@@ -1,0 +1,149 @@
+<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="row">
+        <div class="page-header">
+            <h1>Veroviobeispiel</h1>
+        </div>
+        <script src="http://www.verovio.org/javascript/develop/verovio-toolkit.js" type="text/javascript"/>
+        <!-- We also use jQuery -->
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript"/>
+        <div id="svg_output"/>
+        <script type="text/javascript">
+            var vrvToolkit = new verovio.toolkit();
+            var page = 1;
+            var zoom = 40;
+            var pageHeight = 2970;
+            var pageWidth = 2100;
+            
+            function setOptions() {
+                pageHeight = $(document).height() * 100 / zoom;
+                pageWidth = $(window).width() * 100 / zoom-200;
+                options = {
+                    pageHeight: pageHeight,
+                    pageWidth: pageWidth,
+                    scale: zoom,
+                    adjustPageHeight: 1,
+                    ignoreLayout: 1
+                };
+                vrvToolkit.setOptions(options);
+            }
+            
+            function loadData(data) {
+                setOptions();
+                vrvToolkit.loadData(data);
+            
+                page = 1;
+                loadPage();
+            }
+            
+            /////////////////////////////////////////////
+            /* A function that loads the selected page */
+            /////////////////////////////////////////////
+            function loadPage() {
+                svg = vrvToolkit.renderPage(page, {});
+                $("#svg_output").html(svg);
+            };
+            
+            ////////////////////////////////////////////////////////////
+            /* A function that redoes the layout and reloads the page */
+            ////////////////////////////////////////////////////////////
+            function applyZoom() {
+                setOptions();
+                vrvToolkit.redoLayout();
+            
+                page = 1;
+                loadPage();
+            }
+            
+            ////////////////////////////////////////////////
+            /* Some functions for handling various events */
+            ////////////////////////////////////////////////
+            function nextPage() {
+                if (page &gt;= vrvToolkit.getPageCount()) {
+                return;
+            }
+            
+            page = page + 1;
+                loadPage();
+            };
+            
+            function prevPage() {
+                if (page &lt;= 1) {
+                    return;
+                }
+            
+                page = page - 1;
+                loadPage();
+            };
+            
+            function firstPage() {
+                page = 1;
+                loadPage();
+            };
+            
+            function lastPage() {
+                page = vrvToolkit.getPageCount();
+                loadPage();
+            };
+            
+            function zoomOut() {
+                if (zoom &lt; 20) {
+                    return;
+                }
+                zoom = zoom / 2;
+                applyZoom();
+            }
+            
+            function zoomIn() {
+                if (zoom &gt; 80) {
+                    return;
+                }
+                zoom = zoom * 2;
+                applyZoom();
+            }
+            
+            $(document).ready(function() {
+            
+            ////////////////////////
+            /* Binding the events */
+            ////////////////////////
+            $(window).keyup(function(event){
+                if (event.ctrlKey &amp;&amp; (event.keyCode == 37)) {
+                firstPage();
+            }
+            else if (event.keyCode == 37) {
+                prevPage();
+            }
+            else if (event.ctrlKey &amp;&amp; (event.keyCode == 39)) {
+                lastPage();
+            }
+            else if (event.keyCode == 39) {
+                nextPage();
+            }
+            // see http://www.javascripter.net/faq/keycodes.htm
+            else if ((event.keyCode == 107) || (event.keyCode == 187) || (event.keyCode == 61) ) {
+                zoomIn();
+            }
+            else if ((event.keyCode == 109) || (event.keyCode == 189) || (event.keyCode == 173)) {
+                zoomOut();
+            }
+            });
+            
+            $(window).resize(function(){
+                applyZoom();
+            });
+            
+            var file = location.search.substring(1);
+                if (file.length == 0) {
+                    file = "data/werke/DerTagverdaemmert_mei.xml"
+                }
+                $.ajax({
+                    url: file
+                    , dataType: "text"
+                    , success: function(data) {
+                    loadData(data);
+                }
+            });
+            });
+        </script>
+    </div>
+</div>

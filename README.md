@@ -1,4 +1,7 @@
-# portal-app
-eXistDB-Application for rendering Metadate of TEI and MEI
+# baudi-app
+eXist-App to run BauDi
 
-Here the source code will be uoploaded very soon.
+Here you find the inner content of `baudi-app`.
+
+## Install BauDi (local)
+Install eXistDB (if you not already use it) and upload the latested release for baumann-digital.de.

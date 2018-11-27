@@ -1,0 +1,56 @@
+body{
+margin: 0;
+padding: 0;
+border: 0;
+overflow: hidden;
+height: 100%; 
+max-height: 100%; 
+}
+
+#framecontentLeft, #framecontentTop{
+position: absolute; 
+top: 0; 
+left: 0; 
+width: 200px; /*Width of left frame div*/
+height: 100%;
+overflow: hidden; /*Disable scrollbars. Set to "scroll" to enable*/
+background-color: navy;
+color: white;
+}
+
+#framecontentTop{ 
+left: 200px; /*Set left value to WidthOfLeftFrameDiv*/
+right: 0;
+width: auto;
+height: 120px; /*Height of top frame div*/
+overflow: hidden; /*Disable scrollbars. Set to "scroll" to enable*/
+background-color: navy;
+color: white;
+}
+
+#maincontent{
+position: fixed; 
+left: 200px; /*Set left value to WidthOfLeftFrameDiv*/
+top: 120px; /*Set top value to HeightOfTopFrameDiv*/
+right: 0;
+bottom: 0;
+overflow: auto; 
+background: #fff;
+}
+
+.innertube{
+margin: 15px; /*Margins for inner DIV inside each DIV (to provide padding)*/
+}
+
+* html body{ /*IE6 hack*/
+padding: 120px 0 0 200px; /*Set value to (HeightOfTopFrameDiv 0 0 WidthOfLeftFrameDiv)*/
+}
+
+* html #maincontent{ /*IE6 hack*/
+height: 100%; 
+width: 100%; 
+}
+
+* html #framecontentTop{ /*IE6 hack*/
+width: 100%;
+}

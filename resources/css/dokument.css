@@ -1,0 +1,45 @@
+.boxed{
+	margin: auto;
+	width: 75%;
+	border: 2px solid grey;
+	padding: 5px;
+	position: center;
+}
+div.page {
+    margin: auto;
+    width: 80%;
+    border: 2px solid grey;
+    padding: 5px;
+    position: center;
+}
+div.titlepage {
+    margin: auto;
+    width: 80%;
+    border: 2px solid grey;
+    padding: 5px;
+    position: center;
+}
+
+table {
+	border: 0px solid #000;
+	margin: auto;
+	width: 500px;
+    padding: 8px;
+	position: relative;
+}
+
+td.rowspanned {
+      /*background-color: green;*/
+}
+td span{
+	background-color: #FFF;
+}
+td.role:before{
+	clip: rect(0px, 400px, 20px, 0px);
+	content: " ....................................................................................................................................................................................................................................................................................... ";
+	position: absolute;
+	z-index: -1;
+}
+td.name{
+	text-align: right;
+}

@@ -1,0 +1,23 @@
+.boxed{
+	width: 500px;
+	border: 25px solid grey;
+	padding: 25px;
+	margin: 25px;
+}
+
+table{
+	border: 0px solid #000;
+	width: 450px;
+}
+td span{
+	background-color: #FFF;
+}
+td.role:before{
+	clip: rect(0px, 400px, 20px, 0px);
+	content: " ....................................................................................................................................................................................................................................................................................... ";
+	position: absolute;
+	z-index: -1;
+}
+td.name{
+	text-align: right;
+}
