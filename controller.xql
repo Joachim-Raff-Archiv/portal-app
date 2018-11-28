@@ -5,7 +5,7 @@ declare variable $exist:resource external;
 declare variable $exist:controller external;
 declare variable $exist:prefix external;
 declare variable $exist:root external;
-declare variable $exist:log-in := xmldb:login('/db','Baumann','Ludwig');
+declare variable $exist:log-in := xmldb:login('/db','Raff','Joachim');
 
 if ($exist:path eq '') then
 	<dispatch

@@ -1,15 +1,14 @@
 <meta xmlns="http://exist-db.org/xquery/repo">
-    <description>baudi</description>
-    <author>Tobias Bachmann</author>
+    <description>raffArchive</description>
     <author>Dennis Ried</author>
-    <website>http://www.baumann-digital.de</website>
+    <website>http://raff-archiv.ch</website>
     <status>alpha</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
     <type>application</type>
-    <target>baudi</target>
+    <target>raffArchive</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
-    <permissions user="baudi" group="baudi" mode="rw-rw-r--"/>
+    <permissions user="raffArchive" group="raffArchive" mode="rw-rw-r--"/>
     
-<deployed>2018-11-28T13:04:04.099+01:00</deployed></meta>
+<deployed>2018-11-19T17:05:39.235+01:00</deployed></meta>
