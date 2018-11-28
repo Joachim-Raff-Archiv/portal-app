@@ -5,7 +5,7 @@ declare variable $exist:resource external;
 declare variable $exist:controller external;
 declare variable $exist:prefix external;
 declare variable $exist:root external;
-declare variable $exist:log-in := xmldb:login('/db','admin','Gezeter7:sabbertet');
+declare variable $exist:log-in := xmldb:login('/db','Baumann','Ludwig');
 
 if ($exist:path eq '') then
 	<dispatch
@@ -15,22 +15,22 @@ if ($exist:path eq '') then
 	</dispatch>
 	
 	
-	(: if its a brief :)
+	(: if its a letter :)
 else
-	if (matches($exist:path, "/brief/")) then
+	if (matches($exist:path, "/letter/")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			<forward
-				url="{$exist:controller}/html/brief.html">
+				url="{$exist:controller}/html/viewLetter.html">
 				<add-parameter
-					name="brief-id"
+					name="letter-id"
 					value="{$exist:resource}"/>
 			</forward>
 			<view>
 				<forward
 					url="{$exist:controller}/modules/view.xql">
 					<add-parameter
-						name="brief-id"
+						name="letter-id"
 						value="{$exist:resource}"/>
 				</forward>
 			</view>
@@ -43,22 +43,22 @@ else
 			</error-handler>
 		</dispatch>
 		
-		(: if its a dokument :)
+		(: if its a document :)
 else
-	if (matches($exist:path, "/dokument/")) then
+	if (matches($exist:path, "/document/")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			<forward
-				url="{$exist:controller}/html/dokument.html">
+				url="{$exist:controller}/html/viewDocument.html">
 				<add-parameter
-					name="dokument-id"
+					name="document-id"
 					value="{$exist:resource}"/>
 			</forward>
 			<view>
 				<forward
 					url="{$exist:controller}/modules/view.xql">
 					<add-parameter
-						name="dokument-id"
+						name="document-id"
 						value="{$exist:resource}"/>
 				</forward>
 			</view>
@@ -77,7 +77,7 @@ else
 			<dispatch
 				xmlns="http://exist.sourceforge.net/NS/exist">
 				<forward
-					url="{$exist:controller}/html/person.html">
+					url="{$exist:controller}/html/viewPerson.html">
 					<add-parameter
 						name="person-id"
 						value="{$exist:resource}"/>
@@ -99,22 +99,22 @@ else
 				</error-handler>
 			</dispatch>
 			
-			(: if its an ort :)
+			(: if its an place :)
 		else
-			if (matches($exist:path, "/ort/")) then
+			if (matches($exist:path, "/place/")) then
 				<dispatch
 					xmlns="http://exist.sourceforge.net/NS/exist">
 					<forward
-						url="{$exist:controller}/html/ort.html">
+						url="{$exist:controller}/html/viewPlace.html">
 						<add-parameter
-							name="ort-id"
+							name="place-id"
 							value="{$exist:resource}"/>
 					</forward>
 					<view>
 						<forward
 							url="{$exist:controller}/modules/view.xql">
 							<add-parameter
-								name="ort-id"
+								name="place-id"
 								value="{$exist:resource}"/>
 						</forward>
 					</view>
@@ -133,7 +133,7 @@ else
 					<dispatch
 						xmlns="http://exist.sourceforge.net/NS/exist">
 						<forward
-							url="{$exist:controller}/html/institution.html">
+							url="{$exist:controller}/html/viewInstitution.html">
 							<add-parameter
 								name="institution-id"
 								value="{$exist:resource}"/>
@@ -157,20 +157,20 @@ else
 					
 						(: if its a work :)
 			else
-				if (matches($exist:path, "/werk/")) then
+				if (matches($exist:path, "/work/")) then
 					<dispatch
 						xmlns="http://exist.sourceforge.net/NS/exist">
 						<forward
-							url="{$exist:controller}/html/werk.html">
+							url="{$exist:controller}/html/viewWork.html">
 							<add-parameter
-								name="werk-id"
+								name="work-id"
 								value="{$exist:resource}"/>
 						</forward>
 						<view>
 							<forward
 								url="{$exist:controller}/modules/view.xql">
 								<add-parameter
-									name="werk-id"
+									name="work-id"
 									value="{$exist:resource}"/>
 							</forward>
 						</view>
@@ -183,34 +183,6 @@ else
 						</error-handler>
 					</dispatch>
 					
-					(: if its an old source :)
-				else
-					if (matches($exist:path, "/sources/alt")) then
-						<dispatch
-							xmlns="http://exist.sourceforge.net/NS/exist">
-							<forward
-								url="{$exist:controller}/html/sources.html">
-								<add-parameter
-									name="source-id"
-									value="{$exist:resource}"/>
-							</forward>
-							<view>
-								<forward
-									url="{$exist:controller}/modules/view.xql">
-									<add-parameter
-										name="source-id"
-										value="{$exist:resource}"/>
-								</forward>
-							</view>
-							<error-handler>
-								<forward
-									url="{$exist:controller}/templates/error-page.html"
-									method="get"/>
-								<forward
-									url="{$exist:controller}/modules/view.xql"/>
-							</error-handler>
-						</dispatch>
-						
 						
 						(: if its an manuskript :)
 					else
@@ -218,7 +190,7 @@ else
 							<dispatch
 								xmlns="http://exist.sourceforge.net/NS/exist">
 								<forward
-									url="{$exist:controller}/html/sources/manuscript.html">
+									url="{$exist:controller}/html/sources/viewManuscript.html">
 									<add-parameter
 										name="source-id"
 										value="{$exist:resource}"/>
@@ -247,7 +219,7 @@ else
 								<dispatch
 									xmlns="http://exist.sourceforge.net/NS/exist">
 									<forward
-										url="{$exist:controller}/html/sources/print.html">
+										url="{$exist:controller}/html/sources/viewPrint.html">
 										<add-parameter
 											name="source-id"
 											value="{$exist:resource}"/>

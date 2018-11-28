@@ -13,7 +13,6 @@ import module namespace templates="http://exist-db.org/xquery/templates" ;
  :)
 import module namespace config="http://localhost:8080/exist/apps/baudi/config" at "config.xqm";
 import module namespace app="http://localhost:8080/exist/apps/baudi/templates" at "app.xql";
-import module namespace briefe="http://localhost:8080/exist/apps/baudi/templates" at "briefe.xql";
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
 declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
@@ -21,7 +20,7 @@ declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare option output:method "html5";
 declare option output:media-type "text/html";
 
-let $log-in := xmldb:login("/db", "admin", "Gezeter7:sabbertet")
+let $log-in := xmldb:login("/db", "baudi", "Ludwig")
 let $config := map {
     $templates:CONFIG_APP_ROOT : $config:app-root,
     $templates:CONFIG_STOP_ON_ERROR : true()

@@ -5,9 +5,9 @@
         <xsl:for-each select="//div[@type = 'page' or @type = 'titlepage']//persName[@key]/distinct-values(@key)">
             <xsl:sort select="lower-case(.)" data-type="text" order="ascending"/>
             <xsl:choose>
-                <xsl:when test="doc-available(concat('../../../../contents/texts/persons/', ., '.xml'))">
+                <xsl:when test="doc-available(concat('../../../../contents/baudi/persons/', ., '.xml'))">
                     <a href="{concat($registerRootPerson, .)}" target="_blank">
-                        <xsl:value-of select="doc(concat('../../../../contents/texts/persons/', ., '.xml'))/TEI/teiHeader/fileDesc/titleStmt/title"/>
+                        <xsl:value-of select="doc(concat('../../../../contents/baudi/persons/', ., '.xml'))/TEI/teiHeader/fileDesc/titleStmt/title"/>
                     </a>
                     <br/>
                 </xsl:when>
