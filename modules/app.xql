@@ -422,7 +422,7 @@ return
 )
 };
 
-declare function app:raffAbout($node as node(), $model as map(*)) {
+declare function app:aboutRaff($node as node(), $model as map(*)) {
 
 let $text := doc("/db/contents/jra/texts/portal/aboutRaff.xml")/tei:TEI
 
