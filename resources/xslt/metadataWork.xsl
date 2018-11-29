@@ -22,9 +22,16 @@
                     <tr>
                         <td>Komponist:</td>
                         <td>
-                            <!--<a href="{concat($registerRootPerson,//mei:workList/mei:work/mei:composer/@xml:id,'.xml')}" target="_blank">-->
-                            <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer"/>
-                            <!--</a>-->
+                            <xsl:choose>
+                                <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //composer/persName/@auth, '.xml'))">
+                                    <a href="{concat($registerRootPerson, //mei:composer/mei:persName/@auth)}" target="_blank">
+                                        <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer/mei:persName"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer/mei:persName"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </td>
                     </tr>
                 </xsl:if>
@@ -59,7 +66,7 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <ul>
-                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]">
+                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(contains(@type,'alt'))]">
                                         <li>
                                             <xsl:value-of select="./text()"/>
                                         </li>
