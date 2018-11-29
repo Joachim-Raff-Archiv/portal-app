@@ -9,9 +9,18 @@
             <tr>
                 <td width="150px">Verfasser:</td>
                 <td>
-<!--                    <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()"/>-->
-                    <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-after(.,',')"/>
-                    <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-before(.,',')"/>
+<xsl:choose>
+                        <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //correspAction[@type = 'sent']/persName/@key, '.xml'))">
+                            <a href="{concat($registerRootPerson, //correspAction[@type = 'sent']/persName/@key)}" target="_blank">
+                                <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-after(.,',')"/>
+                                <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-before(.,',')"/>
+                            </a>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-after(.,',')"/>
+                            <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-before(.,',')"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:if test="exists(//correspAction[@type = 'sent']/persName/idno[@type='gnd'])">
                         [GND: <a href="{concat('http://d-nb.info/gnd/',//correspAction[@type = 'sent']/persName/idno[@type='gnd']/text())}" target="_blank"><xsl:value-of select="//correspAction[@type = 'sent']/persName/idno[@type='gnd']/text()"/></a>]
                     </xsl:if>
