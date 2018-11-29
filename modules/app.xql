@@ -48,7 +48,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
 return
 (
    <div class="container">
-      <p>Das lettersverzeichnis enthält zur Zeit {count($letters)} letters.</p>
+      <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
         <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#letters">Chronologie</a></li>  
         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
@@ -208,7 +208,7 @@ return
 <div class="container">
     <div class="page-header">
         <a href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
-            <h2>letter an {$adressat}</h2>
+            <h2>Brief an {$adressat}</h2>
             <h4>Datum: {string($datumSent)}</h4>
             <h4>Absender: {$absender}</h4>
             <h6>ID: {$id}</h6>
@@ -339,47 +339,99 @@ return
 declare function app:registryWorks($node as node(), $model as map(*)) {
     
     let $works := collection("/db/contents/jra/works")/mei:mei
+    let $worksOpus := $works//mei:workList//mei:title[@type='desc' and contains(.,'Opus')]/ancestor::mei:mei
+    let $worksWoO := $works//mei:workList//mei:title[@type='desc' and contains(.,'WoO')]/ancestor::mei:mei
     
     let $content := <div class="container">
     <br/>
     <ul class="nav nav-pills" role="tablist">
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#alpha">Von A-Z</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#chrono">Chronologisch</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortOpus">Opera</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortWoO">WoOs</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortTitle">Titel</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortDate">Chronologie</a></li>
+        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#sortPerfRes">Besetzung</a></li>
     </ul>
     <!-- Tab panels -->
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="alpha">
-        <br/>
+    <div class="tab-pane fade" id="sortOpus">
+        <p>
+        <h5>Werke mit Opuszahl</h5>
+            <ul>
+        {
+        for $work in $worksOpus
+        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
+        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+        let $id := $work/@xml:id/normalize-space(data(.))
+        order by $opus ascending
+        return
+            <li>
+                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
+            </li>
+        }
+            </ul>
+            </p>
+        </div>
+        <div class="tab-pane fade" id="sortWoO">
+        <p>
+        <h5>Werke ohne Opuszahl</h5>
+            <ul>
+        {
+        for $work in $worksWoO
+        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
+        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+        let $id := $work/@xml:id/normalize-space(data(.))
+        order by $opus ascending
+        return
+            <li>
+                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
+            </li>
+        }
+            </ul>
+            </p>
+        </div>
+        <div class="tab-pane fade" id="sortTitle">
+        <p>
+        <h5>Alpabetisch nach Titel</h5>
             <ul>
         {
         for $work in $works
         let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
-        
+        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
         let $id := $work/@xml:id/normalize-space(data(.))
         order by $name ascending
         return
             <li>
-                {$name} (ID: <a href="work/{$id}">{$id}</a>)<br/>
+                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
             </li>
         }
             </ul>
+            </p>
         </div>
-        <div class="tab-pane fade show" id="chrono">
-        <br/>
+        <div class="tab-pane fade" id="sortDate">
+        <p>
+        <h5>Nach Entstehungszeit</h5>
             <ul>
         {
         for $work in $works
         let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
         let $dateComposition := $work//mei:date[@type="composition" and 1]
-        
+        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
         let $id := $work/@xml:id/normalize-space(data(.))
         order by $dateComposition ascending
         return
             <li>
-                {$name} (ID: <a href="work/{$id}">{$id}</a>)<br/>
+                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
             </li>
         }
             </ul>
+            </p>
+        </div>
+        <div class="tab-pane fade show active" id="sortPerfRes">
+        <p>
+        <h5>Nach Besetzungen gruppiert</h5>
+        <!-- Hier muss die Sortierung nach Besetzung hin! -->
+          
+            </p>
         </div>
         </div>
    </div>
