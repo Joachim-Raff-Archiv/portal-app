@@ -22,9 +22,16 @@
                     <tr>
                         <td>Komponist:</td>
                         <td>
-                            <!--<a href="{concat($registerRootPerson,//mei:workList/mei:work/mei:composer/@xml:id,'.xml')}" target="_blank">-->
-                            <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer"/>
-                            <!--</a>-->
+                            <xsl:choose>
+                                <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //composer/persName/@auth, '.xml'))">
+                                    <a href="{concat($registerRootPerson, //mei:composer/mei:persName/@auth)}" target="_blank">
+                                        <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer/mei:persName"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer/mei:persName"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </td>
                     </tr>
                 </xsl:if>
@@ -33,7 +40,16 @@
                     <tr>
                         <td>Textdichter:</td>
                         <td>
-                            <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist"/>
+                            <xsl:choose>
+                                <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/@auth, '.xml'))">
+                                    <a href="{concat($registerRootPerson, //mei:composer/mei:persName/@auth)}" target="_blank">
+                                        <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </td>
                     </tr>
                 </xsl:if>
@@ -46,7 +62,7 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <ul>
-                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes">
+                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(contains(@type,'alt'))]">
                                         <li>
                                             <xsl:value-of select="./text()"/>
                                         </li>
@@ -143,6 +159,36 @@
                         
                     </td>
                 </tr>
+                </xsl:if>
+                <xsl:if test="//mei:eventList/mei:event[@type='UA']">
+                    <tr>
+                        <td>Uraufführung:</td>
+                        <td>
+                            <xsl:variable name="UAdate" select="//mei:eventList/mei:event[@type='UA']/mei:date"/>
+                            <xsl:variable name="UAort" select="//mei:eventList/mei:event[@type='UA']/mei:geogName"/>
+                            <xsl:value-of select="concat('Am ',$UAdate,' in ',$UAort)"/></td>
+                    </tr>
+                </xsl:if>
+                <xsl:if test="exists(//mei:music/mei:body/mei:mdiv/@label)">
+                    <tr>
+                        <td valign="top">Sätze:</td>
+                        <td>
+                            <ul>
+                    <xsl:for-each select="//mei:music/mei:body/mei:mdiv">
+                        <li>
+                            <xsl:value-of select="concat('Nr. ',./@label)"/></li>
+                        <xsl:if test="exists(./mei:mdiv)">
+                            <ul>
+                            <xsl:for-each select="./mei:mdiv">
+                                <li>
+                                    <xsl:value-of select="concat('Nr. ',./@label)"/></li>
+                            </xsl:for-each>
+                            </ul>
+                        </xsl:if>
+                    </xsl:for-each>
+                            </ul>
+                        </td>
+                    </tr>
                 </xsl:if>
                 <!--</xsl:if>-->
                 <!--<tr>
