@@ -338,9 +338,10 @@ return
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
     
-    let $works := collection("/db/contents/jra/works")/mei:mei
+    let $works := collection("/db/contents/jra/works?select=*.xml;recurse=yes")/mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type='desc' and contains(.,'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type='desc' and contains(.,'WoO')]/ancestor::mei:mei
+    let $besetzungen := distinct-values($works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]/text())
     
     let $content := <div class="container">
     <br/>
@@ -428,9 +429,27 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         </div>
         <div class="tab-pane fade show active" id="sortPerfRes">
         <p>
-        <h5>Nach Besetzungen gruppiert</h5>
-        <!-- Hier muss die Sortierung nach Besetzung hin! -->
-          
+        {
+        for $besetzung in $besetzungen
+        let $category := $besetzung
+        order by $category ascending
+        return(
+        <h5>{$category}</h5>,
+          <ul>
+          {
+        for $work in $works
+        where $work//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes/text() = $category
+        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
+        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+        let $id := $work/@xml:id/normalize-space(data(.))
+        order by $opus ascending
+        return
+            <li>
+                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
+            </li>
+        }
+          </ul>)
+          }
             </p>
         </div>
         </div>
