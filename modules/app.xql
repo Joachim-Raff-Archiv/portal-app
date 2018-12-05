@@ -29,14 +29,28 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
     let $letters := collection("/db/contents/jra/sources/documents/letters?select=*.xml;recurse=yes")//tei:TEI
     let $dates := for $letter in $letters
         let $date := 
-        if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when))
-        then($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when)
-        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when-custom))
-        then($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when-custom)
+        if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom)
         else()
         return $date
     let $yearsAll := for $date in $dates
-                    let $yearsSubstring := substring($date,1,4)
+                    let $yearsSubstring := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then(substring($date,1,4))else()
                     return
                     $yearsSubstring
     let $year := let $yearDistinct := distinct-values($yearsAll)
@@ -74,32 +88,60 @@ return
         order by $items ascending
         return
         (<h5 id="{concat('list-item-',$items)}">{if($items='0000')then('ohne Jahr')else($items)}</h5>,
-        let $lettersToProcess := $letters//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1 and contains(substring(data(.),1,4),$items)]/ancestor::tei:TEI
-        for $letter in $lettersToProcess
+        let $lettersToProcess := $letters//tei:correspAction[@type="sent"]/tei:date[contains(@type,'editor') and contains(@type,'source')][contains(substring(data(.),1,4),$items)]/ancestor::tei:TEI
+        for $letter in $letters
+        where //tei:date[contains(substring(data(.),1,4),$items)]
         let $absenderPers := $letter//tei:correspAction[@type="sent"]/tei:persName[1]/text()[1]
         let $absenderOrg := $letter//tei:correspAction[@type="sent"]/tei:orgName[1]/text()[1]
         let $absender := if(exists($absenderPers))then($absenderPers)else if(exists($absenderOrg))then($absenderOrg)else()
         let $adressatPers := $letter//tei:correspAction[@type="received"]/tei:persName[1]/text()[1]
         let $adressatOrg := $letter//tei:correspAction[@type="received"]/tei:orgName[1]/text()[1]
         let $adressat := if(exists($adressatPers))then($adressatPers)else if(exists($adressatOrg))then($adressatOrg)else()
-        let $datumSentWhen := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when
-        let $datumSentWhenCustom := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when-custom
-        let $datumSentFrom := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@from
-        let $datumSentFromCustom := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@from-custom
-        let $datumSentNotBefore := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@notBefore
-        (:let $datumReceived := $letter//tei:correspAction[@type="received"]/tei:date/@when:)
+        let $datumSent := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom)
+        else()
+        (:
+        if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@when)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@when)
+        let $datumSentFrom := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@from)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@from)
+        let $datumSentNotBefore := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@notBefore))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@notBefore)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@notBefore)
+        let $datumSentWhenCustom := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@when-custom)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@when-custom)
+        let $datumSentFromCustom := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@from-custom)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@from-custom)
+        let $datumSentSourceWhen := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source' and 1]/@when
+        let $datumSentSourceFrom := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source'and 1]/@from
+        :)
+        
         let $id := $letter/@xml:id
-        let $datumSent := if(exists($datumSentWhen))
+        (:let $datumSent := if(exists($datumSentWhen))
                           then($datumSentWhen)
-                          else if(exists($datumSentWhenCustom))
-                          then($datumSentWhenCustom)
                           else if(exists($datumSentFrom))
                           then($datumSentFrom)
-                          else if(exists($datumSentFromCustom))
-                          then($datumSentFromCustom)
                           else if(exists($datumSentNotBefore))
                           then($datumSentNotBefore)
-                          else()
+                          else if(exists($datumSentWhenCustom))
+                          then($datumSentWhenCustom)
+                          else if(exists($datumSentFromCustom))
+                          then($datumSentFromCustom)
+                          else if(exists($datumSentSourceWhen))
+                          then($datumSentSourceWhen)
+                          else if(exists($datumSentSourceFrom))
+                          then($datumSentSourceFrom)
+                          else():)
         let $yearSelect := substring($datumSent,1,4)
             let $yearSelectIfthen := if($yearSelect='0000')then('[o.J.]')else($yearSelect)
             let $monthSelect := substring($datumSent,6,2)
@@ -200,7 +242,7 @@ declare function app:letter($node as node(), $model as map(*)) {
 let $id := request:get-parameter("letter-id", "Fehler")
 let $letter := collection("/db/contents/jra/sources/documents/letters")/tei:TEI[@xml:id=$id]
 let $absender := $letter//tei:correspAction[@type="sent"]/tei:persName[1]/text()[1]
-let $datumSent := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when
+let $datumSent := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source' and 1]/@when
 let $adressat := $letter//tei:correspAction[@type="received"]/tei:persName[1]/text()[1]
 
 return
