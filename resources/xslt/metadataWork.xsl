@@ -41,12 +41,12 @@
                     <td valign="top">Besetzung:</td>
                     <td>
                         <xsl:choose>
-                            <xsl:when test="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes/count(node()) = 1">
-                                <xsl:value-of select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes/text()"/>
+                            <xsl:when test="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/count(mei:perfRes[not(@type='alt')]) = 1">
+                                <xsl:value-of select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]/text()"/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <ul>
-                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes">
+                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]">
                                         <li>
                                             <xsl:value-of select="./text()"/>
                                         </li>
@@ -56,6 +56,27 @@
                         </xsl:choose>
                     </td>
                 </tr>
+                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type='alt'])">
+                    <tr>
+                        <td valign="top">Alternative Besetzung:</td>
+                        <td>
+                            <xsl:choose>
+                                <xsl:when test="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/count(mei:perfRes[@type='alt']) = 1">
+                                    <xsl:value-of select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type='alt']/text()"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <ul>
+                                        <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type='alt']">
+                                            <li>
+                                                <xsl:value-of select="./text()"/>
+                                            </li>
+                                        </xsl:for-each>
+                                    </ul>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </td>
+                    </tr>
+                </xsl:if>
                 <xsl:if test="exists(//mei:creation/mei:date[@type='composition' and 1]/@isodate)">
                 <tr>
                     <td>Kompositionsdatum:</td>
@@ -144,6 +165,7 @@
                     </td>
                 </tr>
                 </xsl:if>
+                <xsl:if test="//mei:eventList/mei:event[@type='UA']">
                 <!--</xsl:if>-->
                 <!--<tr>
                     <td colspan="2">Zugehörige Quellen:</td>
