@@ -461,6 +461,7 @@ declare function app:work($node as node(), $model as map(*)) {
 
 let $id := request:get-parameter("work-id", "Fehler")
 let $work := collection("/db/contents/jra/works")/mei:mei[@xml:id=$id]
+let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
 let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
 
 return
@@ -469,7 +470,7 @@ return
         <a href="../registryWorks.html">&#8592; zum Werkeverzeichnis</a>
         <br/>
         <div class="page-header">
-            <h1>{$name}</h1>
+            <h1>{$name}, {$opus}</h1>
             <h5>ID: {$id}</h5>
         </div>
         <br/>
