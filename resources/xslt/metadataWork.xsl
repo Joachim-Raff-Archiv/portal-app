@@ -1,7 +1,6 @@
 <xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes"/>
     <xsl:include href="linking.xsl"/>
-    <!--    <xsl:include href="turnDate.xsl"/>-->
     <xsl:template match="/">
         <div>
             <table border="0" width="100%">
@@ -101,7 +100,7 @@
                 <tr>
                     <td>Kompositionsdatum:</td>
                     <td>
-                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@isodate"/>
+                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@isodate/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
                     </td>
                 </tr>
                 </xsl:if>
@@ -109,8 +108,8 @@
                 <tr>
                     <td>Kompositionszeitraum:</td>
                     <td>
-                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notbefore"/> bis 
-                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notafter"/>
+                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notbefore/format-date(xs:date(.),'[D11].[M11].[Y]')"/> bis 
+                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notafter/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
                     </td>
                 </tr>
                 </xsl:if>
@@ -118,7 +117,7 @@
                     <tr>
                         <td>Kompositionszeitraum:</td>
                         <td>
-                            nach <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notbefore"/>
+                            nach <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notbefore/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
                         </td>
                     </tr>
                 </xsl:if>
@@ -126,7 +125,7 @@
                     <tr>
                         <td>Kompositionszeitraum:</td>
                         <td>
-                            vor <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notafter"/>
+                            vor <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notafter/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
                         </td>
                     </tr>
                 </xsl:if>
@@ -185,8 +184,7 @@
                     </td>
                 </tr>
                 </xsl:if>
-                <xsl:if test="//mei:eventList/mei:event[@type='UA']">
-                    <!--  and not(child::text()/normalize-space(.)='') -->
+                <xsl:if test="//mei:eventList/mei:event[@type='UA']"> <!--  and not(child::text()/normalize-space(.)='') -->
                     <tr>
                         <td valign="top">Uraufführung:</td>
                         <td>
@@ -237,9 +235,8 @@
                         </td>
                     </tr>
                 </xsl:if>
-                </table>
-        <xsl:if test="exists(//mei:componentList/mei:manifestation/mei:itemList/mei:item)">
-                <xsl:variable name="sourceClass" select="//mei:componentList/mei:manifestation/mei:itemList/mei:item/@codedval"/>
+            </table>
+            <xsl:if test="exists(//mei:componentList/mei:manifestation/mei:itemList/mei:item)">
                 <br/>
             <table>
                 <tr>
@@ -249,8 +246,9 @@
                     <td colspan="2">
                         <ul style="list-style-type:circle">
                             <xsl:for-each select="//mei:componentList/mei:manifestation/mei:itemList/mei:item">
+                                <xsl:variable name="sourceClass" select="//mei:componentList/mei:manifestation/mei:itemList/mei:item/@codedval"/>
                                         <li>
-                                            [<xsl:value-of select="document('../../../../contents/jra/definitions/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category[@xml:id=$sourceClass]/mei:desc[@xml:lang='de']"/>] <xsl:value-of select="//mei:locus"/>
+                                            [<xsl:value-of select="document('../../../../contents/jra/definitions/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category[@xml:id=$sourceClass]/mei:desc[@xml:lang='de']"/>] <xsl:value-of select=".//mei:locus"/>
                                         </li>
                             </xsl:for-each>
                         </ul>
