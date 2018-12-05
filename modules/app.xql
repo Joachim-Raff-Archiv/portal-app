@@ -338,7 +338,7 @@ return
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
     
-    let $works := collection("/db/contents/jra/works")/mei:mei
+    let $works := collection("/db/contents/jra/works?select=*.xml;recurse=yes")/mei:mei
     
     let $content := <div class="container">
     <br/>
@@ -380,6 +380,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
             </li>
         }
             </ul>
+            </p>
         </div>
         </div>
    </div>
