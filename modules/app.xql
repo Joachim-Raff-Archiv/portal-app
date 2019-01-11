@@ -1,9 +1,9 @@
 xquery version "3.0";
 
-module namespace app="http://localhost:8080/exist/apps/raffArchive/templates";
+module namespace app="http://185.194.143.51:8080/exist/apps/raffArchive/templates";
 
 import module namespace templates="http://exist-db.org/xquery/templates" ;
-import module namespace config="http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
+import module namespace config="http://185.194.143.51:8080/exist/apps/raffArchive/config" at "config.xqm";
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
 declare namespace tei="http://www.tei-c.org/ns/1.0";
@@ -293,7 +293,7 @@ return
 (
 <div class="row">
     <div class="page-header">
-        <a href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
+        <a href="http://185.194.143.51:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
         <h1>{$name}</h1>
         <h5>ID: {$id}</h5>
     </div>

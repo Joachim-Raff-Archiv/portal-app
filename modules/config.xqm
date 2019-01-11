@@ -4,7 +4,7 @@ xquery version "3.0";
  : A set of helper functions to access the application context from
  : within a module.
  :)
-module namespace config="http://localhost:8080/exist/apps/raffArchive/config";
+module namespace config="http://185.194.143.51:8080/exist/apps/raffArchive/config";
 declare namespace templates="http://exist-db.org/xquery/templates";
 
 declare namespace repo="http://exist-db.org/xquery/repo";
