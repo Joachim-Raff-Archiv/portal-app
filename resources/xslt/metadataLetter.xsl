@@ -30,10 +30,11 @@
                 <td valign="top">Erstellungsdatum:</td>
                 <td>
                     <xsl:value-of select="//correspAction[@type = 'sent']/date"/>
+                    <!-- /format-date(xs:date(.),'[D11].[M11].[Y]') -->
                     <br/>
                     Zeitraum (Quelle): <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='source']/@from-custom"/> bis 
                     <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='source']/@to-custom"/><br/>
-                    Zeitraum (Ermittelt): <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@from"/> bis <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@to"/><br/>
+                    Zeitraum (Ermittelt): <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@from/format-date(xs:date(.),'[D11].[M11].[Y]')"/> bis <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@to/format-date(xs:date(.),'[D11].[M11].[Y]')"/><br/>
                     Anmerkung: <xsl:value-of select="//correspAction[@type = 'sent']/note[@type='editor']"/>
                     
                     <!--

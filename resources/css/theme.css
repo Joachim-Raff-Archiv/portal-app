@@ -2,3 +2,12 @@
 	color: inherit; 
 	text-decoration: none;
 }
+
+.jra {
+    background-color: #5a1a7b;
+    color:white;
+}
+
+div.scroll-sync {
+    position: relative;
+}

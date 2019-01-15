@@ -62,27 +62,27 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
 return
 (
    <div class="container">
-      <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
+      <!--<p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>-->
         <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#letters">Chronologie</a></li>  
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#todo">ToDos</a></li>
+        <li class="nav-item"><a class="nav-link jra active" data-toggle="tab" href="#letters">Chronologie</a></li>  
+        <li class="nav-item"><a class="nav-link jra" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
+        <li class="nav-item"><a class="nav-link jra" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
+        <li class="nav-item"><a class="nav-link jra" data-toggle="tab" href="#todo">ToDos</a></li>
     </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="letters" >
+    <div class="tab-content" style="position:relative">
+        <div class="tab-pane fade show active" id="letters">
         <br/>
         <div class="row">
         <div class="col-2">
-        <div data-spy="scroll" id="list-letters" class="list-group pre-scrollable">
+        <div data-spy="scroll" id="list-letters" class="list-group pre-scrollable scroll-sync">
         {for $items in $year
         order by $items
-        return
-        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$items)}"><span>{if($items='0000')then('ohne Jahr')else($items)}</span><span class="badge badge-primary badge-pill right">{count($yearsAll[contains(.,$items)])}</span></a>
+        return 
+        <a class="jra list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$items)}"><span>{if($items='0000')then('ohne Jahr')else($items)}</span><span class="badge badge-primary badge-pill right">{count($yearsAll[contains(.,$items)])}</span></a>
         }
         </div>
         </div>
-        <div data-spy="scroll" data-target="#list-letters" data-offset="0" class="pre-scrollable col">
+        <div data-spy="scroll" data-target="#list-letters" data-offset="0" class="pre-scrollable col scroll-sync">
         <ul>
         {for $items in $year
         order by $items ascending
