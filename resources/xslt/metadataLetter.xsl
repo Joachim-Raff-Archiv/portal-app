@@ -9,9 +9,19 @@
             <tr>
                 <td width="150px">Verfasser:</td>
                 <td>
-<!--                    <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()"/>-->
-                    <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-after(.,',')"/>
-                    <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-before(.,',')"/>
+                    <xsl:choose>
+                        <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //correspAction[@type = 'sent']/persName/@key, '.xml'))">
+                            <a href="{concat($registerRootPerson, //correspAction[@type = 'sent']/persName/@key)}" target="_blank">
+                                <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-after(.,',')"/>
+                                <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-before(.,',')"/>
+                            </a>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-after(.,',')"/>
+                            <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()/substring-before(.,',')"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    
                     <xsl:if test="exists(//correspAction[@type = 'sent']/persName/idno[@type='gnd'])">
                         [GND: <a href="{concat('http://d-nb.info/gnd/',//correspAction[@type = 'sent']/persName/idno[@type='gnd']/text())}" target="_blank"><xsl:value-of select="//correspAction[@type = 'sent']/persName/idno[@type='gnd']/text()"/></a>]
                     </xsl:if>
@@ -20,11 +30,11 @@
             <tr>
                 <td valign="top">Erstellungsdatum:</td>
                 <td>
-                    <xsl:value-of select="//correspAction[@type = 'sent']/date"/>
+                    <xsl:value-of select="//correspAction[@type = 'sent']/date"/> <!-- /format-date(xs:date(.),'[D11].[M11].[Y]') -->
                     <br/>
                     Zeitraum (Quelle): <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='source']/@from-custom"/> bis 
                     <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='source']/@to-custom"/><br/>
-                    Zeitraum (Ermittelt): <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@from"/> bis <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@to"/><br/>
+                    Zeitraum (Ermittelt): <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@from/format-date(xs:date(.),'[D11].[M11].[Y]')"/> bis <xsl:value-of select="//correspAction[@type = 'sent']/date[@type='editor']/@to/format-date(xs:date(.),'[D11].[M11].[Y]')"/><br/>
                     Anmerkung: <xsl:value-of select="//correspAction[@type = 'sent']/note[@type='editor']"/>
                     
                     <!--

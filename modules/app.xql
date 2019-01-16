@@ -88,8 +88,9 @@ return
         order by $items ascending
         return
         (<h5 id="{concat('list-item-',$items)}">{if($items='0000')then('ohne Jahr')else($items)}</h5>,
-        let $lettersToProcess := $letters//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1 and contains(substring(data(.),1,4),$items)]/ancestor::tei:TEI
-        for $letter in $lettersToProcess
+        let $lettersToProcess := $letters//tei:correspAction[@type="sent"]/tei:date[contains(@type,'editor') and contains(@type,'source')][contains(substring(data(.),1,4),$items)]/ancestor::tei:TEI
+        for $letter in $letters
+        where //tei:date[contains(substring(data(.),1,4),$items)]
         let $absenderPers := $letter//tei:correspAction[@type="sent"]/tei:persName[1]/text()[1]
         let $absenderOrg := $letter//tei:correspAction[@type="sent"]/tei:orgName[1]/text()[1]
         let $absender := if(exists($absenderPers))then($absenderPers)else if(exists($absenderOrg))then($absenderOrg)else()
@@ -241,7 +242,7 @@ declare function app:letter($node as node(), $model as map(*)) {
 let $id := request:get-parameter("letter-id", "Fehler")
 let $letter := collection("/db/contents/jra/sources/documents/letters")/tei:TEI[@xml:id=$id]
 let $absender := $letter//tei:correspAction[@type="sent"]/tei:persName[1]/text()[1]
-let $datumSent := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when
+let $datumSent := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source' and 1]/@when
 let $adressat := $letter//tei:correspAction[@type="received"]/tei:persName[1]/text()[1]
 
 return
