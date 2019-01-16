@@ -37,8 +37,8 @@
         $('[data-toggle="tooltip"]').tooltip()
         })</script>
     </head>
-    <body id="body">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <body id="body" data-spy="scroll" data-target="#list-navItems">
+        <nav class="navbar navbar-expand-lg" style="background-color: #641A85;"> <!-- navbar-dark bg-dark -->
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav">
                     <!--<li class="nav-item">
@@ -83,12 +83,12 @@
                     <li class="dropdown">
                         <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Über das Projekt<span class="caret"/>
                         </a>
-                        <ul class="dropdown-menu navbar-dark bg-dark">
+                        <ul class="dropdown-menu" style="background-color: #5a1a7b;color:white">
                             <li>
                                 <a class="nav-link" href="http://baumann-digital.de:8080/exist/apps/raffArchive/html/aboutProject.html">JRA-Online</a>
                             </li>
-                            <li>
                                 <a class="nav-link" href="">Dokumentation</a>
+                            <li>
                             </li>
                         <li>
                                 <a class="nav-link" href="">Github Repository</a>
@@ -108,7 +108,7 @@
         <div id="content" class="container"/>
         <footer class="footer">
             <div class="container">
-                <p class="text-muted">© 2018 Joachim-Raff-Archiv, Lachen</p>
+                <p class="text-muted">© 2018 Joachim-Raff-Archiv, Lachen (CH)</p>
             </div>
         </footer>
         <!-- Bootstrap core JavaScript
@@ -118,5 +118,11 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"/>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>
+        <script>
+            $('#nav').on('activate.bs.scrollspy', function () {
+		  item = $('#nav').find(".active").last();
+		  item.animatescroll({element: '#nav', padding:20});
+		  })();
+        </script>
     </body>
 </html>

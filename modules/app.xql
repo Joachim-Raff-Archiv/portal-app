@@ -1,9 +1,9 @@
 xquery version "3.0";
 
 module namespace app="http://baumann-digital.de:8080/exist/apps/raffArchive/templates";
-
 import module namespace templates="http://exist-db.org/xquery/templates" ;
 import module namespace config="http://baumann-digital.de:8080/exist/apps/raffArchive/config" at "config.xqm";
+
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
 declare namespace tei="http://www.tei-c.org/ns/1.0";
@@ -29,14 +29,28 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
     let $letters := collection("/db/contents/jra/sources/documents/letters?select=*.xml;recurse=yes")//tei:TEI
     let $dates := for $letter in $letters
         let $date := 
-        if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when))
-        then($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when)
-        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when-custom))
-        then($letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when-custom)
+        if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom)
         else()
         return $date
     let $yearsAll := for $date in $dates
-                    let $yearsSubstring := substring($date,1,4)
+                    let $yearsSubstring := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then(substring($date,1,4))else()
                     return
                     $yearsSubstring
     let $year := let $yearDistinct := distinct-values($yearsAll)
@@ -48,7 +62,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
 return
 (
    <div class="container">
-      <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
+      <!--<p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>-->
         <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#letters">Chronologie</a></li>  
         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
@@ -82,24 +96,51 @@ return
         let $adressatPers := $letter//tei:correspAction[@type="received"]/tei:persName[1]/text()[1]
         let $adressatOrg := $letter//tei:correspAction[@type="received"]/tei:orgName[1]/text()[1]
         let $adressat := if(exists($adressatPers))then($adressatPers)else if(exists($adressatOrg))then($adressatOrg)else()
-        let $datumSentWhen := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when
-        let $datumSentWhenCustom := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@when-custom
-        let $datumSentFrom := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@from
-        let $datumSentFromCustom := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@from-custom
-        let $datumSentNotBefore := $letter//tei:correspAction[@type="sent"]/tei:date[@type="source" and 1]/@notBefore
-        (:let $datumReceived := $letter//tei:correspAction[@type="received"]/tei:date/@when:)
+        let $datumSent := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@notBefore)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor']/@from-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from)
+        else if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom))
+        then($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom)
+        else()
+        (:
+        if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@when)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@when)
+        let $datumSentFrom := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@from)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@from)
+        let $datumSentNotBefore := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@notBefore))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@notBefore)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@notBefore)
+        let $datumSentWhenCustom := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@when-custom))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@when-custom)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@when-custom)
+        let $datumSentFromCustom := if(exists($letter//tei:correspAction[@type="sent"]/tei:date[@type='source']/@from-custom))then($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 2]/@from-custom)else($letter//tei:correspAction[@type="sent"]/tei:date[@type='editor' and 1]/@from-custom)
+        let $datumSentSourceWhen := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source' and 1]/@when
+        let $datumSentSourceFrom := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source'and 1]/@from
+        :)
+        
         let $id := $letter/@xml:id
-        let $datumSent := if(exists($datumSentWhen))
+        (:let $datumSent := if(exists($datumSentWhen))
                           then($datumSentWhen)
-                          else if(exists($datumSentWhenCustom))
-                          then($datumSentWhenCustom)
                           else if(exists($datumSentFrom))
                           then($datumSentFrom)
-                          else if(exists($datumSentFromCustom))
-                          then($datumSentFromCustom)
                           else if(exists($datumSentNotBefore))
                           then($datumSentNotBefore)
-                          else()
+                          else if(exists($datumSentWhenCustom))
+                          then($datumSentWhenCustom)
+                          else if(exists($datumSentFromCustom))
+                          then($datumSentFromCustom)
+                          else if(exists($datumSentSourceWhen))
+                          then($datumSentSourceWhen)
+                          else if(exists($datumSentSourceFrom))
+                          then($datumSentSourceFrom)
+                          else():)
         let $yearSelect := substring($datumSent,1,4)
             let $yearSelectIfthen := if($yearSelect='0000')then('[o.J.]')else($yearSelect)
             let $monthSelect := substring($datumSent,6,2)
@@ -341,6 +382,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $works := collection("/db/contents/jra/works?select=*.xml;recurse=yes")/mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type='desc' and contains(.,'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type='desc' and contains(.,'WoO')]/ancestor::mei:mei
+    let $besetzungen := distinct-values($works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]/text())
     
     let $content := <div class="container">
     <br/>
@@ -428,9 +470,27 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         </div>
         <div class="tab-pane fade show active" id="sortPerfRes">
         <p>
-        <h5>Nach Besetzungen gruppiert</h5>
-        <!-- Hier muss die Sortierung nach Besetzung hin! -->
-          
+        {
+        for $besetzung in $besetzungen
+        let $category := $besetzung
+        order by $category ascending
+        return(
+        <h5>{$category}</h5>,
+          <ul>
+          {
+        for $work in $works
+        where $work//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes/text() = $category
+        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
+        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+        let $id := $work/@xml:id/normalize-space(data(.))
+        order by $opus ascending
+        return
+            <li>
+                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
+            </li>
+        }
+          </ul>)
+          }
             </p>
         </div>
         </div>
@@ -475,7 +535,7 @@ return
 )
 };
 
-declare function app:raffAbout($node as node(), $model as map(*)) {
+declare function app:aboutRaff($node as node(), $model as map(*)) {
 
 let $text := doc("/db/contents/jra/texts/portal/aboutRaff.xml")/tei:TEI
 
