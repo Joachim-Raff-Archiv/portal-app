@@ -69,12 +69,12 @@ return
         <li class="nav-item"><a class="nav-link jra" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
         <li class="nav-item"><a class="nav-link jra" data-toggle="tab" href="#todo">ToDos</a></li>
     </ul>
-    <div class="tab-content" style="position:relative">
+    <div class="tab-content">
         <div class="tab-pane fade show active" id="letters">
         <br/>
         <div class="row">
         <div class="col-2">
-        <div data-spy="scroll" id="list-letters" class="list-group pre-scrollable scroll-sync">
+        <div data-spy="scroll" id="list-navItems" class="list-group pre-scrollable">
         {for $items in $year
         order by $items
         return 
@@ -82,12 +82,12 @@ return
         }
         </div>
         </div>
-        <div data-spy="scroll" data-target="#list-letters" data-offset="0" class="pre-scrollable col scroll-sync">
+        <div data-spy="scroll" data-target="#list-navItems" data-offset="0" class="pre-scrollable col">
         <ul>
         {for $items in $year
         order by $items ascending
         return
-        (<h5 id="{concat('list-item-',$items)}">{if($items='0000')then('ohne Jahr')else($items)}</h5>,
+        (<p id="{concat('list-item-',$items)}" class="RegisterSortEntry">{if($items='0000')then('ohne Jahr')else($items)}</p>,
         let $lettersToProcess := $letters//tei:correspAction[@type="sent"]/tei:date[contains(@type,'editor') and contains(@type,'source')][contains(substring(data(.),1,4),$items)]/ancestor::tei:TEI
         for $letter in $letters
         where //tei:date[contains(substring(data(.),1,4),$items)]
