@@ -5,3 +5,8 @@ build/baudi-0.5*.xar
 build/raffArchive-0.1*.xar
 build/raffArchive-0.3*.xar
 build/raffArchive-0.5*.xar
+build/raffArchive-0.7*.xar
+build/raffArchive-0.9*.xar
+*.bak
+build/.DS_Store
+.DS_Store
