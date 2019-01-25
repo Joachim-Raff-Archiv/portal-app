@@ -3692,7 +3692,8 @@ input[type = submit].btn-block{
 }
 .navbar-nav .dropdown-menu{
     position: static;
-    float: none
+    float: none;
+    background-color:#641A85
 }
 .navbar-text{
     display: inline-block;
