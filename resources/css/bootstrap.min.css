@@ -3565,17 +3565,17 @@ input[type = submit].btn-block{
     flex-wrap: wrap;
     padding-left: 0;
     margin-bottom: 0;
-    list-style: none
+    list-style: none;
 }
 .nav-link{
     display: block;
     padding: .5rem 1rem;
-    color:#641A85
+    color:white
 }
 .nav-link:focus,
 .nav-link:hover{
     text-decoration: none;
-    color:black;
+    color:white;
     background-color:#CCDD6F
 }
 .nav-link.disabled{
@@ -3650,7 +3650,8 @@ input[type = submit].btn-block{
     align-items: center;
     -ms-flex-pack: justify;
     justify-content: space-between;
-    padding: .5rem 1rem
+    padding: .5rem 1rem;
+    background-color:#641A85
 }
 .navbar > .container,
 .navbar > .container-fluid{
@@ -3683,7 +3684,7 @@ input[type = submit].btn-block{
     flex-direction: column;
     padding-left: 0;
     margin-bottom: 0;
-    list-style: none
+    list-style: none;
 }
 .navbar-nav .nav-link{
     padding-right: 0;

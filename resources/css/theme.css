@@ -46,23 +46,24 @@ body {
 }
 
 .btn-jra {
-  background-image: -webkit-linear-gradient(top, #641A85 0%, #265a88 100%);
-  background-image:      -o-linear-gradient(top, #641A85 0%, #265a88 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#337ab7), to(#265a88));
-  background-image:         linear-gradient(to bottom, #641A85 0%, #265a88 100%);
+  background-image: -webkit-linear-gradient(top, #641A85 0%, #7b26a1 100%);
+  background-image:      -o-linear-gradient(top, #641A85 0%, #7b26a1 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#641A85), to(#7b26a1));
+  background-image:         linear-gradient(to bottom, #641A85 0%, #7b26a1 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff641A85', endColorstr='#ff265a88', GradientType=0);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   background-repeat: repeat-x;
-  border-color: #245580;
+  border-color: #ffffff;
 }
 .btn-jra:hover,
 .btn-jra:focus {
-  background-color: #265a88;
-  background-position: 0 -15px;
+  background-color: #932cc1;
+  background-position: 0 -40px;
+  color:#dee2e6;
 }
 .btn-jra:active,
 .btn-jra.active {
-  background-color: #265a88;
+  background-color: #7b26a1;
   border-color: #245580;
 }
 .btn-jra.disabled,
