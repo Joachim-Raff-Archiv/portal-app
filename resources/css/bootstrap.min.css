@@ -150,7 +150,7 @@ sup{
     top: -.5em
 }
 a{
-    color: #007bff;
+    color: #6e078a;
     text-decoration: none;
     background-color: transparent;
     -webkit-text-decoration-skip: objects
@@ -3570,13 +3570,14 @@ input[type = submit].btn-block{
 .nav-link{
     display: block;
     padding: .5rem 1rem;
-    color:white
+    color:white;
+    background-color: #641A85
 }
 .nav-link:focus,
 .nav-link:hover{
     text-decoration: none;
-    color:white;
-    background-color:#CCDD6F
+    color:#000000;
+    background-color:#e8e8e8
 }
 .nav-link.disabled{
     color: #6c757d
@@ -3619,8 +3620,8 @@ input[type = submit].btn-block{
 }
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link{
-    color: #fff;
-    background-color: #641A85
+    color: #737373;
+    background-color: #c0d94d
 }
 .nav-fill .nav-item{
     -ms-flex: 1 1 auto;
@@ -4057,8 +4058,9 @@ input[type = submit].btn-block{
 .card-header{
     padding: .75rem 1.25rem;
     margin-bottom: 0;
-    background-color: rgba(0, 0, 0, .03);
-    border-bottom: 1px solid rgba(0, 0, 0, .125)
+    background-color: #9433bd;
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    color: #ffffff
 }
 .card-header:first-child{
     border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0
@@ -4068,7 +4070,7 @@ input[type = submit].btn-block{
 }
 .card-footer{
     padding: .75rem 1.25rem;
-    background-color: rgba(0, 0, 0, .03);
+    background-color: #9433bd;
     border-top: 1px solid rgba(0, 0, 0, .125)
 }
 .card-footer:last-child{
@@ -4373,7 +4375,7 @@ input[type = submit].btn-block{
 }
 .badge-primary{
     color: #fff;
-    background-color: #007bff
+    background-color: #e8e8e8
 }
 .badge-primary[href]:focus,
 .badge-primary[href]:hover{

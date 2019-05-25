@@ -58,8 +58,8 @@ body {
 }
 .btn-jra:hover,
 .btn-jra:focus {
-  background-color: #80B91D;
-  border-color:#63970C;
+  background-color: #e8e8e8;
+  border-color:#efefef;
   background-position: 0 -40px;
   color:black;
 }
@@ -151,7 +151,7 @@ a.bg-jra:focus,
 a.bg-jra:hover,
 button.bg-jra:focus,
 button.bg-jra:hover{
-    background-color: #80B91D !important
+    background-color: #e8e8e8 !important
 }
 
 .nav-link-jra{
@@ -163,7 +163,7 @@ button.bg-jra:hover{
 .nav-link-jra:hover{
     text-decoration: none;
     color:black;
-    background-color:#80B91D
+    background-color:#e8e8e8
 }
 .nav-link-jra.disabled{
     color: #6c757d
