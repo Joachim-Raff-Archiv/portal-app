@@ -65,7 +65,7 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <ul>
-                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]">
+                                    <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(contains(@type,'alt'))]">
                                         <li>
                                             <xsl:value-of select="./text()"/>
                                         </li>
