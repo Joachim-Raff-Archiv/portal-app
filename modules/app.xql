@@ -176,48 +176,94 @@ return
 
 declare function app:registryPersons($node as node(), $model as map(*)) {
 
-    let $persons := collection("/db/contents/jra/persons")//tei:TEI
+   let $persons := collection("/db/contents/jra/persons/")//tei:TEI
   (:  let $namedPersonsDist := functx:distinct-deep(collection("/db/contents/jra/sources")//tei:text//tei:persName[normalize-space(.)])
     let $namedPersons := collection("/db/contents/jra/sources")//tei:text//tei:persName[normalize-space(.)] :)
-    
-return
-(
-<div class="container">
-    <!--<ul class="nav nav-pills" role="tablist">
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab1">personsdateien</a></li>  
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
-    </ul>
-    <div class="tab-content">-->
-    <!--<div class="tab-pane fade show active" id="tab1">-->
-    <br/>
-        <p>In diesem Verzeichnis sind zur Zeit {count($persons)} Personen erfasst.</p>
-      <ul>
-        {
+
+let $personsAlpha := for $person in $persons
+                        let $persID := $person/@xml:id/string()
+                        let $initial := substring($person//tei:surname[@type="used"][1],1,1)
+                        let $nameSurname := $person//tei:surname[@type="used"][1]
+                        let $nameForename := $person//tei:forename[@type="used"][1]
+                        let $nameAddName := $person//tei:nameLink[1]
+                        let $nameForeFull := if($nameAddName)then(concat($nameForename,' ',$nameAddName))else($nameForename)
+                        let $nameToJoin := if(not($nameSurname=''))then($nameSurname,$nameForeFull)else($nameForeFull)
+                        let $role := $person//tei:roleName[1]
+                        let $nameJoined := if($role)
+                                           then(concat(if($nameForeFull='')
+                                           then($nameSurname)
+                                           else(string-join($nameToJoin,', ')),' (',$role,')'))
+                                           else if($nameForeFull='')
+                                           then($nameSurname)
+                                           else(string-join($nameToJoin,', '))
+                        let $name := <li>{$nameJoined} [<a href="person/{$persID}">{$persID}</a>]</li>
+                        group by $initial
+                        order by $initial
+                        return
+                            (<ul name="{$initial}">
+                                {for $each in $name
+                                    order by $each
+                                    return
+                                        $each}
+                             </ul>)
+
+let $personsGroupedByInitials := for $groups in $personsAlpha
+                                    group by $initial := $groups/@name/string()
+                                    return
+                                           ( <h5 id="{concat('list-item-',if($groups/@name/string()='')then('unknown')else($groups/@name/string()))}">
+                                                {if($groups/@name/string()='')then('[unbekannt]')else($groups/@name/string())}
+                                            </h5>,
+                                                    for $group in $groups
+                                                        return
+                                                            $group
+                                           )
+
+(: {
         for $person in $persons
         let $name := $person//tei:title
         let $id := $person/@xml:id
         order by $name
         return
-        <li>{$name/normalize-space(data(.))} (ID: <a href="person/{$id}">{$id/normalize-space(data(.))}</a>)</li>
-        }
-      </ul>
-    <!--</div>
-    <div class="tab-pane fade" id="tab2">
-        <p>Alle Vorkommen von Personen in alphabetischer Reihenfolge</p>
-         <ul>
-        {
-        for $persName in $namedPersons
-        let $persNameDist := $persName/normalize-space(data(.))
-        let $Quelle := $persName/ancestor::tei:TEI/@xml:id/data(.)
-        order by lower-case($persNameDist)
-        return
-        <li>{$persNameDist} (in: <b>{concat($Quelle,'.xml')}</b>)</li>
-        }
-      </ul>
+        <li>{$name/normalize-space(data(.))} (ID: <a href="person/{$id}">{$id/normalize-space(data(.))}</a>)</li>:)
+        
+return
+
+<div class="container" xmlns="http://www.w3.org/1999/xhtml">
+    <br/>
+        <p>In diesem Verzeichnis sind aktuell {count($persons)} Personen erfasst.</p>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+               <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab1">Alphabetisch</a></li>  
+               <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
+            </ul>
+        <div class="tab-pane fade show active" id="tab1">
+        <br/>
+            <div class="row">
+                <div class="col-2">
+                    <div data-spy="scroll" id="list-persons" class="list-group pre-scrollable">
+                        {for $person in $persons
+                            let $initial := if($person//tei:surname[@type="used"]='')then('unknown')else(substring($person//tei:surname[@type="used"],1,1))
+                            group by $initial
+                            order by $initial
+                            return
+                                <li class="nav-item" xmlns="http://www.w3.org/1999/xhtml">
+                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}">
+                                        <span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
+                                        <span class="badge badge-primary badge-pill right">{count($person[substring(.//tei:surname[@type="used"],1,1)=$initial])}</span>
+                                    </a>
+                                </li>
+                        }
+                    </div>
+                </div>
+                <div data-spy="scroll" data-target="#list-persons" data-offset="0" class="pre-scrollable col">
+                    {$personsGroupedByInitials}
+                </div>
+            </div>
         </div>
-        </div>-->
-    </div>
-)
+        <div class="tab-pane fade" id="tab2">
+            no content
+        </div>
+</div>
+       
 };
 
 declare function app:person($node as node(), $model as map(*)) {
