@@ -38,9 +38,7 @@ return
 <div>
 <p>Es wurden {count($collection//tei:surname[contains(., 'Raff')])} Ergebnisse gefunden.</p>
 <br/>
-        <input type="text" id="myInput" onkeyup="myFilter()" placeholder="Search for names.." title="Type in a name"/>
-<br/>
-<ul id="myUL">
+<ul id="myResults">
 {
 for $search at $n in $collection//tei:surname
     where $search[contains(., 'Raff')]
@@ -104,59 +102,66 @@ group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'
         </p>)
         
 return
-(   <div class="container">
-        <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#letters">Chronologie</a></li>  
-            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
-        </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="letters">
-        <br/>
-        <div class="row">
-        <div class="col-2">
-        <div data-spy="scroll" id="list-letters" class="list-group pre-scrollable">
-        {for $year in $lettersGroupedByYears/@year
-        let $letterCount := $year/parent::xhtml:p/@letterCount/data(.)
-        let $letterYear := $year/data(.)
-        order by $year
-        return
-        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$year)}"><span>{if($year='noYear')then('ohne Jahr')else($letterYear)}</span>
-        <span class="badge badge-primary badge-pill right">{$letterCount}</span></a>
-        }
+(<div class="container">   
+    <div class="row">
+        <div class="col-9">
+            <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#letters">Chronologie</a></li>  
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="letters">
+                <br/>
+                <div class="row">
+                    <div class="col-3">
+                        <div data-spy="scroll" id="list-letters" class="list-group pre-scrollable">
+                            {for $year in $lettersGroupedByYears/@year
+                                let $letterCount := $year/parent::xhtml:p/@letterCount/data(.)
+                                let $letterYear := $year/data(.)
+                                order by $year
+                                return
+                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$year)}"><span>{if($year='noYear')then('ohne Jahr')else($letterYear)}</span>
+                                    <span class="badge badge-primary badge-pill right">{$letterCount}</span></a>
+                            }
+                        </div>
+                  </div>
+                    <div data-spy="scroll" data-target="#list-letters" data-offset="0" class="pre-scrollable col" id="divResults">
+                       {$lettersGroupedByYears}
+                    </div>
+                </div>
+        </div> 
+                <div class="tab-pane fade" id="RegAdressaten" >
+                     
+                     <p><ul>{
+                   let $valuesRec := distinct-values($letters//tei:correspAction[@type="received"]/tei:persName/text()[1])
+                   for $valueRec in $valuesRec
+                   order by $valueRec
+                   return
+                   <li>{$valueRec}</li>
+                     }</ul>
+                     </p>
+                     </div>
+                <div class="tab-pane fade" id="RegAbsender" >
+                
+                     <p><ul>{
+                     let $valuesSent := distinct-values($letters//tei:correspAction[@type="sent"]/tei:persName/text()[1])
+                     for $valueSent in $valuesSent
+                     order by $valueSent
+                     return
+                     <li>{$valueSent}</li>
+                       }</ul>
+                     </p>
+                </div>
+           </div>
         </div>
-      </div>
-     <div data-spy="scroll" data-target="#list-letters" data-offset="0" class="pre-scrollable col">
-        {$lettersGroupedByYears}
-        </div>
-        </div>
-        </div>
-        
-        <div class="tab-pane fade" id="RegAdressaten" >
-        
-        <p><ul>{
-      let $valuesRec := distinct-values($letters//tei:correspAction[@type="received"]/tei:persName/text()[1])
-      for $valueRec in $valuesRec
-      order by $valueRec
-      return
-      <li>{$valueRec}</li>
-        }</ul>
-        </p>
-        </div>
-        <div class="tab-pane fade" id="RegAbsender" >
-        
-      <p><ul>{
-      let $valuesSent := distinct-values($letters//tei:correspAction[@type="sent"]/tei:persName/text()[1])
-      for $valueSent in $valuesSent
-      order by $valueSent
-      return
-      <li>{$valueSent}</li>
-        }</ul>
-        </p>
+        <div class="col-3">
+            <br/><br/><h5>Suche</h5>
+              <input type="text" id="myResearchInput" onkeyup="myFilter()" placeholder="Suche nach.." title="Type in a string"/>
         </div>
    </div>
-      </div>
+</div>
 )
     
 };
