@@ -10,6 +10,7 @@ declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace mei="http://www.music-encoding.org/ns/mei";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace functx = "http://www.functx.com";
+declare namespace http = "http://expath.org/ns/http-client";
 
 declare function functx:is-node-in-sequence-deep-equal
   ( $node as node()? ,
@@ -24,6 +25,32 @@ declare function functx:distinct-deep
     for $seq in (1 to count($nodes))
     return $nodes[$seq][not(functx:is-node-in-sequence-deep-equal(.,$nodes[position() < $seq]))]
  };
+
+(:declare function app:search($node as node(), $model as map(*)) {
+for $x in doc("/db/contents/jra/sources/documents/letters")//tei:TEI
+ let $title := $x//LINE[ . ftcontains "romeo juliet " all words ]
+ return $x/ancestor::tei:TEI/@xml:id
+};:)
+
+declare function app:search($node as node(), $model as map(*)) {
+let $collection := collection('/db/contents/jra/persons')//tei:TEI
+return
+<div>
+<p>Es wurden {count($collection//tei:surname[contains(., 'Raff')])} Ergebnisse gefunden.</p>
+<br/>
+        <input type="text" id="myInput" onkeyup="myFilter()" placeholder="Search for names.." title="Type in a name"/>
+<br/>
+<ul id="myUL">
+{
+for $search at $n in $collection//tei:surname
+    where $search[contains(., 'Raff')]
+    let $result := $search/parent::node()/string()
+    let $resultID := $search/ancestor::tei:TEI/@xml:id
+    order by $result
+    return
+        <li>{$result} (<a href="person/{$resultID}">{$resultID/string()}</a>)</li>
+}</ul></div>
+};
 
 declare function app:registryLetters($node as node(), $model as map(*)) {
 
@@ -169,6 +196,8 @@ return
         <div class="tab-pane fade" id="xmlAnsicht">
             {transform:transform($letter,doc("/db/apps/raffArchive/resources/xslt/xmlView.xsl"), ())}
         </div>
+        <div>
+        <img src="http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg" class="img-thumbnail" width="400"/></div>
     </div>
   </div>
 )
@@ -269,11 +298,10 @@ return
 declare function app:person($node as node(), $model as map(*)) {
  
 let $id := request:get-parameter("person-id", "Fehler")
-let $person := collection("/db/contents/jra/persons")/tei:TEI[@xml:id=$id]
+let $person := collection("/db/contents/jra/persons")//tei:TEI[@xml:id=$id]
 let $name := $person//tei:title/normalize-space(data(.))
-let $namedPersons := collection("/db/contents/jra/sources")//tei:text//tei:persName[@key=$id]
-let $namedPersonsDist := functx:distinct-deep(collection("/db/contents/jra/sources")//tei:text//tei:persName[@key=$id])
-
+let $personNaming := collection("/db/contents/jra/sources")//tei:persName[@key=$id]
+let $personNamingDistinct := functx:distinct-deep($personNaming)
 return
 (
 <div class="row">
@@ -283,36 +311,45 @@ return
         <h5>ID: {$id}</h5>
     </div>
     <div class="container">
-          <ul class="nav nav-pills" role="tablist">
-            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#metadaten">Metadaten</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#named">Erwähnungen</a></li>
-          </ul>
-          <div class="tab-content">
-          <br/>
-            <div class="tab-pane fade show active" id="metadaten">
-                {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
-                <br/>
-                {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentPerson.xsl"), ())}
-            </div>
-            <div class="tab-pane fade" id="named" >
-                <ul>
-                {
-                    for $persName in $namedPersons
-                    let $persNameDist := $persName/normalize-space(data(.))
-                    let $Quelle := $persName/ancestor::tei:TEI/@xml:id/data(.)
-                    order by lower-case($persNameDist)
-                    return
-                    <li>{$persNameDist} (in: <b>{concat($Quelle,'.xml')}</b>)</li>
-                    }
+        <div class="row">
+            <div class="col">
+                <ul class="nav nav-pills" role="tablist">
+                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#metadaten">Metadaten</a></li>
+                  {if($personNaming)then(<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#named">Erwähnungen</a></li>)else()}
+                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
                 </ul>
+                <div class="tab-content">
+                    <br/>
+                    <div class="tab-pane fade show active" id="metadaten">
+                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
+                        <br/>
+                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentPerson.xsl"), ())}
+                    </div>
+                    {if($personNaming)then(<div class="tab-pane fade" id="named" >
+                        <ul>
+                        {
+                            for $each in $personNaming
+                            let $persNameDist := distinct-values($each/normalize-space(data(.)))
+                            let $source := $each/ancestor::tei:TEI/@xml:id/data(.)
+                            order by lower-case($persNameDist)
+                            return
+                            <li>{$each}{$persNameDist} (in: <b>{concat($source,'.xml')}</b>)</li>
+                            }
+                        </ul>
+                    </div>)else()}
+                    <div class="tab-pane fade" id="xmlAnsicht" >
+                        <pre class="pre-scrollable">
+                            <xmp>
+                                {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                            </xmp>
+                        </pre>
+                    </div>
+                </div>
             </div>
-            <div class="tab-pane fade" id="xmlAnsicht" >
-                <pre class="pre-scrollable">
-                    <xmp>
-                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
-                    </xmp>
-                </pre>
+            <div class="col-2">
+            <h5>Links</h5>
+            <li><a href="{concat('/db/contents/jra/persons/',$id,'.xml')}" download="Download">Download file</a></li>
+            <li>Link2</li>
             </div>
         </div>
     </div>
@@ -533,3 +570,43 @@ return
 )
 };
 :)
+
+declare function app:tests($node as node(), $model as map(*)) {
+
+let $collection := collection('/db/contents/jra/persons')
+let $gndNos := (:'1091567573':) $collection//tei:TEI//tei:idno[@type="GND"]
+(:for $gndNo in $gndNos:)
+let $data := <div class="container"><table><tr> <td>Pos. (Abfrage)</td><td>Identifikationsnummer</td><td>GND (eingetragen)</td>
+                        <td>URL</td><td>Test</td></tr>{
+
+                for $item at $n in $gndNos
+(:                    where $n < 20:)
+                    
+                    let $itemString := $item/normalize-space(string())
+                    let $urlGND := concat('http://d-nb.info/gnd/',$itemString)
+                    let $request := http:send-request(<http:request href="{$urlGND}" method="GET"/>)
+                    let $test := exists($request//@status[string()='404'])
+                    
+                    where $test = true()
+                    let $id := $item/ancestor::tei:TEI/@xml:id/string()
+                    let $result := if($test = true())then('Existiert nicht!')else()
+(:                    let $data := if(not($test = true()))then(doc($urlGND))else():)
+(:                    let $dataLink := if(not($test = true()))then($data//xhtml:h1[@class="nameID" and contains(text(),'Permalink:')]/substring-after(text(),': '))else():)
+(:                    let $dataRedirect := if(not($test = true()))then(doc(concat('https://viaf.org',$dataLink)))else():)
+(:                    let $VIAFid := if($dataRedirect='')then('Problem')else($dataRedirect//xhtml:head/xhtml:title/string()):)
+                    
+                    order by $result,$id
+                    return
+                        (<tr>
+                            <td>{$n}</td>
+                            <td>{$id}</td>
+                            <td>{$itemString}</td>
+                            <td>{$urlGND}</td>
+                            <td>{$result}</td>
+                        </tr>)
+                         
+               }</table>
+              </div>
+return
+    $data
+};

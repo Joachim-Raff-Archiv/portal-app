@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>existdb-login</title>
+
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"/>
+    <link rel="import" href="bower_components/existdb-login/existdb-login.html"/>
+
+  </head>
+  <body>
+
+    <h2>existdb-login Web Component</h2>
+
+    <p>
+      Both forms can be used to login. Use the native one if you don't want to deal with Web Components.
+    </p>
+
+    <existdb-login target="restricted.html" style="width:400px; height: 200px;"> </existdb-login>
+
+
+    <h2>native form login</h2>
+    <div>
+      <form class="form" id="form" action="restricted.html" method="post">
+        <input type="hidden" name="origin" value="{$origin}" autocomplete="on"/>
+        <input label="User ID" id="user" name="user" autofocus="autofocus" required="required" error="Please input your username"/>
+        <input label="Password" type="password" id="password" name="password" error="Please input your password"/>
+        <button type="submit" on-click="_handleSubmit">Sign me in</button>
+      </form>
+    </div>
+
+  </body>
+</html>
