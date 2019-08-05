@@ -1,6 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8"/>
-    <xsl:variable name="LinkZurPerson" select="concat('http://localhost:8080/exist/apps/raffArchive/html/person/', ./@key, '.xml')"/>
+    <xsl:variable name="LinkZurPerson" select="concat('http://portal.raff-archiv.ch/html/person/', ./@key, '.xml')"/>
     <xsl:template name="genannteDaten" match="/">
         <p>Erwähnte Zeiträume</p>
         <xsl:for-each select="//div[@type = 'page']//date/@from-iso">

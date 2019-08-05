@@ -1,8 +1,8 @@
 xquery version "3.0";
 
-module namespace app="http://localhost:8080/exist/apps/raffArchive/templates";
+module namespace app="http://portal.raff-archiv.ch/templates";
 import module namespace templates="http://exist-db.org/xquery/templates" ;
-import module namespace config="http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
+import module namespace config="http://portal.raff-archiv.ch/config" at "config.xqm";
 
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
@@ -125,7 +125,7 @@ return
                                     <span class="badge badge-primary badge-pill right">{$letterCount}</span></a>
                             }
                         </nav>
-                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults"> <!--  -->
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
                        {$lettersGroupedByYears}
                     </div>
                 </div>
@@ -156,7 +156,7 @@ return
         </div>
         <div class="col-3">
             <br/><br/><h5>Suche</h5>
-              <input type="text" id="myResearchInput" onkeyup="myFilter()" placeholder="Suche nach.." title="Type in a string"/>
+              <input type="text" id="myResearchInput" onkeyup="myFilterLetter()" placeholder="Name oder ID" title="Type in a string"/>
         </div>
    </div>
 </div>
@@ -242,13 +242,15 @@ let $personsAlpha := for $person in $persons
 let $personsGroupedByInitials := for $groups in $personsAlpha
                                     group by $initial := $groups/@name/string()
                                     return
-                                           ( <h5 id="{concat('list-item-',if($groups/@name/string()='')then('unknown')else($groups/@name/string()))}">
+                                           (<div><h5 id="{concat('list-item-',if($groups/@name/string()='')then('unknown')else($groups/@name/string()))}">
                                                 {if($groups/@name/string()='')then('[unbekannt]')else($groups/@name/string())}
-                                            </h5>,
+                                            </h5>
+                                            {
                                                     for $group in $groups
                                                         return
                                                             $group
-                                           )
+                                             }
+                                           </div>)
 
 (: {
         for $person in $persons
@@ -261,41 +263,45 @@ let $personsGroupedByInitials := for $groups in $personsAlpha
 return
 
 <div class="container" xmlns="http://www.w3.org/1999/xhtml">
-    <br/>
+        <div class="row">
+        <div class="col-9">
         <p>In diesem Verzeichnis sind aktuell {count($persons)} Personen erfasst.</p>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab1">Alphabetisch</a></li>  
                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
             </ul>
-        <div class="tab-pane fade show active" id="tab1">
-        <br/>
-            <div class="row">
-                <div class="col-2">
-                    <div data-spy="scroll" id="list-persons" class="list-group pre-scrollable">
-                        {for $person in $persons
-                            let $initial := if($person//tei:surname[@type="used"]='')then('unknown')else(substring($person//tei:surname[@type="used"],1,1))
-                            group by $initial
-                            order by $initial
-                            return
-                                <li class="nav-item" xmlns="http://www.w3.org/1999/xhtml">
-                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}">
-                                        <span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
-                                        <span class="badge badge-primary badge-pill right">{count($person[substring(.//tei:surname[@type="used"],1,1)=$initial])}</span>
-                                    </a>
-                                </li>
-                        }
+            <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab1">
+            <br/>
+                <div class="row">
+                        <nav id="nav" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                            {for $person in $persons
+                                let $initial := if($person//tei:surname[@type="used"]='')then('unknown')else(substring($person//tei:surname[@type="used"],1,1))
+                                group by $initial
+                                order by $initial
+                                return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}"><span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
+                                            <span class="badge badge-primary badge-pill right">{count($person[substring(.//tei:surnme[@type="used"],1,1)=$initial])}</span>
+                                        </a>
+                            }
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$personsGroupedByInitials}
                     </div>
                 </div>
-                <div data-spy="scroll" data-target="#list-persons" data-offset="0" class="pre-scrollable col">
-                    {$personsGroupedByInitials}
-                </div>
             </div>
+            <div class="tab-pane fade" id="tab2">
+                no content
+            </div>
+            </div>
+            </div>
+            <div class="col-3">
+            <br/><br/>
+            <h5>Suche</h5>
+              <input type="text" id="myResearchInput" onkeyup="myFilterPerson()" placeholder="Name oder ID" title="Type in a string"/>
         </div>
-        <div class="tab-pane fade" id="tab2">
-            no content
         </div>
-</div>
-       
+       </div>
 };
 
 declare function app:person($node as node(), $model as map(*)) {
@@ -309,7 +315,7 @@ return
 (
 <div class="row">
     <div class="page-header">
-        <a href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
+        <a href="http://portal.raff-archiv.ch/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
         <h1>{$name}</h1>
         <h5>ID: {$id}</h5>
     </div>
@@ -510,7 +516,6 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
 
 let $text := doc("/db/contents/jra/texts/portal/aboutProject.xml")/tei:TEI
 
-
 return
 (
     <div class="container">
@@ -534,6 +539,18 @@ return
 declare function app:indexPage($node as node(), $model as map(*)) {
 
 let $text := doc('/db/contents/jra/texts/portal/index.xml')
+
+return
+(
+    <div class="container">
+        {transform:transform($text,doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+    </div>
+)
+};
+
+declare function app:impressum($node as node(), $model as map(*)) {
+
+let $text := doc("/db/contents/jra/texts/portal/impressum.xml")/tei:TEI
 
 return
 (
@@ -573,43 +590,3 @@ return
 )
 };
 :)
-
-declare function app:tests($node as node(), $model as map(*)) {
-
-let $collection := collection('/db/contents/jra/persons')
-let $gndNos := (:'1091567573':) $collection//tei:TEI//tei:idno[@type="GND"]
-(:for $gndNo in $gndNos:)
-let $data := <div class="container"><table><tr> <td>Pos. (Abfrage)</td><td>Identifikationsnummer</td><td>GND (eingetragen)</td>
-                        <td>URL</td><td>Test</td></tr>{
-
-                for $item at $n in $gndNos
-(:                    where $n < 20:)
-                    
-                    let $itemString := $item/normalize-space(string())
-                    let $urlGND := concat('http://d-nb.info/gnd/',$itemString)
-                    let $request := http:send-request(<http:request href="{$urlGND}" method="GET"/>)
-                    let $test := exists($request//@status[string()='404'])
-                    
-                    where $test = true()
-                    let $id := $item/ancestor::tei:TEI/@xml:id/string()
-                    let $result := if($test = true())then('Existiert nicht!')else()
-(:                    let $data := if(not($test = true()))then(doc($urlGND))else():)
-(:                    let $dataLink := if(not($test = true()))then($data//xhtml:h1[@class="nameID" and contains(text(),'Permalink:')]/substring-after(text(),': '))else():)
-(:                    let $dataRedirect := if(not($test = true()))then(doc(concat('https://viaf.org',$dataLink)))else():)
-(:                    let $VIAFid := if($dataRedirect='')then('Problem')else($dataRedirect//xhtml:head/xhtml:title/string()):)
-                    
-                    order by $result,$id
-                    return
-                        (<tr>
-                            <td>{$n}</td>
-                            <td>{$id}</td>
-                            <td>{$itemString}</td>
-                            <td>{$urlGND}</td>
-                            <td>{$result}</td>
-                        </tr>)
-                         
-               }</table>
-              </div>
-return
-    $data
-};
