@@ -11,3 +11,4 @@ build/raffArchive-0.9*.xar
 *.bak
 build/.DS_Store
 .DS_Store
+*.xar
