@@ -1,8 +1,8 @@
 xquery version "3.0";
 
-module namespace app="http://portal.raff-archiv.ch/templates";
+module namespace app="http://localhost:8080/exist/apps/raffArchive/templates";
 import module namespace templates="http://exist-db.org/xquery/templates" ;
-import module namespace config="http://portal.raff-archiv.ch/config" at "config.xqm";
+import module namespace config="http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
 
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
@@ -82,7 +82,7 @@ let $lettersGroupedByYears :=
             then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
             else('0000')
         let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-        let $letterSmall := <li xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'>{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)} – {$correspSent} an {$correspReceived}<span/> (ID: <a href="letter/{$letterID}">{$letterID}</a>)</li>
+        let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
 
 group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'0000'))
                       then('noYear')
@@ -91,14 +91,14 @@ group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'
     order by $year
     return
         (
-        <div year="{$year}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
-            <h5 id="{concat('list-item-',$year)}">{if($year='noYear')then('ohne Jahr')else($year)}</h5>
-            <ul>
+        <div class="RegisterSortBox" year="{$year}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
+            <h5 class="RegisterSortEntry" id="{concat('list-item-',$year)}">{if($year='noYear')then('ohne Jahr')else($year)}</h5>
+            <table width="100%">
             {for $each in $letterSmall
                 let $order := $each/@dateToOrder
                 order by $order
                 return $each}
-                </ul>
+                </table>
         </div>)
         
 return
@@ -106,10 +106,10 @@ return
     <div class="row">
         <div class="col-9">
             <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#letters">Chronologie</a></li>  
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#letters">Chronologie</a></li>  
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="letters">
@@ -122,7 +122,7 @@ return
                                 order by $year
                                 return
                                     <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$year)}"><span>{if($year='noYear')then('ohne Jahr')else($letterYear)}</span>
-                                    <span class="badge badge-primary badge-pill right">{$letterCount}</span></a>
+                                    <span class="badge badge-jra badge-pill right">{$letterCount}</span></a>
                             }
                         </nav>
                     <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
@@ -183,8 +183,8 @@ return
             <h6>ID: {$id}</h6>
     </div>
      <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#metadata">Metadaten</a></li>  
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
+        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#metadata">Metadaten</a></li>  
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane fade show active" id="metadaten" >
@@ -200,7 +200,11 @@ return
             {transform:transform($letter,doc("/db/apps/raffArchive/resources/xslt/xmlView.xsl"), ())}
         </div>
         <div>
-        <img src="http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg" class="img-thumbnail" width="400"/></div>
+            <img src="http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg" class="img-thumbnail" width="400"/>
+            <br/><br/>
+            Quelle: BSB München (http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg) | Unveränderte Wiedergabe | Lizenz: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank">CC BY-NC-SA</a>
+            <br/>
+        </div>
     </div>
   </div>
 )
@@ -267,8 +271,8 @@ return
         <div class="col-9">
         <p>In diesem Verzeichnis sind aktuell {count($persons)} Personen erfasst.</p>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
-               <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab1">Alphabetisch</a></li>  
-               <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
+               <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#tab1">Alphabetisch</a></li>  
+               <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
             </ul>
             <div class="tab-content">
             <div class="tab-pane fade show active" id="tab1">
@@ -281,7 +285,7 @@ return
                                 order by $initial
                                 return
                                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}"><span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
-                                            <span class="badge badge-primary badge-pill right">{count($person[substring(.//tei:surnme[@type="used"],1,1)=$initial])}</span>
+                                            <span class="badge badge-jra badge-pill right">{count($person[substring(.//tei:surnme[@type="used"],1,1)=$initial])}</span>
                                         </a>
                             }
                             </nav>
@@ -315,7 +319,7 @@ return
 (
 <div class="row">
     <div class="page-header">
-        <a href="http://portal.raff-archiv.ch/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
+        <a href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
         <h1>{$name}</h1>
         <h5>ID: {$id}</h5>
     </div>
@@ -323,9 +327,9 @@ return
         <div class="row">
             <div class="col">
                 <ul class="nav nav-pills" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#metadaten">Metadaten</a></li>
-                  {if($personNaming)then(<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#named">Erwähnungen</a></li>)else()}
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
+                  <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#metadaten">Metadaten</a></li>
+                  {if($personNaming)then(<li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#named">Erwähnungen</a></li>)else()}
+                  <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
                 </ul>
                 <div class="tab-content">
                     <br/>
@@ -377,15 +381,15 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $content := <div class="container">
     <br/>
     <ul class="nav nav-pills" role="tablist">
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortOpus">Opera</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortWoO">WoOs</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortTitle">Titel</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sortDate">Chronologie</a></li>
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#sortPerfRes">Besetzung</a></li>
+        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#sortOpus">Opera</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortWoO">WoOs</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortTitle">Titel</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortDate">Chronologie</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortPerfRes">Besetzung</a></li>
     </ul>
     <!-- Tab panels -->
     <div class="tab-content">
-    <div class="tab-pane fade" id="sortOpus">
+    <div class="tab-pane fade show active" id="sortOpus">
         <p>
         <h5>Werke mit Opuszahl</h5>
             <ul>
@@ -458,7 +462,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
             </ul>
             </p>
         </div>
-        <div class="tab-pane fade show active" id="sortPerfRes">
+        <div class="tab-pane fade" id="sortPerfRes">
         <p>
         {
         for $besetzung in $besetzungen
@@ -570,9 +574,9 @@ return
 (
 <div class="container">
         <ul class="nav nav-pills" role="tablist">
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#coding">Kodierung</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#edition">Edition</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sourceDesc">Quellenbeschreibung</a></li>
+        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#coding">Kodierung</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#edition">Edition</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sourceDesc">Quellenbeschreibung</a></li>
     </ul>
     <!-- Tab panels -->
     <div class="tab-content">
