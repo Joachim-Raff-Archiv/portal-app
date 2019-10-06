@@ -1,7 +1,7 @@
 xquery version "3.0";
 
 module namespace app="http://localhost:8080/exist/apps/raffArchive/templates";
-import module namespace templates="http://exist-db.org/xquery/templates" ;
+import module namespace templates="http://exist-db.org/xquery/templates";
 import module namespace config="http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
 
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
@@ -11,6 +11,7 @@ declare namespace mei="http://www.music-encoding.org/ns/mei";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace functx = "http://www.functx.com";
 declare namespace http = "http://expath.org/ns/http-client";
+(:declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";:)
 
 declare function functx:is-node-in-sequence-deep-equal
   ( $node as node()? ,
@@ -53,84 +54,217 @@ for $search at $n in $collection//tei:surname
 declare function app:registryLetters($node as node(), $model as map(*)) {
 
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
-let $lettersGroupedByYears :=
-    for $letter in $letters
-        let $letterID := $letter/@xml:id/data(.)
-        
-        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-        let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text() | $correspActionSent/tei:orgName/text()) else('[Unbekannt]')
-        let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text() | $correspActionReceived/tei:orgName/text()) else('[Unbekannt]')
-        
-        let $date := if($correspActionSent/tei:date[@type='editor']/@when)
-            then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
-            else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
-            then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
-            else if($correspActionSent/tei:date[@type='editor']/@notBefore)
-            then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
-            else if($correspActionSent/tei:date[@type='editor']/@when-custom)
-            then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
-            else if($correspActionSent/tei:date[@type='editor']/@from-custom)
-            then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
-            else if($correspActionSent/tei:date[@type='source']/@when)
-            then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
-            else if($correspActionSent/tei:date[@type='source']/@when-custom)
-            then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
-            else if($correspActionSent/tei:date[@type='source']/@from)
-            then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
-            else if($correspActionSent/tei:date[@type='source']/@from-custom)
-            then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
-            else('0000')
-        let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-        let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+    let $persons := collection('/db/contents/jra/persons')//tei:TEI
+    let $lettersGroupedByYears :=
+        for $letter in $letters
+            let $letterID := $letter/@xml:id/data(.)
+            
+            let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+            let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+            let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text() | $correspActionSent/tei:orgName/text()) else('[Unbekannt]')
+            let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text() | $correspActionReceived/tei:orgName/text()) else('[Unbekannt]')
+            
+            let $date := if($correspActionSent/tei:date[@type='editor']/@when)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
+                else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
+                else if($correspActionSent/tei:date[@type='editor']/@notBefore)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
+                else if($correspActionSent/tei:date[@type='editor']/@when-custom)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
+                else if($correspActionSent/tei:date[@type='editor']/@from-custom)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
+                else if($correspActionSent/tei:date[@type='source']/@when)
+                then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
+                else if($correspActionSent/tei:date[@type='source']/@when-custom)
+                then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
+                else if($correspActionSent/tei:date[@type='source']/@from)
+                then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
+                else if($correspActionSent/tei:date[@type='source']/@from-custom)
+                then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
+                else('0000')
+            let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+    
+        group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'0000'))
+                              then('noYear')
+                              else
+                              if(not(contains(substring($dateSecured,1,4),'-')))then(substring($dateSecured,1,4))else($dateSecured)
+        order by $year
+        return
+            (
+            <div class="RegisterSortBox" year="{$year}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
+                <h5 class="RegisterSortEntry" id="{concat('list-item-',$year)}">{if($year='noYear')then('ohne Jahr')else($year)}</h5>
+                <table width="100%">
+                {for $each in $letterSmall
+                    let $order := $each/@dateToOrder
+                    order by $order
+                    return $each}
+                    </table>
+            </div>)
+            
+    let $lettersGroupedByRecipient :=
+        for $letter in $letters
+            let $letterID := $letter/@xml:id/data(.)
+            
+            let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+            let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+            let $correspSent := if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName[1]/text()[1]) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName[1]/text()[1]) else('[Unbekannt]')
+            let $correspReceived := if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName[1]/text()[1]) else if($correspActionReceived/tei:persName[1]/text()[1]) then($correspActionReceived/tei:persName[1]/text()[1]) else('[Unbekannt]')
+            let $correspReceivedId := if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName[1]/@key/data(.)) else if($correspActionReceived/tei:persName[1]/@key) then($correspActionReceived/tei:persName[1]/@key/data(.)) else('[Unbekannt]')
+            let $date := if($correspActionSent/tei:date[@type='editor']/@when)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
+                else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
+                else if($correspActionSent/tei:date[@type='editor']/@notBefore)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
+                else if($correspActionSent/tei:date[@type='editor']/@when-custom)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
+                else if($correspActionSent/tei:date[@type='editor']/@from-custom)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
+                else if($correspActionSent/tei:date[@type='source']/@when)
+                then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
+                else if($correspActionSent/tei:date[@type='source']/@when-custom)
+                then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
+                else if($correspActionSent/tei:date[@type='source']/@from)
+                then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
+                else if($correspActionSent/tei:date[@type='source']/@from-custom)
+                then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
+                else('0000')
+            let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+    
+        group by $correspReceivedId
+        order by distinct-values($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title/string())
+        return
+            (let $correspReceivedLabel := distinct-values($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title/string())
+            return
+            <div class="RegisterSortBox" recipient="{$correspReceivedLabel}" recipientId="{$correspReceivedId}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
+                <h5 class="RegisterSortEntry" id="{$correspReceivedId}">{$correspReceivedLabel}</h5>
+                <table width="100%">
+                {for $each in $letterSmall
+                    let $order := $each/@dateToOrder
+                    order by $order
+                    return $each}
+                    </table>
+            </div>)
 
-group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'0000'))
-                      then('noYear')
-                      else
-                      if(not(contains(substring($dateSecured,1,4),'-')))then(substring($dateSecured,1,4))else($dateSecured)
-    order by $year
-    return
-        (
-        <div class="RegisterSortBox" year="{$year}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
-            <h5 class="RegisterSortEntry" id="{concat('list-item-',$year)}">{if($year='noYear')then('ohne Jahr')else($year)}</h5>
-            <table width="100%">
-            {for $each in $letterSmall
-                let $order := $each/@dateToOrder
-                order by $order
-                return $each}
-                </table>
-        </div>)
-        
+    let $lettersGroupedBySender :=
+        for $letter in $letters
+            let $letterID := $letter/@xml:id/data(.)
+            
+            let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+            let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+            let $correspSent := if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName[1]/text()[1]) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName[1]/text()[1]) else('[Unbekannt]')
+            let $correspSentId := if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName[1]/@key/data(.)) else if($correspActionSent/tei:persName[1]/@key) then($correspActionSent/tei:persName[1]/@key/data(.)) else('[Unbekannt]')
+            let $correspReceived := if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName[1]/text()[1]) else if($correspActionReceived/tei:persName[1]/text()[1]) then($correspActionReceived/tei:persName[1]/text()[1]) else('[Unbekannt]')
+            let $date := if($correspActionSent/tei:date[@type='editor']/@when)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
+                else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
+                else if($correspActionSent/tei:date[@type='editor']/@notBefore)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
+                else if($correspActionSent/tei:date[@type='editor']/@when-custom)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
+                else if($correspActionSent/tei:date[@type='editor']/@from-custom)
+                then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
+                else if($correspActionSent/tei:date[@type='source']/@when)
+                then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
+                else if($correspActionSent/tei:date[@type='source']/@when-custom)
+                then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
+                else if($correspActionSent/tei:date[@type='source']/@from)
+                then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
+                else if($correspActionSent/tei:date[@type='source']/@from-custom)
+                then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
+                else('0000')
+            let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+    
+        group by $correspSentId
+        order by distinct-values($persons[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string())
+        return
+            (let $correspSentLabel := distinct-values($persons[@xml:id = $correspSentId]//tei:titleStmt/tei:title/string())
+            return
+            <div class="RegisterSortBox" recipient="{$correspSentLabel}" recipientId="{$correspSentId}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
+                <h5 class="RegisterSortEntry" id="{$correspSentId}">{$correspSentLabel}</h5>
+                <table width="100%">
+                {for $each in $letterSmall
+                    let $order := $each/@dateToOrder
+                    order by $order
+                    return $each}
+                    </table>
+            </div>)
+            
 return
 (<div class="container">   
     <div class="row">
         <div class="col-9">
             <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
             <ul class="nav nav-pills" role="tablist">
-                <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#letters">Chronologie</a></li>  
-                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#RegAdressaten">Register: Adressaten</a></li>
-                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#RegAbsender">Register: Absender</a></li>
+                <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#chrono">Nach Datum</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#recipient">Nach Adressat</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sender">Nach Absender</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#regRecipient">Alle Adressaten</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#regSender">Alle Absender</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane fade show active" id="letters">
+                <div class="tab-pane fade show active" id="chrono">
                 <br/>
-                <div class="row">
-                        <nav id="nav" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
-                            {for $year in $lettersGroupedByYears/@year
-                                let $letterCount := $year/parent::xhtml:div/@letterCount/data(.)
-                                let $letterYear := $year/data(.)
-                                order by $year
-                                return
-                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$year)}"><span>{if($year='noYear')then('ohne Jahr')else($letterYear)}</span>
-                                    <span class="badge badge-jra badge-pill right">{$letterCount}</span></a>
-                            }
-                        </nav>
-                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
-                       {$lettersGroupedByYears}
+                    <div class="row">
+                            <nav id="nav1" class="nav nav-pills navbar-fixed-top pre-scrollable col-3"> <!--  -->
+                                {for $year in $lettersGroupedByYears/@year
+                                    let $letterCount := $year/parent::xhtml:div/@letterCount/data(.)
+                                    let $letterYear := $year/data(.)
+                                    order by $year
+                                    return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$year)}"><span>{if($year='noYear')then('ohne Jahr')else($letterYear)}</span>
+                                        <span class="badge badge-jra badge-pill right">{$letterCount}</span></a>
+                                }
+                            </nav>
+                        <div data-spy="scroll" data-target="#nav1" data-offset="0" class="pre-scrollable col" id="divResults">
+                           {$lettersGroupedByYears}
+                        </div>
                     </div>
                 </div>
-        </div> 
-                <div class="tab-pane fade" id="RegAdressaten" >
+                <div class="tab-pane fade show" id="recipient">
+                <br/>
+                    <div class="row">
+                            <nav id="nav2" class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
+                                {for $recipient in $lettersGroupedByRecipient
+                                    let $letterCount := $recipient/parent::xhtml:div/@letterCount/data(.)
+                                    let $letterRecipientId := $recipient/@recipientId/data(.)
+                                    let $letterRecipientLabel := $persons[@xml:id=$letterRecipientId]//tei:titleStmt/tei:title/string()
+                                    order by $letterRecipientLabel
+                                    return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#',$letterRecipientId)}"><span>{$letterRecipientLabel}</span>
+                                        <span class="badge badge-jra badge-pill right">{$letterCount}</span></a>
+                                }
+                            </nav>
+                        <div data-spy="scroll" data-target="#nav2" data-offset="0" class="col pre-scrollable" id="divResults"> 
+                           {$lettersGroupedByRecipient}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade show" id="sender">
+                <br/>
+                    <div class="row">
+                            <nav id="nav3" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                                {for $sender in $lettersGroupedBySender
+                                    let $letterCount := $sender/parent::xhtml:div/@letterCount/data(.)
+                                    let $letterSenderId := $sender/@recipientId/data(.)
+                                    let $letterSenderLabel := $persons[@xml:id=$letterSenderId]//tei:titleStmt/tei:title/string()
+                                    order by $letterSenderLabel
+                                    return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#',$letterSenderId)}"><span>{$letterSenderLabel}</span>
+                                        <span class="badge badge-jra badge-pill right">{$letterCount}</span></a>
+                                }
+                            </nav>
+                        <div data-spy="scroll" data-target="#nav3" data-offset="70" class="pre-scrollable col" id="divResults">
+                           {$lettersGroupedBySender}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="regRecipient" >
                      
                      <div><ul>{
                    let $valuesRec := distinct-values($letters//tei:correspAction[@type="received"]/tei:persName/text()[1])
@@ -141,7 +275,7 @@ return
                      }</ul>
                      </div>
                      </div>
-                <div class="tab-pane fade" id="RegAbsender" >
+                <div class="tab-pane fade" id="regSender" >
                 
                      <div><ul>{
                      let $valuesSent := distinct-values($letters//tei:correspAction[@type="sent"]/tei:persName/text()[1])

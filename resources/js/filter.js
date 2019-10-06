@@ -3,11 +3,10 @@ function myFilterLetter() {
     input = document.getElementById("myResearchInput");
     filter = input.value.toUpperCase();
     div = document.getElementById("divResults");
-/*    p = div.getElementsByTagName("p");*/
-/*    ul = p.getElementsByTagName("ul");*/
-    li = div.getElementsByTagName("li");
-    for (i = 0; i < li.length; i++) {
-        a = li[i]; /*a = li[i].getElementsByTagName("a")[0];*/
+    tr = div.getElementsByClassName("RegisterEntry");
+    td = tr.getElementsByName("td");
+    for (i = 0; i < tr.length; i++) {
+        a = tr[i].getElementsByTagName("td")[0];
         b = a.parentNode;
         c = b.previousElementSibling;
         txtValue = a.textContent || a.innerText;

@@ -1,23 +1,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
+        <title data-template="config:app-title">Joachim-Raff-Archive</title>
         <meta charset="utf-8"/>
         <!--        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>-->
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <title data-template="config:app-title">Joachim-Raff-Archive</title>
-        <!--        <meta data-template="config:app-meta"/>-->
+        <meta data-template="config:app-meta"/>
         <link rel="shortcut icon" href="http://localhost:8080/exist/apps/raffArchive/icon.png"/>
-        
-        <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap.min.css"/>
-        
-        <!-- Bootstrap theme -->
         <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-theme.min.css" rel="stylesheet"/>
+        <!--<link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-social.css" rel="stylesheet"/>-->
         
-        <!-- Bootstrap social (https://lipis.github.io/bootstrap-social/) -->
-        <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-social.css" rel="stylesheet"/>
-        
-        <!-- font awesome -->
+        <!-- font -->
         <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/merriweather.css" rel="stylesheet"/> <!-- font-awesome.min.css -->
         
         <!-- sticky-footer -->
@@ -25,16 +18,24 @@
         
         <!-- Custom styles for this template -->
         <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/theme.css" rel="stylesheet"/>
-        <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript"/> -->
         <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/jquery-1.8.3.min.js"/>
-                <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/additions.js"/>
+        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/loadsource.js"/>
+        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>
+        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/additions.js"/>
         <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/animatescroll.js"/>
         <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/filter.js"/>
         <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.js"/>
         <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.min.js"/>
-        <script>$(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-        })</script>
+        <script>
+            $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+            })
+        </script>
+        <script>
+            $('[data-spy="scroll"]').each(function () {
+            var $spy = $(this).scrollspy('refresh')
+            })
+        </script>
         <style>
             #myResearchInput {
                                  background-position: 2px 10px;
@@ -139,11 +140,11 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"/>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>-->
-        <!--<script>
+        <script>
             $('#nav').on('activate.bs.scrollspy', function () {
 		  item = $('#nav').find(".active").last();
 		  item.animatescroll({element: '#nav', padding:20});
 		  })();
-        </script>-->
+        </script>
     </body>
 </html>
