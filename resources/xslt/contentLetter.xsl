@@ -3,11 +3,13 @@
     <xsl:include href="linking.xsl"/>
     <xsl:template match="/">
         <br/>
+        <xsl:if test="//body/opener[.!=''] or //body/div[@type='volltext']/p[.!='']">
         <table>
     <tr>
-            <td width="150px" valign="top">Regeste:</td>
+            <td width="150px" valign="top">Volltext:</td>
             <td>
-                <xsl:value-of select="//body/div[@decls='regeste']"/>
+                <xsl:if test="//body/opener[.!='']"><xsl:value-of select="//body/opener"/><br/></xsl:if>
+                <xsl:if test="//body/div[@type='volltext']"><xsl:value-of select="//body/div[@type='volltext']"/></xsl:if>
             </td>
         </tr>
     <tr>
@@ -17,5 +19,6 @@
             <td/>
                 </tr>
     </table>
+        </xsl:if>
     </xsl:template>
         </xsl:stylesheet>

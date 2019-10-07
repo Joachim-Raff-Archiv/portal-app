@@ -84,7 +84,10 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                 then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
                 else('0000')
             let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+            let $letterSmall := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'>
+            <div data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" class="col-md-3 col-sm-3 col-xs-3"><a href="letter/{$letterID}">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</a></div>
+            <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
+            </div>
     
         group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'0000'))
                               then('noYear')
@@ -94,13 +97,11 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
         return
             (
             <div class="RegisterSortBox" year="{$year}" letterCount="{count($letterSmall)}" xmlns="http://www.w3.org/1999/xhtml">
-                <h5 class="RegisterSortEntry" id="{concat('list-item-',$year)}">{if($year='noYear')then('ohne Jahr')else($year)}</h5>
-                <table width="100%">
+                <div class="RegisterSortEntry" id="{concat('list-item-',$year)}">{if($year='noYear')then('ohne Jahr')else($year)}</div>
                 {for $each in $letterSmall
                     let $order := $each/@dateToOrder
                     order by $order
                     return $each}
-                    </table>
             </div>)
             
     let $lettersGroupedByRecipient :=
@@ -132,7 +133,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                 then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
                 else('0000')
             let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%"><a href="letter/{$letterID}">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</a></td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
     
         group by $correspReceivedId
         order by distinct-values($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title/string())
@@ -178,7 +179,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                 then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
                 else('0000')
             let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%"><a href="letter/{$letterID}">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</a></td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
     
         group by $correspSentId
         order by distinct-values($persons[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string())
@@ -301,8 +302,9 @@ return
 declare function app:letter($node as node(), $model as map(*)) {
 
 let $id := request:get-parameter("letter-id", "Fehler")
-let $letter := collection("/db/contents/jra/sources/documents/letters")/tei:TEI[@xml:id=$id]
-let $absender := $letter//tei:correspAction[@type="sent"]/tei:persName[1]/text()[1]
+let $letter := collection("/db/contents/jra/sources/documents/letters")//tei:TEI[@xml:id=$id]
+let $person := collection("/db/contents/jra/persons")//tei:TEI
+let $absender := $letter//tei:correspAction[@type="sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
 let $datumSent := $letter//tei:correspAction[@type="sent"]/tei:date[@type='source' and 1]/@when
 let $adressat := $letter//tei:correspAction[@type="received"]/tei:persName[1]/text()[1]
 
@@ -311,9 +313,9 @@ return
 <div class="container">
     <div class="page-header">
         <a href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
-            <h2>Brief an {$adressat}</h2>
-            <h4>Datum: {string($datumSent)}</h4>
-            <h4>Absender: {$absender}</h4>
+            <h2>Von: {$adressat}</h2>
+            <h4>An: {$absender}</h4>
+            <h4>Datum: {format-date(xs:date($datumSent),'[D]. [M,*-3]. [Y]','de',(),())}</h4>
             <h6>ID: {$id}</h6>
     </div>
      <ul class="nav nav-tabs" role="tablist">
@@ -324,7 +326,29 @@ return
         <div class="tab-pane fade show active" id="metadaten" >
             <br/>
             <div class="row">
-                {transform:transform($letter//tei:teiHeader,doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
+            <div class="col-4">
+                {if($letter//tei:facsimile/tei:graphic)
+                then(<a href="{$letter//tei:facsimile/tei:graphic/@url}"><img src="{$letter//tei:facsimile/tei:graphic/@url}" class="img-thumbnail" width="250" target="_blank"/></a>)
+                else('no picture')}
+                <br/><br/>
+                {if($letter//tei:facsimile/tei:graphic)
+                then('Quelle: ',$letter//tei:facsimile/tei:graphic/tei:desc[@type="source"])
+                else('no SourceLink')}
+                 | Unveränderte Wiedergabe
+                 {if($letter//tei:facsimile/tei:graphic)
+                then('Lizenz: ',<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank">{$letter//tei:facsimile/tei:graphic/tei:desc[@type="licence"]}</a>)
+                else('no picture')}
+            </div>
+               <div class="col"> {transform:transform($letter//tei:teiHeader,doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
+            </div>
+            <div class="col-2">
+            Änderungen:
+            <br/>
+                {for $change at $n in $letter//tei:revisionDesc/tei:change
+                let $changeDate := format-date(xs:date($change/@when),'[D]. [M,*-3]. [Y]','de',(),())
+                return
+                    ($changeDate,<br/>)}
+            </div>
             </div>
             <div class="row">
                 {transform:transform($letter//tei:text,doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
@@ -332,12 +356,6 @@ return
         </div>
         <div class="tab-pane fade" id="xmlAnsicht">
             {transform:transform($letter,doc("/db/apps/raffArchive/resources/xslt/xmlView.xsl"), ())}
-        </div>
-        <div>
-            <img src="http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg" class="img-thumbnail" width="400"/>
-            <br/><br/>
-            Quelle: BSB München (http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg) | Unveränderte Wiedergabe | Lizenz: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank">CC BY-NC-SA</a>
-            <br/>
         </div>
     </div>
   </div>
