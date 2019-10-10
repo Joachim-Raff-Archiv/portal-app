@@ -1016,7 +1016,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $works := collection('/db/contents/jra/works')//mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type='desc' and contains(.,'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type='desc' and contains(.,'WoO')]/ancestor::mei:mei
-    let $besetzungen := distinct-values($works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]/text())
+    let $perfRess := functx:distinct-deep($works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')])
     
     let $worksAlpha := for $work in $works
                           let $workName := $work//mei:workList//mei:title[@type='uniform']/normalize-space(text())
@@ -1096,6 +1096,39 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                            (<div class="RegisterSortBox" year="{$year}" count="{$worksChrono[@name=$year]/@count}" xmlns="http://www.w3.org/1999/xhtml">
                                                 <div class="RegisterSortEntry" id="{concat('list-item-',if($year='')then('unknown')else($year))}">
                                                     {if($year='')then('[unbekannt]')else($year)}
+                                                </div>
+                                                {
+                                                 for $group in $groups
+                                                     return
+                                                        $group
+                                                }
+                                           </div>)
+    let $worksPerfRes := for $perfRes in $perfRess
+                          let $workName := $perfRes/ancestor::mei:mei//mei:workList//mei:title[@type='uniform']/normalize-space(text())
+                          let $opus := $perfRes/ancestor::mei:mei//mei:workList//mei:title[@type='desc']/normalize-space(text())
+                          let $workID := $perfRes/ancestor::mei:mei/@xml:id/string()
+                          let $name:= <div class="row RegisterEntry">
+                                        <!--<div class="col-2">{format-date(xs:date(replace($compositionDate,'00','01')),'[M,*-3]. [D]','de',(),())}</div>-->
+                                        <div class="col">{$workName}</div>
+                                        <div class="col-2">{$opus}</div>
+                                        <div class="col-2"><a href="work/{$workID}">{$workID}</a></div>
+                                      </div>
+                        group by $perfRes
+                        order by $perfRes
+                        return
+                            (<div name="{$perfRes}" count="{count($name)}">
+                                {for $each in $name
+                                    order by $each
+                                    return
+                                        $each}
+                             </div>)
+
+    let $worksGroupedByPerfRes := for $groups in $worksPerfRes
+                                    let $perf := $groups/@name/string()
+                                    return
+                                           (<div class="RegisterSortBox" perf="{$perf}" count="{$worksChrono[@name=$perf]/@count}" xmlns="http://www.w3.org/1999/xhtml">
+                                                <div class="RegisterSortEntry" id="{concat('list-item-',if($perf='')then('unknown')else($perf))}">
+                                                    {if($perf='')then('[unbekannt]')else($perf)}
                                                 </div>
                                                 {
                                                  for $group in $groups
@@ -1201,29 +1234,24 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 </div>
         </div>
         <div class="tab-pane fade" id="sortPerfRes">
-        <p>
-        {
-        for $besetzung in $besetzungen
-        let $category := $besetzung
-        order by $category ascending
-        return(
-        <h5>{$category}</h5>,
-          <ul>
-          {
-        for $work in $works
-        where $work//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes/text() = $category
-        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
-        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
-        let $id := $work/@xml:id/normalize-space(data(.))
-        order by $opus ascending
-        return
-            <li>
-                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
-            </li>
-        }
-          </ul>)
-          }
-            </p>
+             <br/>
+            <div class="row">
+                            <nav id="nav" class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
+                            {for $each in $worksGroupedByPerfRes
+                                let $perf := $each/@perf/string()
+                                let $count := $each/@count/string()
+                                order by $perf
+                                return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$perf)}"><span>{if($perf='unknown')then('[unbekannt]')else($perf)}</span>
+                                            <span class="badge badge-jra badge-pill right">{$count}</span>
+                                        </a>
+                            }
+                            
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$worksGroupedByPerfRes}
+                    </div>
+                </div>
         </div>
         </div>
    </div>
