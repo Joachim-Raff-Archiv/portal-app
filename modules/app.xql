@@ -51,6 +51,83 @@ for $search at $n in $collection//tei:surname
 }</ul></div>
 };
 
+declare function local:downloadPerson($personFile) {
+
+    let $dbWebdav := 'http://localhost:8080/exist/webdav/db/contents/jra/'
+    let $collection := 'person/'
+    let $id := request:get-parameter("person-id", "Fehler")
+    let $filePath := concat($dbWebdav,$collection,$id)
+(:    let $interpreterURI := document-uri($interpreter[1]/root()):)
+    return
+        $filePath
+};
+
+declare function local:getDate($date) {
+
+    let $get := if(count($date/tei:date[@type='sort'])=1)
+                then($date/tei:date[@type='sort'])
+                else if(count($date/tei:date[@type='editor'])=1)
+                then(
+                        if($date/tei:date[@type='editor']/@when)
+                        then($date/tei:date[@type='editor']/@when/string())
+                        else if($date/tei:date[@type='editor']/@when-custom)
+                        then($date/tei:date[@type='editor']/@when-custom/string())
+                        else if($date/tei:date[@type='editor']/@from)
+                        then($date/tei:date[@type='editor']/@from/string())
+                        else if($date/tei:date[@type='editor']/@from-custom)
+                        then($date/tei:date[@type='editor']/@from-custom/string())
+                        else if($date/tei:date[@type='editor']/@notBefore)
+                        then($date/tei:date[@type='editor']/@notBefore/string())
+                        else('0000')
+                    )
+                else if(count($date/tei:date[@type='source'])=1)
+                then(
+                        if($date/tei:date[@type='source']/@when)
+                        then($date/tei:date[@type='source']/@when/string())
+                        else if($date/tei:date[@type='source']/@when-custom)
+                        then($date/tei:date[@type='source']/@when-custom/string())
+                        else if($date/tei:date[@type='source']/@from)
+                        then($date/tei:date[@type='source']/@from/string())
+                        else if($date/tei:date[@type='source']/@from-custom)
+                        then($date/tei:date[@type='source']/@from-custom/string())
+                        else('0000')
+                    )
+                else if(count($date/tei:date[@type='editor' and @confidence])=1)
+                then(
+                       $date/tei:date[@type='editor' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                    )
+                else if(count($date/tei:date[@type='source' and @confidence])=1)
+                then(
+                       $date/tei:date[@type='source' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                    )
+                    else if($date/tei:date[@type='editor' and @confidence = '0.5'])
+                then(
+                       $date/tei:date[@type='editor' and @confidence ='0.5'][1]/@when
+                    )
+                else if($date/tei:date[@type='source' and @confidence='0.5'])
+                then(
+                       $date/tei:date[@type='source' and @confidence ='0.5'][1]/@when
+                    )
+                else if($date/tei:date[@type='editor'])
+                then(
+                        if($date/tei:date[@type='editor']/@when)
+                        then($date/tei:date[@type='editor']/@when/string())
+                        else if($date/tei:date[@type='editor']/@when-custom)
+                        then($date/tei:date[@type='editor']/@when-custom/string())
+                        else if($date/tei:date[@type='editor']/@from)
+                        then($date/tei:date[@type='editor']/@from/string())
+                        else if($date/tei:date[@type='editor']/@from-custom)
+                        then($date/tei:date[@type='editor']/@from-custom/string())
+                        else if($date/tei:date[@type='editor']/@notBefore)
+                        then($date/tei:date[@type='editor']/@notBefore/string())
+                        else('0000')
+                    )
+                else('0000')
+    let $dateSecured := if(number(substring($get,1,4)) < number(substring(string(current-date()),1,4))-70)then($get)else()
+    return
+        $dateSecured
+};
+
 declare function app:registryLetters($node as node(), $model as map(*)) {
 
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
@@ -63,36 +140,16 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
             let $correspActionReceived := $letter//tei:correspAction[@type="received"]
             let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text() | $correspActionSent/tei:orgName/text()) else('[Unbekannt]')
             let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text() | $correspActionReceived/tei:orgName/text()) else('[Unbekannt]')
-            
-            let $date := if($correspActionSent/tei:date[@type='editor']/@when)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
-                else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
-                else if($correspActionSent/tei:date[@type='editor']/@notBefore)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
-                else if($correspActionSent/tei:date[@type='editor']/@when-custom)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
-                else if($correspActionSent/tei:date[@type='editor']/@from-custom)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
-                else if($correspActionSent/tei:date[@type='source']/@when)
-                then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
-                else if($correspActionSent/tei:date[@type='source']/@when-custom)
-                then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
-                else if($correspActionSent/tei:date[@type='source']/@from)
-                then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
-                else if($correspActionSent/tei:date[@type='source']/@from-custom)
-                then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
-                else('0000')
-            let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-            let $letterSmall := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'>
-            <div data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" class="col-md-3 col-sm-3 col-xs-3"><a href="letter/{$letterID}">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</a></div>
+            let $date := local:getDate($correspActionSent)
+            let $letterSmall := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$date}'>
+            <div data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" class="col-md-3 col-sm-3 col-xs-3"><a href="letter/{$letterID}">{if(string-length($date)=10 and not(contains($date,'00')))then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))else($date)}</a></div>
             <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
             </div>
     
-        group by $year := if(not($dateSecured) or contains(substring($dateSecured,1,4),'0000'))
+        group by $year := if(not($date) or contains(substring($date,1,4),'0000'))
                               then('noYear')
                               else
-                              if(not(contains(substring($dateSecured,1,4),'-')))then(substring($dateSecured,1,4))else($dateSecured)
+                              if(not(contains(substring($date,1,4),'-')))then(substring($date,1,4))else($date)
         order by $year
         return
             (
@@ -113,27 +170,8 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
             let $correspSent := if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName[1]/text()[1]) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName[1]/text()[1]) else('[Unbekannt]')
             let $correspReceived := if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName[1]/text()[1]) else if($correspActionReceived/tei:persName[1]/text()[1]) then($correspActionReceived/tei:persName[1]/text()[1]) else('[Unbekannt]')
             let $correspReceivedId := if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName[1]/@key/data(.)) else if($correspActionReceived/tei:persName[1]/@key) then($correspActionReceived/tei:persName[1]/@key/data(.)) else('[Unbekannt]')
-            let $date := if($correspActionSent/tei:date[@type='editor']/@when)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
-                else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
-                else if($correspActionSent/tei:date[@type='editor']/@notBefore)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
-                else if($correspActionSent/tei:date[@type='editor']/@when-custom)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
-                else if($correspActionSent/tei:date[@type='editor']/@from-custom)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
-                else if($correspActionSent/tei:date[@type='source']/@when)
-                then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
-                else if($correspActionSent/tei:date[@type='source']/@when-custom)
-                then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
-                else if($correspActionSent/tei:date[@type='source']/@from)
-                then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
-                else if($correspActionSent/tei:date[@type='source']/@from-custom)
-                then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
-                else('0000')
-            let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%"><a href="letter/{$letterID}">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</a></td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+            let $date := local:getDate($correspActionSent)
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$date}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%"><a href="letter/{$letterID}">{if(string-length($date)=10 and not(contains($date,'00')))then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))else($date)}</a></td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
     
         group by $correspReceivedId
         order by distinct-values($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title/string())
@@ -159,27 +197,8 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
             let $correspSent := if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName[1]/text()[1]) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName[1]/text()[1]) else('[Unbekannt]')
             let $correspSentId := if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName[1]/@key/data(.)) else if($correspActionSent/tei:persName[1]/@key) then($correspActionSent/tei:persName[1]/@key/data(.)) else('[Unbekannt]')
             let $correspReceived := if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName[1]/text()[1]) else if($correspActionReceived/tei:persName[1]/text()[1]) then($correspActionReceived/tei:persName[1]/text()[1]) else('[Unbekannt]')
-            let $date := if($correspActionSent/tei:date[@type='editor']/@when)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@when/string())
-                else if($correspActionSent/tei:date[@type='editor' and 1]/@from)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@from/string()) (: größte confidence ansonsten das Erste :)
-                else if($correspActionSent/tei:date[@type='editor']/@notBefore)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@notBefore/string())
-                else if($correspActionSent/tei:date[@type='editor']/@when-custom)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@when-custom/string())
-                else if($correspActionSent/tei:date[@type='editor']/@from-custom)
-                then($correspActionSent/tei:date[@type='editor' and 1]/@from-custom/string())
-                else if($correspActionSent/tei:date[@type='source']/@when)
-                then($correspActionSent/tei:date[@type='source' and 1]/@when/string())
-                else if($correspActionSent/tei:date[@type='source']/@when-custom)
-                then($correspActionSent/tei:date[@type='source' and 1]/@when-custom/string())
-                else if($correspActionSent/tei:date[@type='source']/@from)
-                then($correspActionSent/tei:date[@type='source' and 1]/@from/string())
-                else if($correspActionSent/tei:date[@type='source']/@from-custom)
-                then($correspActionSent/tei:date[@type='source' and 1]/@from-custom/string())
-                else('0000')
-            let $dateSecured := if(number(substring($date,1,4)) < number(substring(string(current-date()),1,4))-70)then($date)else()
-            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$dateSecured}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%"><a href="letter/{$letterID}">{if(string-length($dateSecured)=10 and not(contains($date,'00')))then(format-date(xs:date($dateSecured),'[D]. [M,*-3]. [Y]','de',(),()))else($dateSecured)}</a></td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
+            let $date := local:getDate($correspActionSent)
+            let $letterSmall := <tr class="RegisterEntry" xmlns="http://www.w3.org/1999/xhtml" dateToOrder='{$date}'><td data-toggle="tooltip" data-placement="top" title="ID: {$letterID}" valign="top" width="18%"><a href="letter/{$letterID}">{if(string-length($date)=10 and not(contains($date,'00')))then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))else($date)}</a></td><td width="82%">{$correspSent}<br/>an {$correspReceived}</td></tr>
     
         group by $correspSentId
         order by distinct-values($persons[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string())
@@ -313,32 +332,22 @@ return
 <div class="container">
     <div class="page-header">
         <a href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
-            <h2>Von: {$adressat}</h2>
-            <h4>An: {$absender}</h4>
-            <h4>Datum: {format-date(xs:date($datumSent),'[D]. [M,*-3]. [Y]','de',(),())}</h4>
+        <br/>
+        <br/>
+            <h4>Brief vom {format-date(xs:date($datumSent),'[D]. [M,*-3]. [Y]','de',(),())}</h4>
             <h6>ID: {$id}</h6>
+            <br/>
     </div>
      <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#metadata">Metadaten</a></li>  
-        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
+        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#letterMetadata">Metadaten</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#letterContent">Inhalt</a></li>  
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#xmlView">XML-Ansicht</a></li>
     </ul>
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="metadaten" >
+        <div class="tab-pane fade show active" id="letterMetadata" >
             <br/>
             <div class="row">
-            <div class="col-4">
-                {if($letter//tei:facsimile/tei:graphic)
-                then(<a href="{$letter//tei:facsimile/tei:graphic/@url}"><img src="{$letter//tei:facsimile/tei:graphic/@url}" class="img-thumbnail" width="250" target="_blank"/></a>)
-                else('no picture')}
-                <br/><br/>
-                {if($letter//tei:facsimile/tei:graphic)
-                then('Quelle: ',$letter//tei:facsimile/tei:graphic/tei:desc[@type="source"])
-                else('no SourceLink')}
-                 | Unveränderte Wiedergabe
-                 {if($letter//tei:facsimile/tei:graphic)
-                then('Lizenz: ',<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank">{$letter//tei:facsimile/tei:graphic/tei:desc[@type="licence"]}</a>)
-                else('no picture')}
-            </div>
+            
                <div class="col"> {transform:transform($letter//tei:teiHeader,doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
             </div>
             <div class="col-2">
@@ -350,11 +359,29 @@ return
                     ($changeDate,<br/>)}
             </div>
             </div>
+        </div>
+        <div class="tab-pane fade" id="letterContent">
             <div class="row">
-                {transform:transform($letter//tei:text,doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
+                <div class="col-4">
+                <br/>
+                    {if($letter//tei:facsimile/tei:surface[1]/tei:graphic)
+                    then(<a href="{$letter//tei:facsimile/tei:surface[1]/tei:graphic/@url}"><img src="{$letter//tei:facsimile/tei:surface[1]/tei:graphic/@url}" class="img-thumbnail" width="250" target="_blank"/></a>)
+                    else('no picture')}
+                    <br/><br/>
+                    {if($letter//tei:facsimile/tei:surface[1]/tei:graphic)
+                    then('Quelle: ',$letter//tei:msIdentifier/tei:repository,' ',$letter//tei:msIdentifier/tei:settlement,', ',$letter//tei:msIdentifier/tei:idno )
+                    else('no SourceLink')}
+                     | Unveränderte Wiedergabe
+                     {if($letter//tei:facsimile/tei:surface[1]/tei:graphic)
+                    then('Lizenz: ',<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank">{$letter//tei:facsimile/tei:surface[1]/tei:graphic/tei:desc[@type="licence"]}</a>)
+                    else('no picture')}
+                </div>
+                <div class="col">
+                    {transform:transform($letter//tei:text,doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
+                </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="xmlAnsicht">
+        <div class="tab-pane fade" id="xmlView">
             {transform:transform($letter,doc("/db/apps/raffArchive/resources/xslt/xmlView.xsl"), ())}
         </div>
     </div>
@@ -364,11 +391,9 @@ return
 
 declare function app:registryPersons($node as node(), $model as map(*)) {
 
-   let $persons := collection("/db/contents/jra/persons/")//tei:TEI
-  (:  let $namedPersonsDist := functx:distinct-deep(collection("/db/contents/jra/sources")//tei:text//tei:persName[normalize-space(.)])
-    let $namedPersons := collection("/db/contents/jra/sources")//tei:text//tei:persName[normalize-space(.)] :)
+    let $persons := collection("/db/contents/jra/persons/")//tei:TEI
 
-let $personsAlpha := for $person in $persons
+    let $personsAlpha := for $person in $persons
                         let $persID := $person/@xml:id/string()
                         let $initial := substring($person//tei:surname[@type="used"][1],1,1)
                         let $nameSurname := $person//tei:surname[@type="used"][1]
@@ -377,30 +402,216 @@ let $personsAlpha := for $person in $persons
                         let $nameForeFull := if($nameAddName)then(concat($nameForename,' ',$nameAddName))else($nameForename)
                         let $nameToJoin := if(not($nameSurname=''))then($nameSurname,$nameForeFull)else($nameForeFull)
                         let $role := $person//tei:roleName[1]
-                        let $nameJoined := if($role)
+                        let $pseudonym := if($person//node()[@type='pseudonym'])
+                                          then(concat($person//tei:forename[@type='pseudonym'],' ',$person//tei:surname[@type='pseudonym']))
+                                          else()
+                        let $birth := if($person//tei:birth[1][@when-iso])
+                                      then($person//tei:birth[1]/@when-iso)
+                                      else if($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+                                      then(concat($person//tei:birth[1]/@notBefore,'/',$person//tei:birth[1]/@notAfter))
+                                      else if($person//tei:birth[1][@notBefore])
+                                      then($person//tei:birth[1]/@notBefore)
+                                      else if($person//tei:birth[1][@notAfter])
+                                      then($person//tei:birth[1]/@notAfter)
+                                      else()
+                        let $death := if($person//tei:death[1][@when-iso])
+                                      then($person//tei:death[1]/@when-iso)
+                                      else if($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
+                                      then(concat($person//tei:death[1]/@notBefore,'/',$person//tei:death[1]/@notAfter))
+                                      else if($person//tei:death[1][@notBefore])
+                                      then($person//tei:death[1]/@notBefore)
+                                      else if($person//tei:death[1][@notAfter])
+                                      then($person//tei:death[1]/@notAfter)
+                                      else()
+                        let $lifeData := if($birth[.!=''] and $death[.!=''])
+                                          then(concat(' (',$birth,'–',$death,')'))
+                                          else if($birth and not($death)) 
+                                          then(concat(' (* ',$birth,')')) 
+                                          else if($death and not($birth)) 
+                                          then(concat(' († ',$birth,')'))
+                                          else()
+                        let $nameJoined := (:if($role)
                                            then(concat(if($nameForeFull='')
                                            then($nameSurname)
                                            else(string-join($nameToJoin,', ')),' (',$role,')'))
-                                           else if($nameForeFull='')
+                                           else:) if($nameForeFull='')
                                            then($nameSurname)
                                            else(string-join($nameToJoin,', '))
-                        let $name := <li>{$nameJoined} [<a href="person/{$persID}">{$persID}</a>]</li>
+                        let $name := <div class="row RegisterEntry">
+                                        <div class="col">
+                                            {$nameJoined}
+                                            {$lifeData}
+                                            {if($role)then(<br/>,' (',$role,')')else()}
+                                            {if($pseudonym)then(<br/>,concat('(Pseudonym: ',$pseudonym,')'))else()}
+                                        </div>
+                                        <!--<div class="col-3"></div>-->
+                                        <div class="col-2"><a href="person/{$persID}">{$persID}</a></div>
+                                     </div>
                         group by $initial
                         order by $initial
                         return
-                            (<ul name="{$initial}">
+                            (<div name="{$initial}" count="{count($name)}">
                                 {for $each in $name
                                     order by $each
                                     return
                                         $each}
-                             </ul>)
+                             </div>)
 
-let $personsGroupedByInitials := for $groups in $personsAlpha
+    let $personsGroupedByInitials := for $groups in $personsAlpha
                                     group by $initial := $groups/@name/string()
                                     return
-                                           (<div><h5 id="{concat('list-item-',if($groups/@name/string()='')then('unknown')else($groups/@name/string()))}">
+                                           (<div class="RegisterSortBox" initial="{$initial}" count="{$personsAlpha[@name=$initial]/@count}" xmlns="http://www.w3.org/1999/xhtml">
+                                                <div class="RegisterSortEntry" id="{concat('list-item-',if($groups/@name/string()='')then('unknown')else($groups/@name/string()))}">
                                                 {if($groups/@name/string()='')then('[unbekannt]')else($groups/@name/string())}
-                                            </h5>
+                                            </div>
+                                            {
+                                                    for $group in $groups
+                                                        return
+                                                            $group
+                                             }
+                                           </div>)
+    
+    let $personsBirth := for $person in $persons
+                        let $persID := $person/@xml:id/string()
+                        let $nameSurname := $person//tei:surname[@type="used"][1]
+                        let $nameForename := $person//tei:forename[@type="used"][1]
+                        let $nameAddName := $person//tei:nameLink[1]
+                        let $nameForeFull := if($nameAddName)then(concat($nameForename,' ',$nameAddName))else($nameForename)
+                        let $nameToJoin := if(not($nameSurname=''))then($nameSurname,$nameForeFull)else($nameForeFull)
+                        let $role := $person//tei:roleName[1]
+                        let $pseudonym := if($person//node()[@type='pseudonym'])
+                                          then(concat($person//tei:forename[@type='pseudonym'],' ',$person//tei:surname[@type='pseudonym']))
+                                          else()
+                        let $birth := if($person//tei:birth[1][@when-iso])
+                                      then($person//tei:birth[1]/@when-iso)
+                                      else if($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+                                      then(concat($person//tei:birth[1]/@notBefore,'/',$person//tei:birth[1]/@notAfter))
+                                      else if($person//tei:birth[1][@notBefore])
+                                      then($person//tei:birth[1]/@notBefore)
+                                      else if($person//tei:birth[1][@notAfter])
+                                      then($person//tei:birth[1]/@notAfter)
+                                      else('')
+                        let $death := if($person//tei:death[1][@when-iso])
+                                      then($person//tei:death[1]/@when-iso)
+                                      else if($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
+                                      then(concat($person//tei:death[1]/@notBefore,'/',$person//tei:death[1]/@notAfter))
+                                      else if($person//tei:death[1][@notBefore])
+                                      then($person//tei:death[1]/@notBefore)
+                                      else if($person//tei:death[1][@notAfter])
+                                      then($person//tei:death[1]/@notAfter)
+                                      else('')
+                        let $lifeData := if($birth[.!=''] and $death[.!=''])
+                                          then(concat(' (',$birth,'–',$death,')'))
+                                          else if($birth and not($death)) 
+                                          then(concat(' (* ',$birth,')')) 
+                                          else if($death and not($birth)) 
+                                          then(concat(' († ',$birth,')'))
+                                          else()
+                        let $nameJoined := if($nameForeFull='')
+                                           then($nameSurname)
+                                           else(string-join($nameToJoin,', '))
+                        let $name := <div class="row RegisterEntry">
+                                        <div class="col">
+                                            {$nameJoined}
+                                            {$lifeData}
+                                            {if($role)then(<br/>,' (',$role,')')else()}
+                                            {if($pseudonym)then(<br/>,concat('(Pseudonym: ',$pseudonym,')'))else()}
+                                        </div>
+                                        <!--<div class="col-3"></div>-->
+                                        <div class="col-2"><a href="person/{$persID}">{$persID}</a></div>
+                                     </div>
+                        group by $birth
+                        order by $birth
+                        return
+                            (<div name="{if($birth='')then('unknownBirth')else($birth)}" count="{count($name)}">
+                                {for $each in $name
+                                    order by $each
+                                    return
+                                        $each}
+                             </div>)
+
+let $personsGroupedByBirth := for $groups in $personsBirth
+                                    group by $birth := $groups/@name/string()
+                                    order by $birth
+                                    return
+                                           (<div class="RegisterSortBox" birth="{$birth}" count="{$personsBirth[@name=$birth]/@count}" xmlns="http://www.w3.org/1999/xhtml">
+                                                <div class="RegisterSortEntry" id="{concat('list-item-',translate($birth,'/','_'))}">
+                                                    {if($birth='unknownBirth')then('[Geburtsjahr nicht erfasst]')else($birth)}
+                                                </div>
+                                            {
+                                                    for $group in $groups
+                                                        return
+                                                            $group
+                                             }
+                                           </div>)
+    
+    let $personsDeath := for $person in $persons
+                        let $persID := $person/@xml:id/string()
+                        let $nameSurname := $person//tei:surname[@type="used"][1]
+                        let $nameForename := $person//tei:forename[@type="used"][1]
+                        let $nameAddName := $person//tei:nameLink[1]
+                        let $nameForeFull := if($nameAddName)then(concat($nameForename,' ',$nameAddName))else($nameForename)
+                        let $nameToJoin := if(not($nameSurname=''))then($nameSurname,$nameForeFull)else($nameForeFull)
+                        let $role := $person//tei:roleName[1]
+                        let $pseudonym := if($person//node()[@type='pseudonym'])
+                                          then(concat($person//tei:forename[@type='pseudonym'],' ',$person//tei:surname[@type='pseudonym']))
+                                          else()
+                        let $birth := if($person//tei:birth[1][@when-iso])
+                                      then($person//tei:birth[1]/@when-iso)
+                                      else if($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+                                      then(concat($person//tei:birth[1]/@notBefore,'/',$person//tei:birth[1]/@notAfter))
+                                      else if($person//tei:birth[1][@notBefore])
+                                      then($person//tei:birth[1]/@notBefore)
+                                      else if($person//tei:birth[1][@notAfter])
+                                      then($person//tei:birth[1]/@notAfter)
+                                      else('')
+                        let $death := if($person//tei:death[1][@when-iso])
+                                      then($person//tei:death[1]/@when-iso)
+                                      else if($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
+                                      then(concat($person//tei:death[1]/@notBefore,'/',$person//tei:death[1]/@notAfter))
+                                      else if($person//tei:death[1][@notBefore])
+                                      then($person//tei:death[1]/@notBefore)
+                                      else if($person//tei:death[1][@notAfter])
+                                      then($person//tei:death[1]/@notAfter)
+                                      else('')
+                        let $lifeData := if($birth[.!=''] and $death[.!=''])
+                                          then(concat(' (',$birth,'–',$death,')'))
+                                          else if($birth and not($death)) 
+                                          then(concat(' (* ',$birth,')')) 
+                                          else if($death and not($birth)) 
+                                          then(concat(' († ',$birth,')'))
+                                          else()
+                        let $nameJoined := if($nameForeFull='')
+                                           then($nameSurname)
+                                           else(string-join($nameToJoin,', '))
+                        let $name := <div class="row RegisterEntry">
+                                        <div class="col">
+                                            {$nameJoined}
+                                            {$lifeData}
+                                            {if($role)then(<br/>,' (',$role,')')else()}
+                                            {if($pseudonym)then(<br/>,concat('(Pseudonym: ',$pseudonym,')'))else()}
+                                        </div>
+                                        <!--<div class="col-3"></div>-->
+                                        <div class="col-2"><a href="person/{$persID}">{$persID}</a></div>
+                                     </div>
+                        group by $death
+                        order by $death
+                        return
+                            (<div name="{if($death='')then('unknownDeath')else($death)}" count="{count($name)}">
+                                {for $each in $name
+                                    order by $each
+                                    return
+                                        $each}
+                             </div>)
+
+let $personsGroupedByDeath := for $groups in $personsDeath
+                                    group by $death := $groups/@name/string()
+                                    order by $death
+                                    return
+                                           (<div class="RegisterSortBox" death="{$death}" count="{$personsDeath[@name=$death]/@count}" xmlns="http://www.w3.org/1999/xhtml">
+                                                <div class="RegisterSortEntry" id="{concat('list-item-',translate($death,'/','_'))}">
+                                                    {if($death='unknownDeath')then('[Sterbejahr nicht erfasst]')else($death)}
+                                                </div>
                                             {
                                                     for $group in $groups
                                                         return
@@ -408,46 +619,75 @@ let $personsGroupedByInitials := for $groups in $personsAlpha
                                              }
                                            </div>)
 
-(: {
-        for $person in $persons
-        let $name := $person//tei:title
-        let $id := $person/@xml:id
-        order by $name
-        return
-        <li>{$name/normalize-space(data(.))} (ID: <a href="person/{$id}">{$id/normalize-space(data(.))}</a>)</li>:)
-        
 return
 
 <div class="container" xmlns="http://www.w3.org/1999/xhtml">
         <div class="row">
         <div class="col-9">
-        <p>In diesem Verzeichnis sind aktuell {count($persons)} Personen erfasst.</p>
+        <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
-               <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#tab1">Alphabetisch</a></li>  
-               <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
+               <li class="nav-item nav-linkless-jra">Sortierungen:</li> 
+               <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#alpha">Alphabetisch</a></li>  
+               <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#birth">Geburtsjahr</a></li>
+               <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#death">Sterbejahr</a></li>
             </ul>
             <div class="tab-content">
-            <div class="tab-pane fade show active" id="tab1">
+            <div class="tab-pane fade show active" id="alpha">
             <br/>
                 <div class="row">
                         <nav id="nav" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
-                            {for $person in $persons
-                                let $initial := if($person//tei:surname[@type="used"]='')then('unknown')else(substring($person//tei:surname[@type="used"],1,1))
-                                group by $initial
+                            {for $each in $personsGroupedByInitials
+                                let $initial :=  if($each/@initial/string()='')then('unknown')else($each/@initial/string())
+                                let $count := $each/@count/string()
+(:                                group by $initial:)
                                 order by $initial
                                 return
                                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}"><span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
-                                            <span class="badge badge-jra badge-pill right">{count($person[substring(.//tei:surnme[@type="used"],1,1)=$initial])}</span>
+                                            <span class="badge badge-jra badge-pill right">{$count}</span>
                                         </a>
                             }
+                            
                             </nav>
                     <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
                         {$personsGroupedByInitials}
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="tab2">
-                no content
+            <div class="tab-pane fade" id="birth">
+            <br/>
+                <div class="row">
+                        <nav id="nav" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                            {for $each in $personsGroupedByBirth
+                                let $birth := $each/@birth/string()
+                                let $count := $each/@count/string()
+                                return
+                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',translate($birth,'/','_'))}"><span>{if($birth='unknownBirth')then('[unbekannt]')else($birth)}</span>
+                                            <span class="badge badge-jra badge-pill right">{$count}</span>
+                                        </a>
+                            }
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$personsGroupedByBirth}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="death">
+            <br/>
+                <div class="row">
+                        <nav id="nav" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                            {for $each in $personsGroupedByDeath
+                                let $death := $each/@death/string()
+                                let $count := $each/@count/string()
+                                return
+                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',translate($death,'/','_'))}"><span>{if($death='unknownDeath')then('[unbekannt]')else($death)}</span>
+                                            <span class="badge badge-jra badge-pill right">{$count}</span>
+                                        </a>
+                            }
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$personsGroupedByDeath}
+                    </div>
+                </div>
             </div>
             </div>
             </div>
@@ -479,16 +719,18 @@ return
         <div class="row">
             <div class="col">
                 <ul class="nav nav-pills" role="tablist">
-                  <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#metadaten">Metadaten</a></li>
-                  {if($personNaming)then(<li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#named">Erwähnungen</a></li>)else()}
+                  <li class="nav-item">
+                  <a class="nav-link-jra active" data-toggle="tab" href="#metadata">Allgemein</a></li>
+                  {if($personNaming)then(<li class="nav-item">
+                  <a class="nav-link-jra" data-toggle="tab" href="#named">Erwähnungen</a></li>)else()}
                   <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
                 </ul>
                 <div class="tab-content">
                     <br/>
-                    <div class="tab-pane fade show active" id="metadaten">
+                    <div class="tab-pane fade show active" id="metadata">
                         {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
-                        <br/>
-                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentPerson.xsl"), ())}
+                        <!--<br/>
+                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentPerson.xsl"), ())}-->
                     </div>
                     {if($personNaming)then(<div class="tab-pane fade" id="named" >
                         <ul>
@@ -513,7 +755,160 @@ return
             </div>
             <div class="col-2">
             <h5>Links</h5>
-            <li><a href="{concat('/db/contents/jra/persons/',$id,'.xml')}" download="Download">Download file</a></li>
+            <li><a href="{local:downloadPerson($person)}" download="Download">Download file</a></li>
+            <li>Link2</li>
+            </div>
+        </div>
+    </div>
+</div>
+)
+};
+
+declare function app:registryInstitutions($node as node(), $model as map(*)) {
+
+   let $institutions := collection("/db/contents/jra/institutions/")//tei:TEI
+  (:  let $namedPersonsDist := functx:distinct-deep(collection("/db/contents/jra/sources")//tei:text//tei:persName[normalize-space(.)])
+    let $namedPersons := collection("/db/contents/jra/sources")//tei:text//tei:persName[normalize-space(.)] :)
+
+let $institutionsAlpha := for $institution in $institutions
+                        let $instID := $institution/@xml:id/string()
+                        let $initial := upper-case(substring($institution//tei:org/tei:orgName[1],1,1))
+                        let $nameInstitution := $institution//tei:org/tei:orgName[1]
+                        let $place := $institution//tei:org/tei:place/tei:placeName
+                        let $name := <li>{$nameInstitution} ({$place}) [<a href="institution/{$instID}">{$instID}</a>]</li>
+                        group by $initial
+                        order by $initial
+                        return
+                            (<ul name="{$initial}">
+                                {for $each in $name
+                                    order by upper-case($each)
+                                    return
+                                        $each}
+                             </ul>)
+
+let $institutionsGroupedByInitials := for $groups in $institutionsAlpha
+                                    group by $initial := $groups/@name/string()
+                                    return
+                                           (<div class="RegisterSortBox" inital="{$initial}" xmlns="http://www.w3.org/1999/xhtml">
+                <div class="RegisterSortEntry" id="{concat('list-item-',if($groups/@name/string()='')then('unknown')else($groups/@name/string()))}">{if($groups/@name/string()='')then('[unbekannt]')else($groups/@name/string())}</div>
+                                            {
+                                                    for $group in $groups
+                                                        return
+                                                            $group
+                                             }
+                                           </div>)
+
+(: {
+        for $person in $persons
+        let $name := $person//tei:title
+        let $id := $person/@xml:id
+        order by $name
+        return
+        <li>{$name/normalize-space(data(.))} (ID: <a href="person/{$id}">{$id/normalize-space(data(.))}</a>)</li>:)
+        
+return
+
+<div class="container" xmlns="http://www.w3.org/1999/xhtml">
+        <div class="row">
+        <div class="col-9">
+        <p>In diesem Verzeichnis sind derzeit {count($institutions)} Institutionen erfasst.</p>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+               <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#tab1">Alphabetisch</a></li>  
+               <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#tab2">Alle Erwähnungen</a></li>
+            </ul>
+            <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab1">
+            <br/>
+                <div class="row">
+                        <nav id="nav" class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                            {for $institution in $institutions
+                                let $initial := if($institution//tei:org/tei:orgName[1]='')then('unknown')else(upper-case(substring($institution//tei:org/tei:orgName[1],1,1)))
+                                group by $initial
+                                order by $initial
+                                return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}"><span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
+                                            <span class="badge badge-jra badge-pill right">{count($institution[upper-case(substring(.//tei:org/tei:orgName[1],1,1))=$initial])}</span>
+                                        </a>
+                            }
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$institutionsGroupedByInitials}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab2">
+                no content
+            </div>
+            </div>
+            </div>
+            <div class="col-3">
+            <br/><br/>
+            <h5>Suche</h5>
+              <input type="text" id="myResearchInput" onkeyup="myFilterPerson()" placeholder="Name oder ID" title="Type in a string"/>
+        </div>
+        </div>
+       </div>
+};
+
+declare function app:institution($node as node(), $model as map(*)) {
+ 
+let $id := request:get-parameter("institution-id", "Fehler")
+let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id=$id]
+let $name := $institution//tei:title/normalize-space(data(.))
+let $institutionNaming := collection("/db/contents/jra/sources")//tei:orgName[@key=$id]
+let $institutionNamingDistinct := functx:distinct-deep($institutionNaming)
+return
+(
+<div class="row">
+    <div class="page-header">
+        <a href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Institutionenverzeichnis</a>
+        <br/>
+        <br/>
+        <h1>{$name}</h1>
+        <h5>ID: {$id}</h5>
+        <br/>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <ul class="nav nav-pills" role="tablist">
+                  <li class="nav-item">
+                  <a class="nav-link-jra active" data-toggle="tab" href="#metadata">Allgemein</a></li>
+                  {if($institutionNaming)then(<li class="nav-item">
+                  <a class="nav-link-jra" data-toggle="tab" href="#named">Erwähnungen</a></li>)else()}
+                  <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#xmlAnsicht">XML-Ansicht</a></li>
+                </ul>
+                <div class="tab-content">
+                    <br/>
+                    <div class="tab-pane fade show active" id="metadata">
+                        {transform:transform($institution,doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
+                        <!--<br/>
+                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentPerson.xsl"), ())}-->
+                    </div>
+                    {if($institutionNaming)then(<div class="tab-pane fade" id="named" >
+                        <ul>
+                        {
+                            for $each in $institutionNaming
+                            let $instNameDist := distinct-values($each/normalize-space(data(.)))
+                            let $source := $each/ancestor::tei:TEI/@xml:id/data(.)
+                            order by lower-case($instNameDist)
+                            return
+                            <li>{$each}{$instNameDist} (in: <b>{concat($source,'.xml')}</b>)</li>
+                            }
+                        </ul>
+                    </div>)else()}
+                    <div class="tab-pane fade" id="xmlAnsicht" >
+                        <pre class="pre-scrollable">
+                            <xmp>
+                                {transform:transform($institution,doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                            </xmp>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+            <h5>Links</h5>
+            <li><a href="{local:downloadPerson($institution)}" download="Download">Download file</a></li>
             <li>Link2</li>
             </div>
         </div>

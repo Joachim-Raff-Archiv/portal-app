@@ -3,22 +3,40 @@
     <xsl:include href="linking.xsl"/>
     <xsl:template match="/">
         <br/>
-        <xsl:if test="//body/opener[.!=''] or //body/div[@type='volltext']/p[.!='']">
         <table>
-    <tr>
-            <td width="150px" valign="top">Volltext:</td>
-            <td>
-                <xsl:if test="//body/opener[.!='']"><xsl:value-of select="//body/opener"/><br/></xsl:if>
-                <xsl:if test="//body/div[@type='volltext']"><xsl:value-of select="//body/div[@type='volltext']"/></xsl:if>
-            </td>
-        </tr>
-    <tr>
-            <td>
+            <xsl:if test="//notesStmt/note[@type='regeste']">
+                <tr>
+                    <td width="150px" valign="top">Regeste:</td>
+                    <td>
+                            <xsl:value-of select="//notesStmt/note[@type='regeste']"/>
+                            <br/>
+                    </td>
+                </tr>
+            </xsl:if>
+            <xsl:if test="//body/opener[. != '']">
+                <tr>
+                    <td width="150px" valign="top">Beginn:</td>
+                    <td>
+                            <xsl:value-of select="//body/opener"/>
+                            <br/>
+                    </td>
+                </tr>
+            </xsl:if>
+            <xsl:if test="//body/div[@type = 'volltext']/p[. != '']">
+                <tr>
+                    <td width="150px" valign="top">Volltext:</td>
+                    <td>
+                            <xsl:value-of select="//body/div[@type = 'volltext']"/>
+                    </td>
+                </tr>
+            </xsl:if>
+            <tr>
+                <td>
                     <br/>
                 </td>
-            <td/>
-                </tr>
-    </table>
-        </xsl:if>
+                <td/>
+            </tr>
+        </table>
+
     </xsl:template>
-        </xsl:stylesheet>
+</xsl:stylesheet>

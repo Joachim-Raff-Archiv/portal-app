@@ -156,6 +156,13 @@ button.bg-jra:hover{
     background-color: blue !important
 }
 
+.nav-linkless-jra{
+    display: block;
+    padding: .5rem 1rem;
+    /*font-weight: bold;*/
+    color:#641a85;
+    background-color: rgb(240, 240, 240)
+}
 .nav-link-jra{
     display: block;
     padding: .5rem 1rem;
