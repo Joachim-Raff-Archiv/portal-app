@@ -221,14 +221,13 @@ return
         <div class="col-9">
             <p>Das Briefeverzeichnis enthält zur Zeit {count($letters)} Briefe.</p>
             <ul class="nav nav-pills" role="tablist">
-                <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#chrono">Nach Datum</a></li>
-                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#recipient">Nach Adressat</a></li>
-                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sender">Nach Absender</a></li>
-                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#regRecipient">Alle Adressaten</a></li>
-                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#regSender">Alle Absender</a></li>
+                <li class="nav-item nav-linkless-jra">Sortierungen:</li>
+                <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#date">Datum</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#recipient">Adressat</a></li>
+                <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sender">Absender</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane fade show active" id="chrono">
+                <div class="tab-pane fade show active" id="date">
                 <br/>
                     <div class="row">
                             <nav id="nav1" class="nav nav-pills navbar-fixed-top pre-scrollable col-3"> <!--  -->
@@ -283,28 +282,6 @@ return
                            {$lettersGroupedBySender}
                         </div>
                     </div>
-                </div>
-                <div class="tab-pane fade" id="regRecipient" >
-                     
-                     <div><ul>{
-                   let $valuesRec := distinct-values($letters//tei:correspAction[@type="received"]/tei:persName/text()[1])
-                   for $valueRec in $valuesRec
-                   order by $valueRec
-                   return
-                   <li>{$valueRec}</li>
-                     }</ul>
-                     </div>
-                     </div>
-                <div class="tab-pane fade" id="regSender" >
-                
-                     <div><ul>{
-                     let $valuesSent := distinct-values($letters//tei:correspAction[@type="sent"]/tei:persName/text()[1])
-                     for $valueSent in $valuesSent
-                     order by $valueSent
-                     return
-                     <li>{$valueSent}</li>
-                       }</ul>
-                     </div>
                 </div>
            </div>
         </div>
