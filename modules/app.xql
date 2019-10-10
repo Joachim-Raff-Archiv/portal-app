@@ -948,75 +948,120 @@ return
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
     
-    let $works := collection("/db/contents/jra/works?select=*.xml;recurse=yes")/mei:mei
+    let $works := collection('/db/contents/jra/works')//mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type='desc' and contains(.,'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type='desc' and contains(.,'WoO')]/ancestor::mei:mei
     let $besetzungen := distinct-values($works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type='alt')]/text())
     
+    let $worksAlpha := for $work in $works
+                          let $workName := $work//mei:workList//mei:title[@type='uniform']/normalize-space(text())
+                          let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+                          let $initial := replace(upper-case(substring(translate($workName,'É','E'),1,1)),'3','0-9')
+                          let $workID := $work/@xml:id/string()
+                          let $name:= <div class="row RegisterEntry">
+                                        <div class="col-2">{$opus}</div>
+                                        <div class="col">{$workName}</div>
+                                        <div class="col-2"><a href="work/{$workID}">{$workID}</a></div>
+                                      </div>
+                        group by $initial
+                        order by $initial
+                        return
+                            (<div name="{$initial}" count="{count($name)}">
+                                {for $each in $name
+                                    order by $each
+                                    return
+                                        $each}
+                             </div>)
+
+    let $worksGroupedByInitials := for $groups in $worksAlpha
+                                    let $initial := $groups/@name/string()
+                                    return
+                                           (<div class="RegisterSortBox" initial="{$initial}" count="{$worksAlpha[@name=$initial]/@count}" xmlns="http://www.w3.org/1999/xhtml">
+                                                <div class="RegisterSortEntry" id="{concat('list-item-',if($initial='')then('unknown')else($initial))}">
+                                                    {if($initial='')then('[unbekannt]')else($initial)}
+                                                </div>
+                                                {
+                                                 for $group in $groups
+                                                     return
+                                                        $group
+                                                }
+                                           </div>)
+    
     let $content := <div class="container">
     <br/>
     <ul class="nav nav-pills" role="tablist">
-        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#sortOpus">Opera</a></li>
-        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortWoO">WoOs</a></li>
+        <li class="nav-item nav-linkless-jra">Sortierungen:</li>
+        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#sortWork">Werk</a></li>
         <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortTitle">Titel</a></li>
-        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortDate">Chronologie</a></li>
+        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortDate">Entstehung</a></li>
         <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sortPerfRes">Besetzung</a></li>
+        <li class="nav-item"><a class="nav-link-jra disabled" data-toggle="tab" href="#sortGenre">Gattung</a></li>
     </ul>
     <!-- Tab panels -->
     <div class="tab-content">
-    <div class="tab-pane fade show active" id="sortOpus">
-        <p>
-        <h5>Werke mit Opuszahl</h5>
-            <ul>
-        {
-        for $work in $worksOpus
-        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
-        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
-        let $id := $work/@xml:id/normalize-space(data(.))
-        order by $opus ascending
-        return
-            <li>
-                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
-            </li>
-        }
-            </ul>
-            </p>
-        </div>
-        <div class="tab-pane fade" id="sortWoO">
-        <p>
-        <h5>Werke ohne Opuszahl</h5>
-            <ul>
-        {
-        for $work in $worksWoO
-        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
-        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
-        let $id := $work/@xml:id/normalize-space(data(.))
-        order by $opus ascending
-        return
-            <li>
-                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
-            </li>
-        }
-            </ul>
-            </p>
-        </div>
+    <div class="tab-pane fade show active" id="sortWork">
+    <br/>
+                    <div class="row">
+                        <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        <div class="RegisterSortBox">
+                            <div class="RegisterSortEntry" id="opera">Werke mit Opuszahl</div>
+                        {
+                            for $work in $worksOpus
+                                let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
+                                let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+                                let $workID := $work/@xml:id/normalize-space(data(.))
+                                order by $opus ascending
+                                return
+                                    <div class="row RegisterEntry">
+                                        <div class="col-2">{$opus}</div>
+                                        <div class="col">{$name}</div>
+                                        <div class="col-2"><a href="work/{$workID}">{$workID}</a></div>
+                                    </div>
+                        }
+                            <div class="RegisterSortEntry" id="woos">Werke ohne Opuszahl</div>
+                        {
+                            for $work in $worksWoO
+                                let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
+                                let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+                                let $workID := $work/@xml:id/normalize-space(data(.))
+                                order by $opus ascending
+                                return
+                                    <div class="row RegisterEntry">
+                                        <div class="col-2">{$opus}</div>
+                                        <div class="col">{$name}</div>
+                                        <div class="col-2"><a href="work/{$workID}">{$workID}</a></div>
+                                    </div>
+                        }
+                            </div>
+                         </div>
+                         <div class="col-2">
+                            <nav id="nav" class="nav-pills col">
+                                <li class="nav-item nav-linkless-jra">Kategorien</li>
+                                <a class="list-group-item list-group-item-action" href="#opera"><span>Opera</span></a>
+                                <a class="list-group-item list-group-item-action" href="#woos"><span>WoOs</span></a>
+                            </nav>
+                         </div>
+                      </div>
+                </div>
         <div class="tab-pane fade" id="sortTitle">
-        <p>
-        <h5>Alpabetisch nach Titel</h5>
-            <ul>
-        {
-        for $work in $works
-        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
-        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
-        let $id := $work/@xml:id/normalize-space(data(.))
-        order by $name ascending
-        return
-            <li>
-                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
-            </li>
-        }
-            </ul>
-            </p>
+            <br/>
+            <div class="row">
+                            <nav id="nav" class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
+                            {for $each in $worksGroupedByInitials
+                                let $initial :=  $each/@initial/string()
+                                let $count := $each/@count/string()
+                                order by $initial
+                                return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$initial)}"><span>{if($initial='unknown')then('[unbekannt]')else($initial)}</span>
+                                            <span class="badge badge-jra badge-pill right">{$count}</span>
+                                        </a>
+                            }
+                            
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$worksGroupedByInitials}
+                    </div>
+                </div>
         </div>
         <div class="tab-pane fade" id="sortDate">
         <p>
