@@ -128,6 +128,71 @@ declare function local:getDate($date) {
         $dateSecured
 };
 
+declare function local:getDate($date) {
+
+    let $get := if(count($date/tei:date[@type='sort'])=1)
+                then($date/tei:date[@type='sort'])
+                else if(count($date/tei:date[@type='editor'])=1)
+                then(
+                        if($date/tei:date[@type='editor']/@when)
+                        then($date/tei:date[@type='editor']/@when/string())
+                        else if($date/tei:date[@type='editor']/@when-custom)
+                        then($date/tei:date[@type='editor']/@when-custom/string())
+                        else if($date/tei:date[@type='editor']/@from)
+                        then($date/tei:date[@type='editor']/@from/string())
+                        else if($date/tei:date[@type='editor']/@from-custom)
+                        then($date/tei:date[@type='editor']/@from-custom/string())
+                        else if($date/tei:date[@type='editor']/@notBefore)
+                        then($date/tei:date[@type='editor']/@notBefore/string())
+                        else('0000')
+                    )
+                else if(count($date/tei:date[@type='source'])=1)
+                then(
+                        if($date/tei:date[@type='source']/@when)
+                        then($date/tei:date[@type='source']/@when/string())
+                        else if($date/tei:date[@type='source']/@when-custom)
+                        then($date/tei:date[@type='source']/@when-custom/string())
+                        else if($date/tei:date[@type='source']/@from)
+                        then($date/tei:date[@type='source']/@from/string())
+                        else if($date/tei:date[@type='source']/@from-custom)
+                        then($date/tei:date[@type='source']/@from-custom/string())
+                        else('0000')
+                    )
+                else if(count($date/tei:date[@type='editor' and @confidence])=1)
+                then(
+                       $date/tei:date[@type='editor' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                    )
+                else if(count($date/tei:date[@type='source' and @confidence])=1)
+                then(
+                       $date/tei:date[@type='source' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                    )
+                    else if($date/tei:date[@type='editor' and @confidence = '0.5'])
+                then(
+                       $date/tei:date[@type='editor' and @confidence ='0.5'][1]/@when
+                    )
+                else if($date/tei:date[@type='source' and @confidence='0.5'])
+                then(
+                       $date/tei:date[@type='source' and @confidence ='0.5'][1]/@when
+                    )
+                else if($date/tei:date[@type='editor'])
+                then(
+                        if($date/tei:date[@type='editor']/@when)
+                        then($date/tei:date[@type='editor']/@when/string())
+                        else if($date/tei:date[@type='editor']/@when-custom)
+                        then($date/tei:date[@type='editor']/@when-custom/string())
+                        else if($date/tei:date[@type='editor']/@from)
+                        then($date/tei:date[@type='editor']/@from/string())
+                        else if($date/tei:date[@type='editor']/@from-custom)
+                        then($date/tei:date[@type='editor']/@from-custom/string())
+                        else if($date/tei:date[@type='editor']/@notBefore)
+                        then($date/tei:date[@type='editor']/@notBefore/string())
+                        else('0000')
+                    )
+                else('0000')
+    let $dateSecured := if(number(substring($get,1,4)) < number(substring(string(current-date()),1,4))-70)then($get)else()
+    return
+        $dateSecured
+};
 declare function app:registryLetters($node as node(), $model as map(*)) {
 
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
@@ -959,8 +1024,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                           let $initial := replace(upper-case(substring(translate($workName,'É','E'),1,1)),'3','0-9')
                           let $workID := $work/@xml:id/string()
                           let $name:= <div class="row RegisterEntry">
-                                        <div class="col-2">{$opus}</div>
                                         <div class="col">{$workName}</div>
+                                        <div class="col-2">{$opus}</div>
                                         <div class="col-2"><a href="work/{$workID}">{$workID}</a></div>
                                       </div>
                         group by $initial
@@ -979,6 +1044,58 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                            (<div class="RegisterSortBox" initial="{$initial}" count="{$worksAlpha[@name=$initial]/@count}" xmlns="http://www.w3.org/1999/xhtml">
                                                 <div class="RegisterSortEntry" id="{concat('list-item-',if($initial='')then('unknown')else($initial))}">
                                                     {if($initial='')then('[unbekannt]')else($initial)}
+                                                </div>
+                                                {
+                                                 for $group in $groups
+                                                     return
+                                                        $group
+                                                }
+                                           </div>)
+    let $worksChrono := for $work in $works
+                          let $workName := $work//mei:workList//mei:title[@type='uniform']/normalize-space(text())
+                          let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
+                          let $date := $work//mei:creation/mei:date[@type='composition']
+                          let $compositionDate := if(count($date)=1)
+                                                  then(
+                                                          if($date/@startdate)
+                                                          then($date/@startdate/string())
+                                                          else if($date/@notbefore)
+                                                          then($date/@notbefore/string())
+                                                          else('0000')
+                                                      )
+                                                  else if($date)
+                                                  then(
+                                                          if($date[1]/@startdate)
+                                                          then($date[1]/@startdate/string())
+                                                          else if($date[1]/@notbefore)
+                                                          then($date[1]/@notbefore/string())
+                                                          else('0000')
+                                                      )
+                                                  else('0000')
+                          let $year := substring($compositionDate,1,4)
+                          let $workID := $work/@xml:id/string()
+                          let $name:= <div class="row RegisterEntry">
+                                        <!--<div class="col-2">{format-date(xs:date(replace($compositionDate,'00','01')),'[M,*-3]. [D]','de',(),())}</div>-->
+                                        <div class="col">{$workName}</div>
+                                        <div class="col-2">{$opus}</div>
+                                        <div class="col-2"><a href="work/{$workID}">{$workID}</a></div>
+                                      </div>
+                        group by $year
+                        order by $year
+                        return
+                            (<div name="{$year}" count="{count($name)}">
+                                {for $each in $name
+                                    order by $each
+                                    return
+                                        $each}
+                             </div>)
+
+    let $worksGroupedByYears := for $groups in $worksChrono
+                                    let $year := $groups/@name/string()
+                                    return
+                                           (<div class="RegisterSortBox" year="{$year}" count="{$worksChrono[@name=$year]/@count}" xmlns="http://www.w3.org/1999/xhtml">
+                                                <div class="RegisterSortEntry" id="{concat('list-item-',if($year='')then('unknown')else($year))}">
+                                                    {if($year='')then('[unbekannt]')else($year)}
                                                 </div>
                                                 {
                                                  for $group in $groups
@@ -1064,23 +1181,24 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 </div>
         </div>
         <div class="tab-pane fade" id="sortDate">
-        <p>
-        <h5>Nach Entstehungszeit</h5>
-            <ul>
-        {
-        for $work in $works
-        let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type='uniform' and @xml:lang='de']/normalize-space(text())
-        let $dateComposition := $work//mei:date[@type="composition" and 1]
-        let $opus := $work//mei:workList//mei:title[@type='desc']/normalize-space(text())
-        let $id := $work/@xml:id/normalize-space(data(.))
-        order by $dateComposition ascending
-        return
-            <li>
-                {$name}, {$opus} (ID: <a href="work/{$id}">{$id}</a>)<br/>
-            </li>
-        }
-            </ul>
-            </p>
+            <br/>
+            <div class="row">
+                            <nav id="nav" class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
+                            {for $each in $worksGroupedByYears
+                                let $year := $each/@year/string()
+                                let $count := $each/@count/string()
+                                order by $year
+                                return
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{concat('#list-item-',$year)}"><span>{if($year='unknown')then('[unbekannt]')else($year)}</span>
+                                            <span class="badge badge-jra badge-pill right">{$count}</span>
+                                        </a>
+                            }
+                            
+                            </nav>
+                    <div data-spy="scroll" data-target="#nav" data-offset="70" class="pre-scrollable col" id="divResults">
+                        {$worksGroupedByYears}
+                    </div>
+                </div>
         </div>
         <div class="tab-pane fade" id="sortPerfRes">
         <p>
