@@ -798,6 +798,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:birth[1]/@notAfter)
                 else
                     ('')
+    let $birthFormatted := if(starts-with($birth,'-0')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
     let $death := if ($person//tei:death[1][@when-iso])
     then
         ($person//tei:death[1]/@when-iso)
@@ -815,17 +816,18 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:death[1]/@notAfter)
                 else
                     ('')
-    let $lifeData := if ($birth[. != ''] and $death[. != ''])
+    let $deathFormatted := if(starts-with($death,'-')) then(concat(substring(format-number(number($death),'##.##;##.##'),2),' v. Chr.')) else($death)
+    let $lifeData := if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
     then
-        (concat(' (', $birth, '–', $death, ')'))
+        (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
     else
-        if ($birth and not($death))
+        if ($birthFormatted and not($deathFormatted))
         then
-            (concat(' (* ', $birth, ')'))
+            (concat(' (* ', $birthFormatted, ')'))
         else
-            if ($death and not($birth))
+            if ($deathFormatted and not($birthFormatted))
             then
-                (concat(' († ', $birth, ')'))
+                (concat(' († ', $birthFormatted, ')'))
             else
                 ()
     let $nameJoined := if ($nameForeFull = '')
@@ -865,7 +867,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     if ($birth = '') then
                         ('unknownBirth')
                     else
-                        ($birth)
+                        (distinct-values($birthFormatted))
                 }"
             count="{count($name)}">
             {
@@ -938,6 +940,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:birth[1]/@notAfter)
                 else
                     ('')
+    let $birthFormatted := if(starts-with($birth,'-0')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
     let $death := if ($person//tei:death[1][@when-iso])
     then
         ($person//tei:death[1]/@when-iso)
@@ -955,17 +958,18 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:death[1]/@notAfter)
                 else
                     ('')
-    let $lifeData := if ($birth[. != ''] and $death[. != ''])
+    let $deathFormatted := if(starts-with($death,'-')) then(concat(substring(format-number(number($death),'##.##;##.##'),2),' v. Chr.')) else($death)
+    let $lifeData := if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
     then
-        (concat(' (', $birth, '–', $death, ')'))
+        (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
     else
-        if ($birth and not($death))
+        if ($birthFormatted and not($deathFormatted))
         then
-            (concat(' (* ', $birth, ')'))
+            (concat(' (* ', $birthFormatted, ')'))
         else
-            if ($death and not($birth))
+            if ($deathFormatted and not($birthFormatted))
             then
-                (concat(' († ', $birth, ')'))
+                (concat(' († ', $birthFormatted, ')'))
             else
                 ()
     let $nameJoined := if ($nameForeFull = '')
@@ -1005,7 +1009,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     if ($death = '') then
                         ('unknownDeath')
                     else
-                        ($death)
+                        (distinct-values($deathFormatted))
                 }"
             count="{count($name)}">
             {
@@ -1701,7 +1705,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $works := collection('/db/contents/jra/works')//mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type = 'desc' and contains(., 'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type = 'desc' and contains(., 'WoO')]/ancestor::mei:mei
-    let $perfRess := functx:distinct-deep($works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type = 'alt')])
+    let $perfRess := $works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type = 'alt')]
     
     let $worksAlpha := for $work in $works
     let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
@@ -1881,11 +1885,12 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     
     let $worksGroupedByPerfRes := for $groups in $worksPerfRes
     let $perf := $groups/@name/string()
+    let $count := $groups/@count/string()
     return
         (<div
             class="RegisterSortBox"
             perf="{$perf}"
-            count="{$worksChrono[@name = $perf]/@count}"
+            count="{$count}"
             xmlns="http://www.w3.org/1999/xhtml">
             <div
                 class="RegisterSortEntry"
@@ -2160,12 +2165,13 @@ declare function app:work($node as node(), $model as map(*)) {
             <br/>
             <div
                 class="page-header">
-                <h1>{$name}, {$opus}</h1>
-                <h5>ID: {$id}</h5>
+                <br/>
+                <h2>{$name}</h2>
+                <h4>{$opus}</h4>
             </div>
             <br/>
             <div
-                class="col">
+                class="col-9">
                 {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
             </div>
         </div>

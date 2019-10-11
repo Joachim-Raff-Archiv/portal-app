@@ -51,6 +51,14 @@ body {
     border-bottom:none;
 }
 
+.bottom-line {
+    border-bottom: 1px solid #ddd;
+}
+
+.top-line {
+    border-top: 1px solid #ddd;
+}
+
 .btn-jra {
   background-image: -webkit-linear-gradient(top, #651A85 0%, #641A85 100%);
   background-image:      -o-linear-gradient(top, #651A85 0%, #641A85 100%);

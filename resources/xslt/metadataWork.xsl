@@ -5,36 +5,27 @@
         <div>
             <table border="0" width="100%">
                 <tr>
-                    <th width="20%"/>
+                    <th width="30%"/>
                     <th/>
                 </tr>
-
-                <xsl:if test="not(//mei:workList/mei:work/mei:title[@type = 'desc']/data(.) = '')">
-                    <tr>
-                        <td>Werkbeschreibung:</td>
+                    <tr class="bottom-line">
+                        <td>ID:</td>
                         <td>
-                            <xsl:value-of select="//mei:workList/mei:work/mei:title[@type = 'desc']"/>
+                            <xsl:value-of select="mei:mei/@xml:id"/>
                         </td>
                     </tr>
-                </xsl:if>
-                <xsl:if test="not(//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer = '')">
+                <xsl:if test="//mei:creation/mei:dedication/not(normalize-space(.)='')">
                     <tr>
-                        <td>Komponist:</td>
-                        <td>
-                            <xsl:choose>
-                                <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //composer/persName/@auth, '.xml'))">
-                                    <a href="{concat($registerRootPerson, //mei:composer/mei:persName/@auth)}" target="_blank">
-                                        <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer/mei:persName"/>
-                                    </a>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:composer/mei:persName"/>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </td>
+                        <td>Widmung:</td>
+                        <td><xsl:value-of select="//mei:creation/mei:dedication/text()[1]"/></td>
                     </tr>
                 </xsl:if>
-
+                <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee/not(normalize-space(.)='')">
+                    <tr>
+                        <td>Widmungsträger:</td>
+                        <td><xsl:value-of select="//mei:creation/mei:dedication/mei:dedicatee"/></td>
+                    </tr>
+                </xsl:if>
                 <xsl:if test="not(//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist = '')">
                     <tr>
                         <td valign="top">Textdichter:</td>
@@ -56,7 +47,7 @@
                         </td>
                     </tr>
                 </xsl:if>
-                <tr>
+                <tr class="bottom-line">
                     <td valign="top">Besetzung:</td>
                     <td>
                         <xsl:choose>
@@ -96,50 +87,38 @@
                         </td>
                     </tr>
                 </xsl:if>
-                <xsl:if test="exists(//mei:creation/mei:date[@type='composition' and 1]/@isodate)">
-                <tr>
+                <xsl:if test="exists(//mei:creation/mei:date[@type='composition']/@isodate)">
+                    <tr class="bottom-line">
                     <td>Kompositionsdatum:</td>
                     <td>
-                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@isodate/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
+                        <xsl:value-of select="//mei:creation/mei:date[@type='composition']/@isodate"/>
                     </td>
                 </tr>
                 </xsl:if>
-                <xsl:if test="exists(//mei:creation/mei:date[@type='composition' and 1]/@notbefore) and exists(//mei:creation/mei:date[@type='composition' and 1]/@notafter)">
-                <tr>
+                <xsl:if test="exists(//mei:creation/mei:date[@type='composition']/@notbefore) and exists(//mei:creation/mei:date[@type='composition']/@notafter)">
+                    <tr class="bottom-line">
                     <td>Kompositionszeitraum:</td>
                     <td>
-                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notbefore/format-date(xs:date(.),'[D11].[M11].[Y]')"/> bis 
-                        <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notafter/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
+                        <xsl:value-of select="//mei:creation/mei:date[@type='composition']/@notbefore"/> bis 
+                        <xsl:value-of select="//mei:creation/mei:date[@type='composition']/@notafter"/>
                     </td>
                 </tr>
                 </xsl:if>
-                <xsl:if test="exists(//mei:creation/mei:date[@type='composition' and 1]/@notbefore) and not(exists(//mei:creation/mei:date[@type='composition' and 1]/@notafter))">
-                    <tr>
+                <xsl:if test="exists(//mei:creation/mei:date[@type='composition']/@notbefore) and not(exists(//mei:creation/mei:date[@type='composition']/@notafter))">
+                    <tr class="bottom-line">
                         <td>Kompositionszeitraum:</td>
                         <td>
-                            nach <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notbefore/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
+                            nach <xsl:value-of select="//mei:creation/mei:date[@type='composition']/@notbefore"/>
                         </td>
                     </tr>
                 </xsl:if>
-                <xsl:if test="not(exists(//mei:creation/mei:date[@type='composition' and 1]/@notbefore)) and exists(//mei:creation/mei:date[@type='composition' and 1]/@notafter)">
-                    <tr>
+                <xsl:if test="not(exists(//mei:creation/mei:date[@type='composition']/@notbefore)) and exists(//mei:creation/mei:date[@type='composition']/@notafter)">
+                    <tr class="bottom-line">
                         <td>Kompositionszeitraum:</td>
                         <td>
-                            vor <xsl:value-of select="//mei:creation/mei:date[@type='composition' and 1]/@notafter/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
+                            vor <xsl:value-of select="//mei:creation/mei:date[@type='composition']/@notafter"/>
                         </td>
                     </tr>
-                </xsl:if>
-                <xsl:if test="//mei:creation/mei:dedication/not(normalize-space(.)='')">
-                <tr>
-                    <td>Widmung:</td>
-                    <td><xsl:value-of select="//mei:creation/mei:dedication/text()[1]"/></td>
-                </tr>
-                </xsl:if>
-                <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee/not(normalize-space(.)='')">
-                <tr>
-                    <td>Widmungsträger:</td>
-                    <td><xsl:value-of select="//mei:creation/mei:dedication/mei:dedicatee"/></td>
-                </tr>
                 </xsl:if>
                 <xsl:if test="exists(//mei:componentList/mei:manifestation/mei:biblList/mei:bibl)">
                     <tr>
@@ -185,13 +164,13 @@
                 </tr>
                 </xsl:if>
                 <xsl:if test="//mei:eventList/mei:event[@type='UA']"> <!--  and not(child::text()/normalize-space(.)='') -->
-                    <tr>
+                    <tr class="top-line">
                         <td valign="top">Uraufführung:</td>
                         <td>
-                            <xsl:variable name="UAdate" select="//mei:eventList/mei:event[@type='UA']/mei:date/format-date(xs:date(.),'[D11].[M11].[Y]')"/>
-                            <xsl:variable name="UAort" select="//mei:eventList/mei:event[@type='UA']/mei:geogName"/>
-                            <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type='UA']/mei:persName[@role='conductor']"/>
-                            <xsl:variable name="UAinterpret" select="//mei:eventList/mei:event[@type='UA']/mei:persName[@role='interpret']"/>
+                            <xsl:variable name="UAdate" select="//mei:eventList/mei:event[@type='UA']/mei:date/text()"/>
+                            <xsl:variable name="UAort" select="//mei:eventList/mei:event[@type='UA']/mei:geogName/text()"/>
+                            <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type='UA']/mei:persName[@role='conductor']/text()"/>
+                            <xsl:variable name="UAinterpret" select="//mei:eventList/mei:event[@type='UA']/mei:persName[@role='interpret']/text()"/>
                             <xsl:choose>
                                 <xsl:when test="not(empty($UAdate)) and not(empty($UAort))">
                                     <xsl:value-of select="concat('Am ',$UAdate,' in ',$UAort)"/>
@@ -207,7 +186,7 @@
                                 <br/><xsl:value-of select="concat('Dirigent: ',$UAconductor)"/>
                             </xsl:if>
                             <xsl:if test="not(empty($UAinterpret))">
-                                <xsl:for-each select="$UAinterpret/node()">
+                                <xsl:for-each select="$UAinterpret">
                                 <br/><xsl:value-of select="concat('Interpret: ',.)"/>
                                 </xsl:for-each>
                             </xsl:if>
@@ -215,23 +194,17 @@
                     </tr>
                 </xsl:if>
                 <xsl:if test="exists(//mei:music/mei:body/mei:mdiv/@label)">
-                    <tr>
-                        <td valign="top">Sätze:</td>
+                    <tr class="top-line">
+                        <td valign="top">Musikalische Abschnitte:</td>
                         <td>
-                            <ul>
                     <xsl:for-each select="//mei:music/mei:body/mei:mdiv">
-                        <li>
-                            <xsl:value-of select="concat('Nr. ',./@label)"/></li>
+                        <xsl:value-of select="concat('Nr. ',./@label)"/><br/>
                         <xsl:if test="exists(./mei:mdiv)">
-                            <ul>
                             <xsl:for-each select="./mei:mdiv">
-                                <li>
-                                    <xsl:value-of select="concat('Nr. ',./@label)"/></li>
+                                <xsl:value-of select="concat('Nr. ',./@label)"/><br/>
                             </xsl:for-each>
-                            </ul>
                         </xsl:if>
                     </xsl:for-each>
-                            </ul>
                         </td>
                     </tr>
                 </xsl:if>
