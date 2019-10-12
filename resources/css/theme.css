@@ -51,14 +51,6 @@ body {
     border-bottom:none;
 }
 
-.bottom-line {
-    border-bottom: 1px solid #ddd;
-}
-
-.top-line {
-    border-top: 1px solid #ddd;
-}
-
 .btn-jra {
   background-image: -webkit-linear-gradient(top, #651A85 0%, #641A85 100%);
   background-image:      -o-linear-gradient(top, #651A85 0%, #641A85 100%);
@@ -221,4 +213,14 @@ button.bg-jra:hover{
 .badge-jra{
     color: #641a64;
     background-color: #f0f0f0
+}
+
+table.workView{
+    width:100%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.workView tr:first-of-type td:first-of-type{
+    width:30%;
+    vertical-align:top;
 }
