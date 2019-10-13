@@ -480,11 +480,12 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                 </div>
                 <div
                     class="col-3">
-                    <br/><br/><h5>Suche</h5>
+                    <br/><br/>
+                    <h5><button type="button" class="btn-jra" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten.">Filter​n</button></h5>
                     <input
                         type="text"
                         id="myResearchInput"
-                        onkeyup="myFilterLetter()"
+                        onkeyup="myFilter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
                 </div>
@@ -1201,11 +1202,11 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                 <div
                     class="col-3">
                     <br/><br/>
-                    <h5>Suche</h5>
+                    <h5><button type="button" class="btn-jra" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten.">Filter​n</button></h5>
                     <input
                         type="text"
                         id="myResearchInput"
-                        onkeyup="myFilterPerson()"
+                        onkeyup="myFilter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
                 </div>
@@ -1579,11 +1580,11 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                 <div
                     class="col-3">
                     <br/><br/>
-                    <h5>Suche</h5>
+                    <h5><button type="button" class="btn-jra" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten.">Filter​n</button></h5>
                     <input
                         type="text"
                         id="myResearchInput"
-                        onkeyup="myFilterPerson()"
+                        onkeyup="myFilter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
                 </div>

@@ -51,6 +51,16 @@ body {
     border-bottom:none;
 }
 
+.myResearchInput {
+                                 background-position: 2px 10px;
+                                 background-repeat: no-repeat;
+                                 width: 100%;
+                                 font-size: 16px;
+                                 padding: 12px 10px 12px 20px;
+                                 border: 1px solid #ddd;
+                                 margin-bottom: 12px;
+                             }
+
 .btn-jra {
   background-image: -webkit-linear-gradient(top, #651A85 0%, #641A85 100%);
   background-image:      -o-linear-gradient(top, #651A85 0%, #641A85 100%);

@@ -4,8 +4,10 @@
         <meta charset="utf-8"/>
         <!--        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>-->
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <meta data-template="config:app-meta"/>
+        <meta name="app-meta" data-template="config:app-meta" content="JRA"/>
         <link rel="shortcut icon" href="http://localhost:8080/exist/apps/raffArchive/icon.png"/>
+        
+        <!-- Bootstrap -->
         <link rel="stylesheet" href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap.min.css"/>
         <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-theme.min.css" rel="stylesheet"/>
         <!--<link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-social.css" rel="stylesheet"/>-->
@@ -18,17 +20,18 @@
         
         <!-- Custom styles for this template -->
         <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/theme.css" rel="stylesheet"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/jquery-1.8.3.min.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/loadsource.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/additions.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/animatescroll.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/filter.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.js"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.min.js"/>
+        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/filter.js"/>        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"/>
+<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/jquery-1.8.3.min.js"/>-->
+<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/loadsource.js"/>-->
+        <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>-->
+<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/animatescroll.js"/>-->
+        
+        <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.js"/>-->
+        <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.min.js"/>-->
         <script>
             $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
+              $('[data-toggle="popover"]').popover()
             })
         </script>
         <script>
@@ -36,19 +39,8 @@
             var $spy = $(this).scrollspy('refresh')
             })
         </script>
-        <style>
-            #myResearchInput {
-                                 background-position: 2px 10px;
-                                 background-repeat: no-repeat;
-                                 width: 100%;
-                                 font-size: 16px;
-                                 padding: 12px 10px 12px 20px;
-                                 border: 1px solid #ddd;
-                                 margin-bottom: 12px;
-                             }
-        </style>
     </head>
-    <body id="body">
+    <body id="body" data-spy="scroll" data-target="#nav" data-offset="85" style="position: relative;">
         <nav class="navbar navbar-expand-lg"> <!-- navbar-jra bg-jra -->
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav">
@@ -136,18 +128,15 @@
         <!-- Bootstrap core JavaScript
 				 ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"/>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"/>
-        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"/>
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"/>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"/>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>-->
-        <script>
+<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>
+        
+        <!--<script>
             $('#nav').on('activate.bs.scrollspy', function () {
 		  item = $('#nav').find(".active").last();
 		  item.animatescroll({element: '#nav', padding:20});
 		  })();
-        </script>
+        </script>-->
     </body>
 </html>
