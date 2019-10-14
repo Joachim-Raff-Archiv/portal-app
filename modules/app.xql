@@ -533,7 +533,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         
                         <div
                             class="col">
-                            {transform:transform($letter//tei:teiHeader, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
+                            {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
                         </div>
                         <div
                             class="col-2">
@@ -551,48 +551,10 @@ declare function app:letter($node as node(), $model as map(*)) {
                 <div
                     class="tab-pane fade"
                     id="letterContent">
-                    <div
-                        class="row">
                         <div
-                            class="col-4">
-                            <br/>
-                            {
-                                if ($letter//tei:facsimile/tei:surface[1]/tei:graphic)
-                                then
-                                    (<a
-                                        href="{$letter//tei:facsimile/tei:surface[1]/tei:graphic/@url}"><img
-                                            src="{$letter//tei:facsimile/tei:surface[1]/tei:graphic/@url}"
-                                            class="img-thumbnail"
-                                            width="250"
-                                            target="_blank"/></a>)
-                                else
-                                    ('no picture')
-                            }
-                            <br/><br/>
-                            {
-                                if ($letter//tei:facsimile/tei:surface[1]/tei:graphic)
-                                then
-                                    ('Quelle: ', $letter//tei:msIdentifier/tei:repository, ' ', $letter//tei:msIdentifier/tei:settlement, ', ', $letter//tei:msIdentifier/tei:idno)
-                                else
-                                    ('no SourceLink')
-                            }
-                            | Unveränderte Wiedergabe
-                            {
-                                if ($letter//tei:facsimile/tei:surface[1]/tei:graphic)
-                                then
-                                    ('Lizenz: ',
-                                    <a
-                                        href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de"
-                                        target="_blank">{$letter//tei:facsimile/tei:surface[1]/tei:graphic/tei:desc[@type = "licence"]}</a>)
-                                else
-                                    ('no picture')
-                            }
-                        </div>
-                        <div
-                            class="col">
+                            class="row">
                             {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
                         </div>
-                    </div>
                 </div>
                 <div
                     class="tab-pane fade"

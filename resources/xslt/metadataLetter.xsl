@@ -3,31 +3,50 @@
     <xsl:include href="linking.xsl"/>
     <xsl:include href="formattingDate.xsl"/>
 
+    <xsl:variable name="correspAction" select="//correspAction"/>
+    <xsl:variable name="graphic" select="$correspAction/ancestor::TEI/facsimile/graphic[1]"/>
+
     <xsl:template match="/">
+        <xsl:choose>
+            <xsl:when test="$correspAction/ancestor::TEI/facsimile/graphic">
+                <div class="col-3"><img src="{$graphic/@url}" class="img-thumbnail" width="200px"/><br/><br/>
+                    <xsl:if test="$graphic/desc"><xsl:value-of select="$graphic/desc"/><br/></xsl:if>Quelle: 
+                    <a href="{$graphic/@source}" target="_blank"><xsl:value-of select="$graphic/@resp"/></a></div>
+                <div class="col">
+                    <xsl:call-template name="letterMetadataView"/>
+                </div>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="letterMetadataView"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template name="letterMetadataView">
         <table class="letterView">
             <tr>
                 <td>Adressat:</td>
                 <td>
-                    <a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',//correspAction[@type = 'received']/persName/@key)}" target="_blank">
-                        <xsl:value-of select="//correspAction[@type = 'received']/persName/text()/substring-after(., ',')"/>
-                        <xsl:value-of select="//correspAction[@type = 'received']/persName/text()/substring-before(., ',')"/>
+                    <a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$correspAction[@type = 'received']/persName/@key)}" target="_blank">
+                        <xsl:value-of select="$correspAction[@type = 'received']/persName/text()/substring-after(., ',')"/>
+                        <xsl:value-of select="$correspAction[@type = 'received']/persName/text()/substring-before(., ',')"/>
                     </a>
-                    (<xsl:value-of select="//correspAction[@type = 'received']/persName/@key"/>)
+                    (<xsl:value-of select="$correspAction[@type = 'received']/persName/@key"/>)
                 </td>
             </tr>
             <!--            </xsl:if>-->
             <tr>
                 <td>Absender:</td>
                 <td>
-                    <a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',//correspAction[@type = 'sent']/persName/@key)}" target="_blank">
+                    <a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$correspAction[@type = 'sent']/persName/@key)}" target="_blank">
                         <xsl:choose>
-                            <xsl:when test="contains(//correspAction[@type = 'sent']/persName/text()[1],', ')">
-                                <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="//correspAction[@type = 'sent']/persName/text()[1]/substring-before(., ',')"/></xsl:when>
-                            <xsl:otherwise><xsl:value-of select="//correspAction[@type = 'sent']/persName/text()[1]"/></xsl:otherwise>
+                            <xsl:when test="contains($correspAction[@type = 'sent']/persName/text()[1],', ')">
+                                <xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]/substring-before(., ',')"/></xsl:when>
+                            <xsl:otherwise><xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]"/></xsl:otherwise>
                         </xsl:choose>
                         
                     </a>
-                    (<xsl:value-of select="//correspAction[@type = 'sent']/persName/@key"/>)
+                    (<xsl:value-of select="$correspAction[@type = 'sent']/persName/@key"/>)
                 </td>
             </tr>
         </table>
@@ -36,61 +55,61 @@
                 <td>Datierung:</td>
                 <td>
                     <xsl:choose>
-                        <xsl:when test="not(exists(//correspAction[@type = 'sent']/date)) or empty(//correspAction[@type = 'sent']/date)">
+                        <xsl:when test="not(exists($correspAction[@type = 'sent']/date)) or empty($correspAction[@type = 'sent']/date)">
                             [undatiert]
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:if test="//correspAction[@type = 'sent']/date[@type = 'source']/@when">
-                                <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'source' and @when][1]/@when)"/> (Quelle)
+                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'source']/@when">
+                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source' and @when][1]/@when)"/> (Quelle)
                                 <br/>
                             </xsl:if>
-                            <xsl:if test="//correspAction[@type = 'sent']/date[@type = 'source']/@from-custom">
-                                <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'source']/@from-custom)"/> bis <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'source']/@to-custom)"/> (Quelle)<br/></xsl:if>
-                            <xsl:if test="//correspAction[@type = 'sent']/date[@type = 'editor']/@from">
-                                <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'editor']/@from)"/> bis <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'editor']/@to)"/> (ermittelt)<br/></xsl:if>
-                            <xsl:if test="//correspAction[@type = 'sent']/date[@type = 'postal']/@when">
-                                <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'postal']/@when)"/> (Poststempel)<br/></xsl:if>
-                            <xsl:if test="//correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore">
-                                Frühestens <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore)"/> (ermittelt)<br/>
+                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'source']/@from-custom">
+                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source']/@from-custom)"/> bis <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source']/@to-custom)"/> (Quelle)<br/></xsl:if>
+                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@from">
+                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@from)"/> bis <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@to)"/> (ermittelt)<br/></xsl:if>
+                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'postal']/@when">
+                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'postal']/@when)"/> (Poststempel)<br/></xsl:if>
+                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore">
+                                Frühestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore)"/> (ermittelt)<br/>
                             </xsl:if>
-                            <xsl:if test="//correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter">
-                                Spätestens <xsl:value-of select="local:formatDate(//correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter)"/> (ermittelt)<br/>
+                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter">
+                                Spätestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter)"/> (ermittelt)<br/>
                             </xsl:if>
                         </xsl:otherwise>
                     </xsl:choose>
                 </td>
             </tr>
-                <xsl:if test="//correspAction[@type = 'sent']/note[@type = 'editor']!=''">
+                <xsl:if test="$correspAction[@type = 'sent']/note[@type = 'editor']!=''">
                 <tr>
                     <td>Anmerkung:</td>
                     <td>
-                        <i><xsl:value-of select="//correspAction[@type = 'sent']/note[@type = 'editor']"/></i>
+                        <i><xsl:value-of select="$correspAction[@type = 'sent']/note[@type = 'editor']"/></i>
                     </td>
                 </tr>
                 </xsl:if>
-                <xsl:if test="exists(//correspAction[@type = 'sent']/settlement) and not(empty(//correspAction[@type = 'sent']/settlement))">
+                <xsl:if test="exists($correspAction[@type = 'sent']/settlement) and not(empty($correspAction[@type = 'sent']/settlement))">
                 <tr>
                 <td>Erstellungsort:</td>
                 <td>
-                        <xsl:value-of select="//correspAction[@type = 'sent']/settlement"/>
+                        <xsl:value-of select="$correspAction[@type = 'sent']/settlement"/>
                 </td>
             </tr>
                 </xsl:if>
             </table>
         <table class="letterView">
-            <xsl:if test="exists(//correspAction[@type = 'received']/date)">
+            <xsl:if test="exists($correspAction[@type = 'received']/date)">
                 <tr>
                     <td>Ankunftsdatum:</td>
                     <td>
-                        <xsl:value-of select="//correspAction[@type = 'received']/date"/>
+                        <xsl:value-of select="$correspAction[@type = 'received']/date"/>
                     </td>
                 </tr>
             </xsl:if>
-            <xsl:if test="exists(//correspAction[@type = 'received']/settlement) and not(empty(/correspAction[@type = 'received']/settlement))">
+            <xsl:if test="exists($correspAction[@type = 'received']/settlement) and not(empty(/correspAction[@type = 'received']/settlement))">
                 <tr>
                     <td>Ankunftsort:</td>
                     <td>
-                        <xsl:value-of select="//correspAction[@type = 'received']/settlement"/>
+                        <xsl:value-of select="$correspAction[@type = 'received']/settlement"/>
                     </td>
                 </tr>
             </xsl:if>
