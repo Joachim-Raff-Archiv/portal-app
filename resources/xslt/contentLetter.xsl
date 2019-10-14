@@ -3,40 +3,45 @@
     <xsl:include href="linking.xsl"/>
     <xsl:template match="/">
         <br/>
-        <table>
+        <table class="letterContentView">
             <xsl:if test="//notesStmt/note[@type='regeste']">
-                <tr>
-                    <td width="150px" valign="top">Regeste:</td>
-                    <td>
-                            <xsl:value-of select="//notesStmt/note[@type='regeste']"/>
-                            <br/>
-                    </td>
-                </tr>
-            </xsl:if>
-            <xsl:if test="//body/opener[. != '']">
-                <tr>
-                    <td width="150px" valign="top">Beginn:</td>
-                    <td>
-                            <xsl:value-of select="//body/opener"/>
-                            <br/>
-                    </td>
-                </tr>
-            </xsl:if>
-            <xsl:if test="//body/div[@type = 'volltext']/p[. != '']">
-                <tr>
-                    <td width="150px" valign="top">Volltext:</td>
-                    <td>
-                            <xsl:value-of select="//body/div[@type = 'volltext']"/>
-                    </td>
-                </tr>
-            </xsl:if>
+            <tr>
+                <td>Regeste:</td>
+                <td>
+                    <xsl:value-of select="//notesStmt/note[@type = 'regeste']"/>
+                </td>
+            </tr>
             <tr>
                 <td>
                     <br/>
                 </td>
                 <td/>
             </tr>
+            </xsl:if>
         </table>
+            
+            <xsl:if test="//body/opener[. != '']">
+                <table class="letterContentView">
+                <tr>
+                    <td>Beginn:</td>
+                    <td>
+                            <xsl:value-of select="//body/opener"/>
+                            <br/>
+                    </td>
+                </tr>
+                </table>
+        
+            </xsl:if>
+            <xsl:if test="//body/div[@type = 'volltext']/p[. != '']">
+                <table class="letterContentView">
+                <tr>
+                    <td>Volltext:</td>
+                    <td>
+                            <xsl:value-of select="//body/div[@type = 'volltext']"/>
+                    </td>
+                </tr>
+                </table>
+            </xsl:if>
 
     </xsl:template>
 </xsl:stylesheet>

@@ -244,3 +244,23 @@ table.personView tr:first-of-type td:first-of-type{
     width:30%;
     vertical-align:top;
 }
+
+table.letterView{
+    width:100%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.letterView tr:first-of-type td:first-of-type{
+    width:20%;
+    vertical-align:top;
+}
+
+table.letterContentView{
+    width:100%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.letterContentView tr:first-of-type td:first-of-type{
+    width:20%;
+    vertical-align:top;
+}

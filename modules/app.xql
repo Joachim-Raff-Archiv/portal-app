@@ -152,6 +152,20 @@ declare function local:getDate($date) {
         $get[number(substring(.,1,4)) < number(substring(string(current-date()),1,4))-70]
 };
 
+declare function local:formatDate($dateRaw){
+    if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
+                                              then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
+                                              else if($dateRaw='0000' or $dateRaw='0000-00' or $dateRaw='0000-00-00')
+                                              then('[undatiert]')
+                                              else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
+                                              then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
+                                              else if(contains($dateRaw,'0000-') and contains($dateRaw,'-00'))
+                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                                              else if(starts-with($dateRaw,'0000-'))
+                                              then(concat(format-date(xs:date(replace($dateRaw,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
+                                              else($dateRaw)
+};
+
 declare function app:registryLetters($node as node(), $model as map(*)) {
     
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
@@ -171,17 +185,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
-                        let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
-                                              then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                              else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                              then('[undatiert]')
-                                              else if(string-length($date)=7 and not(contains($date,'00')))
-                                              then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                              else if(contains($date,'0000-') and contains($date,'-00'))
-                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                              else if(starts-with($date,'0000-'))
-                                              then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                              else($date)
+                        let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">Von {$correspSent}<br/>an {$correspReceived}</div>
@@ -232,17 +236,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key/string()[1]) else('noID')
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
-                        let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
-                                              then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                              else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                              then('[undatiert]')
-                                              else if(string-length($date)=7 and not(contains($date,'00')))
-                                              then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                              else if(contains($date,'0000-') and contains($date,'-00'))
-                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                              else if(starts-with($date,'0000-'))
-                                              then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                              else($date)
+                        let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">An {$correspSent}</div>
@@ -292,17 +286,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key/string()[1]) else('noID')
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
-                        let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
-                                              then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                              else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                              then('[undatiert]')
-                                              else if(string-length($date)=7 and not(contains($date,'00')))
-                                              then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                              else if(contains($date,'0000-') and contains($date,'-00'))
-                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                              else if(starts-with($date,'0000-'))
-                                              then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                              else($date)
+                        let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">An {$correspReceived}</div>
@@ -501,8 +485,9 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $letter := collection("/db/contents/jra/sources/documents/letters")//tei:TEI[@xml:id = $id]
     let $person := collection("/db/contents/jra/persons")//tei:TEI
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
-    let $datumSent := $letter//tei:correspAction[@type = "sent"]/tei:date[@type = 'source' and 1]/@when
+    let $datumSent := local:formatDate(local:getDate($letter//tei:correspAction[@type = "sent"]))
     let $adressat := $letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]
+    let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
     
     return
         (
@@ -514,7 +499,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                     href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
                 <br/>
                 <br/>
-                <h4>Brief vom {format-date(xs:date($datumSent), '[D]. [M,*-3]. [Y]', 'de', (), ())}</h4>
+                <h4>Brief an {$nameTurned} | {$datumSent}</h4>
                 <h6>ID: {$id}</h6>
                 <br/>
             </div>
@@ -525,7 +510,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                     class="nav-item"><a
                         class="nav-link-jra active"
                         data-toggle="tab"
-                        href="#letterMetadata">Metadaten</a></li>
+                        href="#letterMetadata">Allgemein</a></li>
                 <li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -605,7 +590,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         </div>
                         <div
                             class="col">
-                            {transform:transform($letter//tei:text, doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
+                            {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
                         </div>
                     </div>
                 </div>
