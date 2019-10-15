@@ -172,17 +172,12 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
     let $persons := collection('/db/contents/jra/persons')//tei:TEI
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     
-    let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    
     let $lettersCrono := for $letter in $letters
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
                         let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                        (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
                         let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text()[1] | $correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                        (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
