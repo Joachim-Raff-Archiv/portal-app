@@ -221,14 +221,15 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         then($correspActionSent/tei:persName/text()[1])
                         else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else ('[Unbekannt]')
                         let $correspSentId := if($correspActionSent/tei:persName/@key)
-                        then($correspActionSent/tei:persName/@key/string()[1])
-                        else if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/@key/string()[1]) else()
+                        then($correspActionSent/tei:persName/id(@key))
+                        else if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/id(@key)) else('none')
                         let $correspReceived := if($correspActionReceived/tei:persName/text())
                         then($correspActionReceived/tei:persName/text()[1])
                         else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
                         let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                        then($correspActionReceived/tei:persName/@key/string()[1])
-                        else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key/string()[1]) else('noID')
+                        then($correspActionReceived/tei:persName/id(@key))
+                        else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/id(@key)) else('none')
+                        let $receiverName := if(starts-with($correspReceivedId,'C')) then($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title) else if(starts-with($correspReceivedId,'D')) then($institutions[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title) else()
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -238,9 +239,8 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspReceivedId
-                        order by $correspReceivedId
                         return
-                            (<div receiver="{if(starts-with($correspReceivedId,'C')) then($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title) else if(starts-with($correspReceivedId,'D')) then($institutions[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title) else()}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                            (<div receiver="{distinct-values($receiverName)}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
                                     order by $each
                                     return
@@ -269,16 +269,16 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                        (:let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]'):)
                         let $correspSentId := if($correspActionSent/tei:persName/@key)
-                        then($correspActionSent/tei:persName/@key/string()[1])
+                        then($correspActionSent/tei:persName/id(@key))
                         else if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/@key/string()[1]) else()
                         let $correspReceived := if($correspActionReceived/tei:persName/text())
                         then($correspActionReceived/tei:persName/text()[1])
                         else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
                         let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                        then($correspActionReceived/tei:persName/@key/string()[1])
-                        else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key/string()[1]) else('noID')
+                        then($correspActionReceived/tei:persName/id(@key))
+                        else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key/string()[1]) else('none')
+                        let $senderName := if(starts-with($correspSentId,'C')) then($persons[@xml:id=$correspSentId]//tei:titleStmt/tei:title) else if(starts-with($correspSentId,'D')) then($institutions[@xml:id=$correspSentId]//tei:titleStmt/tei:title) else()
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -288,9 +288,8 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspSentId
-                        order by $correspSentId
                         return
-                            (<div sender="{if(starts-with($correspSentId,'C')) then($persons[@xml:id=$correspSentId]//tei:titleStmt/tei:title) else if(starts-with($correspSentId,'D')) then($institutions[@xml:id=$correspSentId]//tei:titleStmt/tei:title) else()}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                            (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
                                     order by $each
                                     return
@@ -400,11 +399,11 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                         let $letterCount := $receiver/@count/string()
                                         let $letterReceiver := $receiver/@receiver/string()
                                         let $letterReceiverId := $receiver/@receiverId/string()
-                                            order by $letterReceiverId
+                                            order by $letterReceiver
                                         return
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{$letterReceiver}</span>
+                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiverId='none')then('[Unbekannt]')else($letterReceiver)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -435,11 +434,11 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                         let $letterCount := $sender/@count/string()
                                         let $letterSender := $sender/@sender/string()
                                         let $letterSenderId := $sender/@senderId/string()
-                                            order by $letterSenderId
+                                            order by $letterSender
                                         return
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterSenderId)}"><span>{$letterSender}</span>
+                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='none')then('[Unbekannt]')else($letterSender)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -460,7 +459,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                 <div
                     class="col-3">
                     <br/><br/>
-                    <h5><button type="button" class="btn-jra" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten.">Filter​n</button></h5>
+                    <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
                     <input
                         type="text"
                         id="myResearchInput"
@@ -658,7 +657,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         </div>
         <!--<div class="col-3"></div>-->
         <div
-            class="col-2"><a
+            class="col-2"><a  onclick="pleaseWait()"
                 href="person/{$persID}">{$persID}</a></div>
     </div>
         group by $initial
@@ -799,7 +798,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         </div>
         <!--<div class="col-3"></div>-->
         <div
-            class="col-2"><a
+            class="col-2"><a  onclick="pleaseWait()"
                 href="person/{$persID}">{$persID}</a></div>
     </div>
         group by $birth
@@ -941,7 +940,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         </div>
         <!--<div class="col-3"></div>-->
         <div
-            class="col-2"><a
+            class="col-2"><a onclick="pleaseWait()"
                 href="person/{$persID}">{$persID}</a></div>
     </div>
         group by $death
@@ -1144,7 +1143,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                 <div
                     class="col-3">
                     <br/><br/>
-                    <h5><button type="button" class="btn-jra" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten.">Filter​n</button></h5>
+                    <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
                     <input
                         type="text"
                         id="myResearchInput"
@@ -1346,7 +1345,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
         <div
             class="col-4">{$place}</div>
         <div
-            class="col-2"><a
+            class="col-2"><a onclick="pleaseWait()"
                 href="institution/{$instID}">{$instID}</a></div>
     </div>
         group by $initial
@@ -1412,11 +1411,11 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
         <div
             class="col-4">{$places}</div>
         <div
-            class="col-2"><a
+            class="col-2"><a onclick="pleaseWait()"
                 href="institution/{$instID}">{$instID}</a></div>
     </div>
         group by $place
-        order by $place
+(:        order by $place:)
     return
         (<div
             name="{$place}"
@@ -1431,6 +1430,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
     
     let $institutionsGroupedByPlaces := for $groups in $institutionsPlace
         group by $place := $groups/@name/string()
+        order by $place
     return
         (<div
             class="RegisterSortBox"
@@ -1583,7 +1583,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                 <div
                     class="col-3">
                     <br/><br/>
-                    <h5><button type="button" class="btn-jra" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten.">Filter​n</button></h5>
+                    <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
                     <input
                         type="text"
                         id="myResearchInput"
@@ -1609,7 +1609,7 @@ declare function app:institution($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Institutionenverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
                 <br/>
                 <br/>
                 <h1>{$name}</h1>
@@ -1714,7 +1714,21 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $worksAlpha := for $work in $works
     let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-    let $initial := replace(upper-case(substring(translate($workName, 'É', 'E'), 1, 1)), '3', '0-9')
+    let $initial := for $case in upper-case(substring($workName, 1, 1))
+                        return switch ($case)
+                        case 'É' return 'E'
+                        case '0' return '0–9'
+                        case '1' return '0–9'
+                        case '2' return '0–9'
+                        case '3' return '0–9'
+                        case '4' return '0–9'
+                        case '5' return '0–9'
+                        case '6' return '0–9'
+                        case '7' return '0–9'
+                        case '8' return '0–9'
+                        case '9' return '0–9'
+                        default return $case 
+    
     let $workID := $work/@xml:id/string()
     let $name := <div
         class="row RegisterEntry">
@@ -1723,7 +1737,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         <div
             class="col-2">{$opus}</div>
         <div
-            class="col-2"><a
+            class="col-2"><a onclick="pleaseWait()"
                 href="work/{$workID}">{$workID}</a></div>
     </div>
         group by $initial
@@ -1812,7 +1826,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         <div
             class="col-2">{$opus}</div>
         <div
-            class="col-2"><a
+            class="col-2"><a onclick="pleaseWait()"
                 href="work/{$workID}">{$workID}</a></div>
     </div>
         group by $year
@@ -1840,13 +1854,13 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
             <div
                 class="RegisterSortEntry"
                 id="{
-                        concat('list-item-', if ($year = '') then
+                        concat('list-item-', if ($year = '0000') then
                             ('unknown')
                         else
                             ($year))
                     }">
                 {
-                    if ($year = '') then
+                    if ($year = '0000') then
                         ('[unbekannt]')
                     else
                         ($year)
@@ -1870,7 +1884,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         <div
             class="col-2">{$opus}</div>
         <div
-            class="col-2"><a
+            class="col-2"><a onclick="pleaseWait()"
                 href="work/{$workID}">{$workID}</a></div>
     </div>
         group by $perfRes
@@ -2087,7 +2101,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 <a
                                     class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                     href="{concat('#list-item-', $year)}"><span>{
-                                            if ($year = 'unknown') then
+                                            if ($year = '0000') then
                                                 ('[unbekannt]')
                                             else
                                                 ($year)

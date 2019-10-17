@@ -21,7 +21,10 @@
         <!-- Custom styles for this template -->
         <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/theme.css" rel="stylesheet"/>
         <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/filter.js"/>        
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"/>
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"/> <!-- 1.10.2 -->
+        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/jquery.pleaseWait.js"/>
+        
 <!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/jquery-1.8.3.min.js"/>-->
 <!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/loadsource.js"/>-->
         <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>-->
@@ -38,6 +41,11 @@
             $('[data-spy="scroll"]').each(function () {
             var $spy = $(this).scrollspy('refresh')
             })
+        </script>
+        <script>
+            function pleaseWait() { 
+                $('#content').pleaseWait();
+            }
         </script>
     </head>
     <body id="body" data-spy="scroll" data-target="#nav">
@@ -68,19 +76,19 @@
                         </a>
                         <ul class="dropdown-menu navbar-jra bg-jra">
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">Werkeverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">Werkeverzeichnis</a>
                             </li>
                             <!--<li>
                                 <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registrySources.html">Quellenverzeichnis</a>
                             </li>-->
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registryLetters.html">Briefeverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryLetters.html">Briefeverzeichnis</a>
                             </li>
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">Personenverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">Personenverzeichnis</a>
                             </li>
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">Institutionenverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">Institutionenverzeichnis</a>
                             </li>
                             <!--<li>
                                 <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registryPlaces.html">Orteverzeichnis</a>
@@ -125,6 +133,7 @@
                 <p class="text-muted">© 2019 Joachim-Raff-Archiv, Lachen (CH)</p>
             </div>
         </footer>
+        
         <!-- Bootstrap core JavaScript
 				 ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
