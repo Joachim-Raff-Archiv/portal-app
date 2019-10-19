@@ -37,11 +37,11 @@
                 <tr>
                     <td>Volltext:</td>
                     <td>
-                            <xsl:value-of select="//body/div[@type = 'volltext']"/>
+                        <xsl:value-of select="//body/div[@type = 'volltext']"/>
                     </td>
                 </tr>
                 </table>
             </xsl:if>
-
     </xsl:template>
+    
 </xsl:stylesheet>

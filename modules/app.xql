@@ -55,16 +55,6 @@ declare function app:search($node as node(), $model as map(*)) {
                 }</ul></div>
 };
 
-declare function local:downloadPerson($personFile) {
-    
-    let $dbWebdav := 'http://localhost:8080/exist/webdav/db/contents/jra/'
-    let $collection := 'person/'
-    let $id := request:get-parameter("person-id", "Fehler")
-    let $filePath := concat($dbWebdav, $collection, $id)
-    (:    let $interpreterURI := document-uri($interpreter[1]/root()):)
-    return
-        $filePath
-};
 
 declare function local:getDate($date) {
 
@@ -480,16 +470,18 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $person := collection("/db/contents/jra/persons")//tei:TEI
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
     let $datumSent := local:formatDate(local:getDate($letter//tei:correspAction[@type = "sent"]))
-    let $adressat := $letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]
+    let $correspReceived := $letter//tei:correspAction[@type = "received"]
+    let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
-    
+    let $regeste := $letter//tei:note[@type='regeste']
+    let $fulltext := $letter//tei:div[@type='volltext']
     return
         (
         <div
             class="container">
             <div
                 class="page-header">
-                <a
+                <a onclick="pleaseWait()"
                     href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
                 <br/>
                 <br/>
@@ -505,11 +497,16 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra active"
                         data-toggle="tab"
                         href="#letterMetadata">Allgemein</a></li>
-                <li
+                {if ($regeste) then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
                         data-toggle="tab"
-                        href="#letterContent">Inhalt</a></li>
+                        href="#contentLetterRegeste">Regeste</a></li>)else()}
+                {if ($fulltext) then(<li
+                    class="nav-item"><a
+                        class="nav-link-jra"
+                        data-toggle="tab"
+                        href="#letterContentFull">Volltext</a></li>)else()}
                 <li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -542,14 +539,29 @@ declare function app:letter($node as node(), $model as map(*)) {
                         </div>
                     </div>
                 </div>
-                <div
+                {if ($regeste)
+                 then (<div
                     class="tab-pane fade"
-                    id="letterContent">
+                    id="contentLetterRegeste">
+                    <br/>
                         <div
                             class="row">
-                            {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/contentLetter.xsl"), ())}
+                            <div class="col">
+                                {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/contentLetterRegeste.xsl"), ())}
+                            </div>
                         </div>
-                </div>
+                </div>)else()}
+                {if ($fulltext)
+                 then (<div
+                    class="tab-pane fade"
+                    id="letterContentFull">
+                        <div
+                            class="row">
+                            <div class="letterContentFullView">
+                                {transform:transform($letter//tei:body/tei:div[@type = "volltext"], doc("/db/apps/raffArchive/resources/xslt/contentLetterFull.xsl"), ())}
+                            </div>
+                        </div>
+                </div>)else()}
                 <div
                     class="tab-pane fade"
                     id="xmlView">
@@ -1307,14 +1319,6 @@ declare function app:person($node as node(), $model as map(*)) {
                             </div>
                         </div>
                     </div>
-                    <div
-                        class="col-2">
-                        <h5>Links</h5>
-                        <li><a
-                                href="{local:downloadPerson($person)}"
-                                download="Download">Download file</a></li>
-                        <li>Link2</li>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1688,14 +1692,6 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 </pre>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        class="col-2">
-                        <h5>Links</h5>
-                        <li><a
-                                href="{local:downloadPerson($institution)}"
-                                download="Download">Download file</a></li>
-                        <li>Link2</li>
                     </div>
                 </div>
             </div>

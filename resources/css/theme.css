@@ -265,3 +265,38 @@ table.letterContentView tr:first-of-type td:first-of-type{
     vertical-align:top;
 }
 
+table.letterContentRegeste{
+    width:100%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.letterContentRegeste tr:first-of-type td:first-of-type{
+    width:10%;
+    vertical-align:top;
+}
+
+div.letterContentFullView{
+    font-size: 1em;
+    color:black;
+    text-align: left;
+/*    font-weight: bold;*/
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left: 2em;
+    margin-right: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: #f8f8f8;
+    border-top: 1.5px solid #641a85;
+    border-bottom: 1.5px solid #641a85;
+    border-left: 1.5px solid #641a85;
+    border-right: 1.5px solid #641a85;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
