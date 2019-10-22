@@ -255,6 +255,16 @@ table.letterView tr:first-of-type td:first-of-type{
     vertical-align:top;
 }
 
+table.institutionView{
+    width:100%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.institutionView tr:first-of-type td:first-of-type{
+    width:20%;
+    vertical-align:top;
+}
+
 table.letterContentView{
     width:100%;
     border-top: 1px solid #ddd;
@@ -299,4 +309,9 @@ div.letterContentFullView{
     border-top-right-radius: 6px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
+}
+
+.sublevel {
+    color: gray;
+    font-size: 0.8em;    
 }

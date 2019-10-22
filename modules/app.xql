@@ -1333,18 +1333,19 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
     let $instID := $institution/@xml:id/string()
     let $initial := upper-case(substring($institution//tei:org/tei:orgName[1], 1, 1))
     let $nameInstitution := $institution//tei:org/tei:orgName[1]
+    let $desc := $institution//tei:org/tei:desc[1]
     let $place := string-join($institution//tei:org/tei:place/tei:placeName, '/')
     let $name := <div
         class="row RegisterEntry">
         <div
             class="col-6">
-            {$nameInstitution}
-            {
+            {$nameInstitution}<br/><span class="sublevel">{$desc}</span>
+            <!--{
                 if ($place) then
                     (concat('(', $place, ')'))
                 else
                     ($place)
-            }
+            }-->
         </div>
         <div
             class="col-4">{$place}</div>
@@ -1405,12 +1406,13 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
         <div
             class="col-6">
             {$nameInstitution}
-            {
+            <!--{
                 if ($places) then
                     (concat('(', $places, ')'))
-                else
-                    ($place)
-            }
+                else if ($place = '')
+                then('[unbekannt]')
+                else ($place)
+            }-->
         </div>
         <div
             class="col-4">{$places}</div>
@@ -1422,7 +1424,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
 (:        order by $place:)
     return
         (<div
-            name="{$place}"
+            name="{if($place ='') then('[unbekannt]')else($place)}"
             count="{count($name)}">
             {
                 for $each in $name
@@ -1444,7 +1446,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
             <div
                 class="RegisterSortEntry"
                 id="{
-                        concat('list-item-', if ($place = '') then
+                        concat('list-item-', if ($place = '[unbekannt]') then
                             ('unknown')
                         else
                             ($place))
@@ -1549,10 +1551,9 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $institutionsGroupedByPlaces
-                                        let $place := if ($each/@place/string() = '') then
+                                        let $place := if ($each/@place/string() = '[unbekannt]') then
                                             ('unknown')
-                                        else
-                                            ($each/@place/string())
+                                        else ($each/@place/string())
                                         let $count := $each/@count/string()
                                             order by $place
                                         return
@@ -1604,8 +1605,10 @@ declare function app:institution($node as node(), $model as map(*)) {
     let $id := request:get-parameter("institution-id", "Fehler")
     let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id = $id]
     let $name := $institution//tei:title/normalize-space(data(.))
-    let $institutionNaming := collection("/db/contents/jra/sources")//tei:orgName[@key = $id]
-    let $institutionNamingDistinct := functx:distinct-deep($institutionNaming)
+    let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
+    let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
+    let $references := $institution//tei:bibl/tei:listRelation/tei:relation[@name='reference']
+    let $literature := $institution//tei:bibl[@type='links']
     return
         (
         <div
@@ -1635,17 +1638,24 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra active"
                                     data-toggle="tab"
                                     href="#metadata">Allgemein</a></li>
-                            {
-                                if ($institutionNaming) then
-                                    (<li
-                                        class="nav-item">
-                                        <a
-                                            class="nav-link-jra"
-                                            data-toggle="tab"
-                                            href="#named">Erwähnungen</a></li>)
-                                else
-                                    ()
-                            }
+                            {if ($correspondence) then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#correspondence">Korrespondenz</a></li>)else()}
+                            {if ($references//tei:item/text()!='') then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#references">Raff-Bezug</a></li>)else()}
+                            {if ($literature/text()!='') then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#literature">Literatur</a></li>)else()}
                             <li
                                 class="nav-item"><a
                                     class="nav-link-jra"
@@ -1658,25 +1668,77 @@ declare function app:institution($node as node(), $model as map(*)) {
                             <div
                                 class="tab-pane fade show active"
                                 id="metadata">
-                                {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
+                                {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/metadataInstitution.xsl"), ())}
                                 <!--<br/>
-                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentPerson.xsl"), ())}-->
+                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentInstitution.xsl"), ())}-->
                             </div>
                             {
-                                if ($institutionNaming) then
+                                if ($correspondence) then
                                     (<div
                                         class="tab-pane fade"
-                                        id="named">
+                                        id="correspondence">
+                                        <br/>
+                                            {
+                                                for $letter in $correspondence
+                                                let $letterID := $letter/@xml:id/string()
+                                                let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+                                                let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                                                let $correspSent := if($correspActionSent/tei:orgName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
+                                                (:let $correspSentId := if($correspActionSent/tei:orgName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
+                                                let $correspReceived := if($correspActionReceived/tei:orgName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1] | $correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                                                (:let $correspReceivedId := if($correspActionReceived/tei:orgName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
+                                                let $date := local:getDate($correspActionSent)
+                                                let $year := substring($date,1,4)
+                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
+                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
+                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
+                                                                        then('[undatiert]')
+                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
+                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
+                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
+                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                                                                        else if(starts-with($date,'0000-'))
+                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
+                                                                        else($date)
+                                                
+                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                                                        <div class="col-3">{$dateFormatted}</div>
+                                                                        <div class="col">Von {$correspSent}<br/>an {$correspReceived}</div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                                                    </div>
+                                                
+                                                    order by $date
+                                                return
+                                                $letterEntry
+                                                }
+                                                    
+                                    </div>)
+                                else
+                                    ()
+                            }
+                            {
+                                if ($references//tei:item/text()!='') then
+                                    (<div
+                                        class="tab-pane fade"
+                                        id="references">
                                         <ul>
                                             {
-                                                for $each in $institutionNaming
-                                                let $instNameDist := distinct-values($each/normalize-space(data(.)))
-                                                let $source := $each/ancestor::tei:TEI/@xml:id/data(.)
-                                                    order by lower-case($instNameDist)
+                                                for $item in $references//tei:list/tei:item
+                                                let $content := $item/data(.)
                                                 return
-                                                    <li>{$each}{$instNameDist} (in: <b>{concat($source, '.xml')}</b>)</li>
+                                                    <li>{$content}</li>
                                             }
                                         </ul>
+                                    </div>)
+                                else
+                                    ()
+                            }
+                            {
+                                if ($literature/text()!='') then
+                                    (<div
+                                        class="tab-pane fade"
+                                        id="literature">
+                                        {$literature}
                                     </div>)
                                 else
                                     ()
