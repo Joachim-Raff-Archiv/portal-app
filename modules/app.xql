@@ -158,10 +158,10 @@ declare function local:formatDate($dateRaw){
 
 declare function app:registryLetters($node as node(), $model as map(*)) {
     
-    let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
+    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
     let $persons := collection('/db/contents/jra/persons')//tei:TEI
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
-    
+    let $collection := ($persons, $institutions)
     let $lettersCrono := for $letter in $letters
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
@@ -207,19 +207,31 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                        
                         let $correspSent := if($correspActionSent/tei:persName/text())
-                        then($correspActionSent/tei:persName/text()[1])
-                        else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else ('[Unbekannt]')
-                        let $correspSentId := if($correspActionSent/tei:persName/@key)
-                        then($correspActionSent/tei:persName/id(@key))
-                        else if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/id(@key)) else('none')
-                        let $correspReceived := if($correspActionReceived/tei:persName/text())
-                        then($correspActionReceived/tei:persName/text()[1])
-                        else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                                            then($correspActionSent/tei:persName/text()[1])
+                                            else if($correspActionSent/tei:orgName/text())
+                                            then($correspActionSent/tei:orgName/text()[1])
+                                            else ('[Unbekannt]')
                         let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                        then($correspActionReceived/tei:persName/id(@key))
-                        else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/id(@key)) else('none')
-                        let $receiverName := if(starts-with($correspReceivedId,'C')) then($persons[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title) else if(starts-with($correspReceivedId,'D')) then($institutions[@xml:id=$correspReceivedId]//tei:titleStmt/tei:title) else()
+                                              then($correspActionReceived/tei:persName/@key/string())
+                                              else if($correspActionReceived/tei:orgName/@key)
+                                              then($correspActionReceived/tei:orgName/@key/string())
+                                              else()
+                        
+                        let $correspReceived := if($correspActionReceived/tei:persName/text())
+                                                then($correspActionReceived/tei:persName/text()[1])
+                                                else if($correspActionReceived/tei:orgName/text())
+                                                then($correspActionReceived/tei:orgName/text()[1])
+                                                else ('[Unbekannt]')
+                        
+                        let $receiverName :=  if($correspActionReceived/tei:persName)
+                                              then($correspActionReceived/tei:persName/text()[1])
+                                              else if($correspActionReceived/tei:orgName)
+                                              then($correspActionReceived/tei:orgName/text()[1])
+                                              else()
+                                              (:$collection[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string():)
+                                              
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -259,16 +271,26 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                       
                         let $correspSentId := if($correspActionSent/tei:persName/@key)
-                        then($correspActionSent/tei:persName/id(@key))
-                        else if($correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/@key/string()[1]) else()
+                                              then($correspActionSent/tei:persName/@key/string())
+                                              else if($correspActionSent/tei:orgName/@key)
+                                              then($correspActionSent/tei:orgName/@key/string())
+                                              else()
+                        
                         let $correspReceived := if($correspActionReceived/tei:persName/text())
-                        then($correspActionReceived/tei:persName/text()[1])
-                        else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                        let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                        then($correspActionReceived/tei:persName/id(@key))
-                        else if($correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key/string()[1]) else('none')
-                        let $senderName := if(starts-with($correspSentId,'C')) then($persons[@xml:id=$correspSentId]//tei:titleStmt/tei:title) else if(starts-with($correspSentId,'D')) then($institutions[@xml:id=$correspSentId]//tei:titleStmt/tei:title) else()
+                                                then($correspActionReceived/tei:persName/text()[1])
+                                                else if($correspActionReceived/tei:orgName/text())
+                                                then($correspActionReceived/tei:orgName/text()[1])
+                                                else ('[Unbekannt]')
+                        
+                        let $senderName :=  if($correspActionSent/tei:persName)
+                                              then($correspActionSent/tei:persName/text()[1])
+                                              else if($correspActionSent/tei:orgName)
+                                              then($correspActionSent/tei:orgName/text()[1])
+                                              else()
+                                              (:$collection[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string():)
+                                           
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -277,7 +299,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                 <div class="col">An {$correspReceived}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $correspSentId
+                        group by $senderName
                         return
                             (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
