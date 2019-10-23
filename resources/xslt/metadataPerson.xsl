@@ -21,6 +21,7 @@
 
     <xsl:template name="personMetadataView">
         <table class="personView">
+            <xsl:if test="$person/persName/surname/node()">
             <tr>
                 <td valign="top" width="250px">Name:</td>
                 <td>
@@ -36,9 +37,12 @@
 
                 </td>
             </tr>
+            </xsl:if>
+            <xsl:if test="$person/persName/forename/node()">
             <tr>
                 <td>
                     <xsl:choose>
+                        <xsl:when test="not($person/persName/surname/node())">Name:</xsl:when>
                         <xsl:when test="count($person/persName/forename/node()) = 1">Vorname:</xsl:when>
                         <xsl:otherwise>Vornamen:</xsl:otherwise>
                     </xsl:choose>
@@ -47,7 +51,7 @@
                     <xsl:if test="$person/persName/forename[@type = 'used']">
                         <xsl:value-of select="$person/persName/forename[@type = 'used']"/>
                     </xsl:if>
-                    <xsl:if test="$person/persName/forename[@type = 'altWriting']"> [<xsl:value-of select="$person/persName/forename[@type = 'altWriting']"/>] </xsl:if>
+                    <xsl:if test="$person/persName/forename[@type = 'altWriting']"> [Auch: <xsl:value-of select="$person/persName/forename[@type = 'altWriting']"/>] </xsl:if>
                     <xsl:if test="exists($person/persName/genName)">
                         <xsl:if test="$person/persName/genName[@type = 'used']"> </xsl:if>
                         <xsl:value-of select="$person/persName/genName"/>
@@ -59,6 +63,7 @@
                     <!--</xsl:for-each>-->
                 </td>
             </tr>
+            </xsl:if>
             <xsl:if test="exists($person/persName/addName[@type = 'epithet'])">
                 <tr>
                     <td>Beiname:</td>
@@ -66,6 +71,22 @@
                         <xsl:if test="exists($person/persName/addName[@type = 'epithet'])">
                             <xsl:value-of select="$person/persName/addName[@type = 'epithet']"/>
                         </xsl:if>
+                    </td>
+                </tr>
+            </xsl:if>
+            <xsl:if test="exists($person/persName//addName[@type = 'title'])">
+                <tr>
+                    <td>Titel:</td>
+                    <td>
+                        <xsl:value-of select="$person/persName//addName[@type = 'title']"/>
+                    </td>
+                </tr>
+            </xsl:if>
+            <xsl:if test="exists($person/persName//addName[@type = 'noble'])">
+                <tr>
+                    <td>Adelsgeschlecht:</td>
+                    <td>
+                        <xsl:value-of select="$person/persName//addName[@type = 'noble']"/>
                     </td>
                 </tr>
             </xsl:if>
@@ -123,17 +144,28 @@
             </xsl:if>
         </table>
         <table class="personView">
-            <xsl:if test="exists($person/birth) or exists($person/death)">
+            <xsl:if test="exists($person/birth/node()) or exists($person/birth/@when-iso) or exists($person/death/node()) or exists($person/death/@when-iso)">
                 <tr>
                     <td valign="top">Lebensdaten:</td>
                     <td>
-                        <xsl:if test="$person/birth"> * <xsl:if test="$person/birth[not(date)]"><xsl:value-of select="$person/birth/@when-iso"/> </xsl:if><xsl:value-of select="$person/birth"/><xsl:if test="$person/birth[not(name[@type = 'place'])]"> (<xsl:value-of select="$person/birth/name[@type = 'place']"/>)</xsl:if></xsl:if>
+                        <xsl:if test="$person/birth"> *
+                            <xsl:choose>
+                                <xsl:when test="$person/birth[not(date)]/node()"><xsl:value-of select="$person/birth"/></xsl:when>
+                                <xsl:otherwise><xsl:value-of select="$person/birth/@when-iso"/></xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="$person/birth[placeName]"> (<xsl:value-of select="$person/birth/placeName"/>)</xsl:if>
+                        </xsl:if>
+                        
                         <xsl:if test="exists($person/death/node()) and exists($person/birth/node())">
                             <br/>
                         </xsl:if>
-                        <xsl:if test="$person/death">† <xsl:if test="$person/death[not(date)]"><xsl:value-of select="$person/death/@when-iso"/> </xsl:if><xsl:value-of select="$person/death"/><xsl:if test="$person/death[not(name[@type = 'place'])]"> (<xsl:value-of select="$person/death/name[@type = 'place']"/>)</xsl:if></xsl:if>
-                        <xsl:if test="exists($person/death/node()) and exists($person/death/node())">
-                            <br/>
+                    
+                        <xsl:if test="$person/death"> †
+                            <xsl:choose>
+                                <xsl:when test="$person/death[not(date)]/node()"><xsl:value-of select="$person/death"/></xsl:when>
+                                <xsl:otherwise><xsl:value-of select="$person/death/@when-iso"/></xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="$person/death[placeName]"> (<xsl:value-of select="$person/death/placeName"/>)</xsl:if>
                         </xsl:if>
                     </td>
                 </tr>
