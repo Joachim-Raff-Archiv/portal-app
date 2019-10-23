@@ -54,38 +54,50 @@
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"/>
             <li data-target="#myCarousel" data-slide-to="1"/>
-<!--            <li data-target="#myCarousel" data-slide-to="2"></li>-->
+            <li data-target="#myCarousel" data-slide-to="2"/>
+            <li data-target="#myCarousel" data-slide-to="3"/>
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="first-slide" src="http://joachim-raff.ch/wp-content/uploads/cropped-JRG-banner-3.jpg" alt="First slide"/>
+                <img class="d-block w-100" src="http://joachim-raff.ch/wp-content/uploads/cropped-JRG-banner-3.jpg" alt="First slide"/>
                     <div class="container">
                         <div class="carousel-caption text-right">
-                            <h1>»Zitat über Lachen«</h1>
-                            <p class="card-text">Joseph Joachim Raff</p>
-                            <!--<p><a href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html" class="btn btn-lg btn-jra">Button</a></p>-->
+                            <!--                        <h4>Überschrift/Zitat</h4>-->
+                            <!--                        <p class="card-text">Unterüberschrift/Urheber</p>-->
+                            <!--<p>Freitext</p>-->
                         </div>
                     </div>
             </div>
-            <!--<div class="carousel-item">
-                <img class="second-slide" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/Raff-Zitat.jpg" width="90%" alt="Second slide"/>
-                    <div class="container">
-                        <div class="carousel-caption">
-                            <!-/-<h1>Gesellschaft, Archiv und Jubiläum – 200 Jahre Raff</h1>-/->
-                            <!-/-<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                            <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>-/->
-                        </div>
-                    </div>
-            </div>-->
             <div class="carousel-item">
-                <img class="third-slide" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/MusikUndMeer.png" width="100%" alt="Third slide"/>
+                <img class="d-block h-100" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/200JahreRaffBild.png" alt="Second slide"/>
                     <div class="container">
-                        <div class="carousel-caption text-left">
-                            <h1>Musik und Mee(h)r</h1>
-                            <!--<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                            <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>-->
+                        <div class="carousel-caption text-right text-black">
+                            <h1>2022</h1>
+                            <p class="card-text">200 Jahre Raff</p>
                         </div>
                     </div>
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/Noten.png" alt="Third slide"/>
+                    <div class="container">
+                        <div class="carousel-caption text-right">
+                            <h4>«Donnerwetter, war der Raff gescheit, und dabei gut»</h4>
+                            <p class="card-text">Hans von Bülow</p>
+<!--                            <p>Freitext</p>-->
+<!--                            <p><a class="btn-jra" href="#" role="button">Browse gallery</a></p>-->
+                        </div>
+                    </div>
+            </div>
+            <div class="carousel-item">
+                <img class="d-block h-100" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/200JahreRaff.jpg" alt="Fourth slide"/>
+                <div class="container">
+                    
+                    <div class="carousel-caption text-right">
+                        <h1 class="text-black">2022</h1>
+<!--                        <p class="card-text">Unterüberschrift/Urheber</p>-->
+                        <!--<p>Freitext</p>-->
+                    </div>
+                </div>
             </div>
         </div>
         <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
@@ -97,7 +109,7 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
-    <br/><br/><br/>
+    <br/><br/>
     
     <!-- Marketing messaging and featurettes
       ================================================== -->
@@ -105,9 +117,30 @@
     
     <div class="container marketing">
         
+        <!-- START THE FEATURETTES -->
+        
+        <hr class="featurette-divider"/>
+            
+            <div class="row featurette">
+                <div class="col-md-7 order-md-2">
+                    <h2 class="featurette-heading">Raff goes online. <span class="text-muted">Das neue Raff-Archiv-Portal.</span>
+                </h2>
+                    <p class="lead">Nach langer Arbeit ist die Beta-Version des Raff-Portals nun endlich online! Sie finden hier Kataloge zu Briefen, Werken, Personen und Institutionen, im Umfeld des Komponisten Joachim Raff.</p>
+                </div>
+                <div class="col-md-5 order-md-1">
+                    <img class="featurette-image img-fluid mx-auto" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/JRA-Logo.png" alt="Generic placeholder image"/>
+                </div>
+            </div>
+        
+        <hr class="featurette-divider"/>
+        
+        <!-- /END THE FEATURETTES -->
+        <br/><br/>
+        <!-- CATALOGUES -->
+        
         <!-- Three columns of text below the carousel -->
-        <div class="row">
-            <!-- /.col-lg-4 -->
+        <div class="row justify-content-around">
+            <!--            <div class="col"/>-->
             <div class="col-lg-4">
                 <img class="rounded-circle" src="http://daten.digitale-sammlungen.de/0010/bsb00107735/images/bsb00107735_00001.jpg" alt="Generic placeholder image" width="140" height="140"/>
                 <h2>Briefe</h2>
@@ -115,25 +148,8 @@
                 <p>
                     <a class="btn btn-secondary" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryLetters.html" role="button">Zum Katalog</a>
                 </p>
-            </div><!-- /.col-lg-4 -->
-            <div class="col-lg-4">
-                <img class="rounded-circle" src="https://ik.imagekit.io/guidle/tr:w-250,h-250,c-at_least,dpr-2.625/uploaded/8/a0/c5/8a0c52eae5244829461c1ba19c8501c4a3de93b2.jpg" alt="Generic placeholder image" width="140" height="140"/>
-                    <h2>Personen</h2>
-                <p>Im Personenkatalog sind Datensätze zu Personen enthalten, die einen direkten Raff-Bezug aufweisen.</p>
-                <p>
-                    <a class="btn btn-secondary" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html" role="button">Zum Katalog</a>
-                </p>
             </div>
-            <div class="col-lg-4">
-                <img class="rounded-circle" src="https://ik.imagekit.io/guidle/tr:w-250,h-250,c-at_least,dpr-2.625/uploaded/8/a0/c5/8a0c52eae5244829461c1ba19c8501c4a3de93b2.jpg" alt="Generic placeholder image" width="140" height="140"/>
-                <h2>Institutionen</h2>
-                <p>Der Katalog der Institutionen enthält Datensätze zu Institutionen, die im Umfeld von Joachim Raff in Erscheinung getreten sind.</p>
-                <p>
-                    <a class="btn btn-secondary" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html" role="button">Zum Katalog</a>
-                </p>
-            </div>
-        </div>
-        <div class="row">
+            <!--            <div class="col"/>-->
             <div class="col-lg-4">
                 <img class="rounded-circle" src="http://www.raff.org/support/download/score13a.jpg" alt="Generic placeholder image" width="140" height="140"/>
                 <h2>Werke</h2>
@@ -142,33 +158,43 @@
                     <a class="btn btn-secondary" href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html" role="button">Zum Katalog</a>
                 </p>
             </div>
-        </div><!-- /.row -->
-        
+            <!--            <div class="col"/>-->
+        </div>
         <br/><br/>
-        <!-- START THE FEATURETTES -->
-        
-        <hr class="featurette-divider"/>
-            
-            <div class="row featurette">
-                <div class="col-md-7">
-                    <h2 class="featurette-heading">Raff goes online. <span class="text-muted">Das neue Raff-Archiv-Portal.</span>
-                </h2>
-                    <p class="lead">Nach langer Arbeit ist die Beta-Version des Raff-Portals nun endlich online! Sie finden hier Kataloge zu Briefen, Werken, Personen und Institutionen, im Umfeld des Komponisten Joachim Raff.</p>
-                </div>
-                <div class="col-md-5">
-                    <img class="featurette-image img-fluid mx-auto" src="http://localhost:8080/exist/apps/raffArchive/resources/pics/Klaviatur.png" alt="Generic placeholder image"/>
-                </div>
+        <div class="row justify-content-around">
+            <!--            <div class="col"/>-->
+            <div class="col-lg-4">
+                <img class="rounded-circle" src="https://upload.wikimedia.org/wikipedia/commons/3/37/Marie_d%27Agoult_by_Henri_Lehmann_-_1843.png" alt="Generic placeholder image" width="140" height="140"/>
+                <h2>Personen</h2>
+                <p>Im Personenkatalog sind Datensätze zu Personen enthalten, die einen direkten Raff-Bezug aufweisen.</p>
+                <p>
+                    <a class="btn btn-secondary" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html" role="button">Zum Katalog</a>
+                </p>
             </div>
+            <!--            <div class="col"/>-->
+            <div class="col-lg-4">
+                <img class="rounded-circle" src="https://upload.wikimedia.org/wikipedia/de/thumb/7/73/Verlagssignet_Breitkopf_Haertel.svg/1920px-Verlagssignet_Breitkopf_Haertel.svg.png" alt="Generic placeholder image" width="140" height="140"/>
+                <h2>Institutionen</h2>
+                <p>Dieser Katalog enthält Referenzen zu Institutionen, die im Umfeld von Joachim Raff in Erscheinung getreten sind.</p>
+                <p>
+                    <a class="btn btn-secondary" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html" role="button">Zum Katalog</a>
+                </p>
+            </div>
+            <!--            <div class="col"/>-->
+        </div>
+        <br/><br/>
             
+            <!-- AGAIN FEATURETTES -->
+        
             <hr class="featurette-divider"/>
                 
                 <div class="row featurette">
-                    <div class="col-md-7 order-md-2">
+                    <div class="col-md-7">
                         <h2 class="featurette-heading">Oh yeah, it's that good. <span class="text-muted">See for yourself.</span>
                 </h2>
                         <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
                     </div>
-                    <div class="col-md-5 order-md-1">
+                    <div class="col-md-5">
                         <img class="featurette-image img-fluid mx-auto" src="holder.js/500x500/auto" alt="Generic placeholder image"/>
                     </div>
                 </div>
@@ -176,12 +202,12 @@
                 <hr class="featurette-divider"/>
                     
                     <div class="row featurette">
-                        <div class="col-md-7">
+                        <div class="col-md-7 order-md-2">
                             <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span>
                 </h2>
                             <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-5 order-md-1">
                             <img class="featurette-image img-fluid mx-auto" src="holder.js/500x500/auto" alt="Generic placeholder image"/>
                         </div>
                     </div>

@@ -13,6 +13,9 @@ body {
     /*font-family: syntaxregular, Fallback, sans-serif;*/
 }
 
+.text-black{
+    color:black;
+}
 .RegisterSortBox {
     margin-top: 2em;
     margin-left: auto;
