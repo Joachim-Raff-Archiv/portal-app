@@ -214,9 +214,9 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                             then($correspActionSent/tei:orgName/text()[1])
                                             else ('[Unbekannt]')
                         let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                                              then($correspActionReceived/tei:persName/@key/string())
+                                              then($correspActionReceived/tei:persName/@key)
                                               else if($correspActionReceived/tei:orgName/@key)
-                                              then($correspActionReceived/tei:orgName/@key/string())
+                                              then($correspActionReceived/tei:orgName/@key)
                                               else()
                         
                         let $correspReceived := if($correspActionReceived/tei:persName/text())
@@ -225,12 +225,15 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                                 then($correspActionReceived/tei:orgName/text()[1])
                                                 else ('[Unbekannt]')
                         
-                        let $receiverName :=  if($correspActionReceived/tei:persName)
-                                              then($correspActionReceived/tei:persName/text()[1])
+                        let $receiverNameRaw :=  if($correspActionReceived/tei:persName)
+                                              then($correspActionReceived/tei:persName[1]/text()[1])
                                               else if($correspActionReceived/tei:orgName)
-                                              then($correspActionReceived/tei:orgName/text()[1])
+                                              then($correspActionReceived/tei:orgName[1]/text()[1])
                                               else()
-                                              (:$collection[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string():)
+                        let $receiverName := for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
+                                               let $title := $data//tei:titleStmt/tei:title/string()
+                                               return
+                                                $title
                                               
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
@@ -284,13 +287,16 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                                 then($correspActionReceived/tei:orgName/text()[1])
                                                 else ('[Unbekannt]')
                         
-                        let $senderName :=  if($correspActionSent/tei:persName)
-                                              then($correspActionSent/tei:persName/text()[1])
+                        let $senderNameRaw :=  if($correspActionSent/tei:persName)
+                                              then($correspActionSent/tei:persName[1]/text()[1])
                                               else if($correspActionSent/tei:orgName)
-                                              then($correspActionSent/tei:orgName/text()[1])
+                                              then($correspActionSent/tei:orgName[1]/text()[1])
                                               else()
-                                              (:$collection[@xml:id=$correspSentId]//tei:titleStmt/tei:title/string():)
-                                           
+                        let $senderName := for $data in $collection[range:eq(@xml:id,$correspSentId)]
+                                               let $title := $data//tei:titleStmt/tei:title/string()
+                                               return
+                                                $title
+                                                                   
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -299,7 +305,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                 <div class="col">An {$correspReceived}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $senderName
+                        group by $correspSentId
                         return
                             (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
@@ -332,7 +338,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
             <div
                 class="row">
                 <div
-                    class="col-9">
+                    class="col-10">
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
                     <ul
                         class="nav nav-pills"
@@ -404,7 +410,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                 class="row">
                                 <nav
                                     id="nav1"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
+                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
                                     <!--  -->
                                     {
                                         for $receiver in $lettersGroupedByReceivers
@@ -439,7 +445,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                                 class="row">
                                 <nav
                                     id="nav1"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
+                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
                                     <!--  -->
                                     {
                                         for $sender in $lettersGroupedBySenders
@@ -468,7 +474,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         </div>
                     </div>
                 </div>
-                <div
+                <!--<div
                     class="col-3">
                     <br/><br/>
                     <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
@@ -478,7 +484,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         onkeyup="myFilter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
-                </div>
+                </div>-->
             </div>
         </div>
         )
@@ -602,7 +608,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     let $persID := $person/@xml:id/string()
     let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
     let $nameSurname := $person//tei:surname[@type = "used"][1]
-    let $nameForename := $person//tei:forename[@type = "used"][1]
+    let $nameForename := if($person//tei:forename[@type = "used"][1])then($person//tei:forename[@type = "used"][1]) else if($person//tei:addName[@type = "nick"][1]) then($person//tei:addName[@type = "nick"][1])else($person//tei:titleStmt/tei:title)
     let $nameAddName := $person//tei:nameLink[1]
     let $nameForeFull := if ($nameAddName) then
         (concat($nameForename, ' ', $nameAddName))
@@ -612,7 +618,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         ($nameSurname, $nameForeFull)
     else
         ($nameForeFull)
-    let $role := $person//tei:roleName[1]
+    let $role := string-join($person//tei:roleName,' | ')
     let $pseudonym := if ($person//node()[@type = 'pseudonym'])
     then
         (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
@@ -635,6 +641,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:birth[1]/@notAfter)
                 else
                     ()
+    let $birthFormatted := if(starts-with($birth,'-')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
     let $death := if ($person//tei:death[1][@when-iso])
     then
         ($person//tei:death[1]/@when-iso)
@@ -652,17 +659,18 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:death[1]/@notAfter)
                 else
                     ()
-    let $lifeData := if ($birth[. != ''] and $death[. != ''])
+    let $deathFormatted := if(starts-with($death,'-')) then(concat(substring(format-number(number($death),'##.##;##.##'),2),' v. Chr.')) else($death)
+    let $lifeData := if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
     then
-        (concat(' (', $birth, '–', $death, ')'))
+        (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
     else
-        if ($birth and not($death))
+        if ($birthFormatted and not($deathFormatted))
         then
-            (concat(' (* ', $birth, ')'))
+            (concat(' (* ', $birthFormatted, ')'))
         else
-            if ($death and not($birth))
+            if ($deathFormatted and not($birthFormatted))
             then
-                (concat(' († ', $birth, ')'))
+                (concat(' († ', $birthFormatted, ')'))
             else
                 ()
     let $nameJoined := if ($nameForeFull = '')
@@ -678,13 +686,13 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
             {$lifeData}
             {
                 if ($role) then
-                    (<br/>, ' (', $role, ')')
+                    (<br/>, <span class="sublevel">({$role})</span>)
                 else
                     ()
             }
             {
                 if ($pseudonym) then
-                    (<br/>, concat('(Pseudonym: ', $pseudonym, ')'))
+                    (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
                 else
                     ()
             }
@@ -726,7 +734,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     }">
                 {
                     if ($initial = '') then
-                        ('[unbekannt]')
+                        ('[ohne Nachname]')
                     else
                         ($initial)
                 }
@@ -774,7 +782,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     ($person//tei:birth[1]/@notAfter)
                 else
                     ('')
-    let $birthFormatted := if(starts-with($birth,'-0')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
+    let $birthFormatted := if(starts-with($birth,'-')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
     let $death := if ($person//tei:death[1][@when-iso])
     then
         ($person//tei:death[1]/@when-iso)
@@ -845,6 +853,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     else
                         (distinct-values($birthFormatted))
                 }"
+                birth="{$birth}"
             count="{count($name)}">
             {
                 for $each in $name
@@ -855,8 +864,9 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         </div>)
     
     let $personsGroupedByBirth := for $groups in $personsBirth
+        let $sort := if(contains($groups/@birth,'/')) then(substring($groups/@birth,1,4)) else($groups/@birth/number())
         group by $birth := $groups/@name/string()
-        order by $birth
+        order by $sort
     return
         (<div
             class="RegisterSortBox"
@@ -987,6 +997,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     else
                         (distinct-values($deathFormatted))
                 }"
+            death="{$death}"
             count="{count($name)}">
             {
                 for $each in $name
@@ -997,8 +1008,9 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         </div>)
     
     let $personsGroupedByDeath := for $groups in $personsDeath
+        let $sort := if(contains($groups/@death,'/')) then(substring($groups/@death,1,4)) else($groups/@death/number())
         group by $death := $groups/@name/string()
-        order by $death
+        order by $sort
     return
         (<div
             class="RegisterSortBox"
@@ -1174,7 +1186,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                         </div>
                     </div>
                 </div>
-                <div
+                <!--<div
                     class="col-3">
                     <br/><br/>
                     <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
@@ -1184,7 +1196,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                         onkeyup="myFilter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
-                </div>
+                </div>-->
             </div>
         </div>
 };
@@ -1607,7 +1619,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                 </div>-->
                     </div>
                 </div>
-                <div
+                <!--<div
                     class="col-3">
                     <br/><br/>
                     <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
@@ -1617,7 +1629,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                         onkeyup="myFilter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
-                </div>
+                </div>-->
             </div>
         </div>
 };
