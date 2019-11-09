@@ -264,7 +264,7 @@ table.institutionView{
     border-bottom: 1px solid #ddd;
 }
 table.institutionView tr:first-of-type td:first-of-type{
-    width:20%;
+    width:30%;
     vertical-align:top;
 }
 
