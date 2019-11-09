@@ -513,12 +513,18 @@ declare function app:letter($node as node(), $model as map(*)) {
                     href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
                 <br/>
                 <br/>
-                <h4>Brief an {$nameTurned} | {$datumSent}</h4>
-                <h6>ID: {$id}</h6>
+                <h2>Brief an {$nameTurned} | {$datumSent}</h2>
+                <h5>ID: {$id}</h5>
                 <br/>
             </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
             <ul
-                class="nav nav-tabs"
+                class="nav nav-pills"
                 role="tablist">
                 <li
                     class="nav-item"><a
@@ -530,7 +536,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra"
                         data-toggle="tab"
                         href="#contentLetterRegeste">Regeste</a></li>)else()}
-                {if ($fulltext) then(<li
+                {if ($fulltext/tei:p != '') then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
                         data-toggle="tab"
@@ -554,17 +560,25 @@ declare function app:letter($node as node(), $model as map(*)) {
                             class="col">
                             {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
                         </div>
+                        {if($letter//tei:revisionDesc/tei:change)
+                        then(
                         <div
                             class="col-2">
                             Änderungen:
                             <br/>
                             {
                                 for $change at $n in $letter//tei:revisionDesc/tei:change
-                                let $changeDate := format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ())
+                                let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
+                                let $changerName := $change/@who
+                                let $changeInfo := $change/string()
+                                let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" title="{$changerName}" data-content="{$changeInfo}"/>
                                 return
-                                    ($changeDate, <br/>)
+                                    ($changeDate, $changeInfoButton, <br/>)
                             }
-                        </div>
+                        </div>)
+                        else(<div
+                            class="col-2"/>)
+                        }
                     </div>
                 </div>
                 {if ($regeste)
@@ -579,7 +593,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                             </div>
                         </div>
                 </div>)else()}
-                {if ($fulltext)
+                {if ($fulltext/tei:p != '')
                  then (<div
                     class="tab-pane fade"
                     id="letterContentFull">
@@ -596,6 +610,9 @@ declare function app:letter($node as node(), $model as map(*)) {
                     {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/xmlView.xsl"), ())}
                 </div>
             </div>
+        </div>
+        </div>
+        </div>
         </div>
         )
 };
@@ -1213,13 +1230,16 @@ declare function app:person($node as node(), $model as map(*)) {
     return
         (
         <div
-            class="row">
+            class="container">
             <div
                 class="page-header">
                 <a
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
-                <h1>{$name}</h1>
+                <br/>
+                <br/>
+                <h2>{$name}</h2>
                 <h5>ID: {$id}</h5>
+                <br/>
             </div>
             <div
                 class="container">
@@ -1262,13 +1282,36 @@ declare function app:person($node as node(), $model as map(*)) {
                         </ul>
                         <div
                             class="tab-content">
-                            <br/>
                             <div
                                 class="tab-pane fade show active"
                                 id="metadata">
-                                <div class="row">
+                                <br/>
+                                <div
+                        class="row">
+                        
+                        <div
+                            class="col">
                                 {transform:transform($person, doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
                                 </div>
+                                {if($person//tei:revisionDesc/tei:change)
+                        then(
+                        <div
+                            class="col-2">
+                            Änderungen:
+                            <br/>
+                            {
+                                for $change at $n in $person//tei:revisionDesc/tei:change
+                                let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
+                                let $changerName := $change/@who
+                                let $changeInfo := $change/string()
+                                let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" title="{$changerName}" data-content="{$changeInfo}"/>
+                                return
+                                    ($changeDate, $changeInfoButton, <br/>)
+                            }
+                        </div>)
+                        else(<div
+                            class="col-2"/>)}
+                        </div>
                             </div>
                             {
                                 if ($correspondence) then
@@ -1646,14 +1689,14 @@ declare function app:institution($node as node(), $model as map(*)) {
     return
         (
         <div
-            class="row">
+            class="container">
             <div
                 class="page-header">
                 <a
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
                 <br/>
                 <br/>
-                <h1>{$name}</h1>
+                <h2>{$name}</h2>
                 <h5>ID: {$id}</h5>
                 <br/>
             </div>
@@ -1698,13 +1741,31 @@ declare function app:institution($node as node(), $model as map(*)) {
                         </ul>
                         <div
                             class="tab-content">
-                            <br/>
                             <div
                                 class="tab-pane fade show active"
                                 id="metadata">
+                                <br/>
+                                <div class="row">
+                                <div class="col">
                                 {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/metadataInstitution.xsl"), ())}
-                                <!--<br/>
-                        {transform:transform($person,doc("/db/apps/raffArchive/resources/xslt/contentInstitution.xsl"), ())}-->
+                        </div>
+                                {if($institution//tei:revisionDesc/tei:change)
+                        then(
+                                <div
+                            class="col-2">
+                            Änderungen:
+                            <br/>
+                            {
+                                for $change at $n in $institution//tei:revisionDesc/tei:change
+                                let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
+                                let $changerName := $change/@who
+                                let $changeInfo := $change/string()
+                                let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" title="{$changerName}" data-content="{$changeInfo}"/>
+                                return
+                                    ($changeDate, $changeInfoButton, <br/>)
+                            }
+                        </div>)
+                        else(<div class="col-2"/>)}</div>
                             </div>
                             {
                                 if ($correspondence) then
