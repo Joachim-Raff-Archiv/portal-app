@@ -6,7 +6,7 @@
             <xsl:sort select="lower-case(.)" data-type="text" order="ascending"/>
             <xsl:choose>
                 <xsl:when test="doc-available(concat('../../../../contents/texts/loci/', ., '.xml'))">
-                    <a href="{concat($registerRootOrt, .)}" target="_blank">
+                    <a href="{concat($viewLocus, .)}" target="_blank">
                         <xsl:value-of select="doc(concat('../../../../contents/texts/loci/', ., '.xml'))/TEI/teiHeader/fileDesc/titleStmt/title"/>
                     </a>
                     <br/>

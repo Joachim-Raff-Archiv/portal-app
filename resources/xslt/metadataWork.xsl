@@ -32,7 +32,7 @@
                     <td>Textdichter:</td>
                     <td>
                         <!--                                <xsl:when test="doc-available(concat('../../../../contents/jra/persons/', //mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/mei:persName/@auth, '.xml'))">-->
-                        <a href="{concat($registerRootPerson, //mei:composer/mei:persName/@auth)}" target="_blank">
+                        <a href="{concat($viewPerson, //mei:composer/mei:persName/@auth)}" target="_blank">
                             <xsl:value-of select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/mei:persName"/>
                         </a>
                         <!--</xsl:when>-->
