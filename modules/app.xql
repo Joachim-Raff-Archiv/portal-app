@@ -545,7 +545,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                     class="nav-item"><a
                         class="nav-link-jra"
                         data-toggle="tab"
-                        href="#xmlView">XML-Ansicht</a></li>
+                        href="#viewXML">XML-Ansicht</a></li>
             </ul>
             <div
                 class="tab-content">
@@ -606,8 +606,8 @@ declare function app:letter($node as node(), $model as map(*)) {
                 </div>)else()}
                 <div
                     class="tab-pane fade"
-                    id="xmlView">
-                    {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/xmlView.xsl"), ())}
+                    id="viewXML">
+                    {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                 </div>
             </div>
         </div>
@@ -625,16 +625,10 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     let $persID := $person/@xml:id/string()
     let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
     let $nameSurname := $person//tei:surname[@type = "used"][1]
-    let $nameForename := if($person//tei:forename[@type = "used"][1])then($person//tei:forename[@type = "used"][1]) else if($person//tei:addName[@type = "nick"][1]) then($person//tei:addName[@type = "nick"][1])else($person//tei:titleStmt/tei:title)
-    let $nameAddName := $person//tei:nameLink[1]
-    let $nameForeFull := if ($nameAddName) then
-        (concat($nameForename, ' ', $nameAddName))
-    else
-        ($nameForename)
-    let $nameToJoin := if (not($nameSurname = '')) then
-        ($nameSurname, $nameForeFull)
-    else
-        ($nameForeFull)
+    let $nameForename := $person//tei:forename[@type = "used"][1]
+    let $nameAddName := $person//tei:addName[@type = "nick"][1]
+    let $nameForeFull := if ($nameForename) then($nameForename) else if ($nameAddName and not($nameForename)) then ($nameAddName) else ()
+    let $nameToJoin := if ($nameSurname != '') then($nameSurname, $nameForeFull) else if(not($nameAddName) and not($nameForename)) then($person//tei:titleStmt/tei:title) else ($nameForeFull)
     let $role := string-join($person//tei:roleName,' | ')
     let $pseudonym := if ($person//node()[@type = 'pseudonym'])
     then
@@ -1227,6 +1221,8 @@ declare function app:person($node as node(), $model as map(*)) {
     let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
     let $references := $person//tei:bibl/tei:listRelation/tei:relation[@name='reference']
     let $literature := $person//tei:bibl[@type='links']
+    let $vorkommen := collection("/db/contents/jra")//tei:persName[@key=$id]/ancestor::tei:TEI
+    
     return
         (
         <div
@@ -1319,6 +1315,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                         class="tab-pane fade"
                                         id="correspondence">
                                         <br/>
+                                        <div class="pre-scrollable">
                                             {
                                                 for $letter in $correspondence
                                                 let $letterID := $letter/@xml:id/string()
@@ -1352,13 +1349,51 @@ declare function app:person($node as node(), $model as map(*)) {
                                                 return
                                                 $letterEntry
                                                 }
-                                                    
+                                                </div>
                                     </div>)
                                 else
                                     ()
                             }
                             {
-                                if ($references//tei:item/text()!='') then
+                                if (1=1)
+                                then (<div
+                                        class="tab-pane fade"
+                                        id="references"><br/><div class="pre-scrollable">{
+                                    for $item in $vorkommen
+                                        let $letterID := $item/@xml:id/string()
+                                                let $correspActionSent := $item//tei:correspAction[@type="sent"]
+                                                let $correspActionReceived := $item//tei:correspAction[@type="received"]
+                                                let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
+                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
+                                                let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text()[1] | $correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
+                                                let $date := local:getDate($correspActionSent)
+                                                let $year := substring($date,1,4)
+                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
+                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
+                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
+                                                                        then('[undatiert]')
+                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
+                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
+                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
+                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                                                                        else if(starts-with($date,'0000-'))
+                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
+                                                                        else($date)
+                                                
+                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                                                        <div class="col-2">{$dateFormatted}</div>
+                                                                        <div class="col-2">{if(starts-with($letterID,'A'))then('Brief')else()}</div>
+                                                                        <div class="col">Von {$correspSent} an {$correspReceived}</div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                                                    </div>
+                                                
+                                                    order by $date
+                                                return
+                                                $letterEntry}</div>
+                                        </div>
+                                )
+                                (:else if ($references//tei:item/text()!='') then
                                     (<div
                                         class="tab-pane fade"
                                         id="references">
@@ -1370,7 +1405,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                                     <li>{$content}</li>
                                             }
                                         </ul>
-                                    </div>)
+                                    </div>):)
                                 else
                                     ()
                             }
@@ -1680,10 +1715,12 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
 declare function app:institution($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("institution-id", "Fehler")
+    let $persons := collection("/db/contents/jra/persons")//tei:TEI
     let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id = $id]
     let $name := $institution//tei:title/normalize-space(data(.))
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
+    let $affiliates := $persons//tei:affiliation[@key = $id]/ancestor::tei:TEI
     let $references := $institution//tei:bibl/tei:listRelation/tei:relation[@name='reference']
     let $literature := $institution//tei:bibl[@type='links']
     return
@@ -1765,7 +1802,19 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     ($changeDate, $changeInfoButton, <br/>)
                             }
                         </div>)
-                        else(<div class="col-2"/>)}</div>
+                        else(<div class="col-2"/>)}
+                        </div>
+                        <br/>
+                        <div>Zugehörige Personen:<br/>
+                            <ul>
+                                {for $affiliate in $affiliates
+                                    let $affName := $affiliate//tei:titleStmt/tei:title/string()
+                                    let $affId := $affiliate/@xml:id/string()
+                                    return
+                                        <li>{$affName} (<a href="person/{$affId}" target="_blank">{$affId}</a>)</li>
+                                }
+                            </ul>
+                        </div>
                             </div>
                             {
                                 if ($correspondence) then
@@ -1773,15 +1822,16 @@ declare function app:institution($node as node(), $model as map(*)) {
                                         class="tab-pane fade"
                                         id="correspondence">
                                         <br/>
+                                        <div class="pre-scrollable">
                                             {
                                                 for $letter in $correspondence
                                                 let $letterID := $letter/@xml:id/string()
                                                 let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                                                 let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                                                let $correspSent := if($correspActionSent/tei:orgName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                                                (:let $correspSentId := if($correspActionSent/tei:orgName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:orgName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
-                                                let $correspReceived := if($correspActionReceived/tei:orgName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1] | $correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                                                (:let $correspReceivedId := if($correspActionReceived/tei:orgName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:orgName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
+                                                let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
+                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
+                                                let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text()[1] | $correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
                                                 let $date := local:getDate($correspActionSent)
                                                 let $year := substring($date,1,4)
                                                 let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
@@ -1806,7 +1856,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                                 return
                                                 $letterEntry
                                                 }
-                                                    
+                                                </div>
                                     </div>)
                                 else
                                     ()

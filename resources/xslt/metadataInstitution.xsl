@@ -71,16 +71,16 @@
         </table>
 
         <table class="institutionView">
-            <xsl:if test="exists($institution/idno[@type = 'GND'])">
+            <xsl:if test="$institution/idno[@type = 'GND']">
                 <tr>
                     <td>Normdaten:</td>
                     <td><a href="{concat('http://d-nb.info/gnd/',$institution/idno[@type='GND'])}" target="_blank"><xsl:value-of select="$institution/idno[@type = 'GND']"/></a>
                         (GND)</td>
                 </tr>
             </xsl:if>
-            <xsl:if test="exists($institution/idno[@type = 'VIAF'])">
+            <xsl:if test="$institution/idno[@type = 'VIAF']">
                 <tr>
-                    <td><xsl:choose><xsl:when test="exists($institution/idno[@type = 'GND'])"/><xsl:otherwise>Normdaten:</xsl:otherwise></xsl:choose></td>
+                    <td><xsl:choose><xsl:when test="$institution/idno[@type = 'GND']"/><xsl:otherwise>Normdaten:</xsl:otherwise></xsl:choose></td>
                     <td><a href="{concat('https://viaf.org/viaf/',$institution/idno[@type='VIAF'])}" target="_blank"><xsl:value-of select="$institution/idno[@type = 'VIAF']"/></a>
                         (VIAF)</td>
                 </tr>

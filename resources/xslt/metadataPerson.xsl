@@ -6,11 +6,13 @@
     <xsl:template match="/">
         <xsl:choose>
             <xsl:when test="$person/ancestor::TEI/facsimile/graphic">
+                <div class="row">
                 <div class="col-3"><img src="{$graphic/@url}" class="img-thumbnail" width="200px"/><br/><br/>
                     <xsl:if test="$graphic/desc"><xsl:value-of select="$graphic/desc"/><br/></xsl:if>Quelle: 
                     <a href="{$graphic/@source}" target="_blank"><xsl:value-of select="$graphic/@resp"/></a></div>
                 <div class="col">
                     <xsl:call-template name="personMetadataView"/>
+                </div>
                 </div>
             </xsl:when>
             <xsl:otherwise>
