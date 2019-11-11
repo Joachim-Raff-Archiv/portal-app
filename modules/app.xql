@@ -174,7 +174,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">Von {$correspSent}<br/>an {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
                             </div>
                         group by $year
                         order by $year
@@ -241,7 +241,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">An {$correspSent}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
                             </div>
                         group by $correspReceivedId
                         return
@@ -303,7 +303,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">An {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
                             </div>
                         group by $correspSentId
                         return
@@ -607,7 +607,12 @@ declare function app:letter($node as node(), $model as map(*)) {
                 <div
                     class="tab-pane fade"
                     id="viewXML">
+                    <pre
+                                    class="pre-scrollable">
+                                    <xmp>
                     {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                    </xmp>
+                    </pre>
                 </div>
             </div>
         </div>
@@ -1342,7 +1347,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                                 let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                                         <div class="col-3">{$dateFormatted}</div>
                                                                         <div class="col">Von {$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -1385,7 +1390,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                                                         <div class="col-2">{$dateFormatted}</div>
                                                                         <div class="col-2">{if(starts-with($letterID,'A'))then('Brief')else()}</div>
                                                                         <div class="col">Von {$correspSent} an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -1849,7 +1854,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                                 let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                                         <div class="col-3">{$dateFormatted}</div>
                                                                         <div class="col">Von {$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -2373,28 +2378,153 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
 declare function app:work($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("work-id", "Fehler")
-    let $work := collection("/db/contents/jra/works")/mei:mei[@xml:id = $id]
+    let $work := collection("/db/contents/jra/works")//mei:mei[@xml:id = $id]
+    let $collection := collection("/db/contents/jra")//tei:TEI
+    let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
     
     return
         (
-        <div
+            <div
             class="container">
-            <a
-                href="../registryWorks.html">&#8592; zum Werkeverzeichnis</a>
-            <br/>
             <div
                 class="page-header">
+                <a
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                <br/>
                 <br/>
                 <h2>{$name}</h2>
-                <h4>{$opus}</h4>
+                <h5>{$opus}</h5>
+                <br/>
             </div>
-            <br/>
             <div
-                class="col-9">
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+                        <ul
+                            class="nav nav-pills"
+                            role="tablist">
+                            <li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra active"
+                                    data-toggle="tab"
+                                    href="#metadata">Allgemein</a></li>
+                            <!--{if ($naming) then(-->
+                            <li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#naming">Erwähnungen</a></li>
+                                    <!--)else()}-->
+                                    <li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#viewXML">XML-Ansicht</a></li>
+                        </ul>
+            <div
+                            class="tab-content">
+                            <div
+                                class="tab-pane fade show active"
+                                id="metadata">
+                                <br/>
+                                <div
+                        class="row">
+                        <div
+                            class="col">
                 {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
-            </div>
+                                </div>
+                                {if($work//mei:revisionDesc/mei:change)
+                        then(
+                        <div
+                            class="col-2">
+                            Änderungen:
+                            <br/>
+                            {
+                                for $change at $n in $work//mei:revisionDesc/mei:change
+                                let $changeDate := concat(format-date(xs:date($change/@isodate), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
+                                let $changerName := $change/@resp/string()
+                                let $changeInfo := $change/mei:changeDesc/mei:p/string()
+                                let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
+                                
+                                return
+                                    ($changeDate, $changeInfoButton, <br/>)
+                            }
+                        </div>)
+                        else(<div
+                            class="col-2"/>)}
+                        </div>
+                            </div>
+            <!--{
+                                if ($naming/text()!='') then
+                                    (-->
+                                    <div
+                                        class="tab-pane fade"
+                                        id="naming">
+                                        <br/>
+                                        {
+                                            <div class="pre-scrollable">
+                                            {
+                                                for $letter in $naming
+                                                let $letterID := $letter/@xml:id/string()
+                                                let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+                                                let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                                                let $correspSent := if($correspActionSent/tei:persName/text() or $correspActionSent/tei:orgName/text()) then($correspActionSent/tei:persName/text()[1] | $correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
+                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
+                                                let $correspReceived := if($correspActionReceived/tei:persName/text() or $correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:persName/text()[1] | $correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
+                                                let $date := local:getDate($correspActionSent)
+                                                let $year := substring($date,1,4)
+                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
+                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
+                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
+                                                                        then('[undatiert]')
+                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
+                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
+                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
+                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                                                                        else if(starts-with($date,'0000-'))
+                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
+                                                                        else($date)
+                                                
+                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                                                        <div class="col-3">{$dateFormatted}</div>
+                                                                        <div class="col">Von {$correspSent}<br/>an {$correspReceived}</div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                                                    </div>
+                                                
+                                                    order by $date
+                                                return
+                                                $letterEntry
+                                                }
+                                                </div>
+                                    
+                                         }
+                                    </div>
+                                    <!--)
+                                else
+                                    ()
+                            }-->
+                            <div
+                    class="tab-pane fade"
+                    id="viewXML">
+                    <pre
+                                    class="pre-scrollable">
+                                    <xmp>
+                    {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                    </xmp>
+                    </pre>
+                </div>
+        </div>
+        </div>
+        </div>
+        </div>
         </div>
         )
 };
@@ -2402,12 +2532,33 @@ declare function app:work($node as node(), $model as map(*)) {
 declare function app:aboutProject($node as node(), $model as map(*)) {
     
     let $text := doc("/db/contents/jra/texts/portal/aboutProject.xml")/tei:TEI
+    let $title := $text//tei:titleStmt/tei:title/string()
+    let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
     return
         (
         <div
             class="container">
+            <div
+                class="page-header">
+                <!--<a
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                <br/>
+                <br/>-->
+                <h2>{$title}</h2>
+                <h5 class="sublevel">{$subtitle}</h5>
+                <br/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
             {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+        </div>
+        </div>
+        </div>
         </div>
         )
 };
@@ -2415,12 +2566,101 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
 declare function app:aboutRaff($node as node(), $model as map(*)) {
     
     let $text := doc("/db/contents/jra/texts/portal/aboutRaff.xml")/tei:TEI
+    let $title := $text//tei:titleStmt/tei:title/string()
+    let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
     return
         (
         <div
             class="container">
+            <div
+                class="page-header">
+                <!--<a
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                <br/>
+                <br/>-->
+                <h2>{$title}</h2>
+                <h5 class="sublevel">{$subtitle}</h5>
+                <br/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
             {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            </div>
+            </div>
+            </div>
+        </div>
+        )
+};
+
+declare function app:aboutDocumentation($node as node(), $model as map(*)) {
+    
+    let $text := doc("/db/contents/jra/texts/portal/aboutDocumentation.xml")/tei:TEI
+    let $title := $text//tei:titleStmt/tei:title/string()
+    let $subtitle := $text//tei:sourceDesc/tei:p[1]
+    
+    return
+        (
+        <div
+            class="container">
+            <div
+                class="page-header">
+                <!--<a
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                <br/>
+                <br/>-->
+                <h2>{$title}</h2>
+                <h5 class="sublevel">{$subtitle}</h5>
+                <br/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+        </div>
+        </div>
+        </div>
+        </div>
+        )
+};
+
+declare function app:aboutResources($node as node(), $model as map(*)) {
+    
+    let $text := doc("/db/contents/jra/texts/portal/aboutResources.xml")/tei:TEI
+    let $title := $text//tei:titleStmt/tei:title/string()
+    let $subtitle := $text//tei:sourceDesc/tei:p[1]
+    
+    return
+        (
+         <div
+            class="container">
+            <div
+                class="page-header">
+                <!--<a
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                <br/>
+                <br/>-->
+                <h2>{$title}</h2>
+                <h5 class="sublevel">{$subtitle}</h5>
+                <br/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+        </div>
+        </div>
+        </div>
         </div>
         )
 };
@@ -2450,34 +2690,3 @@ declare function app:impressum($node as node(), $model as map(*)) {
         </div>
         )
 };
-
-(:declare function app:guidelines($node as node(), $model as map(*)) {
-
-let $codingGuidelines := doc('/db/contents/jra/texts/documentation/codingGuidelines.xml')
-let $editiorialGuidelines := doc('/db/contents/jra/texts/documentation/editorialGuidelines.xml')
-let $sourceDescGuidelines := doc('/db/contents/jra/texts/documentation/sourceDescGuidelines.xml')
-
-return
-(
-<div class="container">
-        <ul class="nav nav-pills" role="tablist">
-        <li class="nav-item"><a class="nav-link-jra active" data-toggle="tab" href="#coding">Kodierung</a></li>
-        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#edition">Edition</a></li>
-        <li class="nav-item"><a class="nav-link-jra" data-toggle="tab" href="#sourceDesc">Quellenbeschreibung</a></li>
-    </ul>
-    <!-- Tab panels -->
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="coding" >
-        {transform:transform($codingGuidelines,doc("/db/apps/raffArchive/resources/xslt/codingGuidelines.xsl"), ())}
-        </div>
-        <div class="tab-pane fade" id="edition" >
-        {transform:transform($editiorialGuidelines,doc("/db/apps/raffArchive/resources/xslt/editorialGuidelines.xsl"), ())}
-        </div>
-        <div class="tab-pane fade" id="sourceDesc" >
-        {transform:transform($sourceDescGuidelines,doc("/db/apps/raffArchive/resources/xslt/sourceDescGuidelines.xsl"), ())}
-        </div>
-   </div>
-    </div>
-)
-};
-:)

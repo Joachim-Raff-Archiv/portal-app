@@ -58,9 +58,21 @@
             <xsl:apply-templates/>
         </p>
     </xsl:template>
+    <xsl:template match="hi[@rend = 'code']">
+        <span class="font-family: monospace, monospace; padding: 1rem; word-wrap: normal;">
+            <xsl:apply-templates/>
+        </span>
+    </xsl:template>
     
     <xsl:template match="note[@type = 'editor']">
         [<i><xsl:apply-templates/></i>]
+    </xsl:template>
+    
+    <xsl:template match="ref">
+        <a href="./@target" target="_blank"><xsl:apply-templates/></a>
+    </xsl:template>
+    <xsl:template match="code">
+        <pre><xsl:apply-templates/></pre>
     </xsl:template>
 
     <xsl:template match="figure">
