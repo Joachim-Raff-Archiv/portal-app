@@ -166,8 +166,8 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                        let $correspSent := if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                        let $correspReceived := if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                        let $correspSent := if($correspActionSent/tei:persName[2]/text()) then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
+                        let $correspReceived := if($correspActionReceived/tei:persName[2]/text()) then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) else if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -509,11 +509,12 @@ declare function app:letter($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <a onclick="pleaseWait()"
+                <a class="heading" onclick="pleaseWait()"
                     href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
                 <br/>
                 <br/>
-                <h2>Brief an {$nameTurned} | {$datumSent}</h2>
+                <h4>{$datumSent}</h4>
+                <h2>Brief an {$nameTurned}</h2>
                 <h5>ID: {$id}</h5>
                 <br/>
             </div>
@@ -564,7 +565,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                             class="col-sm-3">
                             {if($letter//tei:revisionDesc/tei:change)
                                 then(<div class="suggestedCitation">
-                                <b style="font-size: medium;">Änderungen:</b>
+                                <span class="heading" style="font-size: medium;">Änderungen:</span>
                                 <br/>
                                 {
                                 for $change at $n in $letter//tei:revisionDesc/tei:change
@@ -579,7 +580,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                             else()
                         }
                         <div class="suggestedCitation">
-                            <b style="font-size: medium;">Zitiervorschlag:</b>
+                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
                             {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/letter/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
@@ -1240,7 +1241,7 @@ declare function app:person($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <a
+                <a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
                 <br/>
                 <br/>
@@ -1304,7 +1305,7 @@ declare function app:person($node as node(), $model as map(*)) {
                             class="col-sm-3">
                             {if($person//tei:revisionDesc/tei:change)
                                 then(<div class="suggestedCitation">
-                                <b style="font-size: medium;">Änderungen:</b>
+                                <span class="heading" style="font-size: medium;">Änderungen:</span>
                                 <br/>
                                 {
                                 for $change at $n in $person//tei:revisionDesc/tei:change
@@ -1319,7 +1320,7 @@ declare function app:person($node as node(), $model as map(*)) {
                             else()
                         }
                         <div class="suggestedCitation">
-                            <b style="font-size: medium;">Zitiervorschlag:</b>
+                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
                             {concat($name,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
@@ -1746,7 +1747,7 @@ declare function app:institution($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <a
+                <a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
                 <br/>
                 <br/>
@@ -1807,7 +1808,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                             class="col-sm-3">
                             {if($institution//tei:revisionDesc/tei:change)
                                 then(<div class="suggestedCitation">
-                                <b style="font-size: medium;">Änderungen:</b>
+                                <span class="heading" style="font-size: medium;">Änderungen:</span>
                                 <br/>
                                 {
                                 for $change at $n in $institution//tei:revisionDesc/tei:change
@@ -1822,7 +1823,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                             else()
                         }
                         <div class="suggestedCitation">
-                            <b style="font-size: medium;">Zitiervorschlag:</b>
+                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
                             {concat($name,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
@@ -2488,7 +2489,7 @@ declare function app:work($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <a
+                <a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>
@@ -2543,7 +2544,7 @@ declare function app:work($node as node(), $model as map(*)) {
                             class="col-sm-3">
                             {if($work//mei:revisionDesc/mei:change)
                                 then(<div class="suggestedCitation">
-                                <b style="font-size: medium;">Änderungen:</b>
+                                <span class="heading" style="font-size: medium;">Änderungen:</span>
                                 <br/>
                                 {
                                 for $change at $n in $work//mei:revisionDesc/mei:change
@@ -2558,7 +2559,7 @@ declare function app:work($node as node(), $model as map(*)) {
                             else()
                         }
                         <div class="suggestedCitation">
-                            <b style="font-size: medium;">Zitiervorschlag:</b>
+                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
                             {concat($name,', ',$opus,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/work/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
@@ -2645,7 +2646,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <!--<a
+                <!--<a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
@@ -2679,7 +2680,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <!--<a
+                <!--<a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
@@ -2713,7 +2714,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <!--<a
+                <!--<a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
@@ -2747,7 +2748,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
             class="container">
             <div
                 class="page-header">
-                <!--<a
+                <!--<a class="heading"
                     href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->

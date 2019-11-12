@@ -12,6 +12,11 @@
         <xsl:apply-templates/>
     </xsl:template>
     
+    <xsl:template match="div/head">
+        <b class="heading">
+            <xsl:apply-templates/>
+        </b>
+    </xsl:template>
     <xsl:template match="hi[@rend = 'bold']">
         <b>
             <xsl:apply-templates/>

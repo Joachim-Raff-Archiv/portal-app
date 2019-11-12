@@ -8,6 +8,13 @@
     color:white;
 }
 
+.heading {
+    font-family: Montserrat;
+}
+
+h1,h2,h3,h4,h5,h6{
+    font-family: Montserrat;
+}
 body {
     font-family: Merriweather;
     /*font-family: syntaxregular, Fallback, sans-serif;*/
@@ -173,6 +180,7 @@ button.bg-jra:hover{
     display: block;
     padding: .5rem 1rem;
     /*font-weight: bold;*/
+    font-family: Montserrat;
     color:#641a85;
     background-color: rgb(240, 240, 240)
 }
@@ -180,6 +188,7 @@ button.bg-jra:hover{
     display: block;
     padding: .5rem 1rem;
     /*font-weight: bold;*/
+    font-family: Montserrat;
     color:#641a85;
     background-color: rgb(240, 240, 240)
 }
@@ -203,6 +212,7 @@ button.bg-jra:hover{
 .nav-link-jra-top{
     display: block;
     padding: .5rem 1rem;
+    font-family: Montserrat;
     /*font-weight: bold;*/
     color: white
 }
