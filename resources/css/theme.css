@@ -318,3 +318,28 @@ div.letterContentFullView{
     color: gray;
     font-size: 0.8em;    
 }
+
+.suggestedCitation{
+    font-size: 0.8em;
+    color:black;
+    text-align: left;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: #f8f8f8;
+    border-top: 1px solid #641a85;
+    border-bottom: 1px solid #641a85;
+    border-left: 1px solid #641a85;
+    border-right: 1px solid #641a85;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}

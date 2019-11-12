@@ -27,43 +27,6 @@
     <xsl:template name="letterMetadataView">
         <table class="letterView">
             <tr>
-                <td valign="top">Adressat:</td>
-                <td>
-                    <xsl:if test="$correspAction[@type = 'received']/persName != ''">
-                        <xsl:choose>
-                            <xsl:when test="contains($correspAction[@type = 'received']/persName/text()[1], ', ')">
-                                <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]/substring-before(., ',')"/></xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'received']/persName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',$correspAction[@type = 'received']/persName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/persName/@key"/></a>)
-                        </xsl:if>
-                    </xsl:if>
-                    <xsl:if test="$correspAction[@type = 'received']/orgName != ''">
-                        <xsl:choose>
-                            <xsl:when test="contains($correspAction[@type = 'received']/orgName/text()[1], ', ')">
-                                <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]/substring-before(., ',')"/></xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'received']/orgName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',$correspAction[@type = 'received']/orgName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/orgName/@key"/></a>)
-                        </xsl:if>
-                    </xsl:if>
-                </td>
-            </tr>
-            <xsl:if test="$correspAction[@type = 'received']/settlement != ''">
-                <tr>
-                    <td valign="top">Zielort:</td>
-                    <td>
-                        <xsl:value-of select="$correspAction[@type = 'received']/settlement"/>
-                    </td>
-                </tr>
-            </xsl:if>
-        </table>
-        <table class="letterView">
-            <tr>
                 <td valign="top">Absender:</td>
                 <td>
                     <xsl:if test="$correspAction[@type = 'sent']/persName != ''">
@@ -101,6 +64,43 @@
         </table>
         <table class="letterView">
             <tr>
+                <td valign="top">Empfänger:</td>
+                <td>
+                    <xsl:if test="$correspAction[@type = 'received']/persName != ''">
+                        <xsl:choose>
+                            <xsl:when test="contains($correspAction[@type = 'received']/persName/text()[1], ', ')">
+                                <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]/substring-before(., ',')"/></xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="$correspAction[@type = 'received']/persName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',$correspAction[@type = 'received']/persName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/persName/@key"/></a>)
+                        </xsl:if>
+                    </xsl:if>
+                    <xsl:if test="$correspAction[@type = 'received']/orgName != ''">
+                        <xsl:choose>
+                            <xsl:when test="contains($correspAction[@type = 'received']/orgName/text()[1], ', ')">
+                                <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]/substring-before(., ',')"/></xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="$correspAction[@type = 'received']/orgName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',$correspAction[@type = 'received']/orgName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/orgName/@key"/></a>)
+                        </xsl:if>
+                    </xsl:if>
+                </td>
+            </tr>
+            <xsl:if test="$correspAction[@type = 'received']/settlement != ''">
+                <tr>
+                    <td valign="top">Zielort:</td>
+                    <td>
+                        <xsl:value-of select="$correspAction[@type = 'received']/settlement"/>
+                    </td>
+                </tr>
+            </xsl:if>
+        </table>
+        <table class="letterView">
+            <tr>
                 <td valign="top">Datierung:</td>
                 <td>
                     <xsl:choose>
@@ -123,7 +123,7 @@
                     </xsl:choose>
                 </td>
             </tr>
-            <xsl:if test="$correspAction[@type = 'sent']/note[@type = 'editor'] != ''">
+            <xsl:if test="$correspAction[@type = 'sent']/note[contains(@type,'editor') and contains(@subtype,'public')] != ''">
                 <tr>
                     <td valign="top">Anmerkung:</td>
                     <td>
@@ -173,7 +173,19 @@
                         </xsl:if></td>
                 </tr>
             </xsl:if>
-            <xsl:if test="$sourceDesc//msIdentifier/altIdentifier/idno != ''">
+            <xsl:if test="$sourceDesc//msIdentifier/idno != ''">
+                <tr>
+                    <td valign="top">Signatur:</td>
+                    <td>
+                        <xsl:value-of select="$sourceDesc//msIdentifier/idno"/>
+                        <!--<xsl:choose><xsl:when test="$sourceDesc//msIdentifier/idno[@resp = 'JRA-copy']"> (Kopie im Joachim-Raff-Archiv)</xsl:when>
+                            <xsl:when test="$sourceDesc//msIdentifier/idno[@resp = 'JRA']"> (Joachim-Raff-Archiv)</xsl:when>
+                            <xsl:when test="$sourceDesc//msIdentifier/idno[@resp = 'BSB']"> (Bayerische Staatsbibliothek)</xsl:when>
+                            </xsl:choose>-->
+                    </td>
+                </tr>
+            </xsl:if>
+            <!--<xsl:if test="$sourceDesc//msIdentifier/altIdentifier/idno != ''">
                 <tr>
                     <td valign="top">Signatur:</td>
                     <td>
@@ -184,7 +196,7 @@
                             <xsl:otherwise><xsl:value-of select="$sourceDesc//msIdentifier/altIdentifier/idno"/></xsl:otherwise></xsl:choose>
                     </td>
                 </tr>
-            </xsl:if>
+            </xsl:if>-->
             <xsl:if test="$sourceDesc//physDesc//supportDesc/extent != ''">
                 <tr>
                     <td valign="top">Umfang:</td>
@@ -206,6 +218,14 @@
                     </td>
                 </tr>
             </xsl:if>
+            <xsl:if test="$sourceDesc//physDesc//handDesc/p[@decls='schreibmittel'] !=''">
+                <tr>
+                    <td valign="top">Schreibmittel:</td>
+                    <td>
+                        <xsl:value-of select="$sourceDesc//physDesc//handDesc/p[@decls='schreibmittel']/string()"/>
+                    </td>
+                </tr>
+            </xsl:if>
             <xsl:if test="$sourceDesc//provenance/p != ''">
                 <tr>
                     <td valign="top">Provenienz:</td>
@@ -222,6 +242,22 @@
                     </td>
                 </tr>
             </xsl:if>
+        </table>
+        <table class="letterView">
+            <tr>
+                <td/>
+                <td/>
+            </tr>
+        </table>
+        <table class="letterView">
+            <tr>
+                <td>Incipit:</td>
+                <td>
+                    <xsl:value-of select="//opener/string()"/>
+                    <br/>
+                    <xsl:value-of select="//incipit/string()"/>
+                </td>
+            </tr>
         </table>
 
     </xsl:template>
