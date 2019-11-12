@@ -1,10 +1,10 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
-    <xsl:variable name="viewPerson" select="'http://portal.raff-archiv.ch/html/person/'"/>
-    <xsl:variable name="viewInstitution" select="'http://portal.raff-archiv.ch/html/institution/'"/>
-    <xsl:variable name="viewWork" select="'http://portal.raff-archiv.ch/html/work/'"/>
-    <xsl:variable name="viewLocus" select="'http://portal.raff-archiv.ch/html/locus/'"/>
-    <xsl:variable name="viewManuscript" select="'http://portal.raff-archiv.ch/html/sources/manuscript/'"/>
-    <xsl:variable name="viewPrint" select="'http://portal.raff-archiv.ch/html/sources/print/'"/>
+    <xsl:variable name="viewPerson" select="'http://localhost:8080/exist/apps/raffArchive/html/person/'"/>
+    <xsl:variable name="viewInstitution" select="'http://localhost:8080/exist/apps/raffArchive/html/institution/'"/>
+    <xsl:variable name="viewWork" select="'http://localhost:8080/exist/apps/raffArchive/html/work/'"/>
+    <xsl:variable name="viewLocus" select="'http://localhost:8080/exist/apps/raffArchive/html/locus/'"/>
+    <xsl:variable name="viewManuscript" select="'http://localhost:8080/exist/apps/raffArchive/html/sources/manuscript/'"/>
+    <xsl:variable name="viewPrint" select="'http://localhost:8080/exist/apps/raffArchive/html/sources/print/'"/>
     
     <!-- Linking persons -->
     <xsl:template match="persName">

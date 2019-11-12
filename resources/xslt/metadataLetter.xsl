@@ -37,7 +37,7 @@
                                 <xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'sent']/persName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',$correspAction[@type = 'sent']/persName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'sent']/persName/@key"/></a>)
+                        <xsl:if test="$correspAction[@type = 'sent']/persName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$correspAction[@type = 'sent']/persName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'sent']/persName/@key"/></a>)
                         </xsl:if>
                     </xsl:if>
                     <xsl:if test="$correspAction[@type = 'sent']/orgName != ''">
@@ -48,7 +48,7 @@
                                 <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'sent']/orgName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',$correspAction[@type = 'sent']/orgName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'sent']/orgName/@key"/></a>)
+                        <xsl:if test="$correspAction[@type = 'sent']/orgName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$correspAction[@type = 'sent']/orgName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'sent']/orgName/@key"/></a>)
                         </xsl:if>
                     </xsl:if>
                 </td>
@@ -74,7 +74,7 @@
                                 <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'received']/persName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',$correspAction[@type = 'received']/persName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/persName/@key"/></a>)
+                        <xsl:if test="$correspAction[@type = 'received']/persName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$correspAction[@type = 'received']/persName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/persName/@key"/></a>)
                         </xsl:if>
                     </xsl:if>
                     <xsl:if test="$correspAction[@type = 'received']/orgName != ''">
@@ -85,7 +85,7 @@
                                 <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'received']/orgName/@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',$correspAction[@type = 'received']/orgName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/orgName/@key"/></a>)
+                        <xsl:if test="$correspAction[@type = 'received']/orgName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$correspAction[@type = 'received']/orgName/@key)}" target="_blank"><xsl:value-of select="$correspAction[@type = 'received']/orgName/@key"/></a>)
                         </xsl:if>
                     </xsl:if>
                 </td>
