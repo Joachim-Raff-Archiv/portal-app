@@ -1,8 +1,8 @@
 xquery version "3.0";
 
-module namespace app = "http://portal.raff-archiv.ch/templates";
+module namespace app = "http://localhost:8080/exist/apps/raffArchive/templates";
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config = "http://portal.raff-archiv.ch/config" at "config.xqm";
+import module namespace config = "http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
 
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
@@ -571,7 +571,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                     let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
                                     let $changerName := $change/@who/string()
                                     let $changeInfo := $change/string()
-                                    let $changeInfoButton := <img src="http://portal.raff-archiv.ch/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
+                                    let $changeInfoButton := <img src="http://localhost:8080/exist/apps/raffArchive/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
                                     return
                                         (<span style="padding-left: 3px;"/>,$changeDate, $changeInfoButton, <br/>)
                                 }<br/>
@@ -581,7 +581,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <b style="font-size: medium;">Zitiervorschlag:</b>
                             <br/>
-                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('http://portal.raff-archiv.ch/html/letter/',$id)}">{concat('http://portal.raff-archiv.ch/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/letter/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                     </div>
@@ -1241,7 +1241,7 @@ declare function app:person($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://portal.raff-archiv.ch/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
                 <br/>
                 <br/>
                 <h2>{$name}</h2>
@@ -1321,7 +1321,7 @@ declare function app:person($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <b style="font-size: medium;">Zitiervorschlag:</b>
                             <br/>
-                            {concat($name,'; ')}<a href="{concat('http://portal.raff-archiv.ch/html/person/',$id)}">{concat('http://portal.raff-archiv.ch/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -1747,7 +1747,7 @@ declare function app:institution($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://portal.raff-archiv.ch/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
                 <br/>
                 <br/>
                 <h2>{$name}</h2>
@@ -1824,7 +1824,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <b style="font-size: medium;">Zitiervorschlag:</b>
                             <br/>
-                            {concat($name,'; ')}<a href="{concat('http://portal.raff-archiv.ch/html/institution/',$id)}">{concat('http://portal.raff-archiv.ch/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -2489,7 +2489,7 @@ declare function app:work($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>
                 <h2>{$name}</h2>
@@ -2560,7 +2560,7 @@ declare function app:work($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <b style="font-size: medium;">Zitiervorschlag:</b>
                             <br/>
-                            {concat($name,', ',$opus,'; ')}<a href="{concat('http://portal.raff-archiv.ch/html/work/',$id)}">{concat('http://portal.raff-archiv.ch/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,', ',$opus,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/work/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -2646,7 +2646,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
@@ -2680,7 +2680,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
@@ -2714,7 +2714,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
@@ -2748,7 +2748,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
