@@ -1,8 +1,8 @@
 xquery version "3.0";
 
-module namespace app = "http://localhost:8080/exist/apps/raffArchive/templates";
+module namespace app = "http://portal.raff-archiv.ch/templates";
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config = "http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
+import module namespace config = "http://portal.raff-archiv.ch/config" at "config.xqm";
 
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
@@ -1235,7 +1235,7 @@ declare function app:person($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
                 <br/>
                 <br/>
                 <h2>{$name}</h2>
@@ -1735,7 +1735,7 @@ declare function app:institution($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
                 <br/>
                 <br/>
                 <h2>{$name}</h2>
@@ -2391,7 +2391,7 @@ declare function app:work($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>
                 <h2>{$name}</h2>
@@ -2542,7 +2542,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
@@ -2576,7 +2576,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
@@ -2610,7 +2610,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>
@@ -2644,7 +2644,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <!--<a
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
+                    href="http://portal.raff-archiv.ch/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
                 <br/>-->
                 <h2>{$title}</h2>

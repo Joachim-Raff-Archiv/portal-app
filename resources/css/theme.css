@@ -78,7 +78,7 @@ body {
 .btn-jra:hover,
 .btn-jra:focus {
   background-color: #f0f0f0;
-  border-color:#efefef;
+  border-color:#777777;
   background-position: 0 -40px;
   color:black;
 }

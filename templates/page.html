@@ -5,33 +5,33 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="app-meta" data-template="config:app-meta" content="JRA"/>
-        <link rel="shortcut icon" href="http://localhost:8080/exist/apps/raffArchive/icon.png"/>
+        <link rel="shortcut icon" href="http://portal.raff-archiv.ch/icon.png"/>
         
         <!-- Bootstrap -->
-        <link rel="stylesheet" href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap.min.css"/>
-        <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-theme.min.css" rel="stylesheet"/>
-        <!--<link href="http://localhost:8080/exist/apps/raffArchive/resources/css/bootstrap-social.css" rel="stylesheet"/>-->
+        <link rel="stylesheet" href="http://portal.raff-archiv.ch/resources/css/bootstrap.min.css"/>
+        <link href="http://portal.raff-archiv.ch/resources/css/bootstrap-theme.min.css" rel="stylesheet"/>
+        <!--<link href="http://portal.raff-archiv.ch/resources/css/bootstrap-social.css" rel="stylesheet"/>-->
         
         <!-- font -->
-        <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/merriweather.css" rel="stylesheet"/> <!-- font-awesome.min.css -->
+        <link href="http://portal.raff-archiv.ch/resources/css/merriweather.css" rel="stylesheet"/> <!-- font-awesome.min.css -->
         
         <!-- sticky-footer -->
-        <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/sticky-footer-navbar.css" rel="stylesheet"/>
+        <link href="http://portal.raff-archiv.ch/resources/css/sticky-footer-navbar.css" rel="stylesheet"/>
         
         <!-- Custom styles for this template -->
-        <link href="http://localhost:8080/exist/apps/raffArchive/resources/css/theme.css" rel="stylesheet"/>
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/filter.js"/>        
+        <link href="http://portal.raff-archiv.ch/resources/css/theme.css" rel="stylesheet"/>
+        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/filter.js"/>        
         
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"/> <!-- 1.10.2 -->
-        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/jquery.pleaseWait.js"/>
+        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/jquery.pleaseWait.js"/>
         
-<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/jquery-1.8.3.min.js"/>-->
-<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/loadsource.js"/>-->
-        <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>-->
-<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/animatescroll/animatescroll.js"/>-->
+<!--        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/animatescroll/jquery-1.8.3.min.js"/>-->
+<!--        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/loadsource.js"/>-->
+        <!--<script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.min.js"/>-->
+<!--        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/animatescroll/animatescroll.js"/>-->
         
-        <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.js"/>-->
-        <!--<script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.bundle.min.js"/>-->
+        <!--<script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.bundle.js"/>-->
+        <!--<script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.bundle.min.js"/>-->
         <script>
             $(function () {
               $('[data-toggle="popover"]').popover()
@@ -57,14 +57,14 @@
                     </li>
                     <li><span class="sr-only">(current)</span></li>-->
                     <li class="nav-item-jra-top active">
-                        <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/index.html">Home<span class="sr-only">(current)</span>
+                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/index.html">Home<span class="sr-only">(current)</span>
                         </a>
                     </li>
                     <li class="dropdown">
                         <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="">Joachim Raff</a>
                         <ul class="dropdown-menu navbar-jra bg-jra">
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/aboutRaff.html">Zur Person</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutRaff.html">Zur Person</a>
                             </li>
                             <li>
                                 <a class="nav-link-jra-top" target="_blank" href="http://joachim-raff.ch">Joachim–Raff–Gesellschaft</a>
@@ -72,29 +72,29 @@
                         </ul>
                     </li>
                     <li class="dropdown">
-                        <a href="http://localhost:8080/exist/apps/raffArchive/html/registryAll.html" class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Verzeichnisse<span class="caret"/>
+                        <a href="http://portal.raff-archiv.ch/html/registryAll.html" class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Verzeichnisse<span class="caret"/>
                         </a>
                         <ul class="dropdown-menu navbar-jra bg-jra">
                             <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">Werkeverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryWorks.html">Werkeverzeichnis</a>
                             </li>
                             <!--<li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registrySources.html">Quellenverzeichnis</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/registrySources.html">Quellenverzeichnis</a>
                             </li>-->
                             <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryLetters.html">Briefeverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryLetters.html">Briefeverzeichnis</a>
                             </li>
                             <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">Personenverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryPersons.html">Personenverzeichnis</a>
                             </li>
                             <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">Institutionenverzeichnis</a>
+                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryInstitutions.html">Institutionenverzeichnis</a>
                             </li>
                             <!--<li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/registryPlaces.html">Orteverzeichnis</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/registryPlaces.html">Orteverzeichnis</a>
                             </li>-->
                             <!--<li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/libraryCatalogue.html">Bibliotheksakatalog</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/libraryCatalogue.html">Bibliotheksakatalog</a>
                             </li>-->
                         </ul>
                     </li>
@@ -103,21 +103,21 @@
                         </a>
                         <ul class="dropdown-menu navbar-jra bg-jra">
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/aboutProject.html">Raff-Archiv-Online</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutProject.html">Raff-Archiv-Online</a>
                             </li>
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/aboutDocumentation.html">Dokumentation</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutDocumentation.html">Dokumentation</a>
                             </li>
                             <li>
-                                <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/aboutResources.html">verwendete Ressourcen</a>
+                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutResources.html">verwendete Ressourcen</a>
                             </li>
                         </ul>
                     </li>
                     <li>
-                        <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/impressum.html">Impressum</a>
+                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/impressum.html">Impressum</a>
                     </li>
                     <!--<li>
-                        <a class="nav-link-jra-top" href="http://localhost:8080/exist/apps/raffArchive/html/search.html">Suche</a>
+                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/search.html">Suche</a>
                     </li>-->
                 </ul>
             </div>
@@ -138,7 +138,7 @@
 				 ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"/>
-<!--        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/bootstrap.min.js"/>-->
+<!--        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.min.js"/>-->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>
         
         <!--<script>
