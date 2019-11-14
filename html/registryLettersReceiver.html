@@ -1,0 +1,26 @@
+<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="row">
+        <div class="page-header">
+            <h1>Briefeverzeichnis</h1>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-10">
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="registryLettersDate.html">Datum</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="#receiver">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="receiver">
+                            <br/>
+                            <div data-template="app:registryLettersReceiver"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

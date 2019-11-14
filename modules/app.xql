@@ -156,6 +156,7 @@ declare function local:formatDate($dateRaw){
                                               else($dateRaw)
 };
 
+(:
 declare function app:registryLetters($node as node(), $model as map(*)) {
     
     let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
@@ -490,6 +491,311 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
         )
 
 };
+:)
+
+declare function app:registryLettersDate($node as node(), $model as map(*)) {
+
+    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
+    let $persons := collection('/db/contents/jra/persons')//tei:TEI
+    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $collection := ($persons, $institutions)
+    let $lettersCrono := for $letter in $letters
+                        let $letterID := $letter/@xml:id/data(.)
+                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                        let $correspSent := if($correspActionSent/tei:persName[2]/text()) then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
+                        let $correspReceived := if($correspActionReceived/tei:persName[2]/text()) then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) else if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                        let $date := local:getDate($correspActionSent)
+                        let $year := substring($date,1,4)
+                        let $dateFormatted := local:formatDate($date)
+                        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
+                                <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
+                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                            </div>
+                        group by $year
+                        order by $year
+                        return
+                            (<div name="{$year}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                                {for $each in $letterEntry
+                                    order by $each/div/@dateToSort
+                                    return
+                                        $each}
+                             </div>)
+     
+     let $lettersGroupedByYears :=
+        for $groups in $lettersCrono[@name !='']
+        let $year := if($groups/@name/string()='0000')then('[Jahr nicht ermittelbar]')else($groups/@name/string())
+        let $count := $groups/@count/string()
+        order by $year
+        return
+            (<div class="RegisterSortBox" year="{$year}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
+                <div class="RegisterSortEntry" id="{concat('list-item-',if($year='[Jahr nicht ermittelbar]')then('unknown')else($year))}">
+                                                    {$year}
+                </div>
+                {
+                    for $group in $groups
+                        return
+                            $group
+                }
+            </div>)
+    
+    return
+        (
+                            <div
+                                class="row">
+                                <nav
+                                    id="nav1"
+                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
+                                    <!--  -->
+                                    {
+                                        for $year in $lettersGroupedByYears[@year !='']
+                                        let $letterCount := $year/@count/string()
+                                        let $letterYear := $year/@year/string()
+                                            order by $year
+                                        return
+                                            <a
+                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}"><span>{
+                                                        if ($letterYear = '[Jahr unbekannt]') then
+                                                            ('[ohne Jahr]')
+                                                        else
+                                                            ($letterYear)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
+                                            </a>
+                                    }
+                                </nav>
+                                <div
+                                    data-spy="scroll"
+                                    data-target="#nav1"
+                                    data-offset="0"
+                                    class="pre-scrollable col"
+                                    id="divResults">
+                                    {$lettersGroupedByYears}
+                                </div>
+                            </div>
+               
+        )
+
+};
+
+declare function app:registryLettersSender($node as node(), $model as map(*)) {
+
+    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
+    let $persons := collection('/db/contents/jra/persons')//tei:TEI
+    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $collection := ($persons, $institutions)
+    
+    let $lettersSender := for $letter in $letters
+                        let $letterID := $letter/@xml:id/data(.)
+                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                       
+                        let $correspSentId := if($correspActionSent/tei:persName/@key)
+                                              then($correspActionSent/tei:persName/@key/string())
+                                              else if($correspActionSent/tei:orgName/@key)
+                                              then($correspActionSent/tei:orgName/@key/string())
+                                              else()
+                        
+                        let $correspReceived := if($correspActionReceived/tei:persName/text())
+                                                then($correspActionReceived/tei:persName/text()[1])
+                                                else if($correspActionReceived/tei:orgName/text())
+                                                then($correspActionReceived/tei:orgName/text()[1])
+                                                else ('[Unbekannt]')
+                        
+                        let $senderNameRaw :=  if($correspActionSent/tei:persName)
+                                              then($correspActionSent/tei:persName[1]/text()[1])
+                                              else if($correspActionSent/tei:orgName)
+                                              then($correspActionSent/tei:orgName[1]/text()[1])
+                                              else()
+                        let $senderName := for $data in $collection[range:eq(@xml:id,$correspSentId)]
+                                               let $title := $data//tei:titleStmt/tei:title/string()
+                                               return
+                                                $title
+                                                                   
+                        let $date := local:getDate($correspActionSent)
+                        let $year := substring($date,1,4)
+                        let $dateFormatted := local:formatDate($date)
+                        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
+                                <div class="col">An {$correspReceived}</div>
+                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                            </div>
+                        group by $correspSentId
+                        return
+                            (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                                {for $each in $letterEntry
+                                    order by $each/div/@dateToSort
+                                    return
+                                        $each}
+                             </div>)
+                             
+    let $lettersGroupedBySenders :=
+        for $groups in $lettersSender
+        let $sender := $groups/@sender/string()
+        let $senderId := $groups/@senderId/string()
+        let $count := $groups/@count/string()
+        order by $sender
+        return
+            (<div class="RegisterSortBox" sender="{$sender}" senderId="{$senderId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
+                <div class="RegisterSortEntry" id="{concat('list-item-',$senderId)}">
+                                                    {$sender}
+                </div>
+                {
+                    for $group in $groups
+                        return
+                            $group
+                }
+            </div>)
+    
+    return
+        (
+                            <div
+                                class="row">
+                                <nav
+                                    id="nav1"
+                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
+                                    <!--  -->
+                                    {
+                                        for $sender in $lettersGroupedBySenders
+                                        let $letterCount := $sender/@count/string()
+                                        let $letterSender := $sender/@sender/string()
+                                        let $letterSenderId := $sender/@senderId/string()
+                                            order by $letterSender
+                                        return
+                                            <a
+                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='none')then('[Unbekannt]')else($letterSender)}</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
+                                            </a>
+                                    }
+                                </nav>
+                                <div
+                                    data-spy="scroll"
+                                    data-target="#nav1"
+                                    data-offset="0"
+                                    class="pre-scrollable col"
+                                    id="divResults">
+                                    {$lettersGroupedBySenders}
+                                </div>
+                            </div>
+                    
+        )
+
+};
+
+declare function app:registryLettersReceiver($node as node(), $model as map(*)) {
+
+    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
+    let $persons := collection('/db/contents/jra/persons')//tei:TEI
+    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $collection := ($persons, $institutions)
+    
+    let $lettersReceiver := for $letter in $letters
+                        let $letterID := $letter/@xml:id/data(.)
+                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                        
+                        let $correspSent := if($correspActionSent/tei:persName/text())
+                                            then($correspActionSent/tei:persName/text()[1])
+                                            else if($correspActionSent/tei:orgName/text())
+                                            then($correspActionSent/tei:orgName/text()[1])
+                                            else ('[Unbekannt]')
+                        let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
+                                              then($correspActionReceived/tei:persName/@key)
+                                              else if($correspActionReceived/tei:orgName/@key)
+                                              then($correspActionReceived/tei:orgName/@key)
+                                              else()
+                        
+                        let $correspReceived := if($correspActionReceived/tei:persName/text())
+                                                then($correspActionReceived/tei:persName/text()[1])
+                                                else if($correspActionReceived/tei:orgName/text())
+                                                then($correspActionReceived/tei:orgName/text()[1])
+                                                else ('[Unbekannt]')
+                        
+                        let $receiverNameRaw :=  if($correspActionReceived/tei:persName)
+                                              then($correspActionReceived/tei:persName[1]/text()[1])
+                                              else if($correspActionReceived/tei:orgName)
+                                              then($correspActionReceived/tei:orgName[1]/text()[1])
+                                              else()
+                        let $receiverName := for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
+                                               let $title := $data//tei:titleStmt/tei:title/string()
+                                               return
+                                                $title
+                                              
+                        let $date := local:getDate($correspActionSent)
+                        let $year := substring($date,1,4)
+                        let $dateFormatted := local:formatDate($date)
+                        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
+                                <div class="col">An {$correspSent}</div>
+                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                            </div>
+                        group by $correspReceivedId
+                        return
+                            (<div receiver="{distinct-values($receiverName)}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                                {for $each in $letterEntry
+                                    order by $each/div/@dateToSort
+                                    return
+                                        $each}
+                             </div>)
+                             
+    let $lettersGroupedByReceivers :=
+        for $groups in $lettersReceiver
+        let $receiver := $groups/@receiver/string()
+        let $receiverId := $groups/@receiverId/string()
+        let $count := $groups/@count/string()
+        order by $receiver
+        return
+            (<div class="RegisterSortBox" receiver="{$receiver}" receiverId="{$receiverId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
+                <div class="RegisterSortEntry" id="{concat('list-item-',$receiverId)}">
+                                                    {$receiver}
+                </div>
+                {
+                    for $group in $groups
+                        return
+                            $group
+                }
+            </div>)
+    
+    return
+                       (     <div
+                                class="row">
+                                <nav
+                                    id="nav1"
+                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
+                                    <!--  -->
+                                    {
+                                        for $receiver in $lettersGroupedByReceivers
+                                        let $letterCount := $receiver/@count/string()
+                                        let $letterReceiver := $receiver/@receiver/string()
+                                        let $letterReceiverId := $receiver/@receiverId/string()
+                                            order by $letterReceiver
+                                        return
+                                            <a
+                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiverId='none')then('[Unbekannt]')else($letterReceiver)}</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
+                                            </a>
+                                    }
+                                </nav>
+                                <div
+                                    data-spy="scroll"
+                                    data-target="#nav1"
+                                    data-offset="0"
+                                    class="pre-scrollable col"
+                                    id="divResults">
+                                    {$lettersGroupedByReceivers}
+                                </div>
+                            </div>
+        )
+
+};
+
 
 declare function app:letter($node as node(), $model as map(*)) {
     
