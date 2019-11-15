@@ -139,7 +139,7 @@ declare function local:getDate($date) {
                 else('0000')
                 
     return
-        $get[number(substring(.,1,4)) < number(substring(string(current-date()),1,4))-70]
+        $get[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]
 };
 
 declare function local:formatDate($dateRaw){
@@ -541,7 +541,19 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
             </div>)
     
     return
-        (
+        (<div class="container">
+            <div class="row">
+                <div class="col-10">
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="date">
+                            <br/>
                             <div
                                 class="row">
                                 <nav
@@ -575,6 +587,11 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                     id="divResults">
                                     {$lettersGroupedByYears}
                                 </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
                             </div>
                
         )
@@ -651,7 +668,19 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
             </div>)
     
     return
-        (
+        (<div class="container">
+            <div class="row">
+                <div class="col-10">
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="registryLettersDate.html">Datum</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="#sender">Absender</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="sender">
+                            <br/>
                             <div
                                 class="row">
                                 <nav
@@ -681,6 +710,11 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                     id="divResults">
                                     {$lettersGroupedBySenders}
                                 </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
                             </div>
                     
         )
@@ -762,7 +796,20 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
             </div>)
     
     return
-                       (     <div
+         (<div class="container">
+            <div class="row">
+                <div class="col-10">
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="registryLettersDate.html">Datum</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="#receiver">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="receiver">
+                            <br/>
+                       <div
                                 class="row">
                                 <nav
                                     id="nav1"
@@ -791,6 +838,10 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                     id="divResults">
                                     {$lettersGroupedByReceivers}
                                 </div>
+                            </div>
+                            </div></div>
+                            </div>
+                            </div>
                             </div>
         )
 
@@ -3092,6 +3143,32 @@ declare function app:indexPage($node as node(), $model as map(*)) {
 declare function app:impressum($node as node(), $model as map(*)) {
     
     let $text := doc("/db/contents/jra/texts/portal/impressum.xml")/tei:TEI
+    
+    return
+        (
+        <div
+            class="container">
+            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+        </div>
+        )
+};
+
+declare function app:privacyPolicy($node as node(), $model as map(*)) {
+    
+    let $text := doc("/db/contents/jra/texts/portal/privacyPolicy.xml")/tei:TEI
+    
+    return
+        (
+        <div
+            class="container">
+            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+        </div>
+        )
+};
+
+declare function app:disclaimer($node as node(), $model as map(*)) {
+    
+    let $text := doc("/db/contents/jra/texts/portal/disclaimer.xml")/tei:TEI
     
     return
         (

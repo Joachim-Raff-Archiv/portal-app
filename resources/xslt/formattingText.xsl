@@ -74,7 +74,7 @@
     </xsl:template>
     
     <xsl:template match="ref">
-        <a href="./@target" target="_blank"><xsl:apply-templates/></a>
+        <a href="{./@target}" target="_blank"><xsl:apply-templates/></a>
     </xsl:template>
     <xsl:template match="code">
         <pre><xsl:apply-templates/></pre>
