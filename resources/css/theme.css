@@ -223,6 +223,19 @@ button.bg-jra:hover{
     color:#641a85;
     background-color:#f0f0f0
 }
+
+.back{
+    padding: .5rem 1rem;
+    font-family: Montserrat;
+    color: white
+}
+.back:focus,
+.back:hover{
+    color:#641a85;
+    font-family: Montserrat;
+    background-color:#f0f0f0
+}
+
 .nav-link-jra-top.disabled{
     color: black
     }

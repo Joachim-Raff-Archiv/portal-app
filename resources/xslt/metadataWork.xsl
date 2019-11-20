@@ -31,7 +31,7 @@
                 <tr>
                     <td valign="top">Textdichter:</td>
                     <td>
-                        <xsl:value-of select="//mei:lyricist/mei:persName"/> (<a href="{concat($viewPerson, //mei:lyricist/mei:persName/@auth)}" target="_blank"><xsl:value-of select="//mei:lyricist/mei:persName/@auth"/></a>)
+                        <xsl:value-of select="//mei:lyricist/mei:persName"/> (<a href="{concat($viewPerson, //mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="//mei:lyricist/mei:persName/@auth"/></a>)
                             <xsl:for-each select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/mei:persName/@corresp">
                                 <xsl:variable name="mdivNo" select="./ancestor::mei:mei//mei:mdiv[@xml:id = //mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/mei:persName/@corresp]"/>
                                 <li>

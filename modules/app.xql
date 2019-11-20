@@ -175,7 +175,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $year
                         order by $year
@@ -242,7 +242,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">An {$correspSent}</div>
-                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspReceivedId
                         return
@@ -304,7 +304,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">An {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspSentId
                         return
@@ -371,7 +371,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav1"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
                                     <!--  -->
                                     {
@@ -410,7 +410,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav1"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
                                     <!--  -->
                                     {
@@ -445,7 +445,7 @@ declare function app:registryLetters($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav1"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
                                     <!--  -->
                                     {
@@ -511,7 +511,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $year
                         order by $year
@@ -557,9 +557,9 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav1"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
-                                    <!--  -->
+                                    id="myScrollspy"
+                                    class="nav nav-pills nav-stacked pre-scrollable col-3"> <!-- pre-scrollable -->
+                                    <ul id="nav" style="height: 89%; overflow-y: auto;" class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="160"> 
                                     {
                                         for $year in $lettersGroupedByYears[@year !='']
                                         let $letterCount := $year/@count/string()
@@ -578,12 +578,10 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
                                     }
+                                    </ul>
                                 </nav>
                                 <div
-                                    data-spy="scroll"
-                                    data-target="#nav1"
-                                    data-offset="0"
-                                    class="pre-scrollable col"
+                                    class="col pre-scrollable"
                                     id="divResults">
                                     {$lettersGroupedByYears}
                                 </div>
@@ -638,7 +636,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">An {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspSentId
                         return
@@ -684,7 +682,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav1"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
                                     <!--  -->
                                     {
@@ -766,7 +764,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">An {$correspSent}</div>
-                                <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspReceivedId
                         return
@@ -812,7 +810,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                        <div
                                 class="row">
                                 <nav
-                                    id="nav1"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
                                     <!--  -->
                                     {
@@ -864,11 +862,10 @@ declare function app:letter($node as node(), $model as map(*)) {
         (
         <div
             class="container">
+            <a class="back" onclick="history.back();">&#8592; zurück</a>
+            <hr/>
             <div
                 class="page-header">
-                <a class="heading" onclick="pleaseWait()"
-                    href="../registryLetters.html">&#8592; zum Briefeverzeichnis</a>
-                <br/>
                 <br/>
                 <h4>{$datumSent}</h4>
                 <h2>Brief an {$nameTurned}</h2>
@@ -1453,10 +1450,10 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             id="alpha">
                             <br/>
                             <div
-                                class="row">
-                                <nav
-                                    id="nav"
-                                    class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                                class="row" >
+                                <nav 
+                                    id="myScrollspy"
+                                    class="nav nav-pills col-3 pre-scrollable">
                                     {
                                         for $each in $personsGroupedByInitials
                                         let $initial := if ($each/@initial/string() = '') then
@@ -1497,7 +1494,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $personsGroupedByBirth
@@ -1534,7 +1531,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $personsGroupedByDeath
@@ -1596,11 +1593,10 @@ declare function app:person($node as node(), $model as map(*)) {
         (
         <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryPersons.html">&#8592; zum Personenverzeichnis</a>
-                <br/>
                 <br/>
                 <h2>{$name}</h2>
                 <h5>ID: {$id}</h5>
@@ -1717,7 +1713,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                                 let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                                         <div class="col-3">{$dateFormatted}</div>
                                                                         <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -1760,7 +1756,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                                                         <div class="col-2">{$dateFormatted}</div>
                                                                         <div class="col-2">{if(starts-with($letterID,'A'))then('Brief')else()}</div>
                                                                         <div class="col">{$correspSent} an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -1993,7 +1989,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $institutionsGroupedByInitials
@@ -2034,7 +2030,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav"
+                                    id="myScrollspy"
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $institutionsGroupedByPlaces
@@ -2102,11 +2098,10 @@ declare function app:institution($node as node(), $model as map(*)) {
         (
         <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryInstitutions.html">&#8592; zum Institutionenverzeichnis</a>
-                <br/>
                 <br/>
                 <h2>{$name}</h2>
                 <h5>ID: {$id}</h5>
@@ -2193,7 +2188,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     let $affName := $affiliate//tei:titleStmt/tei:title/string()
                                     let $affId := $affiliate/@xml:id/string()
                                     return
-                                        <li>{$affName} (<a href="person/{$affId}" target="_blank">{$affId}</a>)</li>
+                                        <li>{$affName} (<a href="person/{$affId}">{$affId}</a>)</li>
                                 }
                             </ul>
                         </div>
@@ -2231,7 +2226,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                                 let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                                         <div class="col-3">{$dateFormatted}</div>
                                                                         <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -2609,7 +2604,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     <div
                         class="col-2">
                         <nav
-                            id="nav"
+                            id="myScrollspy"
                             class="nav-pills col">
                             <li
                                 class="nav-item nav-linkless-jra">Kategorien</li>
@@ -2630,7 +2625,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 <div
                     class="row">
                     <nav
-                        id="nav"
+                        id="myScrollspy"
                         class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
                         {
                             for $each in $worksGroupedByInitials
@@ -2669,7 +2664,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 <div
                     class="row">
                     <nav
-                        id="nav"
+                        id="myScrollspy"
                         class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
                         {
                             for $each in $worksGroupedByYears
@@ -2783,7 +2778,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <div
                             class="row">
                             <nav
-                                id="nav"
+                                id="myScrollspy"
                                 class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
                                 {
                                     for $each in $worksGroupedByPerfResPiano
@@ -2844,11 +2839,10 @@ declare function app:work($node as node(), $model as map(*)) {
         (
             <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
-                <br/>
                 <br/>
                 <h2>{$name}</h2>
                 <h5>{$opus}</h5>
@@ -2958,7 +2952,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                                 let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                                         <div class="col-3">{$dateFormatted}</div>
                                                                         <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}" target="_blank">{$letterID}</a></div>
+                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                                                                     </div>
                                                 
                                                     order by $date
@@ -3001,12 +2995,11 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
         (
         <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <!--<a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
-                <br/>-->
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
                 <br/>
@@ -3035,12 +3028,11 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
         (
         <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <!--<a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
-                <br/>-->
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
                 <br/>
@@ -3069,12 +3061,11 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
         (
         <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <!--<a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
-                <br/>-->
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
                 <br/>
@@ -3103,12 +3094,11 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
         (
          <div
             class="container">
+            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
+            <hr/>
             <div
                 class="page-header">
-                <!--<a class="heading"
-                    href="http://localhost:8080/exist/apps/raffArchive/html/registryWorks.html">&#8592; zum Werkeverzeichnis</a>
                 <br/>
-                <br/>-->
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
                 <br/>

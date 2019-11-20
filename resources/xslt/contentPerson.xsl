@@ -42,7 +42,7 @@
     <xsl:template match="persName">
         <xsl:choose>
             <xsl:when test="doc-available(concat('../../../../contents/texts/persons/', ./@key, '.xml'))">
-                <a href="{concat($viewPerson,./@key)}" target="_blank">
+                <a href="{concat($viewPerson,./@key)}">
                     <xsl:apply-templates/>
                 </a>
             </xsl:when>
@@ -54,7 +54,7 @@
     <xsl:template match="orgName">
         <xsl:choose>
             <xsl:when test="doc-available(concat('../../../../contents/texts/institutions/', ./@key, '.xml'))">
-                <a href="{concat($viewInstitution, ./@key)}" target="_blank">
+                <a href="{concat($viewInstitution, ./@key)}">
                     <xsl:apply-templates/>
                 </a>
             </xsl:when>
@@ -66,7 +66,7 @@
     <xsl:template match="settlement">
         <xsl:choose>
             <xsl:when test="doc-available(concat('../../../../contents/texts/loci/', ./@key, '.xml'))">
-                <a href="{concat($viewLocus,./@key)}" target="_blank">
+                <a href="{concat($viewLocus,./@key)}">
                     <xsl:apply-templates/>
                 </a>
             </xsl:when>
