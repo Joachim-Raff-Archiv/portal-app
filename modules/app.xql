@@ -1732,14 +1732,34 @@ declare function app:person($node as node(), $model as map(*)) {
                                 then (<div
                                         class="tab-pane fade"
                                         id="references"><br/><div class="pre-scrollable">{
-                                    for $item in $vorkommen
+                                    
+                                    let $persID := 'C00693'
+                                    let $collectionReference := collection("/db/contents/jra")//tei:TEI//@key[.=$persID] | collection("/db/contents/jra")//mei:mei//@auth[.=$persID]
+                                    
+                                    
+                                    for $doc in $collectionReference
+                                        let $info := $doc/parent::node()
+                                        let $docRoot := if($doc/ancestor::tei:TEI) then($doc/ancestor::tei:TEI) else if($doc/ancestor::mei:mei) then ($doc/ancestor::mei:mei) else ('unknown Namespace')
+                                        let $docID := $docRoot/@xml:id
+                                        let $namespace := if($docRoot/name()='TEI') then('TEI') else if ($docRoot/name()='mei') then ('MEI') else ('unknown Namespace')
+                                        let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                                                        <div class="col-2">DATE</div>
+                                                                        <div class="col-2">Art</div>
+                                                                        <div class="col">{$docID} Absender an Empfänger</div>
+                                                                        <div class="col-2"><a href="letter/letterID">{$docID/string()}</a></div>
+                                                                    </div>
+                                        order by $docID
+                                        return
+                                            $entry
+                                    
+                                    (:for $item in $vorkommen
                                         let $letterID := $item/@xml:id/string()
                                                 let $correspActionSent := $item//tei:correspAction[@type="sent"]
                                                 let $correspActionReceived := $item//tei:correspAction[@type="received"]
                                                 let $correspSent := if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
+                                                (\:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):\)
                                                 let $correspReceived := if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
+                                                (\:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):\)
                                                 let $date := local:getDate($correspActionSent)
                                                 let $year := substring($date,1,4)
                                                 let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
