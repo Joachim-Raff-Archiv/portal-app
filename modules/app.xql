@@ -1054,7 +1054,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
         ($nameSurname)
     else
         (string-join($nameToJoin, ', '))
-    let $nameToSort := distinct-values(replace(replace(replace($nameJoined,'ö','oe'),'ä','ae'),'ü','ue'))
+    let $nameToSort := distinct-values(replace(replace(replace($nameSurname,'ö','oe'),'ä','ae'),'ü','ue'))
     let $name := <div
         class="row RegisterEntry">
         <div
@@ -1087,7 +1087,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by $each
+                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
@@ -1378,7 +1379,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by $each
+                    let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
@@ -1844,7 +1846,8 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by upper-case($each)
+                    let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
@@ -1911,7 +1914,8 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by upper-case($each)
+                    let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
@@ -2328,7 +2332,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by $each
+                  let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
@@ -2417,7 +2422,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by $each
+                   let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
@@ -2475,7 +2481,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                     count="{count($name)}">
                                     {
                                         for $each in $name
-                                            order by $each
+                                         let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                                         return
                                             $each
                                     }
