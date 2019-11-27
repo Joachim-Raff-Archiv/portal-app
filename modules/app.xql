@@ -2223,7 +2223,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 class="nav-item"><a
                     class="nav-link-jra"
                     data-toggle="tab"
-                    href="#sortGenre">Gattung</a></li>
+                    href="#sortGenre">Kategorien</a></li>
         </ul>
         <div
             class="tab-content">
@@ -2291,7 +2291,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                             id="myScrollspy"
                             class="nav-pills col">
                             <li
-                                class="nav-item nav-linkless-jra">Kategorien</li>
+                                class="nav-item nav-linkless-jra">Zählung</li>
                             <a
                                 class="list-group-item list-group-item-action"
                                 href="#opera"><span>Opera</span></a>
@@ -2425,7 +2425,77 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            Hier kommt die Vokalmusik hin.
+                            <br/>
+                <div
+                    class="row">
+                    <div
+                        data-spy="scroll"
+                        data-target="#nav"
+                        data-offset="70"
+                        class="pre-scrollable col"
+                        id="divResults">
+                        <div
+                            class="RegisterSortBox">
+                            <div
+                                class="RegisterSortEntry"
+                                id="opera">Werke mit Opuszahl</div>
+                            {
+                                for $work in $worksOpus
+                                let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
+                                let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
+                                let $workID := $work/@xml:id/normalize-space(data(.))
+                                    order by $opus ascending
+                                return
+                                    <div
+                                        class="row RegisterEntry">
+                                        <div
+                                            class="col-2">{$opus}</div>
+                                        <div
+                                            class="col">{$name}</div>
+                                        <div
+                                            class="col-2"><a
+                                                href="work/{$workID}">{$workID}</a></div>
+                                    </div>
+                            }
+                            <div
+                                class="RegisterSortEntry"
+                                id="woos">Werke ohne Opuszahl</div>
+                            {
+                                for $work in $worksWoO
+                                let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
+                                let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
+                                let $workID := $work/@xml:id/normalize-space(data(.))
+                                    order by $opus ascending
+                                return
+                                    <div
+                                        class="row RegisterEntry">
+                                        <div
+                                            class="col-2">{$opus}</div>
+                                        <div
+                                            class="col">{$name}</div>
+                                        <div
+                                            class="col-2"><a
+                                                href="work/{$workID}">{$workID}</a></div>
+                                    </div>
+                            }
+                        </div>
+                    </div>
+                    <div
+                        class="col-2">
+                        <nav
+                            id="myScrollspy"
+                            class="nav-pills col">
+                            <li
+                                class="nav-item nav-linkless-jra">Zählung</li>
+                            <a
+                                class="list-group-item list-group-item-action"
+                                href="#opera"><span>Opera</span></a>
+                            <a
+                                class="list-group-item list-group-item-action"
+                                href="#woos"><span>WoOs</span></a>
+                        </nav>
+                    </div>
+                </div>
                         </div>
                     </div>
                     <div
