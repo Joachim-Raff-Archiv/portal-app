@@ -72,7 +72,7 @@ declare function local:getDate($date) {
                         then($date/tei:date[@type='editor']/@notBefore/string())
                         else if($date/tei:date[@type='editor']/@notAfter)
                         then($date/tei:date[@type='editor']/@notAfter/string())
-                        else('0000')
+                        else('0000-00-00')
                     )
                 else if(count($date/tei:date[@type='source'])=1)
                 then(
@@ -88,7 +88,7 @@ declare function local:getDate($date) {
                         then($date/tei:date[@type='source']/@notBefore/string())
                         else if($date/tei:date[@type='source']/@notAfter)
                         then($date/tei:date[@type='source']/@notAfter/string())
-                        else('0000')
+                        else('0000-00-00')
                     )
                 else if(count($date/tei:date[@type='editor' and @confidence])=1)
                 then(
@@ -118,7 +118,7 @@ declare function local:getDate($date) {
                         then($date/tei:date[@type='editor'][1]/@from-custom/string())
                         else if($date/tei:date[@type='editor']/@notBefore)
                         then($date/tei:date[@type='editor'][1]/@notBefore/string())
-                        else('0000')
+                        else('0000-00-00')
                     )
                 else if(count($date/tei:date[@type='source']))
                 then(
@@ -134,9 +134,9 @@ declare function local:getDate($date) {
                         then($date/tei:date[@type='source'][1]/@notBefore/string())
                         else if($date/tei:date[@type='source']/@notAfter)
                         then($date/tei:date[@type='source'][1]/@notAfter/string())
-                        else('0000')
+                        else('0000-00-00')
                     )
-                else('0000')
+                else('0000-00-00')
                 
     return
         $get[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]
@@ -150,348 +150,127 @@ declare function local:formatDate($dateRaw){
                                               else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
                                               then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
                                               else if(contains($dateRaw,'0000-') and contains($dateRaw,'-00'))
-                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
                                               else if(starts-with($dateRaw,'0000-'))
-                                              then(concat(format-date(xs:date(replace($dateRaw,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
+                                              then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
                                               else($dateRaw)
 };
 
-(:
-declare function app:registryLetters($node as node(), $model as map(*)) {
-    
-    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
-    let $collection := ($persons, $institutions)
-    let $lettersCrono := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                        let $correspSent := if($correspActionSent/tei:persName[2]/text()) then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                        let $correspReceived := if($correspActionReceived/tei:persName[2]/text()) then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) else if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                        let $date := local:getDate($correspActionSent)
-                        let $year := substring($date,1,4)
-                        let $dateFormatted := local:formatDate($date)
-                        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
+declare function local:getReferences($idToReference) {
+    let $collectionReference := collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference] | collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference]
+        for $doc in $collectionReference
+            let $docRoot := if($doc/ancestor::tei:TEI)
+                            then($doc/ancestor::tei:TEI)
+                            else if($doc/ancestor::mei:mei)
+                            then($doc/ancestor::mei:mei)
+                            else('unknownNamespace')
+            let $docID := $docRoot/@xml:id
+            let $docType := if(starts-with($docRoot/@xml:id,'A'))
+                            then($docRoot//tei:textClass//tei:term)
+                            else if (starts-with($docRoot/@xml:id,'B'))
+                            then ('Werk')
+                            else if(starts-with($docRoot/@xml:id,'C'))
+                            then('Person')
+                            else if(starts-with($docRoot/@xml:id,'D'))
+                            then('Institution')
+                            else('[Art]')
+            let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
+            let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
+            let $correspSent := if($correspActionSent/tei:persName/text())
+                                then($correspActionSent/tei:persName/text()[1])
+                                else if($correspActionSent/tei:orgName/text())
+                                then($correspActionSent/tei:orgName/text()[1])
+                                else('[Unbekannt]')
+            let $correspReceived := if($correspActionReceived/tei:persName/text())
+                                    then($correspActionReceived/tei:persName/text()[1])
+                                    else if($correspActionReceived/tei:orgName/text())
+                                    then($correspActionReceived/tei:orgName/text()[1])
+                                    else('[Unbekannt]')
+            let $docDate := if(starts-with($docRoot/@xml:id,'A'))
+                            then(local:getDate($docRoot//tei:correspAction[@type='sent']))
+                            else(<br/>)
+            let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
+                             then($correspSent,<br/>,'an ',$correspReceived)
+                             else if($docRoot/name()='TEI')
+                             then($docRoot//tei:titleStmt/tei:title/string())
+                             else if($docRoot/name()='mei') 
+                             then($docRoot//mei:titleStmt/mei:title/string())
+                             else('noTitle')
+            let $role := if(starts-with($docRoot/@xml:id,'C'))
+                            then(if($docRoot//tei:person/tei:affiliation/text() and $docRoot//tei:person/tei:occupation/text())
+                                 then(concat($docRoot//tei:person/tei:affiliation,', ',$docRoot//tei:person/tei:occupation))
+                                 else if($docRoot//tei:person/tei:affiliation/text())
+                                 then($docRoot//tei:person/tei:affiliation/text())
+                                 else if($docRoot//tei:person/tei:occupation/text())
+                                 then($docRoot//tei:person/tei:occupation/text())
+                                 else()
+                                 )
+                            else if(starts-with($docRoot/@xml:id,'D'))
+                            then($docRoot//tei:org/tei:desc/string())
+                            else()
+            let $href := if(starts-with($docRoot/@xml:id,'A'))
+                            then('../letter/')
+                            else if (starts-with($docRoot/@xml:id,'B'))
+                            then ('../work/')
+                            else if(starts-with($docRoot/@xml:id,'C'))
+                            then('../person/')
+                            else if(starts-with($docRoot/@xml:id,'D'))
+                            then('../institution/')
+                            else()
+            let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                            <div class="col-3">{$docType}{if($docDate and starts-with($docRoot/@xml:id,'A'))
+                                                                          then(' vom ',local:formatDate($docDate))
+                                                                          else()}
+                                                                          <br/>
+                                                                          {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
+                                                                           then(' (Regeste)')
+                                                                           else()
+                                            }</div>
+                                            <div class="col">{$docTitle}&#160;<br/>{if($role)then(<span class="sublevel">{concat('(',$role,')')}</span>)else()}</div>
+                                            <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
+                                        </div>
+            order by $docID
+            return
+                $entry
+};
+
+declare function local:getCorrespondance($idToReference){
+    let $correspondence := collection("/db/contents/jra/sources/documents/letters")//tei:TEI//@key[.=$idToReference][not(./ancestor::tei:note[@type='regeste'])]
+    for $doc in $correspondence
+        let $letter := $doc/ancestor::tei:TEI
+        let $letterID := $letter/@xml:id/string()
+        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
+        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+        let $correspSent := if($correspActionSent/tei:persName/text())
+                            then($correspActionSent/tei:persName/text()[1])
+                            else if($correspActionSent/tei:orgName/text())
+                            then($correspActionSent/tei:orgName/text()[1])
+                            else('[Unbekannt]')
+        (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key)
+                              then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key)
+                              else('noID'):)
+        let $correspReceived := if($correspActionReceived/tei:persName/text())
+                                then($correspActionReceived/tei:persName/text()[1])
+                                else if($correspActionReceived/tei:orgName/text())
+                                then($correspActionReceived/tei:orgName/text()[1])
+                                else('[Unbekannt]')
+        (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key)
+                                  then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key)
+                                  else('noID'):)
+        let $date := local:getDate($correspActionSent)
+        let $year := substring($date,1,4)
+        let $dateFormatted := local:formatDate($date)
+        
+        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $year
-                        order by $year
-                        return
-                            (<div name="{$year}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
-                                {for $each in $letterEntry
-                                    order by $each/div/@dateToSort
-                                    return
-                                        $each}
-                             </div>)
-     
-     let $lettersGroupedByYears :=
-        for $groups in $lettersCrono[@name !='']
-        let $year := if($groups/@name/string()='0000')then('[Jahr nicht ermittelbar]')else($groups/@name/string())
-        let $count := $groups/@count/string()
-        order by $year
+        
+            order by $date
         return
-            (<div class="RegisterSortBox" year="{$year}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',if($year='[Jahr nicht ermittelbar]')then('unknown')else($year))}">
-                                                    {$year}
-                </div>
-                {
-                    for $group in $groups
-                        return
-                            $group
-                }
-            </div>)
-    
-    let $lettersReceiver := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                        
-                        let $correspSent := if($correspActionSent/tei:persName/text())
-                                            then($correspActionSent/tei:persName/text()[1])
-                                            else if($correspActionSent/tei:orgName/text())
-                                            then($correspActionSent/tei:orgName/text()[1])
-                                            else ('[Unbekannt]')
-                        let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                                              then($correspActionReceived/tei:persName/@key)
-                                              else if($correspActionReceived/tei:orgName/@key)
-                                              then($correspActionReceived/tei:orgName/@key)
-                                              else()
-                        
-                        let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                                then($correspActionReceived/tei:persName/text()[1])
-                                                else if($correspActionReceived/tei:orgName/text())
-                                                then($correspActionReceived/tei:orgName/text()[1])
-                                                else ('[Unbekannt]')
-                        
-                        let $receiverNameRaw :=  if($correspActionReceived/tei:persName)
-                                              then($correspActionReceived/tei:persName[1]/text()[1])
-                                              else if($correspActionReceived/tei:orgName)
-                                              then($correspActionReceived/tei:orgName[1]/text()[1])
-                                              else()
-                        let $receiverName := for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
-                                               let $title := $data//tei:titleStmt/tei:title/string()
-                                               return
-                                                $title
-                                              
-                        let $date := local:getDate($correspActionSent)
-                        let $year := substring($date,1,4)
-                        let $dateFormatted := local:formatDate($date)
-                        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col">An {$correspSent}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                            </div>
-                        group by $correspReceivedId
-                        return
-                            (<div receiver="{distinct-values($receiverName)}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
-                                {for $each in $letterEntry
-                                    order by $each/div/@dateToSort
-                                    return
-                                        $each}
-                             </div>)
-                             
-    let $lettersGroupedByReceivers :=
-        for $groups in $lettersReceiver
-        let $receiver := $groups/@receiver/string()
-        let $receiverId := $groups/@receiverId/string()
-        let $count := $groups/@count/string()
-        order by $receiver
-        return
-            (<div class="RegisterSortBox" receiver="{$receiver}" receiverId="{$receiverId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',$receiverId)}">
-                                                    {$receiver}
-                </div>
-                {
-                    for $group in $groups
-                        return
-                            $group
-                }
-            </div>)
-    
-    let $lettersSender := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                       
-                        let $correspSentId := if($correspActionSent/tei:persName/@key)
-                                              then($correspActionSent/tei:persName/@key/string())
-                                              else if($correspActionSent/tei:orgName/@key)
-                                              then($correspActionSent/tei:orgName/@key/string())
-                                              else()
-                        
-                        let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                                then($correspActionReceived/tei:persName/text()[1])
-                                                else if($correspActionReceived/tei:orgName/text())
-                                                then($correspActionReceived/tei:orgName/text()[1])
-                                                else ('[Unbekannt]')
-                        
-                        let $senderNameRaw :=  if($correspActionSent/tei:persName)
-                                              then($correspActionSent/tei:persName[1]/text()[1])
-                                              else if($correspActionSent/tei:orgName)
-                                              then($correspActionSent/tei:orgName[1]/text()[1])
-                                              else()
-                        let $senderName := for $data in $collection[range:eq(@xml:id,$correspSentId)]
-                                               let $title := $data//tei:titleStmt/tei:title/string()
-                                               return
-                                                $title
-                                                                   
-                        let $date := local:getDate($correspActionSent)
-                        let $year := substring($date,1,4)
-                        let $dateFormatted := local:formatDate($date)
-                        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col">An {$correspReceived}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                            </div>
-                        group by $correspSentId
-                        return
-                            (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
-                                {for $each in $letterEntry
-                                    order by $each/div/@dateToSort
-                                    return
-                                        $each}
-                             </div>)
-                             
-    let $lettersGroupedBySenders :=
-        for $groups in $lettersSender
-        let $sender := $groups/@sender/string()
-        let $senderId := $groups/@senderId/string()
-        let $count := $groups/@count/string()
-        order by $sender
-        return
-            (<div class="RegisterSortBox" sender="{$sender}" senderId="{$senderId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',$senderId)}">
-                                                    {$sender}
-                </div>
-                {
-                    for $group in $groups
-                        return
-                            $group
-                }
-            </div>)
-    
-    return
-        (<div
-            class="container">
-            <div
-                class="row">
-                <div
-                    class="col-10">
-                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
-                    <ul
-                        class="nav nav-pills"
-                        role="tablist">
-                        <li
-                            class="nav-item nav-linkless-jra">Sortierungen:</li>
-                        <li
-                            class="nav-item"><a
-                                class="nav-link-jra active"
-                                data-toggle="tab"
-                                href="#date">Datum</a></li>
-                        <li
-                            class="nav-item"><a
-                                class="nav-link-jra"
-                                data-toggle="tab"
-                                href="#receiver">Empfänger</a></li>
-                        <li
-                            class="nav-item"><a
-                                class="nav-link-jra"
-                                data-toggle="tab"
-                                href="#sender">Absender</a></li>
-                    </ul>
-                    <div
-                        class="tab-content">
-                        <div
-                            class="tab-pane fade show active"
-                            id="date">
-                            <br/>
-                            <div
-                                class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-3">
-                                    <!--  -->
-                                    {
-                                        for $year in $lettersGroupedByYears[@year !='']
-                                        let $letterCount := $year/@count/string()
-                                        let $letterYear := $year/@year/string()
-                                            order by $year
-                                        return
-                                            <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}"><span>{
-                                                        if ($letterYear = '[Jahr unbekannt]') then
-                                                            ('[ohne Jahr]')
-                                                        else
-                                                            ($letterYear)
-                                                    }</span>
-                                                <span
-                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
-                                            </a>
-                                    }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav1"
-                                    data-offset="0"
-                                    class="pre-scrollable col"
-                                    id="divResults">
-                                    {$lettersGroupedByYears}
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="tab-pane fade"
-                            id="receiver">
-                            <br/>
-                            <div
-                                class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
-                                    <!--  -->
-                                    {
-                                        for $receiver in $lettersGroupedByReceivers
-                                        let $letterCount := $receiver/@count/string()
-                                        let $letterReceiver := $receiver/@receiver/string()
-                                        let $letterReceiverId := $receiver/@receiverId/string()
-                                            order by $letterReceiver
-                                        return
-                                            <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiverId='none')then('[Unbekannt]')else($letterReceiver)}</span>
-                                                <span
-                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
-                                            </a>
-                                    }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav1"
-                                    data-offset="0"
-                                    class="pre-scrollable col"
-                                    id="divResults">
-                                    {$lettersGroupedByReceivers}
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="tab-pane fade"
-                            id="sender">
-                            <br/>
-                            <div
-                                class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
-                                    <!--  -->
-                                    {
-                                        for $sender in $lettersGroupedBySenders
-                                        let $letterCount := $sender/@count/string()
-                                        let $letterSender := $sender/@sender/string()
-                                        let $letterSenderId := $sender/@senderId/string()
-                                            order by $letterSender
-                                        return
-                                            <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='none')then('[Unbekannt]')else($letterSender)}</span>
-                                                <span
-                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
-                                            </a>
-                                    }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav1"
-                                    data-offset="0"
-                                    class="pre-scrollable col"
-                                    id="divResults">
-                                    {$lettersGroupedBySenders}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--<div
-                    class="col-3">
-                    <br/><br/>
-                    <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
-                    <input
-                        type="text"
-                        id="myResearchInput"
-                        onkeyup="myFilter()"
-                        placeholder="Name oder ID"
-                        title="Type in a string"/>
-                </div>-->
-            </div>
-        </div>
-        )
-
+        $letterEntry
 };
-:)
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
@@ -509,7 +288,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
+                                <div class="col-3" dateToSort="{if($date='0000-00-00')then(replace($date,'0000-','9999-'))else($date)}">{$dateFormatted}</div>
                                 <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
@@ -542,33 +321,34 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
     
     return
         (<div class="container">
-            <div class="row">
-                <div class="col-10">
-                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
-                    <ul class="nav nav-pills" role="tablist">
+        <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                  <!--  <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
                         <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
                         <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="date">
+                    </ul> -->
+                    <br/>
+            <div class="row" style="height: 500px;">
+                <div class="col-10"> <!--  pre-scrollable -->
+                    
+                <!--    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="date"> -->
                             <br/>
                             <div
                                 class="row">
                                 <nav
                                     id="myScrollspy"
-                                    class="nav nav-pills nav-stacked pre-scrollable col-3"> <!-- pre-scrollable -->
-                                    <ul id="nav" style="height: 89%; overflow-y: auto;" class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="160"> 
+                                    class="col-md-3 col-sm-3 hidden-xs"> <!-- nav nav-pills nav-stacked pre-scrollable  -->
+                                    <ul id="nav" style="height: 400px; overflow-y: auto;" class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="60">
                                     {
                                         for $year in $lettersGroupedByYears[@year !='']
                                         let $letterCount := $year/@count/string()
                                         let $letterYear := $year/@year/string()
                                             order by $year
                                         return
-                                            <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}"><span>{
+                                            <a class="list-group-item list-group-item-action justify-content-between d-flex  align-items-center" href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}"><!-- class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" -->
+                                            <span>{
                                                         if ($letterYear = '[Jahr unbekannt]') then
                                                             ('[ohne Jahr]')
                                                         else
@@ -581,15 +361,15 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                     </ul>
                                 </nav>
                                 <div
-                                    class="col pre-scrollable"
-                                    id="divResults">
+                                    class="col-md-9 col-sm-9"
+                                    id="divResults"> <!-- pre-scrollable -->
                                     {$lettersGroupedByYears}
                                 </div>
                             </div>
                             </div>
                             </div>
-                            </div>
-                            </div>
+                          <!--  </div>
+                            </div> -->
                             </div>
                
         )
@@ -1144,22 +924,23 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     else
         ()
     let $birth := if ($person//tei:birth[1][@when-iso])
-    then
-        ($person//tei:birth[1]/@when-iso)
-    else
-        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
-        then
-            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
-        else
-            if ($person//tei:birth[1][@notBefore])
-            then
-                ($person//tei:birth[1]/@notBefore)
-            else
-                if ($person//tei:birth[1][@notAfter])
-                then
-                    ($person//tei:birth[1]/@notAfter)
-                else
-                    ('')
+                    then
+                        ($person//tei:birth[1]/@when-iso)
+                    else
+                        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+                        then
+                            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
+                        else
+                            if ($person//tei:birth[1][@notBefore])
+                            then
+                                ($person//tei:birth[1]/@notBefore)
+                            else
+                                if ($person//tei:birth[1][@notAfter])
+                                then
+                                    ($person//tei:birth[1]/@notAfter)
+                                else
+                                    ('')
+    let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth)
     let $birthFormatted := if(starts-with($birth,'-')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
     let $death := if ($person//tei:death[1][@when-iso])
     then
@@ -1235,20 +1016,21 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
             count="{count($name)}">
             {
                 for $each in $name
-                    order by $each
+                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                    order by $order
                 return
                     $each
             }
         </div>)
     
     let $personsGroupedByBirth := for $groups in $personsBirth
-        let $sort := if(contains($groups/@birth,'/')) then(substring($groups/@birth,1,4)) else($groups/@birth/number())
-        group by $birth := $groups/@name/string()
-        order by $sort
+        let $birthToSort := if (contains($groups/@birth/string(),'-')) then(substring($groups/@birth,1,5)) else($groups/@birth/number())
+        group by $birth := $groups/@name/normalize-space(string())
+(:        order by $sort ascending:)
     return
         (<div
             class="RegisterSortBox"
-            birth="{$birth}"
+            birth="{$birth}" birthToSort="{translate($birthToSort,'/','_')}"
             count="{$personsBirth[@name = $birth]/@count}"
             xmlns="http://www.w3.org/1999/xhtml">
             <div
@@ -1447,7 +1229,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     </ul>
                     <div
                         class="tab-content">
-                        <div
+                        <!--<div
                             class="tab-pane fade show active"
                             id="alpha">
                             <br/>
@@ -1488,24 +1270,26 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     {$personsGroupedByInitials}
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div
-                            class="tab-pane fade"
+                            class="tab-pane fade show active"
                             id="birth">
                             <br/>
                             <div
                                 class="row">
                                 <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                                    id="myScrollspy" style="height:500px; overflow-y: auto;"
+                                    class="nav nav-pills navbar-fixed-top col-3"> <!-- pre-scrollable style="overflow-y: auto;" -->
                                     {
                                         for $each in $personsGroupedByBirth
                                         let $birth := $each/@birth/string()
+                                        let $birthToSort := $each/@birthToSort/string()
                                         let $count := $each/@count/string()
+                                        order by $birthToSort
                                         return
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', translate($birth, '/', '_'))}"><span>{
+                                                href="{concat('#list-item-', translate($birth, '/. ', '___'))}"><span>{
                                                         if ($birth = 'unknownBirth') then
                                                             ('[unbekannt]')
                                                         else
@@ -1513,20 +1297,16 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                                     }</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$count}</span>
-                                            </a>
+                                             </a>
                                     }
                                 </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70"
-                                    class="pre-scrollable col"
+                                <div class="col pre-scrollable"
                                     id="divResults">
                                     {$personsGroupedByBirth}
                                 </div>
                             </div>
                         </div>
-                        <div
+                       <!-- <div
                             class="tab-pane fade"
                             id="death">
                             <br/>
@@ -1562,7 +1342,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     {$personsGroupedByDeath}
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
                 <!--<div
@@ -1587,7 +1367,6 @@ declare function app:person($node as node(), $model as map(*)) {
     let $name := $person//tei:title/normalize-space(data(.))
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
-    let $references := $person//tei:bibl/tei:listRelation/tei:relation[@name='reference']
     let $literature := $person//tei:bibl[@type='links']
     let $vorkommen := collection("/db/contents/jra")//tei:persName[@key=$id]/ancestor::tei:TEI
     
@@ -1619,18 +1398,18 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra active"
                                     data-toggle="tab"
                                     href="#metadata">Allgemein</a></li>
-                            {if ($correspondence) then(<li
+                            {if (local:getCorrespondance($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#correspondence">Korrespondenz</a></li>)else()}
-                            {if ($references//tei:item/text()!='') then(<li
+                            {if (local:getReferences($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#references">Raff-Bezug</a></li>)else()}
+                                    href="#references">Bezüge</a></li>)else()}
                             {if ($literature/text()!='') then(<li
                                 class="nav-item">
                                 <a
@@ -1683,122 +1462,33 @@ declare function app:person($node as node(), $model as map(*)) {
                         </div>
                             </div>
                             {
-                                if ($correspondence) then
+                                if (local:getCorrespondance($id)) then
                                     (<div
                                         class="tab-pane fade"
                                         id="correspondence">
                                         <br/>
-                                        <div class="pre-scrollable">
-                                            {
-                                                for $letter in $correspondence
-                                                let $letterID := $letter/@xml:id/string()
-                                                let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                                                let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                                                let $correspSent := if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
-                                                let $correspReceived := if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
-                                                let $date := local:getDate($correspActionSent)
-                                                let $year := substring($date,1,4)
-                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
-                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                                                        then('[undatiert]')
-                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else if(starts-with($date,'0000-'))
-                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else($date)
-                                                
-                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                                                        <div class="col-3">{$dateFormatted}</div>
-                                                                        <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                                                                    </div>
-                                                
-                                                    order by $date
-                                                return
-                                                $letterEntry
-                                                }
-                                                </div>
+                                        <div class="{if(count(local:getCorrespondance($id)) gt 5) then('pre-scrollable') else()}">{
+                                            let $entrys := local:getCorrespondance($id)
+                                            return
+                                                $entrys
+                                        }</div>
                                     </div>)
                                 else
                                     ()
                             }
                             {
-                                if (1=1)
+                                if (local:getReferences($id))
                                 then (<div
                                         class="tab-pane fade"
-                                        id="references"><br/><div class="pre-scrollable">{
-                                    
-                                    let $persID := 'C00693'
-                                    let $collectionReference := collection("/db/contents/jra")//tei:TEI//@key[.=$persID] | collection("/db/contents/jra")//mei:mei//@auth[.=$persID]
-                                    
-                                    
-                                    for $doc in $collectionReference
-                                        let $info := $doc/parent::node()
-                                        let $docRoot := if($doc/ancestor::tei:TEI) then($doc/ancestor::tei:TEI) else if($doc/ancestor::mei:mei) then ($doc/ancestor::mei:mei) else ('unknown Namespace')
-                                        let $docID := $docRoot/@xml:id
-                                        let $namespace := if($docRoot/name()='TEI') then('TEI') else if ($docRoot/name()='mei') then ('MEI') else ('unknown Namespace')
-                                        let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                                                        <div class="col-2">DATE</div>
-                                                                        <div class="col-2">Art</div>
-                                                                        <div class="col">{$docID} Absender an Empfänger</div>
-                                                                        <div class="col-2"><a href="letter/letterID">{$docID/string()}</a></div>
-                                                                    </div>
-                                        order by $docID
-                                        return
-                                            $entry
-                                    
-                                    (:for $item in $vorkommen
-                                        let $letterID := $item/@xml:id/string()
-                                                let $correspActionSent := $item//tei:correspAction[@type="sent"]
-                                                let $correspActionReceived := $item//tei:correspAction[@type="received"]
-                                                let $correspSent := if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                                                (\:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):\)
-                                                let $correspReceived := if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                                                (\:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):\)
-                                                let $date := local:getDate($correspActionSent)
-                                                let $year := substring($date,1,4)
-                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
-                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                                                        then('[undatiert]')
-                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else if(starts-with($date,'0000-'))
-                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else($date)
-                                                
-                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                                                        <div class="col-2">{$dateFormatted}</div>
-                                                                        <div class="col-2">{if(starts-with($letterID,'A'))then('Brief')else()}</div>
-                                                                        <div class="col">{$correspSent} an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                                                                    </div>
-                                                
-                                                    order by $date
-                                                return
-                                                $letterEntry}</div>
-                                        </div>
-                                )
-                                (:else if ($references//tei:item/text()!='') then
-                                    (<div
-                                        class="tab-pane fade"
                                         id="references">
-                                        <ul>
-                                            {
-                                                for $item in $references//tei:list/tei:item
-                                                let $content := $item/data(.)
-                                                return
-                                                    <li>{$content}</li>
-                                            }
-                                        </ul>
-                                    </div>):)
+                                        <br/>
+                                        <div class="{if(count(local:getReferences($id)) gt 5) then('pre-scrollable') else()}">{
+                                            let $entrys := local:getReferences($id)
+                                            return
+                                                $entrys
+                                        }</div>
+                                      </div>
+                                )
                                 else
                                     ()
                             }
@@ -2013,7 +1703,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="myScrollspy"
+                                    id="nav"
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $institutionsGroupedByInitials
@@ -2116,7 +1806,6 @@ declare function app:institution($node as node(), $model as map(*)) {
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
     let $affiliates := $persons//tei:affiliation[@key = $id]/ancestor::tei:TEI
-    let $references := $institution//tei:bibl/tei:listRelation/tei:relation[@name='reference']
     let $literature := $institution//tei:bibl[@type='links']
     return
         (
@@ -2146,18 +1835,18 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra active"
                                     data-toggle="tab"
                                     href="#metadata">Allgemein</a></li>
-                            {if ($correspondence) then(<li
+                            {if (local:getCorrespondance($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#correspondence">Korrespondenz</a></li>)else()}
-                            {if ($references//tei:item/text()!='') then(<li
+                            {if (local:getReferences($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#references">Raff-Bezug</a></li>)else()}
+                                    href="#references">Bezüge</a></li>)else()}
                             {if ($literature/text()!='') then(<li
                                 class="nav-item">
                                 <a
@@ -2218,63 +1907,31 @@ declare function app:institution($node as node(), $model as map(*)) {
                         </div>
                             </div>
                             {
-                                if ($correspondence) then
+                                if (local:getCorrespondance($id)) then
                                     (<div
                                         class="tab-pane fade"
                                         id="correspondence">
                                         <br/>
-                                        <div class="pre-scrollable">
-                                            {
-                                                for $letter in $correspondence
-                                                let $letterID := $letter/@xml:id/string()
-                                                let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                                                let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                                                let $correspSent := if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
-                                                let $correspReceived := if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
-                                                let $date := local:getDate($correspActionSent)
-                                                let $year := substring($date,1,4)
-                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
-                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                                                        then('[undatiert]')
-                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else if(starts-with($date,'0000-'))
-                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else($date)
-                                                
-                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                                                        <div class="col-3">{$dateFormatted}</div>
-                                                                        <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                                                                    </div>
-                                                
-                                                    order by $date
-                                                return
-                                                $letterEntry
-                                                }
-                                                </div>
+                                        <div class="{if(count(local:getCorrespondance($id)) gt 5) then('pre-scrollable') else()}">{
+                                            let $entrys := local:getCorrespondance($id)
+                                            return
+                                                $entrys
+                                        }</div>
                                     </div>)
                                 else
                                     ()
                             }
                             {
-                                if ($references//tei:item/text()!='') then
+                                if (local:getReferences($id)) then
                                     (<div
                                         class="tab-pane fade"
                                         id="references">
-                                        <ul>
-                                            {
-                                                for $item in $references//tei:list/tei:item
-                                                let $content := $item/data(.)
-                                                return
-                                                    <li>{$content}</li>
-                                            }
-                                        </ul>
+                                        <br/>
+                                        <div class="{if(count(local:getReferences($id)) gt 5) then('pre-scrollable') else()}">{
+                                            let $entrys := local:getReferences($id)
+                                            return
+                                                $entrys
+                                        }</div>
                                     </div>)
                                 else
                                     ()
@@ -2393,34 +2050,34 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $date := $work//mei:creation/mei:date[@type = 'composition']
     let $compositionDate := if (count($date) = 1)
-    then
-        (
-        if ($date/@startdate)
-        then
-            ($date/@startdate/string())
-        else
-            if ($date/@notbefore)
-            then
-                ($date/@notbefore/string())
-            else
-                ('0000')
-        )
-    else
-        if ($date)
-        then
-            (
-            if ($date[1]/@startdate)
-            then
-                ($date[1]/@startdate/string())
-            else
-                if ($date[1]/@notbefore)
-                then
-                    ($date[1]/@notbefore/string())
-                else
-                    ('0000')
-            )
-        else
-            ('0000')
+                            then
+                                (
+                                if ($date/@startdate)
+                                then
+                                    ($date/@startdate/string())
+                                else
+                                    if ($date/@notbefore)
+                                    then
+                                        ($date/@notbefore/string())
+                                    else
+                                        ('0000')
+                                )
+                            else
+                                if ($date)
+                                then
+                                    (
+                                    if ($date[1]/@startdate)
+                                    then
+                                        ($date[1]/@startdate/string())
+                                    else
+                                        if ($date[1]/@notbefore)
+                                        then
+                                            ($date[1]/@notbefore/string())
+                                        else
+                                            ('0000')
+                                    )
+                                else
+                                    ('0000')
     let $year := substring($compositionDate, 1, 4)
     let $workID := $work/@xml:id/string()
     let $name := <div
@@ -2964,7 +2621,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                                 (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
                                                 let $date := local:getDate($correspActionSent)
                                                 let $year := substring($date,1,4)
-                                                let $dateFormatted := if(string-length($date)=10 and not(contains($date,'00')))
+                                                let $dateFormatted := local:formatDate($date) (:if(string-length($date)=10 and not(contains($date,'00')))
                                                                         then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
                                                                         else if($date='0000' or $date='0000-00' or $date='0000-00-00')
                                                                         then('[undatiert]')
@@ -2974,7 +2631,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                                                         then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
                                                                         else if(starts-with($date,'0000-'))
                                                                         then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else($date)
+                                                                        else($date):)
                                                 
                                                 let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                                         <div class="col-3">{$dateFormatted}</div>
