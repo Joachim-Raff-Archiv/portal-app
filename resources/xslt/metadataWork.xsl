@@ -11,7 +11,7 @@
                         <xsl:value-of select="mei:mei/@xml:id"/>
                     </td>
                 </tr>
-                                <xsl:if test="//mei:creation/mei:dedication/normalize-space(.) !=''">
+                                <xsl:if test="//mei:creation/mei:dedication/text() !=''">
                 <tr>
                     <td valign="top">Widmung:</td>
                     <td>
@@ -19,11 +19,15 @@
                     </td>
                 </tr>
                 </xsl:if>
-                                <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee !=''">
+                                <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee/normalize-space(.) !=''">
                 <tr>
                     <td valign="top">Widmungsträger:</td>
                     <td>
-                        <xsl:value-of select="//mei:creation/mei:dedication/mei:dedicatee"/>
+                        <xsl:value-of select="//mei:dedicatee"/>
+                        <xsl:choose>
+                            <xsl:when test="//mei:dedicatee/mei:persName"> (<a href="{concat($viewPerson, //mei:dedicatee/mei:persName/@auth)}"><xsl:value-of select="//mei:dedicatee/mei:persName/@auth"/></a>)</xsl:when>
+                            <xsl:when test="//mei:dedicatee/mei:corpName"> (<a href="{concat($viewInstitution, //mei:dedicatee/mei:corpName/@auth)}"><xsl:value-of select="//mei:dedicatee/mei:corpName/@auth"/></a>)</xsl:when>
+                        </xsl:choose>
                     </td>
                 </tr>
                 </xsl:if>
@@ -59,7 +63,7 @@
                         </xsl:choose>
                     </td>
                 </tr>
-                <!--                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type='alt'])">-->
+                                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type='alt'])">
                 <tr>
                     <td valign="top">Alternative Besetzung:</td>
                     <td>
@@ -77,7 +81,7 @@
                     </td>
                 </tr>
 
-                <!--</xsl:if>-->
+                </xsl:if>
             </table>
                             <xsl:if test="//mei:creation/mei:date[@type='composition']">
             <table class="workView">
