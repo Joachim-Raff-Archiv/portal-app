@@ -2922,3 +2922,14 @@ declare function app:disclaimer($node as node(), $model as map(*)) {
         </div>
         )
 };
+
+declare function app:errorReport($node as node(), $model as map(*)){
+
+let $mailto := 'mailto:ried-musikforschung@mail.de'
+let $subject := 'Error%20Report'
+let $occurance := request:get-url()
+let $body := concat('Hey Guys,%0D%0A%0D%0Aplease%20check%20this%20url:%0D%0A%0D%0A',$occurance,'%0D%0A%0D%0Athanks!')
+let $href := concat($mailto,'?subject=',$subject,'&amp;body=',$body)
+return
+    <button class="btn list-item-jra"><a href="{$href}">report</a></button>
+};
