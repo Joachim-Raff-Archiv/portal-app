@@ -354,58 +354,59 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
     return
         (<div class="container">
         <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
-                    <!--<ul class="row nav-pills" role="tablist">
+                    <ul class="row nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
                         <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
                         <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
-                    </ul>-->
-                    <button type="button" class="btn btn-jra dsabled">Sortierungen:</button>
+                    </ul>
+                    <!--<button type="button" class="btn btn-jra dsabled">Sortierungen:</button>
                     <button type="button" class="btn btn-jra">Datum</button>
-                    <button type="button" class="btn btn-jra"><a href="registryLettersReceiver.html">Empfänger</a></button>
+                    <button type="button" class="btn btn-jra"><a href="registryLettersReceiver.html">Empfänger</a></button>-->
                     <br/>
             <div class="row">
-                <div class="col-12"> <!--  pre-scrollable -->
+                <div class="col-10"> <!--  pre-scrollable -->
                     
-                   <!-- <div class="tab-content">
-                        <div class="tab-pane fade show active" id="date">-->
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="date">
                             <br/>
                             <div class="row">
-                            <div class="col-md-3">
-                            <!--<div class="scrollspy">-->
+                            <div class="col-md-3 pre-scrollable">
+                            <div class="scrollspy">
         					   <!--<li class="nav hidden-xs hidden-sm" style="height: 95%; overflow-y: auto; width: 200px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
         					   <!--<div class="list-group" style="height: 95%; overflow-y: auto; width: 150px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
         					   <div id="myScrollspy">
-        					   <ul class="nav hidden-xs hidden-sm" id="nav"> <!-- style="height: 90%; overflow-y: auto; width: 200px;" -->
-                                   {
-                                    for $year at $pos in $lettersGroupedByYears[@year !='']
-                                    let $letterCount := $year/@count/string()
-                                    let $letterYear := $year/@year/string()
-                                        order by $year
-                                    return
-                                        
-                                            <li style="width: 200px;"><a class="list-group-item list-group-item-action justify-content-between d-flex align-items-center"
-                                            href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
-                                            <!-- list-group-item list-group-item-action justify-content-between d-flex align-items-center -->
-                                                <span>{
-                                                        if ($letterYear = '[Jahr unbekannt]') then
-                                                            ('[ohne Jahr]')
-                                                        else
-                                                            ($letterYear)
-                                                       }
-                                                </span>
-                                                <span class="badge badge-jra badge-pill right">{$letterCount}</span></a></li>
-                                   }
-                              </ul>
-                                    <!--</div>-->
+            					   <ul class="nav hidden-xs hidden-sm" id="nav"> <!-- style="height: 90%; overflow-y: auto; width: 200px;" -->
+                                       {
+                                        for $year at $pos in $lettersGroupedByYears[@year !='']
+                                        let $letterCount := $year/@count/string()
+                                        let $letterYear := $year/@year/string()
+                                            order by $year
+                                        return
+                                            
+                                                <li style="width: 200px;"><a class="list-group-item list-group-item-action justify-content-between d-flex align-items-center"
+                                                href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
+                                                <!-- list-group-item list-group-item-action justify-content-between d-flex align-items-center -->
+                                                    <span>{
+                                                            if ($letterYear = '[Jahr unbekannt]') then
+                                                                ('[ohne Jahr]')
+                                                            else
+                                                                ($letterYear)
+                                                           }
+                                                    </span>
+                                                    <span class="badge badge-jra badge-pill right">{$letterCount}</span></a></li>
+                                       }
+                                  </ul>
+                              </div>
+                              <!--</li>-->
                             </div>
                         </div>
-                        <div class="col-md-9 col-sm-9"> <!-- pre-scrollable -->
+                        <div class="col-md-9 col-sm-9 pre-scrollable"> <!-- pre-scrollable -->
                             {$lettersGroupedByYears}
                         </div>
                     </div>
-                  <!--   </div>
-                    </div>-->
+                  </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1265,7 +1266,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                     </ul>
                     <div
                         class="tab-content">
-                        <!--<div
+                        <div
                             class="tab-pane fade show active"
                             id="alpha">
                             <br/>
@@ -1306,7 +1307,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     {$personsGroupedByInitials}
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div
                             class="tab-pane fade show active"
                             id="birth">
@@ -1342,7 +1343,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                 </div>
                             </div>
                         </div>
-                       <!-- <div
+                       <div
                             class="tab-pane fade"
                             id="death">
                             <br/>
@@ -1378,7 +1379,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     {$personsGroupedByDeath}
                                 </div>
                             </div>
-                        </div>-->
+                        </div>
                     </div>
                 </div>
                 <!--<div
