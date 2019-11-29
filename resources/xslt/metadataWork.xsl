@@ -11,7 +11,9 @@
                         <xsl:value-of select="mei:mei/@xml:id"/>
                     </td>
                 </tr>
-                                <xsl:if test="//mei:creation/mei:dedication/text() !=''">
+                </table>
+            <table class="workView">
+                <xsl:if test="//mei:creation/mei:dedication/text()/normalize-space(.) !=''">
                 <tr>
                     <td valign="top">Widmung:</td>
                     <td>
@@ -32,16 +34,33 @@
                 </tr>
                 </xsl:if>
                                 <xsl:if test="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist != ''">
+                                    
                 <tr>
                     <td valign="top">Textdichter:</td>
                     <td>
-                        <xsl:value-of select="//mei:lyricist/mei:persName"/> (<a href="{concat($viewPerson, //mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="//mei:lyricist/mei:persName/@auth"/></a>)
-                            <xsl:for-each select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/mei:persName/@corresp">
-                                <xsl:variable name="mdivNo" select="./ancestor::mei:mei//mei:mdiv[@xml:id = //mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist/mei:persName/@corresp]"/>
-                                <li>
-                                    <xsl:value-of select="concat('zu Nr. ', $mdivNo)"/>
-                                </li>
-                            </xsl:for-each>
+                        
+                        <xsl:for-each select="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist">
+                            <xsl:variable name="corresp" select="substring-after(@corresp,'#')"/>
+                        <xsl:choose>
+                            <xsl:when test="mei:persName">
+                            <xsl:value-of select="mei:persName"/>
+                            (<a href="{concat($viewPerson, mei:persName/@auth)}">
+                                <xsl:value-of select="mei:persName/@auth"/>
+                            </a>)
+                            <xsl:if test="$corresp">
+                                <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
+                            </xsl:if>
+                            <br/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="."/>
+                                <xsl:if test="$corresp">
+                                    <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
+                                </xsl:if>
+                                <br/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        </xsl:for-each>
                     </td>
                 </tr>
                 </xsl:if>
@@ -51,11 +70,11 @@
                     <td valign="top">Besetzung:</td>
                     <td>
                         <xsl:choose>
-                            <xsl:when test="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/count(mei:perfRes[not(@type = 'alt')]) = 1">
-                                <xsl:value-of select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type = 'alt')]/normalize-space(text())"/>
+                            <xsl:when test="/mei:perfMedium/mei:perfResList//count(mei:perfRes[not(@type = 'alt')]) = 1">
+                                <xsl:value-of select="//mei:perfMedium/mei:perfResList//mei:perfRes[not(@type = 'alt')]/normalize-space(text())"/>
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(contains(@type, 'alt'))]">
+                                <xsl:for-each select="//mei:perfMedium/mei:perfResList//mei:perfRes[not(contains(@type, 'alt'))]">
                                     <xsl:value-of select="./normalize-space(text())"/>
                                     <br/>
                                 </xsl:for-each>
@@ -63,16 +82,16 @@
                         </xsl:choose>
                     </td>
                 </tr>
-                                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type='alt'])">
+                                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList//mei:perfRes[@type='alt'])">
                 <tr>
                     <td valign="top">Alternative Besetzung:</td>
                     <td>
                         <xsl:choose>
-                            <xsl:when test="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/count(mei:perfRes[@type = 'alt']) = 1">
-                                <xsl:value-of select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type = 'alt']/normalize-space(text())"/>
+                            <xsl:when test="//mei:workList/mei:work/mei:perfMedium/mei:perfResList//count(mei:perfRes[@type = 'alt']) = 1">
+                                <xsl:value-of select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList//mei:perfRes[@type = 'alt']/normalize-space(text())"/>
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[@type = 'alt']">
+                                <xsl:for-each select="//mei:workList/mei:work/mei:perfMedium/mei:perfResList//mei:perfRes[@type = 'alt']">
                                     <xsl:value-of select="./normalize-space(text())"/>
                                     <br/>
                                 </xsl:for-each>
@@ -121,7 +140,7 @@
                             <xsl:if test="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
             <table class="workView">
                 <tr>
-                    <td>Bekannte Ausgaben:</td>
+                    <td>Erfasste Ausgaben:</td>
                     <td>
                         <xsl:choose>
                             <xsl:when test="//mei:componentList/mei:manifestation/mei:biblList/count(mei:bibl) = 1">
@@ -163,7 +182,7 @@
                 </xsl:if>
             </table>
                             </xsl:if>
-            <xsl:if test="//mei:eventList/mei:event[@type='UA']">            
+            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            
             <table class="workView">
                 <tr>
                     <td>Uraufführung:</td>
@@ -187,10 +206,10 @@
                             <br/>
                             <xsl:value-of select="concat('Dirigent: ', $UAconductor)"/>
                         </xsl:if>
-                        <xsl:if test="$UAinterpret">
+                        <xsl:if test="$UAinterpret/normalize-space() !=''">
                             <xsl:for-each select="$UAinterpret">
                                 <br/>
-                                <xsl:value-of select="concat('Interpret: ', ./text()[1])"/>
+                                <xsl:value-of select="concat('Interpret(en): ', ./text()[1])"/>
                                 <xsl:if test="contains(./@role,' ')">
                                     <xsl:value-of select="concat(' (',string-join(subsequence(tokenize(./@role,' '),2),'|'),')')"/>
                                 </xsl:if>

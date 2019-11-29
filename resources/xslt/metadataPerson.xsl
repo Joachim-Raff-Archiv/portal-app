@@ -1,15 +1,22 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:http="http://expath.org/ns/http-client" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes"/>
     <xsl:variable name="person" select="//listPerson/person"/>
     <xsl:variable name="graphic" select="$person/ancestor::TEI/facsimile/graphic[1]"/>
 
     <xsl:template match="/">
         <xsl:choose>
-            <xsl:when test="$person/ancestor::TEI/facsimile/graphic">
+            <xsl:when test="$person/ancestor::TEI/facsimile/graphic[1]/@url">
                 <div class="row">
-                <div class="col-3"><img src="{$graphic/@url}" class="img-thumbnail" width="200px"/><br/><br/>
-                    <xsl:if test="$graphic/desc"><xsl:value-of select="$graphic/desc"/><br/></xsl:if>Quelle: 
-                    <a href="{$graphic/@source}" target="_blank"><xsl:value-of select="$graphic/@resp"/></a></div>
+                <div class="col-3">
+                    <img src="{$graphic/@url}" class="img-thumbnail" width="200px"/>
+                    <br/>
+                    <br/>
+                    <xsl:if test="$graphic/desc">
+                        <xsl:value-of select="$graphic/desc"/>
+                        <br/>
+                    </xsl:if>
+                    Quelle: <a href="{$graphic/@source}" target="_blank"> <xsl:value-of select="$graphic/@resp"/> </a>
+                </div>
                 <div class="col">
                     <xsl:call-template name="personMetadataView"/>
                 </div>

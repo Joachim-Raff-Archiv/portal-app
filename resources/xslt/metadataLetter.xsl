@@ -30,26 +30,30 @@
                 <td valign="top">Absender:</td>
                 <td>
                     <xsl:if test="$correspAction[@type = 'sent']/persName != ''">
+                        <xsl:for-each select="$correspAction[@type = 'sent']/persName">
                         <xsl:choose>
-                            <xsl:when test="contains($correspAction[@type = 'sent']/persName/text()[1], ', ')">
-                                <xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]/substring-before(., ',')"/></xsl:when>
+                            <xsl:when test="contains(text()[1], ', ')">
+                                <xsl:value-of select="text()[1]/substring-after(., ',')"/> <xsl:value-of select="text()[1]/substring-before(., ',')"/></xsl:when>
                             <xsl:otherwise>
-                                <xsl:value-of select="$correspAction[@type = 'sent']/persName/text()[1]"/>
+                                <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'sent']/persName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$correspAction[@type = 'sent']/persName/@key)}"><xsl:value-of select="$correspAction[@type = 'sent']/persName/@key"/></a>)
-                        </xsl:if>
+                        <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                        </xsl:if><br/>
+                        </xsl:for-each>
                     </xsl:if>
                     <xsl:if test="$correspAction[@type = 'sent']/orgName != ''">
+                        <xsl:for-each select="$correspAction[@type = 'sent']/orgName">
                         <xsl:choose>
-                            <xsl:when test="contains($correspAction[@type = 'sent']/orgName/text()[1], ', ')">
-                                <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]/substring-before(., ',')"/></xsl:when>
+                            <xsl:when test="contains(text()[1], ', ')">
+                                <xsl:value-of select="text()[1]/substring-after(., ',')"/> <xsl:value-of select="text()[1]/substring-before(., ',')"/></xsl:when>
                             <xsl:otherwise>
-                                <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]"/>
+                                <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'sent']/orgName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$correspAction[@type = 'sent']/orgName/@key)}"><xsl:value-of select="$correspAction[@type = 'sent']/orgName/@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if>
+                        </xsl:for-each>
                     </xsl:if>
                 </td>
             </tr>
@@ -67,26 +71,30 @@
                 <td valign="top">Empfänger:</td>
                 <td>
                     <xsl:if test="$correspAction[@type = 'received']/persName != ''">
-                        <xsl:choose>
-                            <xsl:when test="contains($correspAction[@type = 'received']/persName/text()[1], ', ')">
-                                <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]/substring-before(., ',')"/></xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="$correspAction[@type = 'received']/persName/text()[1]"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'received']/persName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$correspAction[@type = 'received']/persName/@key)}"><xsl:value-of select="$correspAction[@type = 'received']/persName/@key"/></a>)
-                        </xsl:if>
+                        <xsl:for-each select="$correspAction[@type = 'received']/persName">
+                            <xsl:choose>
+                                <xsl:when test="contains(text()[1], ', ')">
+                                    <xsl:value-of select="text()[1]/substring-after(., ',')"/> <xsl:value-of select="text()[1]/substring-before(., ',')"/></xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="text()[1]"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                            </xsl:if><br/>
+                        </xsl:for-each>
                     </xsl:if>
                     <xsl:if test="$correspAction[@type = 'received']/orgName != ''">
-                        <xsl:choose>
-                            <xsl:when test="contains($correspAction[@type = 'received']/orgName/text()[1], ', ')">
-                                <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]/substring-after(., ',')"/> <xsl:value-of select="$correspAction[@type = 'sent']/orgName/text()[1]/substring-before(., ',')"/></xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="$correspAction[@type = 'received']/orgName/text()[1]"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="$correspAction[@type = 'received']/orgName/@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$correspAction[@type = 'received']/orgName/@key)}"><xsl:value-of select="$correspAction[@type = 'received']/orgName/@key"/></a>)
-                        </xsl:if>
+                        <xsl:for-each select="$correspAction[@type = 'received']/orgName">
+                            <xsl:choose>
+                                <xsl:when test="contains(text()[1], ', ')">
+                                    <xsl:value-of select="text()[1]/substring-after(., ',')"/> <xsl:value-of select="text()[1]/substring-before(., ',')"/></xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="text()[1]"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                            </xsl:if>
+                        </xsl:for-each>
                     </xsl:if>
                 </td>
             </tr>
