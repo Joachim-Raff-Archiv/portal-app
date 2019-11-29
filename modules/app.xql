@@ -272,6 +272,38 @@ declare function local:getCorrespondance($idToReference){
         $letterEntry
 };
 
+declare function local:getWorks($work){
+    let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
+    let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
+    let $initial := for $case in upper-case(substring($workName, 1, 1))
+                        return switch ($case)
+                        case 'É' return 'E'
+                        case '0' return '0–9'
+                        case '1' return '0–9'
+                        case '2' return '0–9'
+                        case '3' return '0–9'
+                        case '4' return '0–9'
+                        case '5' return '0–9'
+                        case '6' return '0–9'
+                        case '7' return '0–9'
+                        case '8' return '0–9'
+                        case '9' return '0–9'
+                        default return $case 
+    let $workID := $work/@xml:id/string()
+    return
+        <div
+        class="row {if(string-length($work//mei:term)>9)then('RegisterEntry2')else('RegisterEntry')}">
+            <div
+                class="col">{$workName}</div>
+            <div
+                class="col-2">{$opus}</div>
+            <div
+                class="col-2"><a onclick="pleaseWait()"
+                    href="work/{$workID}">{$workID}</a>
+            </div>
+        </div>
+};
+
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
     let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
@@ -321,59 +353,63 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
     
     return
         (<div class="container">
-        <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
-                  <!--  <ul class="nav nav-pills" role="tablist">
+        <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
+                    <!--<ul class="row nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
                         <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
                         <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
-                    </ul> -->
+                    </ul>-->
+                    <button type="button" class="btn btn-jra dsabled">Sortierungen:</button>
+                    <button type="button" class="btn btn-jra">Datum</button>
+                    <button type="button" class="btn btn-jra"><a href="registryLettersReceiver.html">Empfänger</a></button>
                     <br/>
-            <div class="row" style="height: 500px;">
-                <div class="col-10"> <!--  pre-scrollable -->
+            <div class="row">
+                <div class="col-12"> <!--  pre-scrollable -->
                     
-                <!--    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="date"> -->
+                   <!-- <div class="tab-content">
+                        <div class="tab-pane fade show active" id="date">-->
                             <br/>
-                            <div
-                                class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="col-md-3 col-sm-3 hidden-xs"> <!-- nav nav-pills nav-stacked pre-scrollable  -->
-                                    <ul id="nav" style="height: 400px; overflow-y: auto;" class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="60">
-                                    {
-                                        for $year in $lettersGroupedByYears[@year !='']
-                                        let $letterCount := $year/@count/string()
-                                        let $letterYear := $year/@year/string()
-                                            order by $year
-                                        return
-                                            <a class="list-group-item list-group-item-action justify-content-between d-flex  align-items-center" href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}"><!-- class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" -->
-                                            <span>{
+                            <div class="row">
+                            <div class="col-md-3">
+                            <!--<div class="scrollspy">-->
+        					   <!--<li class="nav hidden-xs hidden-sm" style="height: 95%; overflow-y: auto; width: 200px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
+        					   <!--<div class="list-group" style="height: 95%; overflow-y: auto; width: 150px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
+        					   <div id="myScrollspy">
+        					   <ul class="nav hidden-xs hidden-sm" id="nav"> <!-- style="height: 90%; overflow-y: auto; width: 200px;" -->
+                                   {
+                                    for $year at $pos in $lettersGroupedByYears[@year !='']
+                                    let $letterCount := $year/@count/string()
+                                    let $letterYear := $year/@year/string()
+                                        order by $year
+                                    return
+                                        
+                                            <li style="width: 200px;"><a class="list-group-item list-group-item-action justify-content-between d-flex align-items-center"
+                                            href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
+                                            <!-- list-group-item list-group-item-action justify-content-between d-flex align-items-center -->
+                                                <span>{
                                                         if ($letterYear = '[Jahr unbekannt]') then
                                                             ('[ohne Jahr]')
                                                         else
                                                             ($letterYear)
-                                                    }</span>
-                                                <span
-                                                    class="badge badge-jra badge-pill right">{$letterCount}</span>
-                                            </a>
-                                    }
-                                    </ul>
-                                </nav>
-                                <div
-                                    class="col-md-9 col-sm-9"
-                                    id="divResults"> <!-- pre-scrollable -->
-                                    {$lettersGroupedByYears}
-                                </div>
+                                                       }
+                                                </span>
+                                                <span class="badge badge-jra badge-pill right">{$letterCount}</span></a></li>
+                                   }
+                              </ul>
+                                    <!--</div>-->
                             </div>
-                            </div>
-                            </div>
-                          <!--  </div>
-                            </div> -->
-                            </div>
-               
+                        </div>
+                        <div class="col-md-9 col-sm-9"> <!-- pre-scrollable -->
+                            {$lettersGroupedByYears}
+                        </div>
+                    </div>
+                  <!--   </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
         )
-
 };
 
 declare function app:registryLettersSender($node as node(), $model as map(*)) {
@@ -1703,7 +1739,6 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             <div
                                 class="row">
                                 <nav
-                                    id="nav"
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $institutionsGroupedByInitials
@@ -2200,7 +2235,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         class="container">
         <br/>
         <ul
-            class="nav nav-pills"
+            class="nav nav-tabs"
             role="tablist">
             <li
                 class="nav-item nav-linkless-jra">Sortierungen:</li>
@@ -2287,18 +2322,18 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     </div>
                     <div
                         class="col-2">
-                        <nav
+                        <ul
                             id="myScrollspy"
                             class="nav-pills col">
                             <li
                                 class="nav-item nav-linkless-jra">Zählung</li>
                             <a
-                                class="list-group-item list-group-item-action"
-                                href="#opera"><span>Opera</span></a>
+                                class="list-group-item list-group-item-action" href="#opera"
+                                ><span>Opera</span></a>
                             <a
-                                class="list-group-item list-group-item-action"
-                                href="#woos"><span>WoOs</span></a>
-                        </nav>
+                                class="list-group-item list-group-item-action" href="#woos"
+                                ><span>WoOs</span></a>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -2384,7 +2419,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 class="tab-pane fade"
                 id="sortGenre">
                 <ul
-                class="nav nav-pills"
+                class="nav nav-pills col-11 d-flex justify-content-between subNav"
                 role="tablist">
                     <li class="nav-item nav-linkless-jra"><span> </span></li>
                     <li
@@ -2417,95 +2452,139 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                          class="nav-link-jra"
                          data-toggle="tab"
                          href="#arrangements">Bearbeitungen</a></li>
+                         <li class="nav-item nav-linkless-jra d-flex justify-content-between"></li>
                 </ul>
                 <div class="tab-content">
                     <div
                         class="tab-pane fade show active"
                         id="vocalMusic">
                         <br/>
-                        <div
-                            class="row">
-                            <br/>
-                <div
-                    class="row">
-                    <div
-                        data-spy="scroll"
-                        data-target="#nav"
-                        data-offset="70"
-                        class="pre-scrollable col"
-                        id="divResults">
-                        <div
-                            class="RegisterSortBox">
                             <div
-                                class="RegisterSortEntry"
-                                id="opera">Werke mit Opuszahl</div>
-                            {
-                                for $work in $worksOpus
-                                let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
-                                let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-                                let $workID := $work/@xml:id/normalize-space(data(.))
-                                    order by $opus ascending
-                                return
+                                class="row">
+                                <div
+                                    class="pre-scrollable col-11">
+                                    <!-- data-spy="scroll"
+                                    data-target="#nav"
+                                    data-offset="70" -->
                                     <div
-                                        class="row RegisterEntry">
+                                        class="RegisterSortBox">
                                         <div
-                                            class="col-2">{$opus}</div>
+                                            class="RegisterSortEntry"
+                                            id="cat-01-01">Chorwerke mit Orchester geistlich</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
                                         <div
-                                            class="col">{$name}</div>
+                                            class="RegisterSortEntry2"
+                                            id="cat-01-01-01">Oratorien</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
                                         <div
-                                            class="col-2"><a
-                                                href="work/{$workID}">{$workID}</a></div>
+                                            class="RegisterSortEntry2"
+                                            id="cat-01-01-02">Liturgische Werke</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-01-02">Chorwerke mit Orchester weltlich</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                          class="RegisterSortEntry"
+                                          id="cat-01-03">Chorwerke mit Klavier</div>
+                                          {for $work in $works//mei:classification//mei:term[.='cat-01-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                           class="RegisterSortEntry"
+                                           id="cat-01-04">Chorwerke a cappella geistlich</div>
+                                           {for $work in $works//mei:classification//mei:term[.='cat-01-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                           class="RegisterSortEntry"
+                                           id="cat-01-05">Chorwerke a cappella weltlich</div>
+                                           {for $work in $works//mei:classification//mei:term[.='cat-01-05']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-01-06">Ensembles mit Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-06']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-01-07">Lieder mit Orchester</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-07']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-01-08">Lieder mit Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-08']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        
                                     </div>
-                            }
-                            <div
-                                class="RegisterSortEntry"
-                                id="woos">Werke ohne Opuszahl</div>
-                            {
-                                for $work in $worksWoO
-                                let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
-                                let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-                                let $workID := $work/@xml:id/normalize-space(data(.))
-                                    order by $opus ascending
-                                return
-                                    <div
-                                        class="row RegisterEntry">
-                                        <div
-                                            class="col-2">{$opus}</div>
-                                        <div
-                                            class="col">{$name}</div>
-                                        <div
-                                            class="col-2"><a
-                                                href="work/{$workID}">{$workID}</a></div>
-                                    </div>
-                            }
-                        </div>
-                    </div>
-                    <div
-                        class="col-2">
-                        <nav
-                            id="myScrollspy"
-                            class="nav-pills col">
-                            <li
-                                class="nav-item nav-linkless-jra">Zählung</li>
-                            <a
-                                class="list-group-item list-group-item-action"
-                                href="#opera"><span>Opera</span></a>
-                            <a
-                                class="list-group-item list-group-item-action"
-                                href="#woos"><span>WoOs</span></a>
-                        </nav>
-                    </div>
-                </div>
+                                </div>
                         </div>
                     </div>
                     <div
                         class="tab-pane fade"
                         id="stageMusic">
                         <br/>
-                        <div
-                            class="row">
-                            Hier kommt die Bühnenmusik hin.
-                        </div>
+                            <div
+                                class="row">
+                                <div
+                                    class="pre-scrollable col-11">
+                                    <!-- data-spy="scroll"
+                                    data-target="#nav"
+                                    data-offset="70" -->
+                                    <div
+                                        class="RegisterSortBox">
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-02-01">Opern</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-02-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-02-02">Schauspielmusiken</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-02-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        </div>
+                                   </div>
+                            </div>
                     </div>
                     <div
                         class="tab-pane fade"
@@ -2513,7 +2592,55 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            Hier kommt die Orchestermusik hin.
+                              <div
+                                    class="pre-scrollable col-11">
+                                    <!-- data-spy="scroll"
+                                    data-target="#nav"
+                                    data-offset="70" -->
+                                    <div
+                                        class="RegisterSortBox">
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-03-01">Symphonien</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-03-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-03-02">Suiten</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-03-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                       <div
+                                            class="RegisterSortEntry"
+                                            id="cat-03-03">Konzertante Werke</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-03-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                      <div
+                                            class="RegisterSortEntry"
+                                            id="cat-03-04">Ouvertüren und Vorspiele</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-03-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                     <div
+                                            class="RegisterSortEntry"
+                                            id="cat-03-05">Andere Orchesterwerke</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-03-05']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        </div>
+                                   </div>
                         </div>
                     </div>
                     <div
@@ -2522,7 +2649,128 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            Hier kommt die Kammermusik hin.
+                            <div
+                                    class="pre-scrollable col-11">
+                                    <!-- data-spy="scroll"
+                                    data-target="#nav"
+                                    data-offset="70" -->
+                                    <div
+                                        class="RegisterSortBox">
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-04-01">Kammermusik ohne Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-01-01">Sinfonietta</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-01-02">Oktett</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-01-03">Sextett</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-01-04">Streichquartette</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                       <div
+                                            class="RegisterSortEntry"
+                                            id="cat-04-02">Kammermusik mit Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-02-01">Klavierquintette</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-02-02">Klavierquartette</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-02-03">Klaviertrios</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-02-04">Bläser und Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-04-03">Violine und Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-03-01">Sonaten</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-03-02">Andere Werke für Violine und Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-04-04">Cello und Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-04-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        </div>
+                                   </div>
                         </div>
                     </div>
                     <div
@@ -2531,36 +2779,79 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            <nav
-                                id="myScrollspy"
-                                class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
-                                {
-                                    for $each in $worksGroupedByPerfResPiano
-                                    let $perf := $each/@perf/string()
-                                    let $count := $each/@count/string()
-                                        order by $perf
-                                    return
-                                        <a
-                                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                            href="{concat('#list-item-', $perf)}"><span>{
-                                                    if ($perf = 'unknown') then
-                                                        ('[unbekannt]')
-                                                    else
-                                                        ($perf)
-                                                }</span>
-                                            <span
-                                                class="badge badge-jra badge-pill right">{$count}</span>
-                                        </a>
-                                }
-                            </nav>
-                            <div
-                                data-spy="scroll"
-                                data-target="#nav"
-                                data-offset="70"
-                                class="pre-scrollable col"
-                                id="divResults">
-                                {$worksGroupedByPerfResPiano}
-                            </div>
+                              <div
+                                    class="pre-scrollable col-11">
+                                    <!-- data-spy="scroll"
+                                    data-target="#nav"
+                                    data-offset="70" -->
+                                    <div
+                                        class="RegisterSortBox">
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-05-01">Klavier zweihändig</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-05-01-01">Sonaten</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-05-01-02">Suiten</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-05-01-03">Weitere Stücke für Klavier zu zwei Händen</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-05-01-04">Fantasien und Variationen über fremde Themen</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}            
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-05-02">Klavier vierhändig</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-05-03">Zwei Klaviere</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-05-04">Orgel</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-04']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        </div>
+                                   </div>
                         </div>
                     </div>
                     <div
@@ -2569,7 +2860,39 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            Hier kommten die Bearbeitungen hin.
+                            <div
+                                    class="pre-scrollable col-11">
+                                    <!-- data-spy="scroll"
+                                    data-target="#nav"
+                                    data-offset="70" -->
+                                    <div
+                                        class="RegisterSortBox">
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-06-01">Für Orchester</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-06-01']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-06-02">Für Kammermusik</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-06-02']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry"
+                                            id="cat-06-03">Für Klavier</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-06-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by $worksByCat/xhtml:div[2]
+                                                return
+                                                    $worksByCat}
+                                   </div>
+                               </div>
                         </div>
                     </div>
                 </div>

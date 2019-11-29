@@ -15,9 +15,16 @@
 h1,h2,h3,h4,h5,h6{
     font-family: Montserrat;
 }
+html {
+    position: relative;
+}
 body {
     font-family: Merriweather;
     /*font-family: syntaxregular, Fallback, sans-serif;*/
+    padding-top: 20px;
+    padding-bottom: 20px;
+    position: relative;
+/*    height:80%;*/
 }
 
 .text-black{
@@ -47,6 +54,23 @@ body {
     border-top-right-radius: 4px;
 }
 
+.RegisterSortEntry2 {
+    font-size: 1.1em;
+    color: #641a85;
+    text-align: center;
+    font-weight: bold;
+    margin-left: 90px;
+    margin-right: 90px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    background-color: #f0f0f0;
+    border-bottom: 2px solid #641a85;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
 .RegisterEntry {
     border-bottom: 1px solid LightGray;
     padding-top: 0.25em;
@@ -54,6 +78,15 @@ body {
     margin-bottom: 0.25em;
     margin-right: 0.75em;
     margin-left: 0.75em;
+}
+
+.RegisterEntry2 {
+    border-bottom: 1px solid LightGray;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    margin-bottom: 0.25em;
+    margin-left: 100px;
+    margin-right: 100px;
 }
 
 .RegisterEntry:last-child
@@ -341,6 +374,9 @@ div.letterContentFullView{
     color: gray;
     font-size: 0.8em;    
 }
+.subNav {
+    background-color: rgb(240, 240, 240);
+}
 
 .suggestedCitation{
     font-size: 0.8em;
@@ -365,4 +401,45 @@ div.letterContentFullView{
     border-top-right-radius: 6px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
+}
+
+.nav .active {
+  font-weight: bold;
+}
+ 
+.nav .nav {
+  display: none;
+}
+ 
+.nav .active .nav {
+  display: block;
+}
+ 
+.nav .nav a {
+  font-weight: normal;
+  font-size: .85em;
+}
+ 
+.nav .nav span {
+  margin: 0 5px 0 2px;
+}
+ 
+.nav .nav .active a,
+.nav .nav .active:hover a,
+.nav .nav .active:focus a {
+  font-weight: bold;
+}
+ 
+.nav .nav .active span,
+.nav .nav .active:hover span,
+.nav .nav .active:focus span {
+  
+}
+.affix {
+  top: 10px;
+}
+
+
+.leftnav{
+    
 }
