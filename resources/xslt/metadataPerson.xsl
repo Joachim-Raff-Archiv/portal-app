@@ -204,5 +204,13 @@
                 </tr>
             </xsl:if>
         </table>
+        <table class="personView">
+            <xsl:if test="//bibl[@type = 'links']/ref[@type='wikipedia']">
+                <tr>
+                    <td>Sonstige:</td>
+                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="http://localhost:8080/exist/apps/raffArchive/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
+                </tr>
+            </xsl:if>
+        </table>
     </xsl:template>
 </xsl:stylesheet>

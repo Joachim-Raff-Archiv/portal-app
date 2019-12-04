@@ -1,3 +1,4 @@
+
 .navbar-text > a {
 	color: inherit; 
 	text-decoration: none;
@@ -21,9 +22,9 @@ html {
 body {
     font-family: Merriweather;
     /*font-family: syntaxregular, Fallback, sans-serif;*/
-    padding-top: 20px;
-    padding-bottom: 20px;
-    position: relative;
+/*    padding-top: 20px;*/
+/*    padding-bottom: 20px;*/
+/*    position: relative;*/
 /*    height:80%;*/
 }
 
@@ -105,10 +106,10 @@ body {
                              }
 
 .btn-jra {
-  background-image: -webkit-linear-gradient(top, #651A85 0%, #641A85 100%);
-  background-image:      -o-linear-gradient(top, #651A85 0%, #641A85 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#651A85), to(#641A85));
-  background-image:         linear-gradient(to bottom, #651A85 0%, #641A85 100%);
+  background-image: -webkit-linear-gradient(top, #641a85 0%, #641A85 100%);
+  background-image:      -o-linear-gradient(top, #641a85 0%, #641A85 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#641a85), to(#641A85));
+  background-image:         linear-gradient(to bottom, #641a85 0%, #641A85 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff651A85', endColorstr='#ff641A85', GradientType=0);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   background-repeat: repeat-x;
@@ -163,11 +164,11 @@ fieldset[disabled] .btn-jra.active {
 }
 
 navbar-jra .navbar-brand{
-    color: #651A85
+    color: #641a85
 }
 .navbar-jra .navbar-brand:focus,
 .navbar-jra .navbar-brand:hover{
-    color: #651A85
+    color: #641a85
 }
 .navbar-jra .navbar-nav .nav-link-jra{
     color: #641a85 /*rgba(127, 185, 29, 0.5)*/
@@ -183,7 +184,7 @@ navbar-jra .navbar-brand{
 .navbar-jra .navbar-nav .nav-link-jra.active,
 .navbar-jra .navbar-nav .nav-link-jra.show,
 .navbar-jra .navbar-nav .show > .nav-link-jra{
-    color: #651A85
+    color: #641a85; /*#641a85*/
 }
 .navbar-jra .navbar-toggler{
     color: rgba(255, 255, 255, .5);
@@ -196,7 +197,7 @@ navbar-jra .navbar-brand{
     color: rgba(255, 255, 255, .5)
 }
 .navbar-jra .navbar-text a{
-    color: #651A85
+    color: #641a85
 }
     
 .bg-jra{
@@ -228,19 +229,19 @@ button.bg-jra:hover{
 .nav-link-jra:focus,
 .nav-link-jra:hover{
     text-decoration: none;
-    /*font-weight:bold;*/
+    font-weight:bold;
     color:white;
     background-color:#641a85
 }
 .nav-link-jra.disabled{
     color: grey
     }
-.nav-tabs .nav-item.show .nav-link-jra,
-.nav-tabs .nav-link-jra.active{
+/*.nav-tabs .nav-item.show .nav-link-jra,
+.nav-tabs {
     color: white;
     background-color: #641a85;
-    /* border-color: #dee2e6 #dee2e6 #fff */
-}
+    /\* border-color: #dee2e6 #dee2e6 #fff *\/
+}*/
 
 .nav-link-jra-top{
     display: block;
@@ -252,7 +253,7 @@ button.bg-jra:hover{
 .nav-link-jra-top:focus,
 .nav-link-jra-top:hover{
     text-decoration: none;
-    /*font-weight:normal;*/
+    font-weight:bold;
     color:#641a85;
     background-color:#f0f0f0
 }
@@ -441,5 +442,8 @@ div.letterContentFullView{
 
 
 .leftnav{
+    
+}
+.start-catalog{
     
 }

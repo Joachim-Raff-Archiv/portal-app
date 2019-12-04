@@ -139,7 +139,7 @@ declare function local:getDate($date) {
                 else('0000-00-00')
                 
     return
-        $get[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]
+        $get (:[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]:)
 };
 
 declare function local:formatDate($dateRaw){
@@ -679,23 +679,13 @@ declare function app:letter($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            <a class="back" onclick="history.back();">&#8592; zurück</a>
-            <hr/>
             <div
                 class="page-header">
-                <br/>
-                <h4>{$datumSent}</h4>
+                <h5>{$datumSent}</h5>
                 <h2>Brief an {$nameTurned}</h2>
-                <h5>ID: {$id}</h5>
-                <br/>
-            </div>
-            <div
-                class="container">
-                <div
-                    class="row">
-                    <div
-                        class="col">
-            <ul
+                <h6>ID: {$id}</h6>
+                <hr/>
+                <ul
                 class="nav nav-pills"
                 role="tablist">
                 <li
@@ -719,6 +709,14 @@ declare function app:letter($node as node(), $model as map(*)) {
                         data-toggle="tab"
                         href="#viewXML">XML-Ansicht</a></li>
             </ul>
+                <hr/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
             <div
                 class="tab-content">
                 <div
@@ -1411,22 +1409,12 @@ declare function app:person($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
             <div
                 class="page-header">
-                <br/>
                 <h2>{$name}</h2>
-                <h5>ID: {$id}</h5>
-                <br/>
-            </div>
-            <div
-                class="container">
-                <div
-                    class="row">
-                    <div
-                        class="col">
-                        <ul
+                <h6>ID: {$id}</h6>
+                <hr/>
+                    <ul
                             class="nav nav-pills"
                             role="tablist">
                             <li
@@ -1459,6 +1447,15 @@ declare function app:person($node as node(), $model as map(*)) {
                                     data-toggle="tab"
                                     href="#xmlAnsicht">XML-Ansicht</a></li>
                         </ul>
+                        <hr/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+                        
                         <div
                             class="tab-content">
                             <div
@@ -1847,22 +1844,13 @@ declare function app:institution($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
+            
             <div
                 class="page-header">
-                <br/>
                 <h2>{$name}</h2>
-                <h5>ID: {$id}</h5>
-                <br/>
-            </div>
-            <div
-                class="container">
-                <div
-                    class="row">
-                    <div
-                        class="col">
-                        <ul
+                <h6>ID: {$id}</h6>
+                <hr/>
+                <ul
                             class="nav nav-pills"
                             role="tablist">
                             <li
@@ -1895,6 +1883,14 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     data-toggle="tab"
                                     href="#xmlAnsicht">XML-Ansicht</a></li>
                         </ul>
+                <hr/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
                         <div
                             class="tab-content">
                             <div
@@ -2917,22 +2913,12 @@ declare function app:work($node as node(), $model as map(*)) {
         (
             <div
             class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
             <div
                 class="page-header">
-                <br/>
                 <h2>{$name}</h2>
                 <h5>{$opus}</h5>
-                <br/>
-            </div>
-            <div
-                class="container">
-                <div
-                    class="row">
-                    <div
-                        class="col">
-                        <ul
+                <hr/>
+                <ul
                             class="nav nav-pills"
                             role="tablist">
                             <li
@@ -2941,14 +2927,14 @@ declare function app:work($node as node(), $model as map(*)) {
                                     class="nav-link-jra active"
                                     data-toggle="tab"
                                     href="#metadata">Allgemein</a></li>
-                            <!--{if ($naming) then(-->
+                            {if (local:getReferences($id)) then(
                             <li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#naming">Erwähnungen</a></li>
-                                    <!--)else()}-->
+                                    href="#references">Bezüge</a></li>
+                                    )else()}
                                     <li
                                 class="nav-item">
                                 <a
@@ -2956,7 +2942,16 @@ declare function app:work($node as node(), $model as map(*)) {
                                     data-toggle="tab"
                                     href="#viewXML">XML-Ansicht</a></li>
                         </ul>
+            
+                <hr/>
+            </div>
             <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+                        <div
                             class="tab-content">
                             <div
                                 class="tab-pane fade show active"
@@ -2995,56 +2990,22 @@ declare function app:work($node as node(), $model as map(*)) {
                         </div>
                         </div>
                             </div>
-            <!--{
-                                if ($naming/text()!='') then
-                                    (-->
-                                    <div
+                            {
+                                if (local:getReferences($id))
+                                then (<div
                                         class="tab-pane fade"
-                                        id="naming">
+                                        id="references">
                                         <br/>
-                                        {
-                                            <div class="pre-scrollable">
-                                            {
-                                                for $letter in $naming
-                                                let $letterID := $letter/@xml:id/string()
-                                                let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                                                let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                                                let $correspSent := if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                                                (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key) then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key) else('noID'):)
-                                                let $correspReceived := if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
-                                                (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key) then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key) else('noID'):)
-                                                let $date := local:getDate($correspActionSent)
-                                                let $year := substring($date,1,4)
-                                                let $dateFormatted := local:formatDate($date) (:if(string-length($date)=10 and not(contains($date,'00')))
-                                                                        then(format-date(xs:date($date),'[D]. [M,*-3]. [Y]','de',(),()))
-                                                                        else if($date='0000' or $date='0000-00' or $date='0000-00-00')
-                                                                        then('[undatiert]')
-                                                                        else if(string-length($date)=7 and not(contains($date,'00')))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($date,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                                                        else if(contains($date,'0000-') and contains($date,'-00'))
-                                                                        then (concat(upper-case(substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($date,'0000-','1492-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else if(starts-with($date,'0000-'))
-                                                                        then(concat(format-date(xs:date(replace($date,'0000-','1492-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($date,'0000-','1492-')),'[Mn,*-3].','de',(),()),2)))
-                                                                        else($date):)
-                                                
-                                                let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                                                        <div class="col-3">{$dateFormatted}</div>
-                                                                        <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
-                                                                        <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                                                                    </div>
-                                                
-                                                    order by $date
-                                                return
-                                                $letterEntry
-                                                }
-                                                </div>
-                                    
-                                         }
-                                    </div>
-                                    <!--)
+                                        <div class="{if(count(local:getReferences($id)) gt 5) then('pre-scrollable') else()}">{
+                                            let $entrys := local:getReferences($id)
+                                            return
+                                                $entrys
+                                        }</div>
+                                      </div>
+                                )
                                 else
                                     ()
-                            }-->
+                            }
                             <div
                     class="tab-pane fade"
                     id="viewXML">
@@ -3073,14 +3034,11 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
             <div
                 class="page-header">
-                <br/>
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
-                <br/>
+                <hr/>
             </div>
             <div
                 class="container">
@@ -3104,27 +3062,10 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
     
     return
         (
-        <div
-            class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
-            <div
-                class="page-header">
-                <br/>
-                <h2>{$title}</h2>
-                <h5 class="sublevel">{$subtitle}</h5>
-                <br/>
-            </div>
-            <div
-                class="container">
-                <div
-                    class="row">
-                    <div
-                        class="col">
+        <p class="title-b">{$title}</p>,
+        <p class="subtitle-b">{$subtitle}</p>,
+        <div>
             {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
-            </div>
-            </div>
-            </div>
         </div>
         )
 };
@@ -3139,14 +3080,11 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
             <div
                 class="page-header">
-                <br/>
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
-                <br/>
+                <hr/>
             </div>
             <div
                 class="container">
@@ -3172,14 +3110,11 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
         (
          <div
             class="container">
-            <button class="btn btn-jra" onclick="history.back();">&#8592; zurück</button>
-            <hr/>
             <div
                 class="page-header">
-                <br/>
                 <h2>{$title}</h2>
                 <h5 class="sublevel">{$subtitle}</h5>
-                <br/>
+                <hr/>
             </div>
             <div
                 class="container">
@@ -3214,8 +3149,8 @@ declare function app:impressum($node as node(), $model as map(*)) {
     
     return
         (
-        <div
-            class="container">
+        <p class="title-b">Kontakt</p>,
+        <div>
             {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
         </div>
         )
@@ -3256,4 +3191,33 @@ let $body := concat('Hey Guys,%0D%0A%0D%0Aplease%20check%20this%20url:%0D%0A%0D%
 let $href := concat($mailto,'?subject=',$subject,'&amp;body=',$body)
 return
     <button class="btn list-item-jra"><a href="{$href}">report</a></button>
+};
+
+declare function app:countLetters($node as node(), $model as map(*)){
+let $letters := collection("/db/contents/jra/sources/documents/letters") | collection("/db/contents/jra/sources/documents/others")
+let $count := count($letters//tei:TEI)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Postsachen</span>)
+};
+declare function app:countWorks($node as node(), $model as map(*)){
+let $letters := collection("/db/contents/jra/works")
+let $count := count($letters//mei:mei)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Werke</span>)
+};
+declare function app:countPersons($node as node(), $model as map(*)){
+let $letters := collection("/db/contents/jra/persons")
+let $count := count($letters//tei:TEI)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Personen</span>)
+};
+declare function app:countInstitutions($node as node(), $model as map(*)){
+let $letters := collection("/db/contents/jra/institutions")
+let $count := count($letters//tei:TEI)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Institutionen</span>)
 };
