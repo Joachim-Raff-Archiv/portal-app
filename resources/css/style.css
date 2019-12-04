@@ -12,11 +12,11 @@
 
 
 body {
-  background-color: #00a3d4;
+  background-color: #e6e6e6; /*#00a3d4*/
   font-family: Merriweather;
 }
 .nav-jra-landing {
-    /*background-color: #00a1c7;*/
+    background-color: #e6e6e6; /*#00a3d4*/
 }
 h1,
 h2,
@@ -451,7 +451,7 @@ font-family: Montserrat;
 
 .navbar-b.navbar-trans .nav-link,
 .navbar-b.navbar-reduce .nav-link {
-  color: #fff;
+  color: #641a85;
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -1093,7 +1093,7 @@ font-family: Montserrat;
 }
 
 .contact-mf {
-  margin-top: 4rem;
+  margin-top: 3rem;
 }
 
 /*======================================
@@ -1102,7 +1102,7 @@ font-family: Montserrat;
 
 footer {
   text-align: center;
-  color: #fff;
+  color: #000000;
   padding-bottom: 4rem;
 }
 
@@ -1115,7 +1115,7 @@ footer .credits {
 }
 
 footer .credits a {
-  color: #fff;
+  color: #000;
 }
 
 /*======================================
