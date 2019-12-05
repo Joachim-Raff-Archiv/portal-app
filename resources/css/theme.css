@@ -1,9 +1,37 @@
+/* Custom CSS for JRA-Portal, Dennis Ried 2019 */
+
+a{
+    color: #641a85; 
+	text-decoration: none;
+}
+a:focus,a:hover{
+    color: #641a85; 
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.navbar{
+    background-color: #641a85;
+    }
 
 .navbar-text > a {
 	color: inherit; 
 	text-decoration: none;
 }
-
+.list-group-item.active:focus,.list-group-item.active:hover,.list-group-item.active{
+    text-shadow:0 -1px 0 #286090;
+    background-image:-webkit-linear-gradient(top,#a30cd1 0,#6e078a 100%);
+    background-image:-o-linear-gradient(top,#a30cd1 0,#6e078a 100%);
+    background-image:-webkit-gradient(linear,left top,left bottom,from(#a30cd1),to(#6e078a));
+    background-image:linear-gradient(to bottom,#a30cd1 0,#6e078a 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff2b669a', GradientType=0);
+    background-repeat:repeat-x;
+    border-color:#6e078a;
+/*    background: rgb(100,26,133);*/
+/*    background: linear-gradient(189deg, rgba(100,26,133,1) 0%, rgba(153,153,153,1) 58%, rgba(100,26,133,1) 100%); */
+    /*background-color: rgba(110, 7, 138, .85);*/
+    color: white;
+}
 .jra {
     background-color: #641a85;
     color:white;
@@ -24,12 +52,18 @@ body {
     /*font-family: syntaxregular, Fallback, sans-serif;*/
 /*    padding-top: 20px;*/
 /*    padding-bottom: 20px;*/
-/*    position: relative;*/
+    position: relative;
 /*    height:80%;*/
 }
 
 .text-black{
     color:black;
+}
+.RegisterSortBox:first-of-type {
+    margin-top: 0em;
+    margin-left: auto;
+    margin-right: auto;
+/*    padding-top: 0.25em;*/
 }
 .RegisterSortBox {
     margin-top: 2em;
