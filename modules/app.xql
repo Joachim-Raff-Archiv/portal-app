@@ -139,7 +139,7 @@ declare function local:getDate($date) {
                 else('0000-00-00')
                 
     return
-        $get (:[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]:)
+        $get[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]
 };
 
 declare function local:formatDate($dateRaw){
@@ -156,6 +156,76 @@ declare function local:formatDate($dateRaw){
                                               else($dateRaw)
 };
 
+declare function local:getBirth($person){
+if ($person//tei:birth[1][@when-iso])
+    then
+        ($person//tei:birth[1]/@when-iso)
+    else
+        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+        then
+            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
+        else
+            if ($person//tei:birth[1][@notBefore])
+            then
+                ($person//tei:birth[1]/@notBefore)
+            else
+                if ($person//tei:birth[1][@notAfter])
+                then
+                    ($person//tei:birth[1]/@notAfter)
+                else
+                    ('noBirth')
+};
+declare function local:getDeath($person){
+if ($person//tei:death[1][@when-iso])
+    then
+        ($person//tei:death[1]/@when-iso)
+    else
+        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
+        then
+            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
+        else
+            if ($person//tei:death[1][@notBefore])
+            then
+                ($person//tei:death[1]/@notBefore)
+            else
+                if ($person//tei:death[1][@notAfter])
+                then
+                    ($person//tei:death[1]/@notAfter)
+                else
+                    ('noDeath')
+                    };
+
+declare function local:formatLifedata($lifedata){
+if(starts-with($lifedata,'-')) then(concat(substring(format-number(number($lifedata),'##.##;##.##'),2),' v. Chr.')) else($lifedata)
+};
+
+declare function local:getLifedata($person){
+let $birth := if(local:getBirth($person)='noBirth')then()else(local:getBirth($person))
+let $birthFormatted := local:formatLifedata($birth)
+let $death := if(local:getDeath($person)='noDeath')then()else(local:getDeath($person))
+let $deathFormatted := local:formatLifedata($death)
+let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
+                then
+                    (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
+                else
+                    if ($birthFormatted and not($deathFormatted))
+                    then
+                        (concat(' (*', $birthFormatted, ')'))
+                    else
+                        if ($deathFormatted and not($birthFormatted))
+                        then
+                            (concat(' (†', $deathFormatted, ')'))
+                        else
+                            ()
+    return
+        $lifedata
+                };
+
+declare function local:replaceToSortDist($input) {
+distinct-values(
+                replace(replace(replace(replace(replace(replace(replace(replace($input,'ö','oe'),'ä','ae'),'ü','ue'),'é','e'),'è','e'),'ê','e'),'á','a'),'à','a')
+                )
+                };
 declare function local:getReferences($idToReference) {
     let $collectionReference := collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference] | collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference]
         for $doc in $collectionReference
@@ -173,19 +243,19 @@ declare function local:getReferences($idToReference) {
                             then('Person')
                             else if(starts-with($docRoot/@xml:id,'D'))
                             then('Institution')
-                            else('[Art]')
+                            else('Sonstige')
             let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
             let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
             let $correspSent := if($correspActionSent/tei:persName/text())
                                 then($correspActionSent/tei:persName/text()[1])
                                 else if($correspActionSent/tei:orgName/text())
                                 then($correspActionSent/tei:orgName/text()[1])
-                                else('[Unbekannt]')
+                                else('[N.N.]')
             let $correspReceived := if($correspActionReceived/tei:persName/text())
                                     then($correspActionReceived/tei:persName/text()[1])
                                     else if($correspActionReceived/tei:orgName/text())
                                     then($correspActionReceived/tei:orgName/text()[1])
-                                    else('[Unbekannt]')
+                                    else('[N.N.]')
             let $docDate := if(starts-with($docRoot/@xml:id,'A'))
                             then(local:getDate($docRoot//tei:correspAction[@type='sent']))
                             else(<br/>)
@@ -198,7 +268,7 @@ declare function local:getReferences($idToReference) {
                              else('noTitle')
             let $role := if(starts-with($docRoot/@xml:id,'C'))
                             then(if($docRoot//tei:person/tei:affiliation/text() and $docRoot//tei:person/tei:occupation/text())
-                                 then(concat($docRoot//tei:person/tei:affiliation,', ',$docRoot//tei:person/tei:occupation))
+                                 then(concat($docRoot//tei:person/tei:affiliation,', ',string-join($docRoot//tei:person/tei:occupation,'')))
                                  else if($docRoot//tei:person/tei:affiliation/text())
                                  then($docRoot//tei:person/tei:affiliation/text())
                                  else if($docRoot//tei:person/tei:occupation/text())
@@ -218,17 +288,17 @@ declare function local:getReferences($idToReference) {
                             then('../institution/')
                             else()
             let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                            <div class="col-3">{$docType}{if($docDate and starts-with($docRoot/@xml:id,'A'))
-                                                                          then(' vom ',local:formatDate($docDate))
-                                                                          else()}
-                                                                          <br/>
-                                                                          {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
-                                                                           then(' (Regeste)')
-                                                                           else()
-                                            }</div>
-                                            <div class="col">{$docTitle}&#160;<br/>{if($role)then(<span class="sublevel">{concat('(',$role,')')}</span>)else()}</div>
-                                            <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
-                                        </div>
+                            <div class="col-3">{if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
+                                                then('Regeste',<br/>)
+                                                else()}
+                                                {$docType}
+                                                {if($docDate and starts-with($docRoot/@xml:id,'A'))
+                                                then(' vom ',local:formatDate($docDate))
+                                                else()}
+                           </div>
+                           <div class="col">{$docTitle}&#160;<br/>{if($role)then(<span class="sublevel">{concat('(',$role,')')}</span>)else()}</div>
+                           <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
+                         </div>
             order by $docID
             return
                 $entry
@@ -245,7 +315,7 @@ declare function local:getCorrespondance($idToReference){
                             then($correspActionSent/tei:persName/text()[1])
                             else if($correspActionSent/tei:orgName/text())
                             then($correspActionSent/tei:orgName/text()[1])
-                            else('[Unbekannt]')
+                            else('[N.N.]')
         (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key)
                               then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key)
                               else('noID'):)
@@ -253,7 +323,7 @@ declare function local:getCorrespondance($idToReference){
                                 then($correspActionReceived/tei:persName/text()[1])
                                 else if($correspActionReceived/tei:orgName/text())
                                 then($correspActionReceived/tei:orgName/text()[1])
-                                else('[Unbekannt]')
+                                else('[N.N.]')
         (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key)
                                   then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key)
                                   else('noID'):)
@@ -314,8 +384,8 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                        let $correspSent := if($correspActionSent/tei:persName[2]/text()) then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[Unbekannt]')
-                        let $correspReceived := if($correspActionReceived/tei:persName[2]/text()) then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) else if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[Unbekannt]')
+                        let $correspSent := if($correspActionSent/tei:persName[2]/text()) then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[N.N.]')
+                        let $correspReceived := if($correspActionReceived/tei:persName[2]/text()) then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) else if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[N.N.]')
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
@@ -353,30 +423,25 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
     
     return
         (<div class="container">
+        <div class="row">
+        <div class="col-10">
         <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
-                    <ul class="row nav-pills" role="tablist">
+                    <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersReceiver.html">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersSender.html">Absender</a></li>
                     </ul>
-                    <!--<button type="button" class="btn btn-jra dsabled">Sortierungen:</button>
-                    <button type="button" class="btn btn-jra">Datum</button>
-                    <button type="button" class="btn btn-jra"><a href="registryLettersReceiver.html">Empfänger</a></button>-->
-                    <br/>
-            <div class="row">
-                <div class="col-10"> <!--  pre-scrollable -->
-                    
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="date">
                             <br/>
                             <div class="row">
-                            <div class="col-md-3 pre-scrollable">
-                            <div class="scrollspy">
+                            <!--<div class="col-md-3 pre-scrollable">
+                            <div class="scrollspy">-->
         					   <!--<li class="nav hidden-xs hidden-sm" style="height: 95%; overflow-y: auto; width: 200px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
         					   <!--<div class="list-group" style="height: 95%; overflow-y: auto; width: 150px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
-        					   <div id="myScrollspy">
-            					   <ul class="nav hidden-xs hidden-sm" id="nav"> <!-- style="height: 90%; overflow-y: auto; width: 200px;" -->
+        					   <div id="navigator" class="list-group col-3" style="position: relative; height:500px; overflow-y: scroll;"> <!-- id="myScrollspy" class="nav nav-pills navbar-fixed-top pre-scrollable col-3" -->
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- style="height: 90%; overflow-y: auto; width: 200px;" -->
                                        {
                                         for $year at $pos in $lettersGroupedByYears[@year !='']
                                         let $letterCount := $year/@count/string()
@@ -384,9 +449,8 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                             order by $year
                                         return
                                             
-                                                <li style="width: 200px;"><a class="list-group-item list-group-item-action justify-content-between d-flex align-items-center"
-                                                href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
-                                                <!-- list-group-item list-group-item-action justify-content-between d-flex align-items-center -->
+                                                <li class="nav-item list-group-item list-group-item-action">
+                                                    <a class="nav-link justify-content-between align-items-center d-flex" href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
                                                     <span>{
                                                             if ($letterYear = '[Jahr unbekannt]') then
                                                                 ('[ohne Jahr]')
@@ -396,12 +460,13 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                                     </span>
                                                     <span class="badge badge-jra badge-pill right">{$letterCount}</span></a></li>
                                        }
-                                  </ul>
-                              </div>
-                              <!--</li>-->
+                                       </ul>
+                                  </div>
+                              <!--</div>
+                              </li>
                             </div>
-                        </div>
-                        <div class="col-md-9 col-sm-9 pre-scrollable"> <!-- pre-scrollable -->
+                        </div>-->
+                        <div data-spy="scroll" data-target="#navigator" data-offset="0" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- col-md-9 col-sm-9 pre-scrollable -->
                             {$lettersGroupedByYears}
                         </div>
                     </div>
@@ -426,16 +491,16 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
                        
                         let $correspSentId := if($correspActionSent/tei:persName/@key)
-                                              then($correspActionSent/tei:persName/@key/string())
+                                              then($correspActionSent/tei:persName[1]/@key/string())
                                               else if($correspActionSent/tei:orgName/@key)
-                                              then($correspActionSent/tei:orgName/@key/string())
+                                              then($correspActionSent/tei:orgName[1]/@key/string())
                                               else()
                         
                         let $correspReceived := if($correspActionReceived/tei:persName/text())
                                                 then($correspActionReceived/tei:persName/text()[1])
                                                 else if($correspActionReceived/tei:orgName/text())
                                                 then($correspActionReceived/tei:orgName/text()[1])
-                                                else ('[Unbekannt]')
+                                                else ('[N.N.]')
                         
                         let $senderNameRaw :=  if($correspActionSent/tei:persName)
                                               then($correspActionSent/tei:persName[1]/text()[1])
@@ -489,9 +554,9 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
-                        <li class="nav-item"><a class="nav-link-jra active" href="registryLettersDate.html">Datum</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersReceiver.html">Empfänger</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" href="#sender">Absender</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersReceiver.html">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="#sender">Absender</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="sender">
@@ -511,7 +576,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                         return
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='none')then('[Unbekannt]')else($letterSender)}</span>
+                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='none')then('[N.N.]')else($letterSender)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -549,31 +614,28 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
                         
                         let $correspSent := if($correspActionSent/tei:persName/text())
-                                            then($correspActionSent/tei:persName/text()[1])
+                                            then($correspActionSent/tei:persName[1]/text()[1])
                                             else if($correspActionSent/tei:orgName/text())
-                                            then($correspActionSent/tei:orgName/text()[1])
-                                            else ('[Unbekannt]')
+                                            then($correspActionSent/tei:orgName[1]/text()[1])
+                                            else ('[N.N.]')
                         let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                                              then($correspActionReceived/tei:persName/@key)
+                                              then($correspActionReceived/tei:persName[1]/@key)
                                               else if($correspActionReceived/tei:orgName/@key)
-                                              then($correspActionReceived/tei:orgName/@key)
+                                              then($correspActionReceived/tei:orgName[1]/@key)
                                               else()
                         
                         let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                                then($correspActionReceived/tei:persName/text()[1])
+                                                then($correspActionReceived/tei:persName[1]/text()[1])
                                                 else if($correspActionReceived/tei:orgName/text())
-                                                then($correspActionReceived/tei:orgName/text()[1])
-                                                else ('[Unbekannt]')
+                                                then($correspActionReceived/tei:orgName[1]/text()[1])
+                                                else ('[N.N.]')
                         
-                        let $receiverNameRaw :=  if($correspActionReceived/tei:persName)
-                                              then($correspActionReceived/tei:persName[1]/text()[1])
-                                              else if($correspActionReceived/tei:orgName)
-                                              then($correspActionReceived/tei:orgName[1]/text()[1])
-                                              else()
-                        let $receiverName := for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
+                        let $receiverName := if($correspReceivedId)
+                                             then(for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
                                                let $title := $data//tei:titleStmt/tei:title/string()
                                                return
-                                                $title
+                                                $title)
+                                             else($correspReceived)
                                               
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
@@ -583,7 +645,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                 <div class="col">An {$correspSent}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $correspReceivedId
+                        group by $receiverName
                         return
                             (<div receiver="{distinct-values($receiverName)}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
@@ -617,9 +679,9 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
-                        <li class="nav-item"><a class="nav-link-jra active" href="registryLettersDate.html">Datum</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" href="#receiver">Empfänger</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" href="registryLettersSender.html">Absender</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="#receiver">Empfänger</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersSender.html">Absender</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="receiver">
@@ -639,7 +701,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                         return
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiverId='none')then('[Unbekannt]')else($letterReceiver)}</span>
+                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiverId='none')then('[N.N.]')else($letterReceiver)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -802,433 +864,299 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     let $persons := collection("/db/contents/jra/persons/")//tei:TEI
     
     let $personsAlpha := for $person in $persons
-    let $persID := $person/@xml:id/string()
-    let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
-    let $nameSurname := $person//tei:surname[@type = "used"][1]
-    let $nameForename := $person//tei:forename[@type = "used"][1]
-    let $nameAddName := $person//tei:addName[@type = "nick"][1]
-    let $nameForeFull := if ($nameForename) then($nameForename) else if ($nameAddName and not($nameForename)) then ($nameAddName) else ()
-    let $nameToJoin := if ($nameSurname != '') then($nameSurname, $nameForeFull) else if(not($nameAddName) and not($nameForename)) then($person//tei:titleStmt/tei:title) else ($nameForeFull)
-    let $role := string-join($person//tei:roleName,' | ')
-    let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-    then
-        (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
-    else
-        ()
-    let $birth := if ($person//tei:birth[1][@when-iso])
-    then
-        ($person//tei:birth[1]/@when-iso)
-    else
-        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
-        then
-            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
-        else
-            if ($person//tei:birth[1][@notBefore])
-            then
-                ($person//tei:birth[1]/@notBefore)
-            else
-                if ($person//tei:birth[1][@notAfter])
-                then
-                    ($person//tei:birth[1]/@notAfter)
-                else
-                    ()
-    let $birthFormatted := if(starts-with($birth,'-')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
-    let $death := if ($person//tei:death[1][@when-iso])
-    then
-        ($person//tei:death[1]/@when-iso)
-    else
-        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
-        then
-            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
-        else
-            if ($person//tei:death[1][@notBefore])
-            then
-                ($person//tei:death[1]/@notBefore)
-            else
-                if ($person//tei:death[1][@notAfter])
-                then
-                    ($person//tei:death[1]/@notAfter)
-                else
-                    ()
-    let $deathFormatted := if(starts-with($death,'-')) then(concat(substring(format-number(number($death),'##.##;##.##'),2),' v. Chr.')) else($death)
-    let $lifeData := if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
-    then
-        (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
-    else
-        if ($birthFormatted and not($deathFormatted))
-        then
-            (concat(' (* ', $birthFormatted, ')'))
-        else
-            if ($deathFormatted and not($birthFormatted))
-            then
-                (concat(' († ', $birthFormatted, ')'))
-            else
-                ()
-    let $nameJoined := if ($nameForeFull = '')
-    then
-        ($nameSurname)
-    else
-        (string-join($nameToJoin, ', '))
-    let $nameToSort := distinct-values(replace(replace(replace($nameSurname,'ö','oe'),'ä','ae'),'ü','ue'))
-    let $name := <div
-        class="row RegisterEntry">
-        <div
-            class="col">
-            {$nameJoined}
-            {$lifeData}
-            {
-                if ($role) then
-                    (<br/>, <span class="sublevel">({$role})</span>)
-                else
-                    ()
-            }
-            {
-                if ($pseudonym) then
-                    (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
-                else
-                    ()
-            }
-        </div>
-        <!--<div class="col-3"></div>-->
-        <div
-            class="col-2"><a  onclick="pleaseWait()"
-                href="person/{$persID}">{$persID}</a></div>
-    </div>
-        group by $initial
-        order by $initial
-    return
-        (<div
-            name="{$initial}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                            let $persID := $person/@xml:id/string()
+                            let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
+                            let $nameSurname := $person//tei:surname[@type = "used"][1]
+                            let $nameForename := $person//tei:forename[@type = "used"][1]
+                            let $nameAddName := $person//tei:addName[@type = "nick"][1]
+                            let $nameForeFull := if ($nameForename) then($nameForename) else if ($nameAddName and not($nameForename)) then ($nameAddName) else ()
+                            let $nameToJoin := if ($nameSurname != '') then($nameSurname, $nameForeFull) else if(not($nameAddName) and not($nameForename)) then($person//tei:titleStmt/tei:title) else ($nameForeFull)
+                            let $role := string-join($person//tei:roleName,' | ')
+                            let $pseudonym := if ($person//node()[@type = 'pseudonym'])
+                            then
+                                (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
+                            else
+                                ()
+                            (:let $birth := local:getBirth($person)
+                            let $birthFormatted := local:formatLifedata($birth)
+                            let $death := local:getBirth($person)
+                            let $deathFormatted := local:formatLifedata($death):)
+                            
+                            let $lifeData := local:getLifedata($person)
+                            let $nameJoined := if ($nameForeFull = '')
+                            then
+                                ($nameSurname)
+                            else
+                                (string-join($nameToJoin, ', '))
+                            let $nameToSort := local:replaceToSortDist($nameSurname)
+                            let $name := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {$nameJoined}
+                                    {$lifeData}
+                                    {
+                                        if ($role) then
+                                            (<br/>, <span class="sublevel">({$role})</span>)
+                                        else
+                                            ()
+                                    }
+                                    {
+                                        if ($pseudonym) then
+                                            (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
+                                        else
+                                            ()
+                                    }
+                                </div>
+                                <!--<div class="col-3"></div>-->
+                                <div
+                                    class="col-2"><a  onclick="pleaseWait()"
+                                        href="person/{$persID}">{$persID}</a></div>
+                            </div>
+                                group by $initial
+                                order by $initial
+                            return
+                                (<div
+                                    name="{$initial}"
+                                    count="{count($name)}">
+                                    {
+                                        for $each in $name
+                                        let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                                            order by $order
+                                        return
+                                            $each
+                                    }
+                                </div>)
     
     let $personsGroupedByInitials := for $groups in $personsAlpha
-        group by $initial := $groups/@name/string()
-    return
-        (<div
-            class="RegisterSortBox"
-            initial="{$initial}"
-            count="{$personsAlpha[@name = $initial]/@count}"
-            xmlns="http://www.w3.org/1999/xhtml">
-            <div
-                class="RegisterSortEntry"
-                id="{
-                        concat('list-item-', if ($initial = '') then
-                            ('unknown')
-                        else
-                            ($initial))
-                    }">
-                {
-                    if ($initial = '') then
-                        ('[ohne Nachname]')
-                    else
-                        ($initial)
-                }
-            </div>
-            {
-                for $group in $groups
-                return
-                    $group
-            }
-        </div>)
+                                        group by $initial := $groups/@name/string()
+                                        return
+                                            (<div
+                                                class="RegisterSortBox"
+                                                initial="{$initial}"
+                                                count="{$personsAlpha[@name = $initial]/@count}"
+                                                xmlns="http://www.w3.org/1999/xhtml">
+                                                <div
+                                                    class="RegisterSortEntry"
+                                                    id="{
+                                                            concat('list-item-', if ($initial = '') then
+                                                                ('unknown')
+                                                            else
+                                                                ($initial))
+                                                        }">
+                                                    {
+                                                        if ($initial = '') then
+                                                            ('[ohne Nachname]')
+                                                        else
+                                                            ($initial)
+                                                    }
+                                                </div>
+                                                {
+                                                    for $group in $groups
+                                                    return
+                                                        $group
+                                                }
+                                            </div>)
     
     let $personsBirth := for $person in $persons
-    let $persID := $person/@xml:id/string()
-    let $nameSurname := $person//tei:surname[@type = "used"][1]
-    let $nameForename := $person//tei:forename[@type = "used"][1]
-    let $nameAddName := $person//tei:nameLink[1]
-    let $nameForeFull := if ($nameAddName) then
-        (concat($nameForename, ' ', $nameAddName))
-    else
-        ($nameForename)
-    let $nameToJoin := if (not($nameSurname = '')) then
-        ($nameSurname, $nameForeFull)
-    else
-        ($nameForeFull)
-    let $role := $person//tei:roleName[1]
-    let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-    then
-        (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
-    else
-        ()
-    let $birth := if ($person//tei:birth[1][@when-iso])
-                    then
-                        ($person//tei:birth[1]/@when-iso)
-                    else
-                        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
-                        then
-                            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
-                        else
-                            if ($person//tei:birth[1][@notBefore])
-                            then
-                                ($person//tei:birth[1]/@notBefore)
-                            else
-                                if ($person//tei:birth[1][@notAfter])
-                                then
-                                    ($person//tei:birth[1]/@notAfter)
-                                else
-                                    ('')
-    let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth)
-    let $birthFormatted := if(starts-with($birth,'-')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
-    let $death := if ($person//tei:death[1][@when-iso])
-    then
-        ($person//tei:death[1]/@when-iso)
-    else
-        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
-        then
-            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
-        else
-            if ($person//tei:death[1][@notBefore])
-            then
-                ($person//tei:death[1]/@notBefore)
-            else
-                if ($person//tei:death[1][@notAfter])
-                then
-                    ($person//tei:death[1]/@notAfter)
-                else
-                    ('')
-    let $deathFormatted := if(starts-with($death,'-')) then(concat(substring(format-number(number($death),'##.##;##.##'),2),' v. Chr.')) else($death)
-    let $lifeData := if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
-    then
-        (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
-    else
-        if ($birthFormatted and not($deathFormatted))
-        then
-            (concat(' (* ', $birthFormatted, ')'))
-        else
-            if ($deathFormatted and not($birthFormatted))
-            then
-                (concat(' († ', $birthFormatted, ')'))
-            else
-                ()
-    let $nameJoined := if ($nameForeFull = '')
-    then
-        ($nameSurname)
-    else
-        (string-join($nameToJoin, ', '))
-    let $name := <div
-        class="row RegisterEntry">
-        <div
-            class="col">
-            {$nameJoined}
-            {$lifeData}
-            {
-                if ($role) then
-                    (<br/>, <span class="sublevel">({$role})</span>)
-                else
-                    ()
-            }
-            {
-                if ($pseudonym) then
-                    (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
-                else
-                    ()
-            }
-        </div>
-        <!--<div class="col-3"></div>-->
-        <div
-            class="col-2"><a  onclick="pleaseWait()"
-                href="person/{$persID}">{$persID}</a></div>
-    </div>
-        group by $birth
-        order by $birth
-    return
-        (<div
-            name="{
-                    if ($birth = '') then
-                        ('unknownBirth')
-                    else
-                        (distinct-values($birthFormatted))
-                }"
-                birth="{$birth}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                             let $persID := $person/@xml:id/string()
+                             let $nameSurname := $person//tei:surname[@type = "used"][1]
+                             let $nameForename := $person//tei:forename[@type = "used"][1]
+                             let $nameAddName := $person//tei:nameLink[1]
+                             let $nameForeFull := if ($nameAddName) then
+                                 (concat($nameForename, ' ', $nameAddName))
+                             else
+                                 ($nameForename)
+                             let $nameToJoin := if (not($nameSurname = '')) then
+                                 ($nameSurname, $nameForeFull)
+                             else
+                                 ($nameForeFull)
+                             let $role := $person//tei:roleName[1]
+                             let $pseudonym := if ($person//node()[@type = 'pseudonym'])
+                             then
+                                 (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
+                             else
+                                 ()
+                             let $birth := local:getBirth($person)
+                             let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth)
+                             let $birthFormatted := local:formatLifedata($birth)
+(:                             let $death := local:getDeath($person):)
+(:                             let $deathFormatted := local:formatLifedata($death):)
+                             let $lifeData := local:getLifedata($person)
+                             let $nameJoined := if ($nameForeFull = '')
+                             then
+                                 ($nameSurname)
+                             else
+                                 (string-join($nameToJoin, ', '))
+                             let $name := <div
+                                 class="row RegisterEntry">
+                                 <div
+                                     class="col">
+                                     {$nameJoined}
+                                     {$lifeData}
+                                     {
+                                         if ($role) then
+                                             (<br/>, <span class="sublevel">({$role})</span>)
+                                         else
+                                             ()
+                                     }
+                                     {
+                                         if ($pseudonym) then
+                                             (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
+                                         else
+                                             ()
+                                     }
+                                 </div>
+                                 <!--<div class="col-3"></div>-->
+                                 <div
+                                     class="col-2"><a  onclick="pleaseWait()"
+                                         href="person/{$persID}">{$persID}</a></div>
+                             </div>
+                                 group by $birth
+                                 order by distinct-values($birthToSort)
+                             return
+                                 (<div
+                                     name="{
+                                             if ($birth != 'noBirth') then (distinct-values($birthFormatted)) else($birth)
+                                         }"
+                                         birth="{$birth}"
+                                     count="{count($name)}">
+                                     {
+                                         for $each in $name
+                                         let $order := local:replaceToSortDist($each)
+                                             order by $order
+                                         return
+                                             $each
+                                     }
+                                 </div>)
     
     let $personsGroupedByBirth := for $groups in $personsBirth
-        let $birthToSort := if (contains($groups/@birth/string(),'-')) then(substring($groups/@birth,1,5)) else($groups/@birth/number())
-        group by $birth := $groups/@name/normalize-space(string())
-(:        order by $sort ascending:)
-    return
-        (<div
-            class="RegisterSortBox"
-            birth="{$birth}" birthToSort="{translate($birthToSort,'/','_')}"
-            count="{$personsBirth[@name = $birth]/@count}"
-            xmlns="http://www.w3.org/1999/xhtml">
-            <div
-                class="RegisterSortEntry"
-                id="{concat('list-item-', translate($birth, '/', '_'))}">
-                {
-                    if ($birth = 'unknownBirth') then
-                        ('[Geburtsjahr nicht erfasst]')
-                    else
-                        ($birth)
-                }
-            </div>
-            {
-                for $group in $groups
-                return
-                    $group
-            }
-        </div>)
+                                     let $birthToSort := $groups/@birth/string()
+                                     (:if (contains($groups/@birth/string(),'-')) then(substring($groups/@birth,1,5)) else($groups/@birth/number()):)
+                                     group by $birth := $groups/@name/normalize-space(string())
+                                     order by $birthToSort
+                                      return
+                                          (<div
+                                              class="RegisterSortBox"
+                                              birth="{$birth}" birthToSort="{$birthToSort}"
+                                              count="{$personsBirth[@name = $birth]/@count}"
+                                              xmlns="http://www.w3.org/1999/xhtml">
+                                              <div
+                                                  class="RegisterSortEntry"
+                                                  id="{concat('list-item-', translate($birth, '/', '_'))}">
+                                                  {
+                                                      if ($birth = 'noBirth') then
+                                                          ('[Geburtsjahr nicht erfasst]')
+                                                      else
+                                                          ($birth)
+                                                  }
+                                              </div>
+                                              {
+                                                  for $group in $groups
+                                                  return
+                                                      $group
+                                              }
+                                          </div>)
     
     let $personsDeath := for $person in $persons
-    let $persID := $person/@xml:id/string()
-    let $nameSurname := $person//tei:surname[@type = "used"][1]
-    let $nameForename := $person//tei:forename[@type = "used"][1]
-    let $nameAddName := $person//tei:nameLink[1]
-    let $nameForeFull := if ($nameAddName) then
-        (concat($nameForename, ' ', $nameAddName))
-    else
-        ($nameForename)
-    let $nameToJoin := if (not($nameSurname = '')) then
-        ($nameSurname, $nameForeFull)
-    else
-        ($nameForeFull)
-    let $role := $person//tei:roleName[1]
-    let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-    then
-        (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
-    else
-        ()
-    let $birth := if ($person//tei:birth[1][@when-iso])
-    then
-        ($person//tei:birth[1]/@when-iso)
-    else
-        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
-        then
-            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
-        else
-            if ($person//tei:birth[1][@notBefore])
-            then
-                ($person//tei:birth[1]/@notBefore)
-            else
-                if ($person//tei:birth[1][@notAfter])
-                then
-                    ($person//tei:birth[1]/@notAfter)
-                else
-                    ('')
-    let $birthFormatted := if(starts-with($birth,'-0')) then(concat(substring(format-number(number($birth),'##.##;##.##'),2),' v. Chr.')) else($birth)
-    let $death := if ($person//tei:death[1][@when-iso])
-    then
-        ($person//tei:death[1]/@when-iso)
-    else
-        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
-        then
-            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
-        else
-            if ($person//tei:death[1][@notBefore])
-            then
-                ($person//tei:death[1]/@notBefore)
-            else
-                if ($person//tei:death[1][@notAfter])
-                then
-                    ($person//tei:death[1]/@notAfter)
-                else
-                    ('')
-    let $deathFormatted := if(starts-with($death,'-')) then(concat(substring(format-number(number($death),'##.##;##.##'),2),' v. Chr.')) else($death)
-    let $lifeData := if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
-    then
-        (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
-    else
-        if ($birthFormatted and not($deathFormatted))
-        then
-            (concat(' (* ', $birthFormatted, ')'))
-        else
-            if ($deathFormatted and not($birthFormatted))
-            then
-                (concat(' († ', $birthFormatted, ')'))
-            else
-                ()
-    let $nameJoined := if ($nameForeFull = '')
-    then
-        ($nameSurname)
-    else
-        (string-join($nameToJoin, ', '))
-    let $name := <div
-        class="row RegisterEntry">
-        <div
-            class="col">
-            {$nameJoined}
-            {$lifeData}
-            {
-                if ($role) then
-                    (<br/>, <span class="sublevel">({$role})</span>)
-                else
-                    ()
-            }
-            {
-                if ($pseudonym) then
-                    (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
-                else
-                    ()
-            }
-        </div>
-        <!--<div class="col-3"></div>-->
-        <div
-            class="col-2"><a onclick="pleaseWait()"
-                href="person/{$persID}">{$persID}</a></div>
-    </div>
-        group by $death
-        order by $death
-    return
-        (<div
-            name="{
-                    if ($death = '') then
-                        ('unknownDeath')
-                    else
-                        (distinct-values($deathFormatted))
-                }"
-            death="{$death}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                    let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                            let $persID := $person/@xml:id/string()
+                            let $nameSurname := $person//tei:surname[@type = "used"][1]
+                            let $nameForename := $person//tei:forename[@type = "used"][1]
+                            let $nameAddName := $person//tei:nameLink[1]
+                            let $nameForeFull := if ($nameAddName) then
+                                (concat($nameForename, ' ', $nameAddName))
+                            else
+                                ($nameForename)
+                            let $nameToJoin := if (not($nameSurname = '')) then
+                                ($nameSurname, $nameForeFull)
+                            else
+                                ($nameForeFull)
+                            let $role := $person//tei:roleName[1]
+                            let $pseudonym := if ($person//node()[@type = 'pseudonym'])
+                            then
+                                (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
+                            else
+                                ()
+(:                            let $birth := local:getBirth($person):)
+(:                            let $birthFormatted := local:formatLifedata($birth):)
+                            let $death := local:getDeath($person)
+                            let $deathToSort := if (contains($death,'/')) then(substring-before($death,'/')) else($death)
+                            let $deathFormatted := local:formatLifedata($death)
+                            let $lifeData := local:getLifedata($person)
+                            let $nameJoined := if ($nameForeFull = '')
+                            then
+                                ($nameSurname)
+                            else
+                                (string-join($nameToJoin, ', '))
+                            let $name := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {$nameJoined}
+                                    {$lifeData}
+                                    {
+                                        if ($role) then
+                                            (<br/>, <span class="sublevel">({$role})</span>)
+                                        else
+                                            ()
+                                    }
+                                    {
+                                        if ($pseudonym) then
+                                            (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
+                                        else
+                                            ()
+                                    }
+                                </div>
+                                <!--<div class="col-3"></div>-->
+                                <div
+                                    class="col-2"><a onclick="pleaseWait()"
+                                        href="person/{$persID}">{$persID}</a></div>
+                            </div>
+                                group by $death
+                                order by distinct-values($deathToSort)
+                            return
+                                (<div
+                                    name="{
+                                            if ($death != 'noDeath') then (distinct-values($deathFormatted)) else($death)
+                                        }"
+                                    death="{$death}"
+                                    count="{count($name)}">
+                                    {
+                                        for $each in $name
+                                            let $order := local:replaceToSortDist($each)
+                                            order by $order
+                                        return
+                                            $each
+                                    }
+                                </div>)
     
     let $personsGroupedByDeath := for $groups in $personsDeath
-        let $sort := if(contains($groups/@death,'/')) then(substring($groups/@death,1,4)) else($groups/@death/number())
-        group by $death := $groups/@name/string()
-        order by $sort
-    return
-        (<div
-            class="RegisterSortBox"
-            death="{$death}"
-            count="{$personsDeath[@name = $death]/@count}"
-            xmlns="http://www.w3.org/1999/xhtml">
-            <div
-                class="RegisterSortEntry"
-                id="{concat('list-item-', translate($death, '/', '_'))}">
-                {
-                    if ($death = 'unknownDeath') then
-                        ('[Sterbejahr nicht erfasst]')
-                    else
-                        ($death)
-                }
-            </div>
-            {
-                for $group in $groups
-                return
-                    $group
-            }
-        </div>)
+                                    let $deathToSort := $groups/@death/string()
+                                    (:if(contains($groups/@death,'/')) then(substring($groups/@death,1,4)) else($groups/@death/number()):)
+                                    group by $death := $groups/@name/normalize-space(string())
+                                    order by $deathToSort
+                                    return
+                                        (<div
+                                            class="RegisterSortBox"
+                                            death="{$death}" deathToSort="{$deathToSort}"
+                                            count="{$personsDeath[@name = $death]/@count}"
+                                            xmlns="http://www.w3.org/1999/xhtml">
+                                            <div
+                                                class="RegisterSortEntry"
+                                                id="{concat('list-item-', translate($death, '/', '_'))}">
+                                                {
+                                                    if ($death = 'noDeath') then
+                                                        ('[Sterbejahr nicht erfasst]')
+                                                    else
+                                                        ($death)
+                                                }
+                                            </div>
+                                            {
+                                                for $group in $groups
+                                                return
+                                                    $group
+                                            }
+                                        </div>)
     
     return
         
@@ -1286,7 +1214,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
                                                         if ($initial = 'unknown') then
-                                                            ('[unbekannt]')
+                                                            ('[ohne Initial]')
                                                         else
                                                             ($initial)
                                                     }</span>
@@ -1307,7 +1235,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             </div>
                         </div>
                         <div
-                            class="tab-pane fade show active"
+                            class="tab-pane fade"
                             id="birth">
                             <br/>
                             <div
@@ -1325,8 +1253,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', translate($birth, '/. ', '___'))}"><span>{
-                                                        if ($birth = 'unknownBirth') then
-                                                            ('[unbekannt]')
+                                                        if ($birth = 'noBirth') then
+                                                            ('[nicht erfasst]')
                                                         else
                                                             ($birth)
                                                     }</span>
@@ -1352,14 +1280,16 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $personsGroupedByDeath
+                                        let $deathToSort := $each/@deathToSort/string()
                                         let $death := $each/@death/string()
                                         let $count := $each/@count/string()
+                                        order by $deathToSort
                                         return
                                             <a
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', translate($death, '/', '_'))}"><span>{
-                                                        if ($death = 'unknownDeath') then
-                                                            ('[unbekannt]')
+                                                        if ($death = 'noDeath') then
+                                                            ('[nicht erfasst]')
                                                         else
                                                             ($death)
                                                     }</span>
@@ -1435,7 +1365,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#references">Bezüge</a></li>)else()}
-                            {if ($literature/text()!='') then(<li
+                            {if ($literature/text()/normalize-space()!='') then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
@@ -1527,7 +1457,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                     ()
                             }
                             {
-                                if ($literature/text()!='') then
+                                if ($literature/text()/normalize-space()!='') then
                                     (<div
                                         class="tab-pane fade"
                                         id="literature">
@@ -1559,111 +1489,99 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
     let $institutions := collection("/db/contents/jra/institutions/")//tei:TEI
     
     let $institutionsAlpha := for $institution in $institutions
-    let $instID := $institution/@xml:id/string()
-    let $initial := upper-case(substring($institution//tei:org/tei:orgName[1], 1, 1))
-    let $nameInstitution := $institution//tei:org/tei:orgName[1]
-    let $desc := $institution//tei:org/tei:desc[1]
-    let $place := string-join($institution//tei:org/tei:place/tei:placeName, '/')
-    let $name := <div
-        class="row RegisterEntry">
-        <div
-            class="col-6">
-            {$nameInstitution}<br/><span class="sublevel">{$desc}</span>
-            <!--{
-                if ($place) then
-                    (concat('(', $place, ')'))
-                else
-                    ($place)
-            }-->
-        </div>
-        <div
-            class="col-4">{$place}</div>
-        <div
-            class="col-2"><a onclick="pleaseWait()"
-                href="institution/{$instID}">{$instID}</a></div>
-    </div>
-        group by $initial
-        order by $initial
-    return
-        (<div
-            name="{$initial}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                    let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                                let $instID := $institution/@xml:id/string()
+                                let $initial := upper-case(substring($institution//tei:org/tei:orgName[1], 1, 1))
+                                let $nameInstitution := $institution//tei:org/tei:orgName[1]
+                                let $desc := $institution//tei:org/tei:desc[1]
+                                let $place := string-join($institution//tei:org/tei:place/tei:placeName, '/')
+                                let $name := <div
+                                    class="row RegisterEntry">
+                                    <div
+                                        class="col-6">
+                                        {$nameInstitution}<br/><span class="sublevel">{$desc}</span>
+                                    </div>
+                                    <div
+                                        class="col-4">{$place}</div>
+                                    <div
+                                        class="col-2"><a onclick="pleaseWait()"
+                                            href="institution/{$instID}">{$instID}</a></div>
+                                </div>
+                                    group by $initial
+                                    order by $initial
+                                return
+                                    (<div
+                                        name="{$initial}"
+                                        count="{count($name)}">
+                                        {
+                                            for $each in $name
+                                                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                                                order by $order
+                                            return
+                                                $each
+                                        }
+                                    </div>)
     
     let $institutionsGroupedByInitials := for $groups in $institutionsAlpha
-        group by $initial := $groups/@name/string()
-    return
-        (<div
-            class="RegisterSortBox"
-            initial="{$initial}"
-            count="{$institutionsAlpha[@name = $initial]/@count}"
-            xmlns="http://www.w3.org/1999/xhtml">
-            <div
-                class="RegisterSortEntry"
-                id="{
-                        concat('list-item-', if ($initial = '') then
-                            ('unknown')
-                        else
-                            ($initial))
-                    }">
-                {
-                    if ($initial = '') then
-                        ('[unbekannt]')
-                    else
-                        ($initial)
-                }
-            </div>
-            {
-                for $group in $groups
-                return
-                    $group
-            }
-        </div>)
+                                            group by $initial := $groups/@name/string()
+                                            return
+                                                (<div
+                                                    class="RegisterSortBox"
+                                                    initial="{$initial}"
+                                                    count="{$institutionsAlpha[@name = $initial]/@count}"
+                                                    xmlns="http://www.w3.org/1999/xhtml">
+                                                    <div
+                                                        class="RegisterSortEntry"
+                                                        id="{
+                                                                concat('list-item-', if ($initial = '') then
+                                                                    ('unknown')
+                                                                else
+                                                                    ($initial))
+                                                            }">
+                                                        {
+                                                            if ($initial = '') then
+                                                                ('[N.N.]')
+                                                            else
+                                                                ($initial)
+                                                        }
+                                                    </div>
+                                                    {
+                                                        for $group in $groups
+                                                        return
+                                                            $group
+                                                    }
+                                                </div>)
     
     let $institutionsPlace := for $place in $institutions//tei:org/tei:place/tei:placeName
-    let $instID := $place/ancestor::tei:TEI/@xml:id/string()
-    let $nameInstitution := $place/ancestor::tei:org/tei:orgName[1]
-    let $places := string-join($place//tei:org/tei:place/tei:placeName, '/')
-    let $name := <div
-        class="row RegisterEntry">
-        <div
-            class="col-6">
-            {$nameInstitution}
-            <!--{
-                if ($places) then
-                    (concat('(', $places, ')'))
-                else if ($place = '')
-                then('[unbekannt]')
-                else ($place)
-            }-->
-        </div>
-        <div
-            class="col-4">{$places}</div>
-        <div
-            class="col-2"><a onclick="pleaseWait()"
-                href="institution/{$instID}">{$instID}</a></div>
-    </div>
-        group by $place
-(:        order by $place:)
-    return
-        (<div
-            name="{if($place ='') then('[unbekannt]')else($place)}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                    let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                                let $instID := $place/ancestor::tei:TEI/@xml:id/string()
+                                let $nameInstitution := $place/ancestor::tei:org/tei:orgName[1]
+                                let $desc := $place/ancestor::tei:org/tei:desc[1]
+                                let $places := if(count($place/ancestor::tei:org/tei:place/tei:placeName)>1)then(string-join($place/ancestor::tei:org/tei:place/tei:placeName, '/'))else()
+                                let $name := <div
+                                    class="row RegisterEntry">
+                                    <div
+                                        class="col-6">
+                                        {$nameInstitution}<br/><span class="sublevel">{$desc}</span>
+                                    </div>
+                                    <div
+                                        class="col-4">{$places}</div>
+                                    <div
+                                        class="col-2"><a onclick="pleaseWait()"
+                                            href="institution/{$instID}">{$instID}</a></div>
+                                </div>
+                                    group by $place
+                            (:        order by $place:)
+                                return
+                                    (<div
+                                        name="{if($place ='') then('[N.N.]')else($place)}"
+                                        count="{count($name)}">
+                                        {
+                                            for $each in $name
+                                                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                                                order by $order
+                                            return
+                                                $each
+                                        }
+                                    </div>)
     
     let $institutionsGroupedByPlaces := for $groups in $institutionsPlace
         group by $place := $groups/@name/string()
@@ -1677,14 +1595,14 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
             <div
                 class="RegisterSortEntry"
                 id="{
-                        concat('list-item-', if ($place = '[unbekannt]') then
+                        concat('list-item-', if ($place = '[N.N.]') then
                             ('unknown')
                         else
                             ($place))
                     }">
                 {
                     if ($place = '') then
-                        ('[unbekannt]')
+                        ('[N.N.]')
                     else
                         ($place)
                 }
@@ -1751,7 +1669,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
                                                         if ($initial = 'unknown') then
-                                                            ('[unbekannt]')
+                                                            ('[N.N.]')
                                                         else
                                                             ($initial)
                                                     }</span>
@@ -1781,7 +1699,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                     class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
                                     {
                                         for $each in $institutionsGroupedByPlaces
-                                        let $place := if ($each/@place/string() = '[unbekannt]') then
+                                        let $place := if ($each/@place/string() = '[N.N.]') then
                                             ('unknown')
                                         else ($each/@place/string())
                                         let $count := $each/@count/string()
@@ -1791,7 +1709,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $place)}"><span>{
                                                         if ($place = 'unknown') then
-                                                            ('[unbekannt]')
+                                                            ('[N.N.]')
                                                         else
                                                             ($place)
                                                     }</span>
@@ -1871,7 +1789,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#references">Bezüge</a></li>)else()}
-                            {if ($literature/text()!='') then(<li
+                            {if ($literature/text()/normalize-space()!='') then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
@@ -1926,6 +1844,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                          </div>
                         </div>
                         </div>
+                        <!--
                         <br/>
                         <div>Zugehörige Personen:<br/>
                             <ul>
@@ -1937,6 +1856,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 }
                             </ul>
                         </div>
+                        -->
                             </div>
                             {
                                 if (local:getCorrespondance($id)) then
@@ -1969,7 +1889,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     ()
                             }
                             {
-                                if ($literature/text()!='') then
+                                if ($literature/text()/normalize-space()!='') then
                                     (<div
                                         class="tab-pane fade"
                                         id="literature">
@@ -2005,48 +1925,48 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $perfRess := $works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type = 'alt')]
     
     let $worksAlpha := for $work in $works
-    let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
-    let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-    let $initial := for $case in upper-case(substring($workName, 1, 1))
-                        return switch ($case)
-                        case 'É' return 'E'
-                        case '0' return '0–9'
-                        case '1' return '0–9'
-                        case '2' return '0–9'
-                        case '3' return '0–9'
-                        case '4' return '0–9'
-                        case '5' return '0–9'
-                        case '6' return '0–9'
-                        case '7' return '0–9'
-                        case '8' return '0–9'
-                        case '9' return '0–9'
-                        default return $case 
-    
-    let $workID := $work/@xml:id/string()
-    let $name := <div
-        class="row RegisterEntry">
-        <div
-            class="col">{$workName}</div>
-        <div
-            class="col-2">{$opus}</div>
-        <div
-            class="col-2"><a onclick="pleaseWait()"
-                href="work/{$workID}">{$workID}</a></div>
-    </div>
-        group by $initial
-        order by $initial
-    return
-        (<div
-            name="{$initial}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                  let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                            let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
+                            let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
+                            let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
+                            let $initial := for $case in upper-case(substring($withoutArticle, 1, 1))
+                                                return switch ($case)
+                                                case 'É' return 'E'
+                                                case '0' return '0–9'
+                                                case '1' return '0–9'
+                                                case '2' return '0–9'
+                                                case '3' return '0–9'
+                                                case '4' return '0–9'
+                                                case '5' return '0–9'
+                                                case '6' return '0–9'
+                                                case '7' return '0–9'
+                                                case '8' return '0–9'
+                                                case '9' return '0-9'
+                                                default return $case 
+                            let $workID := $work/@xml:id/string()
+                            let $name := <div
+                                            class="row RegisterEntry">
+                                            <div
+                                                class="col">{$workName}</div>
+                                            <div
+                                                class="col-2">{$opus}</div>
+                                            <div
+                                                class="col-2"><a onclick="pleaseWait()"
+                                                    href="work/{$workID}">{$workID}</a></div>
+                                        </div>
+                                            group by $initial
+                                            order by $initial
+                                            return
+                                                (<div
+                                                    name="{$initial}"
+                                                    count="{count($name)}">
+                                                    {
+                                                        for $each in $name
+                                                          let $order := local:replaceToSortDist($each)
+                                                            order by $order
+                                                        return
+                                                            $each
+                                                    }
+                                                </div>)
     
     let $worksGroupedByInitials := for $groups in $worksAlpha
     let $initial := $groups/@name/string()
@@ -2066,7 +1986,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     }">
                 {
                     if ($initial = '') then
-                        ('[unbekannt]')
+                        ('[N.N.]')
                     else
                         ($initial)
                 }
@@ -2156,7 +2076,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     }">
                 {
                     if ($year = '0000') then
-                        ('[unbekannt]')
+                        ('[N.N.]')
                     else
                         ($year)
                 }
@@ -2216,7 +2136,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                         }">
                                                     {
                                                         if ($perf = '') then
-                                                            ('[unbekannt]')
+                                                            ('[N.N.]')
                                                         else
                                                             ($perf)
                                                     }
@@ -2321,7 +2241,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         class="col-2">
                         <ul
                             id="myScrollspy"
-                            class="nav-pills col">
+                            class="nav nav-pills col">
                             <li
                                 class="nav-item nav-linkless-jra">Zählung</li>
                             <a
@@ -2353,7 +2273,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                     class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                     href="{concat('#list-item-', $initial)}"><span>{
                                             if ($initial = 'unknown') then
-                                                ('[unbekannt]')
+                                                ('[N.N.]')
                                             else
                                                 ($initial)
                                         }</span>
@@ -2392,7 +2312,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                     class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                     href="{concat('#list-item-', $year)}"><span>{
                                             if ($year = '0000') then
-                                                ('[unbekannt]')
+                                                ('[N.N.]')
                                             else
                                                 ($year)
                                         }</span>
