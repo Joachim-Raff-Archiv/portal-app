@@ -1,6 +1,6 @@
 <xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://portal.raff-archive.ch/ns/local" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes"/>
-    <xsl:include href="linking.xsl"/>
+    <xsl:include href="formattingText.xsl"/>
     <xsl:include href="formattingDate.xsl"/>
     <xsl:template match="/">
         <div>
@@ -137,55 +137,20 @@
                 </xsl:if>
             </table>
                         </xsl:if>
-                            <xsl:if test="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
+            
             <table class="workView">
+                <xsl:if test="//mei:history/mei:eventList/mei:event[@type='entstehung']">
                 <tr>
-                    <td>Erfasste Ausgaben:</td>
+                    <td>Entstehungsgeschichte:</td>
                     <td>
-                        <xsl:choose>
-                            <xsl:when test="//mei:componentList/mei:manifestation/mei:biblList/count(mei:bibl) = 1">
-                                <xsl:value-of select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl/concat(./mei:publisher, ' (', ./mei:date, ')')"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <ul>
-                                    <xsl:for-each select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
-                                        <li>
-                                            <xsl:value-of select="concat(./mei:publisher, ' (', ./mei:date, ')')"/>
-                                        </li>
-                                    </xsl:for-each>
-                                </ul>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </td>
-                </tr>
-                <xsl:if test="//mei:history/mei:eventList/count(mei:event[exists(mei:head) and exists(mei:desc)]) &gt;= 1">
-                <tr>
-                    <td>Werkgeschichte:</td>
-                    <td>
-                        <xsl:choose>
-                            <xsl:when test="//mei:history/mei:eventList/count(mei:event[exists(mei:head) and exists(mei:desc)]) = 1">
-                                <xsl:value-of select="//mei:history/mei:eventList/mei:event[exists(mei:head) and exists(mei:desc)]"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <ul>
-                                    <xsl:for-each select="//mei:history/mei:eventList/mei:event[exists(mei:head) and exists(mei:desc)]">
-                                        <li>
-                                            <xsl:value-of select="./mei:head"/>: <xsl:value-of select="./mei:desc"/>
-                                        </li>
-                                    </xsl:for-each>
-                                </ul>
-                            </xsl:otherwise>
-                        </xsl:choose>
-
+<!--                        <xsl:value-of select="//mei:history/mei:eventList/mei:event[@type='entstehung']/mei:desc"/>-->
+                        <xsl:apply-templates select="//mei:event[@type='entstehung']/mei:desc"/>
                     </td>
                 </tr>
                 </xsl:if>
-            </table>
-                            </xsl:if>
             <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            
-            <table class="workView">
                 <tr>
-                    <td>Uraufführung:</td>
+                    <td valign="top">Uraufführung:</td>
                     <td>
                         <xsl:variable name="UAdate" select="local:formatDate(//mei:eventList/mei:event[@type = 'UA']/mei:date/text())"/>
                         <xsl:variable name="UAort" select="//mei:eventList/mei:event[@type = 'UA']/mei:geogName/text()"/>
@@ -215,6 +180,30 @@
                                 </xsl:if>
                             </xsl:for-each>
                         </xsl:if>
+                    </td>
+                </tr>
+            </xsl:if>
+            </table>
+            
+            <xsl:if test="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
+            <table class="workView">
+                <tr>
+                    <td>Erfasste Ausgaben:</td>
+                    <td>
+                        <xsl:choose>
+                            <xsl:when test="//mei:componentList/mei:manifestation/mei:biblList/count(mei:bibl) = 1">
+                                <xsl:value-of select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl/concat(./mei:publisher, ' (', ./mei:date, ')')"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <ul>
+                                    <xsl:for-each select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
+                                        <li>
+                                            <xsl:value-of select="concat(./mei:publisher, ' (', ./mei:date, ')')"/>
+                                        </li>
+                                    </xsl:for-each>
+                                </ul>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </td>
                 </tr>
             </table>

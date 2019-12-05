@@ -5,11 +5,21 @@
 
     <xsl:template match="/">
         <xsl:choose>
-            <xsl:when test="$institution/ancestor::TEI/facsimile/graphic">
-                <div class="col-3"><img src="{$graphic/@url}" class="img-thumbnail" width="200px"/><br/><br/>
-                    <xsl:if test="$graphic/desc"><xsl:value-of select="$graphic/desc"/><br/></xsl:if>Quelle: <a href="{$graphic/@source}" target="_blank"><xsl:value-of select="$graphic/@resp"/></a></div>
-                <div class="col">
-                    <xsl:call-template name="institutionMetadataView"/>
+            <xsl:when test="$institution/ancestor::TEI/facsimile/graphic[1]/@url">
+                <div class="row">
+                    <div class="col-3">
+                        <img src="{$graphic/@url}" class="img-thumbnail" width="200px"/>
+                        <br/>
+                        <br/>
+                        <xsl:if test="$graphic/desc">
+                            <xsl:value-of select="$graphic/desc"/>
+                            <br/>
+                        </xsl:if>
+                        Quelle: <a href="{$graphic/@source}" target="_blank"> <xsl:value-of select="$graphic/@resp"/> </a>
+                    </div>
+                    <div class="col">
+                        <xsl:call-template name="institutionMetadataView"/>
+                    </div>
                 </div>
             </xsl:when>
             <xsl:otherwise>
@@ -39,23 +49,31 @@
             </tr>
         </table>
         <table class="institutionView">
+            <xsl:if test="exists($institution/desc)">
             <tr>
-                <td> Kategorie: </td>
+                <td>Kategorie: </td>
                 <td>
                     <xsl:if test="$institution/desc">
                         <xsl:value-of select="$institution/desc"/>
                     </xsl:if>
                 </td>
             </tr>
-        </table>
-        <table class="institutionView">
-            <xsl:if test="exists($institution/persName/roleName)">
+            </xsl:if>
+            <xsl:if test="exists($institution/listEvent)">
+                <xsl:for-each select="$institution/listEvent/event">
                 <tr>
-                    <td>Funktion:</td>
+                    <td><xsl:choose>
+                        <xsl:when test="@type='established'">Gründung:</xsl:when>
+                        <xsl:when test="@type='honor'">Ehrung(en):</xsl:when>
+                    </xsl:choose></td>
                     <td>
-                        <xsl:value-of select="$institution/persName/roleName"/>
+                        <xsl:choose>
+                            <xsl:when test="@type='established'"><xsl:value-of select="desc/date/@when"/></xsl:when>
+                            <xsl:when test="@type='honor'"><xsl:value-of select="string()"/></xsl:when>
+                        </xsl:choose>
                     </td>
                 </tr>
+                </xsl:for-each>
             </xsl:if>
             <!--<xsl:if test="exists($institution//relation[@name = 'reference']//item/text())">
                 <tr>
@@ -83,6 +101,14 @@
                     <td><xsl:choose><xsl:when test="$institution/idno[@type = 'GND']"/><xsl:otherwise>Normdaten:</xsl:otherwise></xsl:choose></td>
                     <td><a href="{concat('https://viaf.org/viaf/',$institution/idno[@type='VIAF'])}" target="_blank"><xsl:value-of select="$institution/idno[@type = 'VIAF']"/></a>
                         (VIAF)</td>
+                </tr>
+            </xsl:if>
+        </table>
+        <table class="personView">
+            <xsl:if test="//bibl[@type = 'links']/ref[@type='wikipedia']">
+                <tr>
+                    <td>Sonstige:</td>
+                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="http://localhost:8080/exist/apps/raffArchive/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
                 </tr>
             </xsl:if>
         </table>
