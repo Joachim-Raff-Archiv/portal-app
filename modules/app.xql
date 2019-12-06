@@ -642,7 +642,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col">An {$correspSent}</div>
+                                <div class="col">Von {$correspSent}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $receiverName
