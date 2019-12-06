@@ -436,37 +436,27 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         <div class="tab-pane fade show active" id="date">
                             <br/>
                             <div class="row">
-                            <!--<div class="col-md-3 pre-scrollable">
-                            <div class="scrollspy">-->
-        					   <!--<li class="nav hidden-xs hidden-sm" style="height: 95%; overflow-y: auto; width: 200px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
-        					   <!--<div class="list-group" style="height: 95%; overflow-y: auto; width: 150px;" data-spy="affix" data-offset-top="100" data-offset-bottom="200" id="nav">-->
-        					   <div id="navigator" class="list-group col-3" style="position: relative; height:500px; overflow-y: scroll;"> <!-- id="myScrollspy" class="nav nav-pills navbar-fixed-top pre-scrollable col-3" -->
-            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- style="height: 90%; overflow-y: auto; width: 200px;" -->
+        					   <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                        {
                                         for $year at $pos in $lettersGroupedByYears[@year !='']
                                         let $letterCount := $year/@count/string()
                                         let $letterYear := $year/@year/string()
                                             order by $year
                                         return
-                                            
-                                                <li class="nav-item list-group-item list-group-item-action">
-                                                    <a class="nav-link justify-content-between align-items-center d-flex" href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
-                                                    <span>{
-                                                            if ($letterYear = '[Jahr unbekannt]') then
-                                                                ('[ohne Jahr]')
-                                                            else
-                                                                ($letterYear)
-                                                           }
-                                                    </span>
-                                                    <span class="badge badge-jra badge-pill right">{$letterCount}</span></a></li>
+                                            <a class="nav-link list-group-item list-group-item-action justify-content-between align-items-center d-flex" href="{concat('#list-item-', if($letterYear='[Jahr nicht ermittelbar]')then('unknown')else($letterYear))}">
+                                            <span>{
+                                                    if ($letterYear = '[Jahr unbekannt]') then
+                                                        ('[ohne Jahr]')
+                                                    else
+                                                        ($letterYear)
+                                                   }
+                                            </span>
+                                            <span class="badge badge-jra badge-pill right">{$letterCount}</span></a>
                                        }
                                        </ul>
                                   </div>
-                              <!--</div>
-                              </li>
-                            </div>
-                        </div>-->
-                        <div data-spy="scroll" data-target="#navigator" data-offset="0" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- col-md-9 col-sm-9 pre-scrollable -->
+                        <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- style="position: relative; height:500px; overflow-y: scroll;" -->
                             {$lettersGroupedByYears}
                         </div>
                     </div>
