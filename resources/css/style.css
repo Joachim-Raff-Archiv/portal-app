@@ -12,7 +12,8 @@
 
 
 body {
-  background-color: #e6e6e6; /*#00a3d4*/
+/*  background-color: #e6e6e6; /\*#00a3d4*\/*/
+  background-color: rgba(177, 196, 73, 1);
   font-family: Merriweather;
 }
 .nav-jra-landing {
@@ -89,6 +90,7 @@ a:hover {
 }
 
 .bg-image {
+/*  background-color: rgba(177, 196, 73, 1);*/
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size:cover;
