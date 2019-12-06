@@ -304,6 +304,33 @@ declare function local:getReferences($idToReference) {
                 $entry
 };
 
+declare function local:getSender($correspActionSent){
+let $sender := if($correspActionSent/tei:persName[3]/text())
+                then(concat($correspActionSent/tei:persName[1]/text()[1],'/',$correspActionSent/tei:persName[2]/text()[1],'/',$correspActionSent/tei:persName[3]/text()[1])) 
+                else if($correspActionSent/tei:persName[2]/text())
+                        then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) 
+                        else if($correspActionSent/tei:persName/text()) 
+                             then($correspActionSent/tei:persName/text()[1]) 
+                             else if($correspActionSent/tei:orgName/text()) 
+                                  then($correspActionSent/tei:orgName/text()[1]) 
+                                  else('[N.N.]')
+  return
+    $sender
+};
+declare function local:getReceiver($correspActionReceived){
+let $receiver := if($correspActionReceived/tei:persName[3]/text()) 
+                                then(concat($correspActionReceived/tei:persName[1]/text()[1],'/', $correspActionReceived/tei:persName[2]/text()[1],'/', $correspActionReceived/tei:persName[3]/text()[1])) 
+                                else if($correspActionReceived/tei:persName[2]/text()) 
+                                     then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) 
+                                     else if($correspActionReceived/tei:persName/text()) 
+                                          then($correspActionReceived/tei:persName/text()[1]) 
+                                          else if($correspActionReceived/tei:orgName/text()) 
+                                               then($correspActionReceived/tei:orgName/text()[1]) 
+                                               else ('[N.N.]')
+ return
+     $receiver
+};
+
 declare function local:getCorrespondance($idToReference){
     let $correspondence := collection("/db/contents/jra/sources/documents/letters")//tei:TEI//@key[.=$idToReference][not(./ancestor::tei:note[@type='regeste'])]
     for $doc in $correspondence
@@ -311,22 +338,8 @@ declare function local:getCorrespondance($idToReference){
         let $letterID := $letter/@xml:id/string()
         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-        let $correspSent := if($correspActionSent/tei:persName/text())
-                            then($correspActionSent/tei:persName/text()[1])
-                            else if($correspActionSent/tei:orgName/text())
-                            then($correspActionSent/tei:orgName/text()[1])
-                            else('[N.N.]')
-        (:let $correspSentId := if($correspActionSent/tei:persName/@key or $correspActionSent/tei:orgName/@key)
-                              then($correspActionSent/tei:persName/@key | $correspActionSent/tei:orgName/@key)
-                              else('noID'):)
-        let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                then($correspActionReceived/tei:persName/text()[1])
-                                else if($correspActionReceived/tei:orgName/text())
-                                then($correspActionReceived/tei:orgName/text()[1])
-                                else('[N.N.]')
-        (:let $correspReceivedId := if($correspActionReceived/tei:persName/@key or $correspActionReceived/tei:orgName/@key)
-                                  then($correspActionReceived/tei:persName/@key | $correspActionReceived/tei:orgName/@key)
-                                  else('noID'):)
+        let $correspSent := local:getSender($correspActionSent)
+        let $correspReceived := local:getReceiver($correspActionReceived)
         let $date := local:getDate($correspActionSent)
         let $year := substring($date,1,4)
         let $dateFormatted := local:formatDate($date)
@@ -425,12 +438,12 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
         (<div class="container">
         <div class="row">
         <div class="col-10">
-        <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
+        <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe und Postkarten.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersReceiver.html">Empfänger</a></li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersSender.html">Absender</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersReceiver.html">Empfänger</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="date">
@@ -456,10 +469,21 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                        }
                                        </ul>
                                   </div>
-                        <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- style="position: relative; height:500px; overflow-y: scroll;" -->
+                        <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- style="position: relative; height:500px; overflow-y: scroll;" -->
                             {$lettersGroupedByYears}
                         </div>
                     </div>
+                  <div
+                    class="col-3">
+                    <br/><br/>
+                    <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
+                    <input
+                        type="text"
+                        id="myResearchInput"
+                        onkeyup="myFilterLetter()"
+                        placeholder="Name oder ID"
+                        title="Type in a string"/>
+                </div>
                   </div>
                     </div>
                 </div>
@@ -475,32 +499,24 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersSender := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+    let $lettersSender := for $letter in ($letters//tei:correspAction[@type="sent"]//tei:persName,$letters//tei:correspAction[@type="sent"]//tei:orgName)
+                        let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
+                        let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
+                        let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
                        
-                        let $correspSentId := if($correspActionSent/tei:persName/@key)
-                                              then($correspActionSent/tei:persName[1]/@key/string())
-                                              else if($correspActionSent/tei:orgName/@key)
-                                              then($correspActionSent/tei:orgName[1]/@key/string())
-                                              else()
+                        let $correspSent :=  local:getSender($correspActionSent)
+                        let $correspSentId := normalize-space(if($letter/@key)
+                                              then($letter/@key)
+                                              else('noID'))
                         
-                        let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                                then($correspActionReceived/tei:persName/text()[1])
-                                                else if($correspActionReceived/tei:orgName/text())
-                                                then($correspActionReceived/tei:orgName/text()[1])
-                                                else ('[N.N.]')
+                        let $correspReceived := local:getReceiver($correspActionReceived)
                         
-                        let $senderNameRaw :=  if($correspActionSent/tei:persName)
-                                              then($correspActionSent/tei:persName[1]/text()[1])
-                                              else if($correspActionSent/tei:orgName)
-                                              then($correspActionSent/tei:orgName[1]/text()[1])
-                                              else()
-                        let $senderName := for $data in $collection[range:eq(@xml:id,$correspSentId)]
+                        let $senderName := normalize-space(if($correspSentId!='noID')
+                                           then(for $data in $collection[range:eq(@xml:id,$correspSentId)]
                                                let $title := $data//tei:titleStmt/tei:title/string()
                                                return
-                                                $title
+                                                $title)
+                                                else($correspSent))
                                                                    
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
@@ -510,9 +526,9 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                 <div class="col">An {$correspReceived}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $correspSentId
+                        group by $senderName
                         return
-                            (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                            (<div sender="{distinct-values($senderName)}" senderId="{distinct-values($correspSentId)}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
                                     order by $each/div/@dateToSort
                                     return
@@ -527,8 +543,8 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
         order by $sender
         return
             (<div class="RegisterSortBox" sender="{$sender}" senderId="{$senderId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',$senderId)}">
-                                                    {$sender}
+                <div class="RegisterSortEntry" id="{concat('list-item-',if($senderId !='noID')then($senderId)else(translate(normalize-space($sender),',.’ ','____')))}">
+                                                    {if($sender='noReceiver')then('[N.N.]')else($sender)}
                 </div>
                 {
                     for $group in $groups
@@ -541,43 +557,37 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
         (<div class="container">
             <div class="row">
                 <div class="col-10">
-                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe und Postkarten.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
-                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersReceiver.html">Empfänger</a></li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#sender">Absender</a></li>
+                        <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersReceiver.html">Empfänger</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="sender">
                             <br/>
                             <div
                                 class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
-                                    <!--  -->
+                                <div id="navigator" class="list-group col-sm-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                     {
                                         for $sender in $lettersGroupedBySenders
                                         let $letterCount := $sender/@count/string()
                                         let $letterSender := $sender/@sender/string()
-                                        let $letterSenderId := $sender/@senderId/string()
+                                        let $letterSenderId := if($sender/@senderId/string()!='noID')then(($sender/@senderId/string()))else(translate(normalize-space($letterSender),',.’ ','____'))
                                             order by $letterSender
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='none')then('[N.N.]')else($letterSender)}</span>
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='noSender')then('[N.N.]')else($letterSender)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
                                     }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav1"
-                                    data-offset="0"
-                                    class="pre-scrollable col"
-                                    id="divResults">
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$lettersGroupedBySenders}
                                 </div>
                             </div>
@@ -598,34 +608,24 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersReceiver := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+    let $lettersReceiver := for $letter in ($letters//tei:correspAction[@type="received"]//tei:persName,$letters//tei:correspAction[@type="received"]//tei:orgName)
+                        let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
+                        let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
+                        let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
                         
-                        let $correspSent := if($correspActionSent/tei:persName/text())
-                                            then($correspActionSent/tei:persName[1]/text()[1])
-                                            else if($correspActionSent/tei:orgName/text())
-                                            then($correspActionSent/tei:orgName[1]/text()[1])
-                                            else ('[N.N.]')
-                        let $correspReceivedId := if($correspActionReceived/tei:persName/@key)
-                                              then($correspActionReceived/tei:persName[1]/@key)
-                                              else if($correspActionReceived/tei:orgName/@key)
-                                              then($correspActionReceived/tei:orgName[1]/@key)
-                                              else()
+                        let $correspSent := local:getSender($correspActionSent)
+                        let $correspReceivedId := normalize-space(if($letter/@key)
+                                              then($letter/@key)
+                                              else('noID'))
                         
-                        let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                                then($correspActionReceived/tei:persName[1]/text()[1])
-                                                else if($correspActionReceived/tei:orgName/text())
-                                                then($correspActionReceived/tei:orgName[1]/text()[1])
-                                                else ('[N.N.]')
+                        let $correspReceived := local:getReceiver($correspActionReceived)
                         
-                        let $receiverName := if($correspReceivedId)
+                        let $receiverName := normalize-space(if($correspReceivedId !='noID')
                                              then(for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
                                                let $title := $data//tei:titleStmt/tei:title/string()
                                                return
                                                 $title)
-                                             else($correspReceived)
+                                             else($correspReceived))
                                               
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
@@ -637,7 +637,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                             </div>
                         group by $receiverName
                         return
-                            (<div receiver="{distinct-values($receiverName)}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                            (<div receiver="{distinct-values($receiverName)}" receiverId="{distinct-values($correspReceivedId)}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
                                     order by $each/div/@dateToSort
                                     return
@@ -652,8 +652,8 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
         order by $receiver
         return
             (<div class="RegisterSortBox" receiver="{$receiver}" receiverId="{$receiverId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',$receiverId)}">
-                                                    {$receiver}
+                <div class="RegisterSortEntry" id="{concat('list-item-',if($receiverId !='noID')then($receiverId)else(translate(normalize-space($receiver),',.’[] ','______')))}">
+                                                    {if($receiver='noReceiver')then('[N.N.]')else($receiver)}
                 </div>
                 {
                     for $group in $groups
@@ -665,44 +665,39 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
     return
          (<div class="container">
             <div class="row">
-                <div class="col-10">
-                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe.</p>
+                <div class="col-11">
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe und Postkarten.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
-                        <li class="nav-item"><a class="nav-link-jra active" href="#receiver">Empfänger</a></li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersSender.html">Absender</a></li>
+                        <li class="nav-item"><a class="nav-link-jra active" href="#receiver">Empfänger</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="receiver">
                             <br/>
                        <div
                                 class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top pre-scrollable col-4">
+                                <div id="navigator" class="list-group col-sm-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                     <!--  -->
                                     {
                                         for $receiver in $lettersGroupedByReceivers
                                         let $letterCount := $receiver/@count/string()
                                         let $letterReceiver := $receiver/@receiver/string()
-                                        let $letterReceiverId := $receiver/@receiverId/string()
+                                        let $letterReceiverId := if($receiver/@receiverId/string()!='noID')then($receiver/@receiverId/string())else(translate(normalize-space($letterReceiver),',.’[] ','______'))
                                             order by $letterReceiver
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiverId='none')then('[N.N.]')else($letterReceiver)}</span>
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiver='noReceiver')then('[N.N.]') else ($letterReceiver)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
                                     }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav1"
-                                    data-offset="0"
-                                    class="pre-scrollable col"
-                                    id="divResults">
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$lettersGroupedByReceivers}
                                 </div>
                             </div>
@@ -1033,7 +1028,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                               xmlns="http://www.w3.org/1999/xhtml">
                                               <div
                                                   class="RegisterSortEntry"
-                                                  id="{concat('list-item-', translate($birth, '/', '_'))}">
+                                                  id="{concat('list-item-', translate($birth, '/. ', '___'))}">
                                                   {
                                                       if ($birth = 'noBirth') then
                                                           ('[Geburtsjahr nicht erfasst]')
@@ -1133,7 +1128,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             xmlns="http://www.w3.org/1999/xhtml">
                                             <div
                                                 class="RegisterSortEntry"
-                                                id="{concat('list-item-', translate($death, '/', '_'))}">
+                                                id="{concat('list-item-', translate($death, '/. ', '___'))}">
                                                 {
                                                     if ($death = 'noDeath') then
                                                         ('[Sterbejahr nicht erfasst]')
@@ -1173,12 +1168,12 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             class="nav-item"><a
                                 class="nav-link-jra"
                                 data-toggle="tab"
-                                href="#birth">Geburtsjahr</a></li>
+                                href="#birth" onclick="activateTab2()">Geburtsjahr</a></li>
                         <li
                             class="nav-item"><a
                                 class="nav-link-jra"
                                 data-toggle="tab"
-                                href="#death">Sterbejahr</a></li>
+                                href="#death" onclick="activateTab3()">Sterbejahr</a></li>
                     </ul>
                     <div
                         class="tab-content">
@@ -1188,9 +1183,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             <br/>
                             <div
                                 class="row" >
-                                <nav 
-                                    id="myScrollspy"
-                                    class="nav nav-pills col-3 pre-scrollable">
+                                <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                     {
                                         for $each in $personsGroupedByInitials
                                         let $initial := if ($each/@initial/string() = '') then
@@ -1201,7 +1195,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             order by $initial
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
                                                         if ($initial = 'unknown') then
                                                             ('[ohne Initial]')
@@ -1213,13 +1207,9 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             </a>
                                     }
                                 
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70"
-                                    class="pre-scrollable col"
-                                    id="divResults">
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$personsGroupedByInitials}
                                 </div>
                             </div>
@@ -1230,9 +1220,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             <br/>
                             <div
                                 class="row">
-                                <nav
-                                    id="myScrollspy" style="height:500px; overflow-y: auto;"
-                                    class="nav nav-pills navbar-fixed-top col-3"> <!-- pre-scrollable style="overflow-y: auto;" -->
+                                <div id="navigatorTab2" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="navTab2" class="nav hidden-xs hidden-sm">
                                     {
                                         for $each in $personsGroupedByBirth
                                         let $birth := $each/@birth/string()
@@ -1241,7 +1230,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                         order by $birthToSort
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', translate($birth, '/. ', '___'))}"><span>{
                                                         if ($birth = 'noBirth') then
                                                             ('[nicht erfasst]')
@@ -1252,9 +1241,9 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                                     class="badge badge-jra badge-pill right">{$count}</span>
                                              </a>
                                     }
-                                </nav>
-                                <div class="col pre-scrollable"
-                                    id="divResults">
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$personsGroupedByBirth}
                                 </div>
                             </div>
@@ -1265,9 +1254,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             <br/>
                             <div
                                 class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                                <div id="navigatorTab3" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="navTab3" class="nav hidden-xs hidden-sm">
                                     {
                                         for $each in $personsGroupedByDeath
                                         let $deathToSort := $each/@deathToSort/string()
@@ -1276,8 +1264,8 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                         order by $deathToSort
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', translate($death, '/', '_'))}"><span>{
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', translate($death, '/. ', '___'))}"><span>{
                                                         if ($death = 'noDeath') then
                                                             ('[nicht erfasst]')
                                                         else
@@ -1287,13 +1275,9 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                                     class="badge badge-jra badge-pill right">{$count}</span>
                                             </a>
                                     }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70"
-                                    class="pre-scrollable col"
-                                    id="divResults">
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigatorTab3" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$personsGroupedByDeath}
                                 </div>
                             </div>
@@ -1319,7 +1303,7 @@ declare function app:person($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("person-id", "Fehler")
     let $person := collection("/db/contents/jra/persons")//tei:TEI[@xml:id = $id]
-    let $name := $person//tei:title/normalize-space(data(.))
+    let $name := $person//tei:titleStmt/tei:title/normalize-space(data(.))
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
@@ -1504,7 +1488,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                         count="{count($name)}">
                                         {
                                             for $each in $name
-                                                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                                                let $order := local:replaceToSortDist($each)
                                                 order by $order
                                             return
                                                 $each
@@ -1566,7 +1550,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                         count="{count($name)}">
                                         {
                                             for $each in $name
-                                                let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                                                let $order := local:replaceToSortDist($each)
                                                 order by $order
                                             return
                                                 $each
@@ -1588,7 +1572,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                         concat('list-item-', if ($place = '[N.N.]') then
                             ('unknown')
                         else
-                            ($place))
+                            (translate($place,' ','_')))
                     }">
                 {
                     if ($place = '') then
@@ -1629,12 +1613,12 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             class="nav-item"><a
                                 class="nav-link-jra"
                                 data-toggle="tab"
-                                href="#place">Ort</a></li>
-                        <li
+                                href="#place" onclick="activateTab2()">Ort</a></li>
+                        <!--<li
                             class="nav-item"><a
                                 class="nav-link-jra disabled"
                                 data-toggle="tab"
-                                href="#established">Gründungsjahr</a></li>
+                                href="#established" onclick="activateTab3()">Gründungsjahr</a></li>-->
                     </ul>
                     <div
                         class="tab-content">
@@ -1644,8 +1628,8 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             <br/>
                             <div
                                 class="row">
-                                <nav
-                                    class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                                <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm">
                                     {
                                         for $each in $institutionsGroupedByInitials
                                         let $initial := if ($each/@initial/string() = '') then
@@ -1656,7 +1640,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                             order by $initial
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
                                                         if ($initial = 'unknown') then
                                                             ('[N.N.]')
@@ -1667,13 +1651,9 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                                     class="badge badge-jra badge-pill right">{$count}</span>
                                             </a>
                                     }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70"
-                                    class="pre-scrollable col"
-                                    id="divResults">
+                                    </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$institutionsGroupedByInitials}
                                 </div>
                             </div>
@@ -1684,9 +1664,8 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                             <br/>
                             <div
                                 class="row">
-                                <nav
-                                    id="myScrollspy"
-                                    class="nav nav-pills navbar-fixed-top col-3 pre-scrollable">
+                                <div id="navigatorTab2" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="navTab2" class="nav hidden-xs hidden-sm">
                                     {
                                         for $each in $institutionsGroupedByPlaces
                                         let $place := if ($each/@place/string() = '[N.N.]') then
@@ -1696,8 +1675,8 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                             order by $place
                                         return
                                             <a
-                                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', $place)}"><span>{
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', translate($place,' ','_'))}"><span>{
                                                         if ($place = 'unknown') then
                                                             ('[N.N.]')
                                                         else
@@ -1707,13 +1686,9 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                                     class="badge badge-jra badge-pill right">{$count}</span>
                                             </a>
                                     }
-                                </nav>
-                                <div
-                                    data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70"
-                                    class="pre-scrollable col"
-                                    id="divResults">
+                                    </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$institutionsGroupedByPlaces}
                                 </div>
                             </div>
@@ -1743,7 +1718,7 @@ declare function app:institution($node as node(), $model as map(*)) {
     let $id := request:get-parameter("institution-id", "Fehler")
     let $persons := collection("/db/contents/jra/persons")//tei:TEI
     let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id = $id]
-    let $name := $institution//tei:title/normalize-space(data(.))
+    let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
     let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
     let $affiliates := $persons//tei:affiliation[@key = $id]/ancestor::tei:TEI
@@ -2155,12 +2130,12 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 class="nav-item"><a
                     class="nav-link-jra"
                     data-toggle="tab"
-                    href="#sortTitle">Titel</a></li>
+                    href="#sortTitle" onclick="activateTab2()">Titel</a></li>
             <li
                 class="nav-item"><a
                     class="nav-link-jra"
                     data-toggle="tab"
-                    href="#sortDate">Entstehung</a></li>
+                    href="#sortDate" onclick="activateTab3()">Entstehung</a></li>
             <li
                 class="nav-item"><a
                     class="nav-link-jra"
@@ -2175,12 +2150,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 <br/>
                 <div
                     class="row">
-                    <div
-                        data-spy="scroll"
-                        data-target="#nav"
-                        data-offset="70"
-                        class="pre-scrollable col"
-                        id="divResults">
+                    <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col" style="position: relative; height:500px; overflow-y: scroll;">
                         <div
                             class="RegisterSortBox">
                             <div
@@ -2227,18 +2197,13 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                             }
                         </div>
                     </div>
-                    <div
-                        class="col-2">
-                        <ul
-                            id="myScrollspy"
-                            class="nav nav-pills col">
-                            <li
-                                class="nav-item nav-linkless-jra">Zählung</li>
+                    <div id="navigator" class=" col-2" style="align-content:right;">
+            			<ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                             <a
-                                class="list-group-item list-group-item-action" href="#opera"
+                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="#opera"
                                 ><span>Opera</span></a>
                             <a
-                                class="list-group-item list-group-item-action" href="#woos"
+                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="#woos"
                                 ><span>WoOs</span></a>
                         </ul>
                     </div>
@@ -2250,9 +2215,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 <br/>
                 <div
                     class="row">
-                    <nav
-                        id="myScrollspy"
-                        class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
+                    <div id="navigatorTab2" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="navTab2" class="nav hidden-xs hidden-sm">
                         {
                             for $each in $worksGroupedByInitials
                             let $initial := $each/@initial/string()
@@ -2260,7 +2224,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 order by $initial
                             return
                                 <a
-                                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                    class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                     href="{concat('#list-item-', $initial)}"><span>{
                                             if ($initial = 'unknown') then
                                                 ('[N.N.]')
@@ -2271,14 +2235,9 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         class="badge badge-jra badge-pill right">{$count}</span>
                                 </a>
                         }
-                    
-                    </nav>
-                    <div
-                        data-spy="scroll"
-                        data-target="#nav"
-                        data-offset="70"
-                        class="pre-scrollable col"
-                        id="divResults">
+                        </ul>
+                    </div>
+                    <div data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                         {$worksGroupedByInitials}
                     </div>
                 </div>
@@ -2289,9 +2248,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                 <br/>
                 <div
                     class="row">
-                    <nav
-                        id="myScrollspy"
-                        class="nav nav-pills navbar-fixed-top col-2 pre-scrollable">
+                    <div id="navigatorTab3" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="navTab3" class="nav hidden-xs hidden-sm">
                         {
                             for $each in $worksGroupedByYears
                             let $year := $each/@year/string()
@@ -2299,7 +2257,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 order by $year
                             return
                                 <a
-                                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                    class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                     href="{concat('#list-item-', $year)}"><span>{
                                             if ($year = '0000') then
                                                 ('[N.N.]')
@@ -2310,14 +2268,9 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         class="badge badge-jra badge-pill right">{$count}</span>
                                 </a>
                         }
-                    
-                    </nav>
-                    <div
-                        data-spy="scroll"
-                        data-target="#nav"
-                        data-offset="70"
-                        class="pre-scrollable col"
-                        id="divResults">
+                        </ul>
+                    </div>
+                    <div data-spy="scroll" data-target="#navigatorTab3" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                         {$worksGroupedByYears}
                     </div>
                 </div>
@@ -2368,11 +2321,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                             <div
                                 class="row">
-                                <div
-                                    class="pre-scrollable col-11">
-                                    <!-- data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70" -->
+                                <div id="navigatorVocalMusic" class="list-group col-11" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
                                         <div
@@ -2466,11 +2415,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                             <div
                                 class="row">
-                                <div
-                                    class="pre-scrollable col-11">
-                                    <!-- data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70" -->
+                                <div id="navigatorStageMusic" class="list-group col-11" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
                                         <div
@@ -2499,11 +2444,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                              <div
-                                    class="pre-scrollable col-11">
-                                    <!-- data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70" -->
+                              <div id="navigatorOrchestralMusic" class="list-group col-11" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
                                         <div
@@ -2556,11 +2497,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            <div
-                                    class="pre-scrollable col-11">
-                                    <!-- data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70" -->
+                            <div id="navigatorChamberMusic" class="list-group col-11" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
                                         <div
@@ -2686,11 +2623,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                              <div
-                                    class="pre-scrollable col-11">
-                                    <!-- data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70" -->
+                              <div id="navigatorPianoMusic" class="list-group col-11" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
                                         <div
@@ -2767,11 +2700,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                         <br/>
                         <div
                             class="row">
-                            <div
-                                    class="pre-scrollable col-11">
-                                    <!-- data-spy="scroll"
-                                    data-target="#nav"
-                                    data-offset="70" -->
+                            <div id="navigatorArrangements" class="list-group col-11" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
                                         <div
@@ -3059,7 +2988,7 @@ declare function app:impressum($node as node(), $model as map(*)) {
     
     return
         (
-        <p class="title-b">Kontakt</p>,
+        <div class="title-b">Kontakt</div>,
         <div>
             {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
         </div>
@@ -3096,7 +3025,7 @@ declare function app:errorReport($node as node(), $model as map(*)){
 
 let $mailto := 'mailto:ried-musikforschung@mail.de'
 let $subject := 'Error%20Report'
-let $occurance := request:get-url()
+let $occurance := replace(request:get-url(),'http://localhost:8080/exist/apps/raffArchive','http://portal.raff-archiv.ch')
 let $body := concat('Hey Guys,%0D%0A%0D%0Aplease%20check%20this%20url:%0D%0A%0D%0A',$occurance,'%0D%0A%0D%0Athanks!')
 let $href := concat($mailto,'?subject=',$subject,'&amp;body=',$body)
 return

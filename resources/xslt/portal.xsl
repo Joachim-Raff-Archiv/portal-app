@@ -4,84 +4,12 @@
     <xsl:template match="/">
         <xsl:apply-templates select="//body"/>
     </xsl:template>
-    <!--<xsl:template match="p">
-        <p>
-            <xsl:apply-templates/>
-        </p>
+    <xsl:template match="figure[@type='icon']">
+        <xsl:variable name="picture" select="@source"/>
+        <img src="{$picture}" width="20"/>
     </xsl:template>
-    <xsl:variable name="briefID" select="//TEI/@xml:id/data(.)"/>
-    <xsl:template match="hi[@rend = 'underline']">
-        <span style="text-decoration: underline;">
-            <xsl:apply-templates/>
-        </span>
+    <xsl:template match="figure[@type='logo']">
+        <xsl:variable name="picture" select="@source"/>
+        <img src="{$picture}" width="115"/>
     </xsl:template>
-    <xsl:template match="hi[@rend = 'italic']">
-        <i>
-            <xsl:apply-templates/>
-        </i>
-    </xsl:template>
-    <xsl:template match="lb">
-        <br/>
-        <xsl:apply-templates/>
-    </xsl:template>
-    <xsl:template match="hi[@rend = 'right']">
-        <p class="text-right">
-            <xsl:apply-templates/>
-        </p>
-    </xsl:template>
-    <xsl:template match="hi[@rend = 'center']">
-        <p class="text-center">
-            <xsl:apply-templates/>
-        </p>
-    </xsl:template>
-    <xsl:template match="hi[@rend = 'left']">
-        <p class="text-left">
-            <xsl:apply-templates/>
-        </p>
-    </xsl:template>
-    <xsl:template match="persName">
-        <xsl:choose>
-            <xsl:when test="doc-available(concat('../../../../contents/texts/persons/', ./@key, '.xml'))">
-                <a href="{concat('../raffArchive/html/person/', ./@key, '.html')}">
-                    <xsl:apply-templates/>
-                </a>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template match="orgName">
-        <xsl:choose>
-            <xsl:when test="doc-available(concat('../../../../contents/texts/institutions/', ./@key, '.xml'))">
-                <a href="{concat('../raffArchive/html/institution/', ./@key, '.html')}">
-                    <xsl:apply-templates/>
-                </a>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template match="settlement">
-        <xsl:choose>
-            <xsl:when test="doc-available(concat('../../../../contents/texts/loci/', ./@key, '.xml'))">
-                <a href="{concat('../raffArchive/html/ort/', ./@key, '.html')}">
-                    <xsl:apply-templates/>
-                </a>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template match="note[@type = 'editor']">
-        <i>[<xsl:apply-templates/>]</i>
-    </xsl:template>
-    <xsl:template match="figure">
-        <xsl:variable name="picture" select="@facs"/>
-        <p class="text-center">
-            <img src="{$picture}" width="250"/>
-        </p>
-    </xsl:template>-->
 </xsl:stylesheet>

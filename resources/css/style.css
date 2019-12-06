@@ -356,27 +356,26 @@ font-family: Montserrat;
 .back-to-top {
   position: fixed;
   display: none;
-/*  background: #641a85;*/
+  background: #e6e6e6;
   background-image:url(http://localhost:8080/exist/apps/raffArchive/resources/fonts/feather/arrow-up.svg);
   background-repeat: no-repeat;
 /*  background-attachment: fixed;*/
   background-position: center;
-  color: #fff;
   width: 65px;
   height: 65px;
   text-align: center;
   line-height: 1;
   font-size: 20px;
   border-radius: 50%;
-  right: 15px;
-  bottom: 15px;
+  right: 10px;
+  bottom: 10px;
   transition: background 0.5s;
   z-index: 11;
 }
 
 .back-to-top i {
   padding-top: 12px;
-  color: #fff;
+  color:white;
 }
 
 /* Prelaoder */

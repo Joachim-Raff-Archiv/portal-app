@@ -183,7 +183,8 @@
         <script src="http://localhost:8080/exist/apps/raffArchive/resources/lib/owlcarousel/owl.carousel.min.js"/>
         <script src="http://localhost:8080/exist/apps/raffArchive/resources/lib/lightbox/js/lightbox.min.js"/>
         <script src="http://localhost:8080/exist/apps/raffArchive/resources/lib/typed/typed.min.js"/>
-        <script src="http://localhost:8080/exist/apps/raffArchive/resources/js/animateScrollspy.js"/>
+        <script src="http://localhost:8080/exist/apps/raffArchive/resources/js/filter.js"/>
+<!--        <script src="http://localhost:8080/exist/apps/raffArchive/resources/js/animateScrollspy.js"/>-->
         <!-- Contact Form JavaScript File -->
 <!--        <script src="http://localhost:8080/exist/apps/raffArchive/resources/contactform/contactform.js"/>-->
         
@@ -205,11 +206,19 @@
                 $('#content').pleaseWait();
             }
         </script>
-        <script>
+        <!--<script>
             $('#nav').on('activate.bs.scrollspy', function () {
             item = $('#nav').find(".active").last();
             item.animatescroll({element: '#nav', padding:20});
             });
+        </script>-->
+        <script>
+            function activateTab2() {
+                document.getElementById("navTab2").firstChild.classList.add("active");
+              };
+            function activateTab3() {
+                document.getElementById("navTab3").firstChild.classList.add("active");
+              };
         </script>
     </body>
 </html>
