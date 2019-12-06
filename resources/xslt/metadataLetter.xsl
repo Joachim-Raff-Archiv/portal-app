@@ -37,7 +37,7 @@
                             <xsl:otherwise>
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
-                        </xsl:choose>
+                        </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/persName/@cert">*</xsl:if>
                         <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if><br/>
                         </xsl:for-each>
@@ -50,7 +50,7 @@
                             <xsl:otherwise>
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
-                        </xsl:choose>
+                        </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/orgName/@cert">*</xsl:if>
                         <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if>
                         </xsl:for-each>
@@ -61,7 +61,7 @@
                 <tr>
                     <td valign="top">Erstellungsort:</td>
                     <td>
-                        <xsl:value-of select="$correspAction[@type = 'sent']/settlement"/>
+                        <xsl:value-of select="$correspAction[@type = 'sent']/settlement"/> <xsl:if test="$correspAction[@type = 'sent']/settlement/@cert">*</xsl:if>
                     </td>
                 </tr>
             </xsl:if>
@@ -78,7 +78,7 @@
                                 <xsl:otherwise>
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
-                            </xsl:choose>
+                            </xsl:choose><xsl:if test="$correspAction[@type = 'received']/persName/@cert">*</xsl:if>
                             <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if><br/>
                         </xsl:for-each>
@@ -91,7 +91,7 @@
                                 <xsl:otherwise>
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
-                            </xsl:choose>
+                            </xsl:choose><xsl:if test="$correspAction[@type = 'received']/orgName/@cert">*</xsl:if>
                             <xsl:if test="@key"> (<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if>
                         </xsl:for-each>
@@ -102,7 +102,7 @@
                 <tr>
                     <td valign="top">Zielort:</td>
                     <td>
-                        <xsl:value-of select="$correspAction[@type = 'received']/settlement"/>
+                        <xsl:value-of select="$correspAction[@type = 'received']/settlement"/><xsl:if test="$correspAction[@type = 'received']/settlement/@cert">*</xsl:if>
                     </td>
                 </tr>
             </xsl:if>
@@ -128,7 +128,7 @@
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter"> Spätestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter)"/> (ermittelt)<br/>
                             </xsl:if>
                         </xsl:otherwise>
-                    </xsl:choose>
+                    </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/date/@cert">*</xsl:if>
                 </td>
             </tr>
             <xsl:if test="$correspAction[@type = 'sent']/note[contains(@type,'editor') and contains(@subtype,'public')] != ''">
@@ -148,7 +148,7 @@
                 <tr>
                     <td valign="top">Ankunftsdatum:</td>
                     <td>
-                        <xsl:value-of select="$correspAction[@type = 'received']/date"/>
+                        <xsl:value-of select="$correspAction[@type = 'received']/date"/><xsl:if test="$correspAction[@type = 'received']/orgName/@cert">*</xsl:if>
                     </td>
                 </tr>
             </xsl:if>
@@ -267,7 +267,10 @@
                 </td>
             </tr>
         </table>
-
+        <br/>
+        <br/>
+        <hr/>
+        <xsl:if test="//@cert">* Daten nicht gesichert</xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>
