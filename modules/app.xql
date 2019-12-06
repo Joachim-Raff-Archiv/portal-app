@@ -362,7 +362,7 @@ declare function local:getWorks($work){
     let $workID := $work/@xml:id/string()
     return
         <div
-        class="row {if(string-length($work//mei:term)>9)then('RegisterEntry2')else('RegisterEntry')}">
+        class="row {if($work//mei:term[string-length(.)>9])then('RegisterEntry2')else('RegisterEntry')}">
             <div
                 class="col">{$workName}</div>
             <div
