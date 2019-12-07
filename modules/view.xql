@@ -11,8 +11,8 @@ import module namespace templates="http://exist-db.org/xquery/templates" ;
  : The following modules provide functions which will be called by the 
  : templating.
  :)
-import module namespace config="http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
-import module namespace app="http://localhost:8080/exist/apps/raffArchive/templates" at "app.xql";
+import module namespace config="http://intern.raff-portal.ch/config" at "config.xqm";
+import module namespace app="http://intern.raff-portal.ch/templates" at "app.xql";
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
 declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";

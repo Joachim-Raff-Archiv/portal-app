@@ -1,8 +1,8 @@
 xquery version "3.0";
 
-module namespace app = "http://localhost:8080/exist/apps/raffArchive/templates";
+module namespace app = "http://intern.raff-portal.ch/templates";
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config = "http://localhost:8080/exist/apps/raffArchive/config" at "config.xqm";
+import module namespace config = "http://intern.raff-portal.ch/config" at "config.xqm";
 
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
@@ -857,7 +857,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                     let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
                                     let $changerName := $change/@who/string()
                                     let $changeInfo := $change/string()
-                                    let $changeInfoButton := <img src="http://localhost:8080/exist/apps/raffArchive/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
+                                    let $changeInfoButton := <img src="http://intern.raff-portal.ch/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
                                     return
                                         (<span style="padding-left: 3px;"/>,$changeDate, $changeInfoButton, <br/>)
                                 }<br/>
@@ -867,7 +867,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/letter/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('http://intern.raff-portal.ch/html/letter/',$id)}">{concat('http://intern.raff-portal.ch/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                     </div>
@@ -1422,7 +1422,7 @@ declare function app:person($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($name,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,'; ')}<a href="{concat('http://intern.raff-portal.ch/html/person/',$id)}">{concat('http://intern.raff-portal.ch/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -1833,7 +1833,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($name,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,'; ')}<a href="{concat('http://intern.raff-portal.ch/html/institution/',$id)}">{concat('http://intern.raff-portal.ch/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -2852,7 +2852,7 @@ declare function app:work($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($name,', ',$opus,'; ')}<a href="{concat('http://localhost:8080/exist/apps/raffArchive/html/work/',$id)}">{concat('http://localhost:8080/exist/apps/raffArchive/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,', ',$opus,'; ')}<a href="{concat('http://intern.raff-portal.ch/html/work/',$id)}">{concat('http://intern.raff-portal.ch/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -3053,7 +3053,7 @@ declare function app:errorReport($node as node(), $model as map(*)){
 
 let $mailto := 'mailto:ried-musikforschung@mail.de'
 let $subject := 'Error%20Report'
-let $occurance := replace(request:get-url(),'http://localhost:8080/exist/apps/raffArchive','http://portal.raff-archiv.ch')
+let $occurance := replace(request:get-url(),'http://intern.raff-portal.ch','http://portal.raff-archiv.ch')
 let $body := concat('Hey Guys,%0D%0A%0D%0Aplease%20check%20this%20url:%0D%0A%0D%0A',$occurance,'%0D%0A%0D%0Athanks!')
 let $href := concat($mailto,'?subject=',$subject,'&amp;body=',$body)
 return
