@@ -25,11 +25,42 @@
                 <tr>
                     <td valign="top">Widmungsträger:</td>
                     <td>
-                        <xsl:value-of select="//mei:dedicatee"/>
-                        <xsl:choose>
-                            <xsl:when test="//mei:dedicatee/mei:persName"> (<a href="{concat($viewPerson, //mei:dedicatee/mei:persName/@auth)}"><xsl:value-of select="//mei:dedicatee/mei:persName/@auth"/></a>)</xsl:when>
-                            <xsl:when test="//mei:dedicatee/mei:corpName"> (<a href="{concat($viewInstitution, //mei:dedicatee/mei:corpName/@auth)}"><xsl:value-of select="//mei:dedicatee/mei:corpName/@auth"/></a>)</xsl:when>
-                        </xsl:choose>
+                        <xsl:for-each select="//mei:dedication/mei:dedicatee">
+                            <xsl:variable name="corresp" select="substring-after(@corresp,'#')"/>
+                            <xsl:choose>
+                                <xsl:when test="mei:persName">
+                                    <xsl:if test="$corresp">
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                    </xsl:if>
+                                    <xsl:value-of select="mei:persName"/>
+                                    <xsl:if test="mei:persName/@auth">
+                                        (<a href="{concat($viewPerson, mei:persName/@auth)}">
+                                            <xsl:value-of select="mei:persName/@auth"/>
+                                        </a>)
+                                    </xsl:if>
+                                    <br/>
+                                </xsl:when>
+                                <xsl:when test="mei:corpName">
+                                    <xsl:if test="$corresp">
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                    </xsl:if>
+                                    <xsl:value-of select="mei:corpName"/>
+                                    <xsl:if test="mei:corpName/@auth">
+                                        (<a href="{concat($viewPerson, mei:corpName/@auth)}">
+                                            <xsl:value-of select="mei:corpName/@auth"/>
+                                        </a>)
+                                    </xsl:if>
+                                    <br/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:if test="$corresp">
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                    </xsl:if>
+                                    <xsl:value-of select="."/>
+                                    <br/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:for-each>
                     </td>
                 </tr>
                 </xsl:if>
