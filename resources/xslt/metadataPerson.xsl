@@ -1,4 +1,5 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:http="http://expath.org/ns/http-client" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
+    <xsl:include href="formattingText.xsl"/>
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes"/>
     <xsl:variable name="person" select="//listPerson/person"/>
     <xsl:variable name="graphic" select="$person/ancestor::TEI/facsimile/graphic[1]"/>
@@ -178,6 +179,16 @@
                         </xsl:if>
                     </td>
                 </tr>
+            </xsl:if>
+            <xsl:if test="exists($person/listEvent)">
+                <xsl:for-each select="$person/listEvent/event">
+                    <tr>
+                        <td>Besonderes Ereignis:</td>
+                        <td>
+                            <xsl:apply-templates/>
+                        </td>
+                    </tr>
+                </xsl:for-each>
             </xsl:if>
             <xsl:if test="exists($person/residence/placeName/text())">
                 <td>Wirkungsorte:</td>
