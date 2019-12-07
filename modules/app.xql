@@ -58,82 +58,82 @@ declare function app:search($node as node(), $model as map(*)) {
 
 declare function local:getDate($date) {
 
-    let $get := if(count($date/tei:date[@type='editor'])=1)
+    let $get := if(count($date/tei:date[matches(@type,'^editor')])=1)
                 then(
-                        if($date/tei:date[@type='editor']/@when)
-                        then($date/tei:date[@type='editor']/@when/string())
-                        else if($date/tei:date[@type='editor']/@when-custom)
-                        then($date/tei:date[@type='editor']/@when-custom/string())
-                        else if($date/tei:date[@type='editor']/@from)
-                        then($date/tei:date[@type='editor']/@from/string())
-                        else if($date/tei:date[@type='editor']/@from-custom)
-                        then($date/tei:date[@type='editor']/@from-custom/string())
-                        else if($date/tei:date[@type='editor']/@notBefore)
-                        then($date/tei:date[@type='editor']/@notBefore/string())
-                        else if($date/tei:date[@type='editor']/@notAfter)
-                        then($date/tei:date[@type='editor']/@notAfter/string())
+                        if($date/tei:date[matches(@type,'^editor')]/@when)
+                        then($date/tei:date[matches(@type,'^editor')]/@when/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^editor')]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from)
+                        then($date/tei:date[matches(@type,'^editor')]/@from/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^editor')]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^editor')]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^editor')]/@notAfter/string())
                         else('0000-00-00')
                     )
-                else if(count($date/tei:date[@type='source'])=1)
+                else if(count($date/tei:date[matches(@type,'^source')])=1)
                 then(
-                        if($date/tei:date[@type='source']/@when)
-                        then($date/tei:date[@type='source']/@when/string())
-                        else if($date/tei:date[@type='source']/@when-custom)
-                        then($date/tei:date[@type='source']/@when-custom/string())
-                        else if($date/tei:date[@type='source']/@from)
-                        then($date/tei:date[@type='source']/@from/string())
-                        else if($date/tei:date[@type='source']/@from-custom)
-                        then($date/tei:date[@type='source']/@from-custom/string())
-                        else if($date/tei:date[@type='source']/@notBefore)
-                        then($date/tei:date[@type='source']/@notBefore/string())
-                        else if($date/tei:date[@type='source']/@notAfter)
-                        then($date/tei:date[@type='source']/@notAfter/string())
+                        if($date/tei:date[matches(@type,'^source')]/@when)
+                        then($date/tei:date[matches(@type,'^source')]/@when/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^source')]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from)
+                        then($date/tei:date[matches(@type,'^source')]/@from/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^source')]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^source')]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^source')]/@notAfter/string())
                         else('0000-00-00')
                     )
-                else if(count($date/tei:date[@type='editor' and @confidence])=1)
+                else if(count($date/tei:date[matches(@type,'^editor') and @confidence])=1)
                 then(
-                       $date/tei:date[@type='editor' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                       $date/tei:date[matches(@type,'^editor') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
                     )
-                else if(count($date/tei:date[@type='source' and @confidence])=1)
+                else if(count($date/tei:date[matches(@type,'^source') and @confidence])=1)
                 then(
-                       $date/tei:date[@type='source' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                       $date/tei:date[matches(@type,'^source') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
                     )
-                    else if($date/tei:date[@type='editor' and @confidence = '0.5'])
+                    else if($date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')])
                 then(
-                       $date/tei:date[@type='editor' and @confidence ='0.5'][1]/@when
+                       $date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')][1]/@when
                     )
-                else if($date/tei:date[@type='source' and @confidence='0.5'])
+                else if($date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')])
                 then(
-                       $date/tei:date[@type='source' and @confidence ='0.5'][1]/@when
+                       $date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')][1]/@when
                     )
-                else if($date/tei:date[@type='editor'])
+                else if($date/tei:date[matches(@type,'^editor')])
                 then(
-                        if($date/tei:date[@type='editor']/@when)
-                        then($date/tei:date[@type='editor'][1]/@when/string())
-                        else if($date/tei:date[@type='editor']/@when-custom)
-                        then($date/tei:date[@type='editor'][1]/@when-custom/string())
-                        else if($date/tei:date[@type='editor']/@from)
-                        then($date/tei:date[@type='editor'][1]/@from/string())
-                        else if($date/tei:date[@type='editor']/@from-custom)
-                        then($date/tei:date[@type='editor'][1]/@from-custom/string())
-                        else if($date/tei:date[@type='editor']/@notBefore)
-                        then($date/tei:date[@type='editor'][1]/@notBefore/string())
+                        if($date/tei:date[matches(@type,'^editor')]/@when)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@when/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@from/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@notBefore/string())
                         else('0000-00-00')
                     )
-                else if(count($date/tei:date[@type='source']))
+                else if(count($date/tei:date[matches(@type,'^source')]))
                 then(
-                        if($date/tei:date[@type='source']/@when)
-                        then($date/tei:date[@type='source'][1]/@when/string())
-                        else if($date/tei:date[@type='source']/@when-custom)
-                        then($date/tei:date[@type='source'][1]/@when-custom/string())
-                        else if($date/tei:date[@type='source']/@from)
-                        then($date/tei:date[@type='source'][1]/@from/string())
-                        else if($date/tei:date[@type='source']/@from-custom)
-                        then($date/tei:date[@type='source'][1]/@from-custom/string())
-                        else if($date/tei:date[@type='source']/@notBefore)
-                        then($date/tei:date[@type='source'][1]/@notBefore/string())
-                        else if($date/tei:date[@type='source']/@notAfter)
-                        then($date/tei:date[@type='source'][1]/@notAfter/string())
+                        if($date/tei:date[matches(@type,'^source')]/@when)
+                        then($date/tei:date[matches(@type,'^source')][1]/@when/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^source')][1]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from)
+                        then($date/tei:date[matches(@type,'^source')][1]/@from/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^source')][1]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^source')][1]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^source')][1]/@notAfter/string())
                         else('0000-00-00')
                     )
                 else('0000-00-00')
@@ -145,7 +145,7 @@ declare function local:getDate($date) {
 declare function local:formatDate($dateRaw){
     let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
                   then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
-                  else if($dateRaw='0000' or $dateRaw='0000-00' or $dateRaw='0000-00-00')
+                  else if($dateRaw =('0000','0000-00','0000-00-00'))
                   then('[undatiert]')
                   else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
                   then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
@@ -241,7 +241,7 @@ return
 };
 
 declare function local:getReferences($idToReference) {
-    let $collectionReference := collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference] | collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference]
+    let $collectionReference := (collection("/db/contents/jra/persons")//tei:TEI//[matches(@key,$idToReference)], collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference], collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference])
         for $doc in $collectionReference
             let $docRoot := if($doc/ancestor::tei:TEI)
                             then($doc/ancestor::tei:TEI)
@@ -380,24 +380,24 @@ declare function local:getCorrespondance($idToReference){
 };
 
 declare function local:getNameJoined($person){
- let $nameSurname := $person//tei:surname[@type = "used"][1]/text()[1]
+ let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]/text()[1]
  let $nameGenName := $person//tei:genName/text()
  let $nameSurnameFull := if($nameGenName)then(concat($nameSurname,' ',$nameGenName))else($nameSurname)
- let $nameForename := $person//tei:forename[@type = "used"][1]/text()[1]
+ let $nameForename := $person//tei:forename[matches(@type,"^used")][1]/text()[1]
  let $nameNameLink := $person//tei:nameLink[1]/text()[1]
- let $nameAddNameTitle := $person//tei:addName[@type="title"][1]/text()[1]
- let $nameAddNameEpitet := $person//tei:addName[@type="epithet"][1]/text()[1]
+ let $nameAddNameTitle := $person//tei:addName[matches(@type,"^title")][1]/text()[1]
+ let $nameAddNameEpitet := $person//tei:addName[matches(@type,"^epithet")][1]/text()[1]
  let $nameForeFull := concat(if($nameAddNameTitle)then(concat($nameAddNameTitle,' '))else(),
                              if($nameForename)then(concat($nameForename,' '))else(),
                              if($nameAddNameEpitet)then(concat($nameAddNameEpitet,' '))else(),
                              if($nameNameLink)then(concat($nameNameLink,' '))else()
                              )
- let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-                   then (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
+ let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
+                   then (concat($person//tei:forename[matches(@type,'^pseudonym')], ' ', $person//tei:surname[matches(@type,'^pseudonym')]))
                    else ()
  let $nameRoleName := $person//tei:roleName[1]/text()[1]
- let $nameAddNameNick := $person//tei:addName[@type="nick"][1]/text()[1]
- let $nameUnspec := $person//tei:name[@type = 'unspecified'][1]/text()[1]
+ let $nameAddNameNick := $person//tei:addName[matches(@type,"^nick")][1]/text()[1]
+ let $nameUnspec := $person//tei:name[matches(@type,'^unspecified')][1]/text()[1]
  
  let $nameToJoin := if ($nameSurnameFull and $nameForeFull)
                     then (concat($nameSurnameFull,', ',$nameForeFull))
@@ -420,8 +420,8 @@ declare function local:getNameJoined($person){
 };
 
 declare function local:getWorks($work){
-    let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
-    let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
+    let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
+    let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
     let $initial := for $case in upper-case(substring($workName, 1, 1))
                         return switch ($case)
                         case 'É' return 'E'
@@ -453,14 +453,14 @@ declare function local:getWorks($work){
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
+    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI, collection('/db/contents/jra/sources/documents/others')//tei:TEI)
     let $persons := collection('/db/contents/jra/persons')//tei:TEI
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
     let $lettersCrono := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                        let $letterID := $letter/@xml:id/string()
+                        let $correspActionSent := $letter//tei:correspAction[matches(@type,'^sent')]
+                        let $correspActionReceived := $letter//tei:correspAction[matches(@type,'^received')]
                         let $correspSent := local:getSender($correspActionSent)
                         let $correspSentTurned := local:getSenderTurned($correspActionSent)
                         let $correspReceived := local:getReceiver($correspActionReceived)
@@ -484,7 +484,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                              </div>)
      
      let $lettersGroupedByYears :=
-        for $groups in $lettersCrono[@name !='']
+        for $groups in $lettersCrono
         let $year := if($groups/@name/string()='0000')then('[Jahr nicht ermittelbar]')else($groups/@name/string())
         let $count := $groups/@count/string()
         order by $year
@@ -518,7 +518,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
         					   <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
             					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                        {
-                                        for $year at $pos in $lettersGroupedByYears[@year !='']
+                                        for $year at $pos in $lettersGroupedByYears (:[@year !='']:)
                                         let $letterCount := $year/@count/string()
                                         let $letterYear := $year/@year/string()
                                             order by $year
@@ -535,11 +535,11 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                        }
                                        </ul>
                                   </div>
-                        <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- style="position: relative; height:500px; overflow-y: scroll;" -->
+                        <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                             {$lettersGroupedByYears}
                         </div>
                     </div>
-                  <div
+                  <!--<div
                     class="col-3">
                     <br/><br/>
                     <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
@@ -549,7 +549,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         onkeyup="myFilterLetter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
-                </div>
+                </div>-->
                   </div>
                     </div>
                 </div>
@@ -565,12 +565,10 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersSender := for $letter in ($letters//tei:correspAction[@type="sent"]//tei:persName,$letters//tei:correspAction[@type="sent"]//tei:orgName)
+    let $lettersSender := for $letter in ($letters//tei:correspAction[matches(@type,"^sent")]//tei:persName,$letters//tei:correspAction[matches(@type,"^sent")]//tei:orgName)
                         let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
-                       
-(:                        let $correspSentTurned :=  local:getSenderTurned($correspActionSent):)
+                        let $correspActionSent := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^sent")]
+                        let $correspActionReceived := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^received")]
                         let $correspSent :=  local:getSender($correspActionSent)
                         let $correspSentId := normalize-space(if($letter/@key)
                                               then($letter/@key)
@@ -610,8 +608,8 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
         order by $sender
         return
             (<div class="RegisterSortBox" sender="{$sender}" senderId="{$senderId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',if($senderId !='noID')then($senderId)else(translate(normalize-space($sender),',.’ ','____')))}">
-                                                    {if($sender='noReceiver')then('[N.N.]')else($sender)}
+                <div class="RegisterSortEntry" id="{concat('list-item-',if(not(matches($senderId, '^noID')))then($senderId)else(translate(normalize-space($sender),',.’ ','____')))}">
+                                                    {if(matches($sender,'^noReceiver'))then('[N.N.]')else($sender)}
                 </div>
                 {
                     for $group in $groups
@@ -642,12 +640,12 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                         for $sender in $lettersGroupedBySenders
                                         let $letterCount := $sender/@count/string()
                                         let $letterSender := $sender/@sender/string()
-                                        let $letterSenderId := if($sender/@senderId/string()!='noID')then(($sender/@senderId/string()))else(translate(normalize-space($letterSender),',.’ ','____'))
+                                        let $letterSenderId := if(not(matches($sender/@senderId/string(),'^noID')))then(($sender/@senderId/string()))else(translate(normalize-space($letterSender),',.’ ','____'))
                                             order by $letterSender
                                         return
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='noSender')then('[N.N.]')else($letterSender)}</span>
+                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if(matches($letterSenderId,'^noSender'))then('[N.N.]')else($letterSender)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -675,10 +673,10 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersReceiver := for $letter in ($letters//tei:correspAction[@type="received"]//tei:persName,$letters//tei:correspAction[@type="received"]//tei:orgName)
+    let $lettersReceiver := for $letter in ($letters//tei:correspAction[matches(@type,"^received")]//tei:persName,$letters//tei:correspAction[matches(@type,"received")]//tei:orgName)
                         let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
+                        let $correspActionSent := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"sent")]
+                        let $correspActionReceived := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"received")]
                         
                         let $correspSentTurned := local:getSenderTurned($correspActionSent)
                         let $correspSent := local:getSender($correspActionSent)
@@ -721,8 +719,8 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
         order by $receiver
         return
             (<div class="RegisterSortBox" receiver="{$receiver}" receiverId="{$receiverId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',if($receiverId !='noID')then($receiverId)else(translate(normalize-space($receiver),',.’[] ','______')))}">
-                                                    {if($receiver='noReceiver')then('[N.N.]')else($receiver)}
+                <div class="RegisterSortEntry" id="{concat('list-item-',if(not(matches($receiverId,'^noID')))then($receiverId)else(translate(normalize-space($receiver),',.’[] ','______')))}">
+                                                    {if(matches($receiver,'^noReceiver'))then('[N.N.]')else($receiver)}
                 </div>
                 {
                     for $group in $groups
@@ -754,12 +752,12 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                         for $receiver in $lettersGroupedByReceivers
                                         let $letterCount := $receiver/@count/string()
                                         let $letterReceiver := $receiver/@receiver/string()
-                                        let $letterReceiverId := if($receiver/@receiverId/string()!='noID')then($receiver/@receiverId/string())else(translate(normalize-space($letterReceiver),',.’[] ','______'))
+                                        let $letterReceiverId := if(not(matches($receiver/@receiverId/string(),'noID')))then($receiver/@receiverId/string())else(translate(normalize-space($letterReceiver),',.’[] ','______'))
                                             order by $letterReceiver
                                         return
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiver='noReceiver')then('[N.N.]') else ($letterReceiver)}</span>
+                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if(matches($letterReceiver,'^noReceiver'))then('[N.N.]') else ($letterReceiver)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -919,11 +917,11 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     
     let $personsAlpha := for $person in $persons
                             let $persID := $person/@xml:id/string()
-                            let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
-                            let $nameSurname := $person//tei:surname[@type = "used"][1]
+                            let $initial := substring($person//tei:surname[matches(@type,"^used")][1], 1, 1)
+                            let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                             let $role := $person//tei:roleName[1]/text()[1]
-                            let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
-                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                            let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
+                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
                                                else ()
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
@@ -976,12 +974,12 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             (<div
                                                 class="RegisterSortBox"
                                                 initial="{$initial}"
-                                                count="{$personsAlpha[@name = $initial]/@count}"
+                                                count="{$personsAlpha[matches(@name,$initial)]/@count}"
                                                 xmlns="http://www.w3.org/1999/xhtml">
                                                 <div
                                                     class="RegisterSortEntry"
                                                     id="{
-                                                            concat('list-item-', if ($initial = '') then
+                                                            concat('list-item-', if (matches($initial,'')) then
                                                                 ('unknown')
                                                             else
                                                                 ($initial))
@@ -1003,10 +1001,10 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     let $personsBirth := for $person in $persons
                              let $persID := $person/@xml:id/string()
                              let $nameJoined := local:getNameJoined($person)
-                             let $nameSurname := $person//tei:surname[@type = "used"][1]
+                             let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                              let $role := $person//tei:roleName[1]/text()[1]
-                             let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
-                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                             let $pseudonym := if ($person//*[matches(@type,'^pseudonym')][1]/text()[1])
+                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
                                                else ()
                              let $occupation := $person//tei:occupation[1]/text()[1]
                              
@@ -1045,7 +1043,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                              return
                                  (<div
                                      name="{
-                                             if ($birth != 'noBirth') then (distinct-values($birthFormatted)) else($birth)
+                                             if (not(matches($birth,'^noBirth'))) then (distinct-values($birthFormatted)) else($birth)
                                          }"
                                          birth="{$birth}"
                                      count="{count($name)}">
@@ -1067,13 +1065,13 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                           (<div
                                               class="RegisterSortBox"
                                               birth="{$birth}" birthToSort="{$birthToSort}"
-                                              count="{$personsBirth[@name = $birth]/@count}"
+                                              count="{$personsBirth[matches(@name,$birth)]/@count}"
                                               xmlns="http://www.w3.org/1999/xhtml">
                                               <div
                                                   class="RegisterSortEntry"
                                                   id="{concat('list-item-', translate($birth, '/. ', '___'))}">
                                                   {
-                                                      if ($birth = 'noBirth') then
+                                                      if (matches($birth,'^noBirth')) then
                                                           ('[Geburtsjahr nicht erfasst]')
                                                       else
                                                           ($birth)
@@ -1088,10 +1086,10 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     
     let $personsDeath := for $person in $persons
                             let $persID := $person/@xml:id/string()
-                            let $nameSurname := $person//tei:surname[@type = "used"][1]
+                            let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                             let $role := $person//tei:roleName[1]/text()[1]
-                            let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
-                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                            let $pseudonym := if ($person//*[matches(@type,'^pseudonym')][1]/text()[1])
+                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
                                                else ()
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
@@ -1130,7 +1128,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             return
                                 (<div
                                     name="{
-                                            if ($death != 'noDeath') then (distinct-values($deathFormatted)) else($death)
+                                            if (not(matches($death,'^noDeath'))) then (distinct-values($deathFormatted)) else($death)
                                         }"
                                     death="{$death}"
                                     count="{count($name)}">
@@ -1152,13 +1150,13 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                         (<div
                                             class="RegisterSortBox"
                                             death="{$death}" deathToSort="{$deathToSort}"
-                                            count="{$personsDeath[@name = $death]/@count}"
+                                            count="{$personsDeath[matches(@name,$death)]/@count}"
                                             xmlns="http://www.w3.org/1999/xhtml">
                                             <div
                                                 class="RegisterSortEntry"
                                                 id="{concat('list-item-', translate($death, '/. ', '___'))}">
                                                 {
-                                                    if ($death = 'noDeath') then
+                                                    if (matches($death,'^noDeath')) then
                                                         ('[Sterbejahr nicht erfasst]')
                                                     else
                                                         ($death)
@@ -1225,7 +1223,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
-                                                        if ($initial = 'unknown') then
+                                                        if (matches($initial,'unknown')) then
                                                             ('[ohne Initial]')
                                                         else
                                                             ($initial)
@@ -1260,7 +1258,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', translate($birth, '/. ', '___'))}"><span>{
-                                                        if ($birth = 'noBirth') then
+                                                        if (matches($birth,'noBirth')) then
                                                             ('[nicht erfasst]')
                                                         else
                                                             ($birth)
@@ -1294,7 +1292,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', translate($death, '/. ', '___'))}"><span>{
-                                                        if ($death = 'noDeath') then
+                                                        if (matches($death,'noDeath')) then
                                                             ('[nicht erfasst]')
                                                         else
                                                             ($death)
