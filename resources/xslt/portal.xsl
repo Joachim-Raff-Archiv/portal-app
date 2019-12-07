@@ -6,10 +6,42 @@
     </xsl:template>
     <xsl:template match="figure[@type='icon']">
         <xsl:variable name="picture" select="@source"/>
-        <img src="{$picture}" width="20"/>
+        <img src="{$picture}" width="20" style="padding: 5px 0px 7px 0px;"/>
     </xsl:template>
     <xsl:template match="figure[@type='logo']">
         <xsl:variable name="picture" select="@source"/>
         <img src="{$picture}" width="115"/>
+    </xsl:template>
+    
+    <xsl:template match="table">
+        
+        <table>
+            <xsl:apply-templates/> <!-- select="//table" -->
+        </table>
+    </xsl:template>
+    <xsl:template match="row">
+        <tr>
+            <xsl:apply-templates/> <!-- select="//table" -->
+        </tr>
+    </xsl:template>
+    <xsl:template match="cell[not(ancestor::table/@style='impressum')]">
+        <xsl:choose>
+            <xsl:when test="@rend='top'">
+                <td valign="top">
+                    <xsl:apply-templates/> <!-- select="//table" -->
+                </td>
+            </xsl:when>
+            <xsl:otherwise>
+                <td>
+                    <xsl:apply-templates/> <!-- select="//table" -->
+                </td>
+            </xsl:otherwise>
+        </xsl:choose>
+        
+    </xsl:template>
+    <xsl:template match="cell[ancestor::table/@style='impressum']">
+        <td valign="center" width="225px">
+            <xsl:apply-templates/> <!-- select="//table" -->
+        </td>
     </xsl:template>
 </xsl:stylesheet>
