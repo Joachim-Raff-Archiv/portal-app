@@ -39,6 +39,7 @@ a:focus,a:hover{
 
 .heading {
     font-family: Montserrat;
+    line-height:2;
 }
 
 h1,h2,h3,h4,h5,h6{
