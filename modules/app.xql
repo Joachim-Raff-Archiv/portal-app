@@ -139,21 +139,25 @@ declare function local:getDate($date) {
                 else('0000-00-00')
                 
     return
-        $get[number(substring(.,1,4)) <= number(substring(string(current-date()),1,4))-70]
+        $get
 };
 
 declare function local:formatDate($dateRaw){
-    if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
-                                              then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
-                                              else if($dateRaw='0000' or $dateRaw='0000-00' or $dateRaw='0000-00-00')
-                                              then('[undatiert]')
-                                              else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
-                                              then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                                              else if(contains($dateRaw,'0000-') and contains($dateRaw,'-00'))
-                                              then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                                              else if(starts-with($dateRaw,'0000-'))
-                                              then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
-                                              else($dateRaw)
+    let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
+                  then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
+                  else if($dateRaw='0000' or $dateRaw='0000-00' or $dateRaw='0000-00-00')
+                  then('[undatiert]')
+                  else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
+                  then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
+                  else if(contains($dateRaw,'0000-') and contains($dateRaw,'-00'))
+                  then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                  else if(starts-with($dateRaw,'0000-'))
+                  then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
+                  else($dateRaw)
+
+    let $replaceMay := replace($date,'Mai.','Mai')
+    return
+        $replaceMay
 };
 
 declare function local:getBirth($person){
@@ -226,6 +230,16 @@ distinct-values(
                 replace(replace(replace(replace(replace(replace(replace(replace($input,'ö','oe'),'ä','ae'),'ü','ue'),'é','e'),'è','e'),'ê','e'),'á','a'),'à','a')
                 )
                 };
+                
+declare function local:turnName($nameToTurn){
+let $nameTurned := if(contains($nameToTurn,'['))
+                   then($nameToTurn)
+                   else(concat(string-join(subsequence(tokenize($nameToTurn,', '),2),' '),
+                   ' ',subsequence(tokenize($nameToTurn,', '),1,1)))
+return
+    $nameTurned
+};
+
 declare function local:getReferences($idToReference) {
     let $collectionReference := collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference] | collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference]
         for $doc in $collectionReference
@@ -246,38 +260,18 @@ declare function local:getReferences($idToReference) {
                             else('Sonstige')
             let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
             let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
-            let $correspSent := if($correspActionSent/tei:persName/text())
-                                then($correspActionSent/tei:persName/text()[1])
-                                else if($correspActionSent/tei:orgName/text())
-                                then($correspActionSent/tei:orgName/text()[1])
-                                else('[N.N.]')
-            let $correspReceived := if($correspActionReceived/tei:persName/text())
-                                    then($correspActionReceived/tei:persName/text()[1])
-                                    else if($correspActionReceived/tei:orgName/text())
-                                    then($correspActionReceived/tei:orgName/text()[1])
-                                    else('[N.N.]')
+            let $correspSentTurned := local:getSenderTurned($correspActionSent)
+            let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
             let $docDate := if(starts-with($docRoot/@xml:id,'A'))
                             then(local:getDate($docRoot//tei:correspAction[@type='sent']))
                             else(<br/>)
             let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
-                             then($correspSent,<br/>,'an ',$correspReceived)
+                             then($correspSentTurned,<br/>,'an ',$correspReceivedTurned)
                              else if($docRoot/name()='TEI')
                              then($docRoot//tei:titleStmt/tei:title/string())
                              else if($docRoot/name()='mei') 
                              then($docRoot//mei:titleStmt/mei:title/string())
                              else('noTitle')
-            let $role := if(starts-with($docRoot/@xml:id,'C'))
-                            then(if($docRoot//tei:person/tei:affiliation/text() and $docRoot//tei:person/tei:occupation/text())
-                                 then(concat($docRoot//tei:person/tei:affiliation,', ',string-join($docRoot//tei:person/tei:occupation,'')))
-                                 else if($docRoot//tei:person/tei:affiliation/text())
-                                 then($docRoot//tei:person/tei:affiliation/text())
-                                 else if($docRoot//tei:person/tei:occupation/text())
-                                 then($docRoot//tei:person/tei:occupation/text())
-                                 else()
-                                 )
-                            else if(starts-with($docRoot/@xml:id,'D'))
-                            then($docRoot//tei:org/tei:desc/string())
-                            else()
             let $href := if(starts-with($docRoot/@xml:id,'A'))
                             then('../letter/')
                             else if (starts-with($docRoot/@xml:id,'B'))
@@ -296,7 +290,7 @@ declare function local:getReferences($idToReference) {
                                                 then(' vom ',local:formatDate($docDate))
                                                 else()}
                            </div>
-                           <div class="col">{$docTitle}&#160;<br/>{if($role)then(<span class="sublevel">{concat('(',$role,')')}</span>)else()}</div>
+                           <div class="col">{$docTitle}</div>
                            <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
                          </div>
             order by $docID
@@ -304,11 +298,24 @@ declare function local:getReferences($idToReference) {
                 $entry
 };
 
+declare function local:getSenderTurned($correspActionSent){
+let $sender := if($correspActionSent/tei:persName[3]/text())
+                then(concat(local:turnName($correspActionSent/tei:persName[1]/text()[1]),'/', local:turnName($correspActionSent/tei:persName[2]/text()[1]),'/', local:turnName($correspActionSent/tei:persName[3]/text()[1]))) 
+                else if($correspActionSent/tei:persName[2]/text())
+                        then(concat(local:turnName($correspActionSent/tei:persName[1]/text()[1]),' und ',local:turnName($correspActionSent/tei:persName[2]/text()[1]))) 
+                        else if($correspActionSent/tei:persName/text()) 
+                             then(local:turnName($correspActionSent/tei:persName/text()[1])) 
+                             else if($correspActionSent/tei:orgName/text()) 
+                                  then($correspActionSent/tei:orgName/text()[1]) 
+                                  else('[N.N.]')
+  return
+    $sender
+};
 declare function local:getSender($correspActionSent){
 let $sender := if($correspActionSent/tei:persName[3]/text())
-                then(concat($correspActionSent/tei:persName[1]/text()[1],'/',$correspActionSent/tei:persName[2]/text()[1],'/',$correspActionSent/tei:persName[3]/text()[1])) 
+                then(concat($correspActionSent/tei:persName[1]/text()[1],'/', $correspActionSent/tei:persName[2]/text()[1],'/', $correspActionSent/tei:persName[3]/text()[1])) 
                 else if($correspActionSent/tei:persName[2]/text())
-                        then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) 
+                        then(concat($correspActionSent/tei:persName[1]/text()[1],' und ', $correspActionSent/tei:persName[2]/text()[1])) 
                         else if($correspActionSent/tei:persName/text()) 
                              then($correspActionSent/tei:persName/text()[1]) 
                              else if($correspActionSent/tei:orgName/text()) 
@@ -317,11 +324,28 @@ let $sender := if($correspActionSent/tei:persName[3]/text())
   return
     $sender
 };
+
+declare function local:getReceiverTurned($correspActionReceived){
+
+let $receiver := if($correspActionReceived/tei:persName[3]/text()) 
+                                then(concat(local:turnName($correspActionReceived/tei:persName[1]/text()[1]),'/', local:turnName($correspActionReceived/tei:persName[2]/text()[1]),'/', local:turnName($correspActionReceived/tei:persName[3]/text()[1]))) 
+                                else if($correspActionReceived/tei:persName[2]/text()) 
+                                     then(concat(local:turnName($correspActionReceived/tei:persName[1]/text()[1]),' und ', local:turnName($correspActionReceived/tei:persName[2]/text()[1]))) 
+                                     else if($correspActionReceived/tei:persName/text()) 
+                                          then(local:turnName($correspActionReceived/tei:persName/text()[1])) 
+                                          else if($correspActionReceived/tei:orgName/text()) 
+                                               then($correspActionReceived/tei:orgName/text()[1]) 
+                                               else ('[N.N.]')
+ return
+     $receiver
+};
+
 declare function local:getReceiver($correspActionReceived){
+
 let $receiver := if($correspActionReceived/tei:persName[3]/text()) 
                                 then(concat($correspActionReceived/tei:persName[1]/text()[1],'/', $correspActionReceived/tei:persName[2]/text()[1],'/', $correspActionReceived/tei:persName[3]/text()[1])) 
                                 else if($correspActionReceived/tei:persName[2]/text()) 
-                                     then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) 
+                                     then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ', $correspActionReceived/tei:persName[2]/text()[1])) 
                                      else if($correspActionReceived/tei:persName/text()) 
                                           then($correspActionReceived/tei:persName/text()[1]) 
                                           else if($correspActionReceived/tei:orgName/text()) 
@@ -338,21 +362,61 @@ declare function local:getCorrespondance($idToReference){
         let $letterID := $letter/@xml:id/string()
         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-        let $correspSent := local:getSender($correspActionSent)
-        let $correspReceived := local:getReceiver($correspActionReceived)
+        let $correspSentTurned := local:getSenderTurned($correspActionSent)
+        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
         let $date := local:getDate($correspActionSent)
         let $year := substring($date,1,4)
         let $dateFormatted := local:formatDate($date)
         
         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
-                                <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
+                                <div class="col">{$correspSentTurned}<br/>an {$correspReceivedTurned}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
         
             order by $date
         return
         $letterEntry
+};
+
+declare function local:getNameJoined($person){
+ let $nameSurname := $person//tei:surname[@type = "used"][1]/text()[1]
+ let $nameGenName := $person//tei:genName/text()
+ let $nameSurnameFull := if($nameGenName)then(concat($nameSurname,' ',$nameGenName))else($nameSurname)
+ let $nameForename := $person//tei:forename[@type = "used"][1]/text()[1]
+ let $nameNameLink := $person//tei:nameLink[1]/text()[1]
+ let $nameAddNameTitle := $person//tei:addName[@type="title"][1]/text()[1]
+ let $nameAddNameEpitet := $person//tei:addName[@type="epithet"][1]/text()[1]
+ let $nameForeFull := concat(if($nameAddNameTitle)then(concat($nameAddNameTitle,' '))else(),
+                             if($nameForename)then(concat($nameForename,' '))else(),
+                             if($nameAddNameEpitet)then(concat($nameAddNameEpitet,' '))else(),
+                             if($nameNameLink)then(concat($nameNameLink,' '))else()
+                             )
+ let $pseudonym := if ($person//node()[@type = 'pseudonym'])
+                   then (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
+                   else ()
+ let $nameRoleName := $person//tei:roleName[1]/text()[1]
+ let $nameAddNameNick := $person//tei:addName[@type="nick"][1]/text()[1]
+ let $nameUnspec := $person//tei:name[@type = 'unspecified'][1]/text()[1]
+ 
+ let $nameToJoin := if ($nameSurnameFull and $nameForeFull)
+                    then (concat($nameSurnameFull,', ',$nameForeFull))
+                    else if ($nameSurnameFull)
+                    then ($nameSurnameFull)
+                    else if($nameForeFull)
+                    then ($nameForeFull)
+                    else if($pseudonym)
+                    then ($pseudonym)
+                    else if($nameRoleName)
+                    then ($nameRoleName)
+                    else if ($nameAddNameNick)
+                    then ($nameAddNameNick)
+                    else if ($nameUnspec)
+                    then ($nameUnspec)
+                    else ('[N.N.]')
+ 
+ return
+    $nameToJoin
 };
 
 declare function local:getWorks($work){
@@ -389,7 +453,7 @@ declare function local:getWorks($work){
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
-    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
+    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
     let $persons := collection('/db/contents/jra/persons')//tei:TEI
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
@@ -397,14 +461,16 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         let $letterID := $letter/@xml:id/data(.)
                         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-                        let $correspSent := if($correspActionSent/tei:persName[2]/text()) then(concat($correspActionSent/tei:persName[1]/text()[1],' und ',$correspActionSent/tei:persName[2]/text()[1])) else if($correspActionSent/tei:persName/text()) then($correspActionSent/tei:persName/text()[1]) else if($correspActionSent/tei:orgName/text()) then($correspActionSent/tei:orgName/text()[1]) else('[N.N.]')
-                        let $correspReceived := if($correspActionReceived/tei:persName[2]/text()) then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ',$correspActionReceived/tei:persName[2]/text()[1])) else if($correspActionReceived/tei:persName/text()) then($correspActionReceived/tei:persName/text()[1]) else if($correspActionReceived/tei:orgName/text()) then($correspActionReceived/tei:orgName/text()[1]) else ('[N.N.]')
+                        let $correspSent := local:getSender($correspActionSent)
+                        let $correspSentTurned := local:getSenderTurned($correspActionSent)
+                        let $correspReceived := local:getReceiver($correspActionReceived)
+                        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
                         let $date := local:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{if($date='0000-00-00')then(replace($date,'0000-','9999-'))else($date)}">{$dateFormatted}</div>
-                                <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
+                                <div class="col">{$correspSentTurned}<br/>an {$correspReceivedTurned}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $year
@@ -494,7 +560,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
 declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
-    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
+    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
     let $persons := collection('/db/contents/jra/persons')//tei:TEI
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
@@ -504,13 +570,14 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                         let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
                        
+(:                        let $correspSentTurned :=  local:getSenderTurned($correspActionSent):)
                         let $correspSent :=  local:getSender($correspActionSent)
                         let $correspSentId := normalize-space(if($letter/@key)
                                               then($letter/@key)
                                               else('noID'))
                         
+                        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
                         let $correspReceived := local:getReceiver($correspActionReceived)
-                        
                         let $senderName := normalize-space(if($correspSentId!='noID')
                                            then(for $data in $collection[range:eq(@xml:id,$correspSentId)]
                                                let $title := $data//tei:titleStmt/tei:title/string()
@@ -523,7 +590,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                         let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col">An {$correspReceived}</div>
+                                <div class="col">an {$correspReceivedTurned}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $senderName
@@ -603,7 +670,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
 declare function app:registryLettersReceiver($node as node(), $model as map(*)) {
 
-    let $letters := collection('/db/contents/jra/sources/documents/letters')//tei:TEI
+    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
     let $persons := collection('/db/contents/jra/persons')//tei:TEI
     let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
     let $collection := ($persons, $institutions)
@@ -613,11 +680,13 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
                         let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
                         
+                        let $correspSentTurned := local:getSenderTurned($correspActionSent)
                         let $correspSent := local:getSender($correspActionSent)
                         let $correspReceivedId := normalize-space(if($letter/@key)
                                               then($letter/@key)
                                               else('noID'))
                         
+(:                        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived):)
                         let $correspReceived := local:getReceiver($correspActionReceived)
                         
                         let $receiverName := normalize-space(if($correspReceivedId !='noID')
@@ -632,7 +701,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $dateFormatted := local:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col">Von {$correspSent}</div>
+                                <div class="col">von {$correspSentTurned}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $receiverName
@@ -852,27 +921,14 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             let $persID := $person/@xml:id/string()
                             let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
                             let $nameSurname := $person//tei:surname[@type = "used"][1]
-                            let $nameForename := $person//tei:forename[@type = "used"][1]
-                            let $nameAddName := $person//tei:addName[@type = "nick"][1]
-                            let $nameForeFull := if ($nameForename) then($nameForename) else if ($nameAddName and not($nameForename)) then ($nameAddName) else ()
-                            let $nameToJoin := if ($nameSurname != '') then($nameSurname, $nameForeFull) else if(not($nameAddName) and not($nameForename)) then($person//tei:titleStmt/tei:title) else ($nameForeFull)
-                            let $role := string-join($person//tei:roleName,' | ')
-                            let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-                            then
-                                (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
-                            else
-                                ()
-                            (:let $birth := local:getBirth($person)
-                            let $birthFormatted := local:formatLifedata($birth)
-                            let $death := local:getBirth($person)
-                            let $deathFormatted := local:formatLifedata($death):)
+                            let $role := $person//tei:roleName[1]/text()[1]
+                            let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
+                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                                               else ()
+                            let $occupation := $person//tei:occupation[1]/text()[1]
                             
                             let $lifeData := local:getLifedata($person)
-                            let $nameJoined := if ($nameForeFull = '')
-                            then
-                                ($nameSurname)
-                            else
-                                (string-join($nameToJoin, ', '))
+                            let $nameJoined := local:getNameJoined($person)
                             let $nameToSort := local:replaceToSortDist($nameSurname)
                             let $name := <div
                                 class="row RegisterEntry">
@@ -881,16 +937,17 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     {$nameJoined}
                                     {$lifeData}
                                     {
-                                        if ($role) then
-                                            (<br/>, <span class="sublevel">({$role})</span>)
-                                        else
-                                            ()
-                                    }
-                                    {
-                                        if ($pseudonym) then
-                                            (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
-                                        else
-                                            ()
+                                        if ($pseudonym or $role or $occupation)
+                                        then (<br/>,
+                                                <span class="sublevel">
+                                                    {concat('(',
+                                                            string-join((if($pseudonym)then(concat($pseudonym,' [Pseudonym]'))else(),
+                                                                         if($role)then($role)else(),
+                                                                         if($occupation)then($occupation)else()),' | ')
+                                                            ,')')
+                                                    }
+                                                </span>)
+                                        else ()
                                     }
                                 </div>
                                 <!--<div class="col-3"></div>-->
@@ -906,7 +963,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     count="{count($name)}">
                                     {
                                         for $each in $name
-                                        let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
+                                        let $order := local:replaceToSortDist($each)
                                             order by $order
                                         return
                                             $each
@@ -945,34 +1002,19 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     
     let $personsBirth := for $person in $persons
                              let $persID := $person/@xml:id/string()
+                             let $nameJoined := local:getNameJoined($person)
                              let $nameSurname := $person//tei:surname[@type = "used"][1]
-                             let $nameForename := $person//tei:forename[@type = "used"][1]
-                             let $nameAddName := $person//tei:nameLink[1]
-                             let $nameForeFull := if ($nameAddName) then
-                                 (concat($nameForename, ' ', $nameAddName))
-                             else
-                                 ($nameForename)
-                             let $nameToJoin := if (not($nameSurname = '')) then
-                                 ($nameSurname, $nameForeFull)
-                             else
-                                 ($nameForeFull)
-                             let $role := $person//tei:roleName[1]
-                             let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-                             then
-                                 (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
-                             else
-                                 ()
+                             let $role := $person//tei:roleName[1]/text()[1]
+                             let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
+                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                                               else ()
+                             let $occupation := $person//tei:occupation[1]/text()[1]
+                             
                              let $birth := local:getBirth($person)
                              let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth)
                              let $birthFormatted := local:formatLifedata($birth)
-(:                             let $death := local:getDeath($person):)
-(:                             let $deathFormatted := local:formatLifedata($death):)
                              let $lifeData := local:getLifedata($person)
-                             let $nameJoined := if ($nameForeFull = '')
-                             then
-                                 ($nameSurname)
-                             else
-                                 (string-join($nameToJoin, ', '))
+                             
                              let $name := <div
                                  class="row RegisterEntry">
                                  <div
@@ -980,17 +1022,18 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                      {$nameJoined}
                                      {$lifeData}
                                      {
-                                         if ($role) then
-                                             (<br/>, <span class="sublevel">({$role})</span>)
-                                         else
-                                             ()
-                                     }
-                                     {
-                                         if ($pseudonym) then
-                                             (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
-                                         else
-                                             ()
-                                     }
+                                        if ($pseudonym or $role or $occupation)
+                                        then (<br/>,
+                                                <span class="sublevel">
+                                                    {concat('(',
+                                                            string-join((if($pseudonym)then(concat($pseudonym,' [Pseudonym]'))else(),
+                                                                         if($role)then($role)else(),
+                                                                         if($occupation)then($occupation)else()),' | ')
+                                                            ,')')
+                                                    }
+                                                </span>)
+                                        else ()
+                                    }
                                  </div>
                                  <!--<div class="col-3"></div>-->
                                  <div
@@ -1046,33 +1089,17 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
     let $personsDeath := for $person in $persons
                             let $persID := $person/@xml:id/string()
                             let $nameSurname := $person//tei:surname[@type = "used"][1]
-                            let $nameForename := $person//tei:forename[@type = "used"][1]
-                            let $nameAddName := $person//tei:nameLink[1]
-                            let $nameForeFull := if ($nameAddName) then
-                                (concat($nameForename, ' ', $nameAddName))
-                            else
-                                ($nameForename)
-                            let $nameToJoin := if (not($nameSurname = '')) then
-                                ($nameSurname, $nameForeFull)
-                            else
-                                ($nameForeFull)
-                            let $role := $person//tei:roleName[1]
-                            let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-                            then
-                                (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
-                            else
-                                ()
-(:                            let $birth := local:getBirth($person):)
-(:                            let $birthFormatted := local:formatLifedata($birth):)
+                            let $role := $person//tei:roleName[1]/text()[1]
+                            let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
+                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                                               else ()
+                            let $occupation := $person//tei:occupation[1]/text()[1]
+                            
                             let $death := local:getDeath($person)
                             let $deathToSort := if (contains($death,'/')) then(substring-before($death,'/')) else($death)
                             let $deathFormatted := local:formatLifedata($death)
                             let $lifeData := local:getLifedata($person)
-                            let $nameJoined := if ($nameForeFull = '')
-                            then
-                                ($nameSurname)
-                            else
-                                (string-join($nameToJoin, ', '))
+                            let $nameJoined := local:getNameJoined($person)
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
@@ -1080,16 +1107,17 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                     {$nameJoined}
                                     {$lifeData}
                                     {
-                                        if ($role) then
-                                            (<br/>, <span class="sublevel">({$role})</span>)
-                                        else
-                                            ()
-                                    }
-                                    {
-                                        if ($pseudonym) then
-                                            (<br/>, <span class="sublevel">(Pseudonym: {$pseudonym})</span>)
-                                        else
-                                            ()
+                                        if ($pseudonym or $role or $occupation)
+                                        then (<br/>,
+                                                <span class="sublevel">
+                                                    {concat('(',
+                                                            string-join((if($pseudonym)then(concat($pseudonym,' [Pseudonym]'))else(),
+                                                                         if($role)then($role)else(),
+                                                                         if($occupation)then($occupation)else()),' | ')
+                                                            ,')')
+                                                    }
+                                                </span>)
+                                        else ()
                                     }
                                 </div>
                                 <!--<div class="col-3"></div>-->
@@ -1719,7 +1747,7 @@ declare function app:institution($node as node(), $model as map(*)) {
     let $persons := collection("/db/contents/jra/persons")//tei:TEI
     let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id = $id]
     let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
-    let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
+    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
     let $affiliates := $persons//tei:affiliation[@key = $id]/ancestor::tei:TEI
     let $literature := $institution//tei:bibl[@type='links']
@@ -3040,22 +3068,22 @@ return
     <span class="counter-text">Postsachen</span>)
 };
 declare function app:countWorks($node as node(), $model as map(*)){
-let $letters := collection("/db/contents/jra/works")
-let $count := count($letters//mei:mei)
+let $works := collection("/db/contents/jra/works")
+let $count := count($works//mei:mei)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Werke</span>)
 };
 declare function app:countPersons($node as node(), $model as map(*)){
-let $letters := collection("/db/contents/jra/persons")
-let $count := count($letters//tei:TEI)
+let $persons := collection("/db/contents/jra/persons")
+let $count := count($persons//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Personen</span>)
 };
 declare function app:countInstitutions($node as node(), $model as map(*)){
-let $letters := collection("/db/contents/jra/institutions")
-let $count := count($letters//tei:TEI)
+let $institutions := collection("/db/contents/jra/institutions")
+let $count := count($institutions//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Institutionen</span>)
