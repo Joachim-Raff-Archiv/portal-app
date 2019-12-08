@@ -1,4 +1,4 @@
-xquery version "3.0";
+xquery version "3.1";
 
 module namespace app = "http://localhost:8080/exist/apps/raffArchive/templates";
 import module namespace templates = "http://exist-db.org/xquery/templates";
@@ -241,7 +241,7 @@ return
 };
 
 declare function local:getReferences($idToReference) {
-    let $collectionReference := (collection("/db/contents/jra/persons")//tei:TEI//[matches(@key,$idToReference)], collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference], collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference])
+    let $collectionReference := (collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference], collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference])
         for $doc in $collectionReference
             let $docRoot := if($doc/ancestor::tei:TEI)
                             then($doc/ancestor::tei:TEI)
@@ -505,7 +505,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
         					   <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
             					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                        {
-                                        for $year at $pos in $lettersGroupedByYears (:[@year !='']:)
+                                        for $year at $pos in $lettersGroupedByYears[@year !='']
                                         let $letterCount := $year/@count/string()
                                         let $letterYear := $year/@year/string()
                                             order by $year
@@ -961,12 +961,12 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                             (<div
                                                 class="RegisterSortBox"
                                                 initial="{$initial}"
-                                                count="{$personsAlpha[matches(@name,$initial)]/@count}"
+                                                count="{$personsAlpha[@name=$initial]/@count}"
                                                 xmlns="http://www.w3.org/1999/xhtml">
                                                 <div
                                                     class="RegisterSortEntry"
                                                     id="{
-                                                            concat('list-item-', if (matches($initial,'')) then
+                                                            concat('list-item-', if ($initial='') then
                                                                 ('unknown')
                                                             else
                                                                 ($initial))
@@ -1026,11 +1026,11 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
             					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                     {
                                         for $each in $personsGroupedByInitials
-                                        let $initial := if ($each/@initial/string() = '') then
-                                            ('unknown')
-                                        else
-                                            ($each/@initial/string())
-                                        let $count := $each/@count/string()
+                                            let $initial := if ($each/@initial/string() = '') then
+                                                ('unknown')
+                                            else
+                                                ($each/@initial/string())
+                                            let $count := $each/@count/string()
                                             order by $initial
                                         return
                                             <a
@@ -2373,6 +2373,14 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 return
                                                     $worksByCat}
                                         <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-01-01-03">Andere Chorwerke</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-03']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-01-02">Chorwerke mit Orchester weltlich</div>
                                             {for $work in $works//mei:classification//mei:term[.='cat-01-02']/ancestor::mei:mei
@@ -2689,7 +2697,15 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 let $worksByCat := local:getWorks($work)
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
-                                                    $worksByCat}            
+                                                    $worksByCat} 
+                                       <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-05-01-05">Klavierauszüge</div>
+                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-05']/ancestor::mei:mei
+                                                let $worksByCat := local:getWorks($work)
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-02">Klavier vierhändig</div>
