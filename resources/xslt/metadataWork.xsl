@@ -176,6 +176,7 @@
                     <td>
 <!--                        <xsl:value-of select="//mei:history/mei:eventList/mei:event[@type='entstehung']/mei:desc"/>-->
                         <xsl:apply-templates select="//mei:event[@type='entstehung']/mei:desc"/>
+<!--                        <xsl:value-of select="//mei:creation/string-join(text(),' ')"/>-->
                     </td>
                 </tr>
                 </xsl:if>

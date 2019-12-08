@@ -2395,7 +2395,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
-                                        <div
+                                        <!--<div
                                           class="RegisterSortEntry"
                                           id="cat-01-03">Chorwerke mit Klavier</div>
                                           {let $works := 'cat-01-03'
@@ -2403,7 +2403,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
-                                                    $worksByCat}
+                                                    $worksByCat}-->
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-04">Chorwerke a cappella geistlich</div>
