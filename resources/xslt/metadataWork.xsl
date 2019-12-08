@@ -245,13 +245,26 @@
                     <td>Musikalische Abschnitte:</td>
                     <td>
                         <xsl:for-each select="//mei:music/mei:body/mei:mdiv">
-                            <xsl:value-of select="concat('Nr. ', ./@label)"/>
+                            <xsl:choose>
+                                <xsl:when test="contains(@label,'Abteilung') or contains(@label,'Teil')">
+                                    <xsl:value-of select="@label"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="concat('Nr. ', ./@label)"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
                             <br/>
                             <xsl:if test="exists(./mei:mdiv)">
                                 <ul>
                                     <xsl:for-each select="./mei:mdiv">
-
-                                        <xsl:value-of select="concat('Nr. ', ./@n, ' ', ./@label)"/>
+                                        <xsl:choose>
+                                            <xsl:when test="contains(@label,'Abteilung') or contains(@label,'Teil')">
+                                                <xsl:value-of select="concat(./@n, ' ', ./@label)"/>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:value-of select="concat('Nr. ', ./@n, ' ', ./@label)"/>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                         <br/>
                                     </xsl:for-each>
                                 </ul>
