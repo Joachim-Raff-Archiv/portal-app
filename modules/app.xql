@@ -427,7 +427,7 @@ declare function local:getWorks($cat){
         let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
         let $workID := $work/@xml:id/string()
         return
-            <div titleToSort="{$withoutArticle}"
+            <div titleToSort="{$opus}"
             class="row {if(string-length($cat)>9)then('RegisterEntry2')else('RegisterEntry')}">
                 <div
                     class="col">{$workName}</div>
@@ -2669,11 +2669,46 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
-                                        
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-03-03">«Fantasien und Variationen über fremde Themen für Violine und Klavier»</div>
+                                            {let $works := 'cat-04-03-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-04">Cello und Klavier</div>
                                             {let $works := 'cat-04-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-04-01">Sonaten</div>
+                                            {let $works := 'cat-04-04-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-04-02">Andere Werke für Cello und Klavier</div>
+                                            {let $works := 'cat-04-04-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-04-03">«Fantasien und Variationen über fremde Themen für Cello und Klavier»</div>
+                                            {let $works := 'cat-04-04-03'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)

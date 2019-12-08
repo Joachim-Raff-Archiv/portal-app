@@ -144,6 +144,14 @@
                     </td>
                 </tr>
             </xsl:if>
+            <xsl:if test="exists($person/occupation[.!=''])">
+                <tr>
+                    <td>Beruf:</td>
+                    <td>
+                        <xsl:value-of select="$person/occupation"/>
+                    </td>
+                </tr>
+            </xsl:if>
             <xsl:if test="exists($person/affiliation/text())">
                 <tr>
                     <td>Affiliation:</td>

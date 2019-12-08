@@ -20,19 +20,19 @@
             </xsl:if>
         </table>
         
-        <xsl:if test="//body/opener[. != '']">
+        <!--<xsl:if test="//body/opener[. != '']">
             <table class="letterContentRegeste">
                 <tr>
                     <td>Beginn:</td>
                     <td>
                         <xsl:apply-templates select="//body/opener"/>
-                        <!--<xsl:value-of select="//body/opener"/>-->
+                        <!-\-<xsl:value-of select="//body/opener"/>-\->
                         <br/>
                     </td>
                 </tr>
             </table>
             
-        </xsl:if>
+        </xsl:if>-->
         
     </xsl:template>
     
