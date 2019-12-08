@@ -419,23 +419,25 @@ declare function local:getNameJoined($person){
     $nameToJoin
 };
 
-declare function local:getWorks($work){
-    let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
-    let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
-    let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
-    let $workID := $work/@xml:id/string()
-    return
-        <div titleToSort="{$withoutArticle}"
-        class="row {if($work//mei:term[string-length(.)>9])then('RegisterEntry2')else('RegisterEntry')}">
-            <div
-                class="col">{$workName}</div>
-            <div
-                class="col-2">{$opus}</div>
-            <div
-                class="col-2"><a onclick="pleaseWait()"
-                    href="work/{$workID}">{$workID}</a>
+declare function local:getWorks($cat){
+    let $works := collection('/db/contents/jra/works')//mei:term[.=$cat]/ancestor::mei:mei
+    for $work in $works
+        let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
+        let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
+        let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
+        let $workID := $work/@xml:id/string()
+        return
+            <div titleToSort="{$withoutArticle}"
+            class="row {if(string-length($cat)>9)then('RegisterEntry2')else('RegisterEntry')}">
+                <div
+                    class="col">{$workName}</div>
+                <div
+                    class="col-2">{$opus}</div>
+                <div
+                    class="col-2"><a onclick="pleaseWait()"
+                        href="work/{$workID}">{$workID}</a>
+                </div>
             </div>
-        </div>
 };
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
@@ -2351,88 +2353,99 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-01">Chorwerke mit Orchester geistlich</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-01">Oratorien</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-02">Liturgische Werke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-03">Andere Chorwerke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-02">Chorwerke mit Orchester weltlich</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                           class="RegisterSortEntry"
                                           id="cat-01-03">Chorwerke mit Klavier</div>
-                                          {for $work in $works//mei:classification//mei:term[.='cat-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                          {let $works := 'cat-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-04">Chorwerke a cappella geistlich</div>
-                                           {for $work in $works//mei:classification//mei:term[.='cat-01-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                           {let $works := 'cat-01-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-05">Chorwerke a cappella weltlich</div>
-                                           {for $work in $works//mei:classification//mei:term[.='cat-01-05']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                           {let $works := 'cat-01-05'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-06">Ensembles mit Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-06']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-06'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-07">Lieder mit Orchester</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-07']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                               {let $works := 'cat-01-07'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work 
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-08">Lieder mit Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-08']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-01-08'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
@@ -2453,16 +2466,18 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-02-01">Opern</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-02-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-02-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-02-02">Schauspielmusiken</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-02-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-02-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
@@ -2482,40 +2497,45 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-03-01">Symphonien</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-03-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-03-02">Suiten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-03-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-03-03">Konzertante Werke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-03-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                       <div
                                             class="RegisterSortEntry"
                                             id="cat-03-04">Ouvertüren und Vorspiele</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-03-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                      <div
                                             class="RegisterSortEntry"
                                             id="cat-03-05">Andere Orchesterwerke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-05']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-03-05'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
@@ -2535,104 +2555,117 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-01">Kammermusik ohne Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-01">Sinfonietta</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-02">Oktett</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-03">Sextett</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-04">Streichquartette</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-01-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-04-02">Kammermusik mit Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-01">Klavierquintette</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-02-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-02">Klavierquartette</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-02-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-03">Klaviertrios</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-02-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-04">Bläser und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-02-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-03">Violine und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-01">Sonaten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-03-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-02">Andere Werke für Violine und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-03-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
@@ -2640,8 +2673,9 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-04">Cello und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-04-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
@@ -2661,72 +2695,81 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-01">Klavier zweihändig</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-01">Sonaten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-02">Suiten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-03">Weitere Stücke für Klavier zu zwei Händen</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-04">Fantasien und Variationen über fremde Themen</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-01-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat} 
                                        <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-05">Klavierauszüge</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-05']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-01-05'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-02">Klavier vierhändig</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-03">Zwei Klaviere</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-04">Orgel</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-05-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
@@ -2746,24 +2789,27 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-01">Für Orchester</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-06-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-06-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-02">Für Kammermusik</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-06-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-06-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-03">Für Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-06-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
+                                            {let $works := 'cat-06-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
