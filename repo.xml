@@ -9,5 +9,5 @@
     <target>raffArchive</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
-    <permissions user="raffArchive" group="raffArchive" mode="rwxrwx---"/>
+    <permissions user="raffArchive" group="raffArchive" mode="rwxr-xr-x"/>
 <deployed>2018-11-19T17:05:39.235+01:00</deployed></meta>
