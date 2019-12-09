@@ -234,14 +234,14 @@
                     </td>
                 </tr>
             </xsl:if>
-            <xsl:if test="$sourceDesc//provenance/p != ''">
+            <!--<xsl:if test="$sourceDesc//provenance/p != ''">
                 <tr>
                     <td valign="top">Provenienz:</td>
                     <td>
                         <xsl:value-of select="$sourceDesc//provenance"/>
                     </td>
                 </tr>
-            </xsl:if>
+            </xsl:if>-->
             <xsl:if test="$sourceDesc/bibl != ''">
                 <tr>
                     <td valign="top">Veröffentlichung:</td>
