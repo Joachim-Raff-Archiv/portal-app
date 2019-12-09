@@ -357,7 +357,7 @@ font-family: Montserrat;
   position: fixed;
   display: none;
   background: #e6e6e6;
-  background-image:url(http://localhost:8080/exist/apps/raffArchive/resources/fonts/feather/arrow-up.svg);
+  background-image:url(http://portal.raff-archiv.ch/resources/fonts/feather/arrow-up.svg);
   background-repeat: no-repeat;
 /*  background-attachment: fixed;*/
   background-position: center;
