@@ -75,9 +75,11 @@
                         <xsl:choose>
                             <xsl:when test="mei:persName">
                             <xsl:value-of select="mei:persName"/>
+                                <xsl:if test="mei:persName/@auth">
                             (<a href="{concat($viewPerson, mei:persName/@auth)}">
                                 <xsl:value-of select="mei:persName/@auth"/>
                             </a>)
+                                </xsl:if>
                             <xsl:if test="$corresp">
                                 <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
                             </xsl:if>

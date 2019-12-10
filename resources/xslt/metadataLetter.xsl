@@ -181,6 +181,18 @@
                         </xsl:if></td>
                 </tr>
             </xsl:if>
+            <xsl:if test="$sourceDesc//msIdentifier/collection != ''">
+                <tr>
+                    <td valign="top">Sammlung:</td>
+                    <td>
+                        <xsl:value-of select="$sourceDesc//msIdentifier/collection"/>
+                        <!--<xsl:choose><xsl:when test="$sourceDesc//msIdentifier/idno[@resp = 'JRA-copy']"> (Kopie im Joachim-Raff-Archiv)</xsl:when>
+                            <xsl:when test="$sourceDesc//msIdentifier/idno[@resp = 'JRA']"> (Joachim-Raff-Archiv)</xsl:when>
+                            <xsl:when test="$sourceDesc//msIdentifier/idno[@resp = 'BSB']"> (Bayerische Staatsbibliothek)</xsl:when>
+                            </xsl:choose>-->
+                    </td>
+                </tr>
+            </xsl:if>
             <xsl:if test="$sourceDesc//msIdentifier/idno != ''">
                 <tr>
                     <td valign="top">Signatur:</td>
@@ -257,6 +269,7 @@
                 <td/>
             </tr>
         </table>
+        <xsl:if test="//incipit !=''">
         <table class="letterView">
             <tr>
                 <td>Incipit:</td>
@@ -267,10 +280,11 @@
                 </td>
             </tr>
         </table>
+        </xsl:if>
         <br/>
         <br/>
         <hr/>
-        <xsl:if test="//@cert">* Daten nicht gesichert</xsl:if>
+        <xsl:if test="//@cert">* Daten nicht verifiziert</xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

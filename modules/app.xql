@@ -776,7 +776,7 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
-    let $regeste := $letter//tei:note[@type='regeste']
+    let $regeste := $letter//tei:note[@type='regeste' and . !='']
     let $fulltext := $letter//tei:div[@type='volltext']
     return
         (
@@ -806,11 +806,11 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra"
                         data-toggle="tab"
                         href="#letterContentFull">Volltext</a></li>)else()}
-                <li
+                <!--<li
                     class="nav-item"><a
                         class="nav-link-jra"
                         data-toggle="tab"
-                        href="#viewXML">XML-Ansicht</a></li>
+                        href="#viewXML">XML-Ansicht</a></li>-->
             </ul>
                 <hr/>
             </div>
@@ -882,7 +882,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                             </div>
                         </div>
                 </div>)else()}
-                <div
+                <!--<div
                     class="tab-pane fade"
                     id="viewXML">
                     <pre
@@ -891,7 +891,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                     {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                     </xmp>
                     </pre>
-                </div>
+                </div>-->
             </div>
         </div>
         </div>
@@ -1428,11 +1428,11 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            <li
+                            <!--<li
                                 class="nav-item"><a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#xmlAnsicht">XML-Ansicht</a></li>
+                                    href="#xmlAnsicht">XML-Ansicht</a></li>-->
                         </ul>
                         <hr/>
             </div>
@@ -1523,7 +1523,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            <div
+                            <!--<div
                                 class="tab-pane fade"
                                 id="xmlAnsicht">
                                 <pre
@@ -1532,7 +1532,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                         {transform:transform($person, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                                     </xmp>
                                 </pre>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -1843,11 +1843,11 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            <li
+                            <!--<li
                                 class="nav-item"><a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#xmlAnsicht">XML-Ansicht</a></li>
+                                    href="#xmlAnsicht">XML-Ansicht</a></li>-->
                         </ul>
                 <hr/>
             </div>
@@ -1946,7 +1946,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            <div
+                            <!--<div
                                 class="tab-pane fade"
                                 id="xmlAnsicht">
                                 <pre
@@ -1955,7 +1955,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                         {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                                     </xmp>
                                 </pre>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -2895,12 +2895,12 @@ declare function app:work($node as node(), $model as map(*)) {
                                     data-toggle="tab"
                                     href="#references">Bezüge</a></li>
                                     )else()}
-                                    <li
+                                  <!--  <li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#viewXML">XML-Ansicht</a></li>
+                                    href="#viewXML">XML-Ansicht</a></li>-->
                         </ul>
             
                 <hr/>
@@ -2966,7 +2966,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            <div
+                   <!--         <div
                     class="tab-pane fade"
                     id="viewXML">
                     <pre
@@ -2975,7 +2975,7 @@ declare function app:work($node as node(), $model as map(*)) {
                     {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                     </xmp>
                     </pre>
-                </div>
+                </div>-->
         </div>
         </div>
         </div>
