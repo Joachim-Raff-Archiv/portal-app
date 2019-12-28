@@ -1,4 +1,4 @@
-<package xmlns="http://expath.org/ns/pkg" name="http://localhost:8080/exist/apps/raffArchive" abbrev="raffArchive" version="0.1" spec="1.0">
+<package xmlns="http://expath.org/ns/pkg" name="http://portal.raff-archiv.ch" abbrev="raffArchive" version="1.0" spec="1.0">
     <title>Joachim-Raff-Archiv</title>
     <dependency package="http://exist-db.org/apps/shared"/>
 </package>
