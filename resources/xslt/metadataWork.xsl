@@ -287,7 +287,7 @@
                         <ul style="list-style-type:circle">
                             <xsl:for-each select="//mei:componentList/mei:manifestation/mei:itemList/mei:item">
                                 <xsl:variable name="sourceClass" select="//mei:componentList/mei:manifestation/mei:itemList/mei:item/@codedval"/>
-                                <li> [<xsl:value-of select="document('../../../../contents/jra/definitions/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category[@xml:id = $sourceClass]/mei:desc[@xml:lang = 'de']"/>] <xsl:value-of select=".//mei:locus"/>
+                                <li> [<xsl:value-of select="document('../../../../apps/jraDefinitions/data/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category[@xml:id = $sourceClass]/mei:desc[@xml:lang = 'de']"/>] <xsl:value-of select=".//mei:locus"/>
                                 </li>
                             </xsl:for-each>
                         </ul>

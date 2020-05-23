@@ -30,13 +30,13 @@ declare function functx:distinct-deep
 };
 
 (:declare function app:search($node as node(), $model as map(*)) {
-for $x in doc("/db/contents/jra/sources/documents/letters")//tei:TEI
+for $x in doc("/db/apps/jraSources/data/documents/letters")//tei:TEI
  let $title := $x//LINE[ . ftcontains "romeo juliet " all words ]
  return $x/ancestor::tei:TEI/@xml:id
 };:)
 
 declare function app:search($node as node(), $model as map(*)) {
-    let $collection := collection('/db/contents/jra/persons')//tei:TEI
+    let $collection := collection('/db/apps/jraPersons/data')//tei:TEI
     return
         <div>
             <p>Es wurden {count($collection//tei:surname[contains(., 'Raff')])} Ergebnisse gefunden.</p>
@@ -241,7 +241,7 @@ return
 };
 
 declare function local:getReferences($idToReference) {
-    let $collectionReference := (collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference], collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference], collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference])
+    let $collectionReference := (collection("/db/apps/jraPersons/data")//tei:TEI//@key[.=$idToReference], collection("/db/apps/jraInstitutions/data")//tei:TEI//@key[.=$idToReference], collection("/db/apps/jraTexts/data")//tei:TEI//@key[.=$idToReference], collection("/db/apps/jraSources/data")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference], collection("/db/apps/jraWorks/data")//mei:mei//@auth[.=$idToReference])
         for $doc in $collectionReference
             let $docRoot := if($doc/ancestor::tei:TEI)
                             then($doc/ancestor::tei:TEI)
@@ -356,7 +356,7 @@ let $receiver := if($correspActionReceived/tei:persName[3]/text())
 };
 
 declare function local:getCorrespondance($idToReference){
-    let $correspondence := collection("/db/contents/jra/sources/documents/letters")//tei:TEI//@key[.=$idToReference][not(./ancestor::tei:note[@type='regeste'])]
+    let $correspondence := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI//@key[.=$idToReference][not(./ancestor::tei:note[@type='regeste'])]
     for $doc in $correspondence
         let $letter := $doc/ancestor::tei:TEI
         let $letterID := $letter/@xml:id/string()
@@ -420,7 +420,7 @@ declare function local:getNameJoined($person){
 };
 
 declare function local:getWorks($cat){
-    let $works := collection('/db/contents/jra/works')//mei:term[.=$cat]/ancestor::mei:mei
+    let $works := collection('/db/apps/jraWorks/data')//mei:term[.=$cat]/ancestor::mei:mei
     for $work in $works
         let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
         let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
@@ -442,9 +442,9 @@ declare function local:getWorks($cat){
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI, collection('/db/contents/jra/sources/documents/others')//tei:TEI)
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI, collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
+    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
+    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     let $lettersCrono := for $letter in $letters
                         let $letterID := $letter/@xml:id/string()
@@ -549,9 +549,9 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
 declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
+    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
+    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     
     let $lettersSender := for $letter in ($letters//tei:correspAction[matches(@type,"^sent")]//tei:persName,$letters//tei:correspAction[matches(@type,"^sent")]//tei:orgName)
@@ -657,9 +657,9 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
 declare function app:registryLettersReceiver($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
+    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
+    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     
     let $lettersReceiver := for $letter in ($letters//tei:correspAction[matches(@type,"^received")]//tei:persName,$letters//tei:correspAction[matches(@type,"received")]//tei:orgName)
@@ -769,8 +769,8 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
 declare function app:letter($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("letter-id", "Fehler")
-    let $letter := collection("/db/contents/jra/sources/documents/letters")//tei:TEI[@xml:id = $id]
-    let $person := collection("/db/contents/jra/persons")//tei:TEI
+    let $letter := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI[@xml:id = $id]
+    let $person := collection("/db/apps/jraPersons/data")//tei:TEI
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
     let $datumSent := local:formatDate(local:getDate($letter//tei:correspAction[@type = "sent"]))
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
@@ -902,7 +902,7 @@ declare function app:letter($node as node(), $model as map(*)) {
 
 declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
     
-    let $persons := collection("/db/contents/jra/persons/")//tei:TEI
+    let $persons := collection("/db/apps/jraPersons/data/")//tei:TEI
     
     let $personsAlpha := for $person in $persons
                             let $persID := $person/@xml:id/string()
@@ -1063,7 +1063,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
 
 declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
     
-    let $persons := collection("/db/contents/jra/persons/")//tei:TEI
+    let $persons := collection("/db/apps/jraPersons/data/")//tei:TEI
     
     let $personsBirth := for $person in $persons
                              let $persID := $person/@xml:id/string()
@@ -1224,7 +1224,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
  
  declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
     
-    let $persons := collection("/db/contents/jra/persons/")//tei:TEI
+    let $persons := collection("/db/apps/jraPersons/data/")//tei:TEI
     
     let $personsDeath := for $person in $persons
                             let $persID := $person/@xml:id/string()
@@ -1385,12 +1385,14 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
 declare function app:person($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("person-id", "Fehler")
-    let $person := collection("/db/contents/jra/persons")//tei:TEI[@xml:id = $id]
+    let $person := collection("/db/apps/jraPersons/data")//tei:TEI[@xml:id = $id]
     let $name := $person//tei:titleStmt/tei:title/normalize-space(data(.))
-    let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
+    let $letters := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
-    let $vorkommen := collection("/db/contents/jra")//tei:persName[@key=$id]/ancestor::tei:TEI
+    let $vorkommen := collection("/db/apps/jraInstitutions")//tei:persName[@key=$id]/ancestor::tei:TEI|
+                      collection("/db/apps/jraTexts")//tei:persName[@key=$id]/ancestor::tei:TEI|
+                      collection("/db/apps/jraSources")//tei:persName[@key=$id]/ancestor::tei:TEI
     
     return
         (
@@ -1543,7 +1545,7 @@ declare function app:person($node as node(), $model as map(*)) {
 
 declare function app:registryInstitutions($node as node(), $model as map(*)) {
     
-    let $institutions := collection("/db/contents/jra/institutions/")//tei:TEI
+    let $institutions := collection("/db/apps/jraInstitutions/data/")//tei:TEI
     
     let $institutionsAlpha := for $institution in $institutions
                                 let $instID := $institution/@xml:id/string()
@@ -1799,10 +1801,10 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
 declare function app:institution($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("institution-id", "Fehler")
-    let $persons := collection("/db/contents/jra/persons")//tei:TEI
-    let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id = $id]
+    let $persons := collection("/db/apps/jraPersons/data")//tei:TEI
+    let $institution := collection("/db/apps/jraInstitutions/data")//tei:TEI[@xml:id = $id]
     let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
     let $affiliates := $persons//tei:affiliation[@key = $id]/ancestor::tei:TEI
     let $literature := $institution//tei:bibl[@type='links']
@@ -1967,7 +1969,7 @@ declare function app:institution($node as node(), $model as map(*)) {
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
     
-    let $works := collection('/db/contents/jra/works')//mei:mei
+    let $works := collection('/db/apps/jraWorks/data')//mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type = 'desc' and contains(., 'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type = 'desc' and contains(., 'WoO')]/ancestor::mei:mei
     let $perfRess := $works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type = 'alt')]
@@ -2863,8 +2865,10 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
 declare function app:work($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("work-id", "Fehler")
-    let $work := collection("/db/contents/jra/works")//mei:mei[@xml:id = $id]
-    let $collection := collection("/db/contents/jra")//tei:TEI
+    let $work := collection("/db/apps/jraWorks/data")//mei:mei[@xml:id = $id]
+    let $collection := collection("/db/apps/jraInstitutions")//tei:TEI|
+                       collection("/db/apps/jraTexts")//tei:TEI|
+                       collection("/db/apps/jraSources")//tei:TEI
     let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
@@ -2986,7 +2990,7 @@ declare function app:work($node as node(), $model as map(*)) {
 
 declare function app:aboutProject($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutProject.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutProject.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3016,7 +3020,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
 
 declare function app:aboutRaff($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutRaff.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutRaff.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3032,7 +3036,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
 
 declare function app:aboutDocumentation($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutDocumentation.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutDocumentation.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3062,7 +3066,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
 
 declare function app:aboutResources($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutResources.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutResources.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3092,7 +3096,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
 
 declare function app:indexPage($node as node(), $model as map(*)) {
     
-    let $text := doc('/db/contents/jra/texts/portal/index.xml')
+    let $text := doc('/db/apps/jraTexts/data/portal/index.xml')
     
     return
         (
@@ -3105,7 +3109,7 @@ declare function app:indexPage($node as node(), $model as map(*)) {
 
 declare function app:impressum($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/impressum.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/impressum.xml")/tei:TEI
     
     return
         (
@@ -3118,7 +3122,7 @@ declare function app:impressum($node as node(), $model as map(*)) {
 
 declare function app:privacyPolicy($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/privacyPolicy.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/privacyPolicy.xml")/tei:TEI
     
     return
         (
@@ -3131,7 +3135,7 @@ declare function app:privacyPolicy($node as node(), $model as map(*)) {
 
 declare function app:disclaimer($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/disclaimer.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/disclaimer.xml")/tei:TEI
     
     return
         (
@@ -3154,28 +3158,28 @@ return
 };
 
 declare function app:countLetters($node as node(), $model as map(*)){
-let $letters := collection("/db/contents/jra/sources/documents/letters") | collection("/db/contents/jra/sources/documents/others")
+let $letters := collection("/db/apps/jraSources/data/documents/letters") | collection("/db/apps/jraSources/data/documents/others")
 let $count := count($letters//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Postsachen</span>)
 };
 declare function app:countWorks($node as node(), $model as map(*)){
-let $works := collection("/db/contents/jra/works")
+let $works := collection("/db/apps/jraWorks/data")
 let $count := count($works//mei:mei)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Werke</span>)
 };
 declare function app:countPersons($node as node(), $model as map(*)){
-let $persons := collection("/db/contents/jra/persons")
+let $persons := collection("/db/apps/jraPersons/data")
 let $count := count($persons//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Personen</span>)
 };
 declare function app:countInstitutions($node as node(), $model as map(*)){
-let $institutions := collection("/db/contents/jra/institutions")
+let $institutions := collection("/db/apps/jraInstitutions/data")
 let $count := count($institutions//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
