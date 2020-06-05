@@ -20,7 +20,6 @@ declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare option output:method "html5";
 declare option output:media-type "text/html";
 
-let $log-in := xmldb:login("/db", "admin", "")
 let $config := map {
     $templates:CONFIG_APP_ROOT : $config:app-root,
     $templates:CONFIG_STOP_ON_ERROR : true()
