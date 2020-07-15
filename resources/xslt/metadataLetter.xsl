@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://portal.raff-archive.ch/ns/local" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="https://portal.raff-archive.ch/ns/local" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8"/>
     <xsl:include href="linking.xsl"/>
     <xsl:include href="formattingDate.xsl"/>
@@ -38,7 +38,7 @@
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/persName/@cert">*</xsl:if>
-                        <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if><br/>
                         </xsl:for-each>
                     </xsl:if>
@@ -51,7 +51,7 @@
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/orgName/@cert">*</xsl:if>
-                        <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if>
                         </xsl:for-each>
                     </xsl:if>
@@ -79,7 +79,7 @@
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
                             </xsl:choose><xsl:if test="$correspAction[@type = 'received']/persName/@cert">*</xsl:if>
-                            <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                            <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if><br/>
                         </xsl:for-each>
                     </xsl:if>
@@ -92,7 +92,7 @@
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
                             </xsl:choose><xsl:if test="$correspAction[@type = 'received']/orgName/@cert">*</xsl:if>
-                            <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                            <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if>
                         </xsl:for-each>
                     </xsl:if>

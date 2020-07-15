@@ -108,7 +108,7 @@
             <xsl:if test="//bibl[@type = 'links']/ref[@type='wikipedia']">
                 <tr>
                     <td>Sonstige:</td>
-                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="http://portal.raff-archiv.ch/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
+                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://portal.raff-archiv.ch/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
                 </tr>
             </xsl:if>
         </table>
