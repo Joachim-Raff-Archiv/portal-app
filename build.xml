@@ -1,11 +1,21 @@
 <project default="xar" name="raffArchive">
     <xmlproperty file="expath-pkg.xml"/>
     <property name="project.version" value="${package(version)}"/>
-    <property name="project.app" value="raffArchive"/>
+    <property name="project.app" value="${package(abbrev)}"/>
     <property name="build.dir" value="build"/>
     <tstamp/>
-    <target name="xar">
+
+    <!-- xar (asking for permissions) -->
+    <target name="xar" >
+        <delete file="./repo.xml"/>
+        <input message="set user permissions (default: user=yes,group=yes;other=no)" defaultvalue="rwxrwx---" addproperty="userPermissions"/>
+        <copyfile src="repo/${userPermissions}/repo.xml" dest="./repo.xml" forceoverwrite="yes"/>
         <mkdir dir="${build.dir}"/>
-        <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="${build.dir}/*"/>
+        <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="${build.dir}/ repo/"/>
+        <echo message=""/>
+        <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+        <echo message="!!!!!!! user permissions set to !!!!!!!"/>
+        <echo message="!!!!!!!!!!!    ${userPermissions}    !!!!!!!!!!!"/>
+        <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
     </target>
 </project>
