@@ -144,14 +144,6 @@
                     </td>
                 </tr>
             </xsl:if>
-            <xsl:if test="exists($person/occupation[.!=''])">
-                <tr>
-                    <td>Beruf:</td>
-                    <td>
-                        <xsl:value-of select="$person/occupation"/>
-                    </td>
-                </tr>
-            </xsl:if>
             <xsl:if test="exists($person/affiliation/text())">
                 <tr>
                     <td>Affiliation:</td>
@@ -227,7 +219,7 @@
             <xsl:if test="//bibl[@type = 'links']/ref[@type='wikipedia']">
                 <tr>
                     <td>Sonstige:</td>
-                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://portal.raff-archiv.ch/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
+                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="http://intern.raff-portal.ch/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
                 </tr>
             </xsl:if>
         </table>

@@ -1,13 +1,13 @@
 <meta xmlns="http://exist-db.org/xquery/repo">
-    <description>raffArchive</description>
+    <description>raffArchiveInternal</description>
     <author>Dennis Ried</author>
-    <website>https://portal.raff-archiv.ch</website>
+    <website>http://intern.raff-archiv.ch</website>
     <status>alpha</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
     <type>application</type>
-    <target>raffArchive</target>
+    <target>raffArchiveInternal</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
-    <permissions user="raffArchive" group="raffArchive" mode="rwxr-xr-x"/>
-<deployed>2018-11-19T17:05:39.235+01:00</deployed></meta>
+    <permissions user="raffArchive" group="raffArchive" mode="rwxrwx---"/>
+<deployed>2019-12-07T14:28:00.000+01:00</deployed></meta>

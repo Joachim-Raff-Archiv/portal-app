@@ -11,8 +11,8 @@ import module namespace templates="http://exist-db.org/xquery/templates" ;
  : The following modules provide functions which will be called by the 
  : templating.
  :)
-import module namespace config="https://portal.raff-archiv.ch/config" at "config.xqm";
-import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
+import module namespace config="http://intern.raff-portal.ch/config" at "config.xqm";
+import module namespace app="http://intern.raff-portal.ch/templates" at "app.xql";
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
 declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
@@ -20,6 +20,7 @@ declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare option output:method "html5";
 declare option output:media-type "text/html";
 
+let $log-in := xmldb:login("/db", "admin", "")
 let $config := map {
     $templates:CONFIG_APP_ROOT : $config:app-root,
     $templates:CONFIG_STOP_ON_ERROR : true()
