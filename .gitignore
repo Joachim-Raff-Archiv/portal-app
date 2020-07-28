@@ -13,3 +13,4 @@ build/.DS_Store
 .DS_Store
 *.xar
 resources/img
+.existdb-json
