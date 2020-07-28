@@ -1,8 +1,8 @@
-xquery version "3.0";
+xquery version "3.1";
 
-module namespace app = "http://intern.raff-portal.ch/templates";
+module namespace app = "https://portal.raff-archiv.ch/templates";
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config = "http://intern.raff-portal.ch/config" at "config.xqm";
+import module namespace config = "https://portal.raff-archiv.ch/config" at "config.xqm";
 
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
@@ -30,13 +30,13 @@ declare function functx:distinct-deep
 };
 
 (:declare function app:search($node as node(), $model as map(*)) {
-for $x in doc("/db/contents/jra/sources/documents/letters")//tei:TEI
+for $x in doc("/db/apps/jraSources/data/documents/letters")//tei:TEI
  let $title := $x//LINE[ . ftcontains "romeo juliet " all words ]
  return $x/ancestor::tei:TEI/@xml:id
 };:)
 
 declare function app:search($node as node(), $model as map(*)) {
-    let $collection := collection('/db/contents/jra/persons')//tei:TEI
+    let $collection := collection('/db/apps/jraPersons/data')//tei:TEI
     return
         <div>
             <p>Es wurden {count($collection//tei:surname[contains(., 'Raff')])} Ergebnisse gefunden.</p>
@@ -58,82 +58,82 @@ declare function app:search($node as node(), $model as map(*)) {
 
 declare function local:getDate($date) {
 
-    let $get := if(count($date/tei:date[@type='editor'])=1)
+    let $get := if(count($date/tei:date[matches(@type,'^editor')])=1)
                 then(
-                        if($date/tei:date[@type='editor']/@when)
-                        then($date/tei:date[@type='editor']/@when/string())
-                        else if($date/tei:date[@type='editor']/@when-custom)
-                        then($date/tei:date[@type='editor']/@when-custom/string())
-                        else if($date/tei:date[@type='editor']/@from)
-                        then($date/tei:date[@type='editor']/@from/string())
-                        else if($date/tei:date[@type='editor']/@from-custom)
-                        then($date/tei:date[@type='editor']/@from-custom/string())
-                        else if($date/tei:date[@type='editor']/@notBefore)
-                        then($date/tei:date[@type='editor']/@notBefore/string())
-                        else if($date/tei:date[@type='editor']/@notAfter)
-                        then($date/tei:date[@type='editor']/@notAfter/string())
+                        if($date/tei:date[matches(@type,'^editor')]/@when)
+                        then($date/tei:date[matches(@type,'^editor')]/@when/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^editor')]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from)
+                        then($date/tei:date[matches(@type,'^editor')]/@from/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^editor')]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^editor')]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^editor')]/@notAfter/string())
                         else('0000-00-00')
                     )
-                else if(count($date/tei:date[@type='source'])=1)
+                else if(count($date/tei:date[matches(@type,'^source')])=1)
                 then(
-                        if($date/tei:date[@type='source']/@when)
-                        then($date/tei:date[@type='source']/@when/string())
-                        else if($date/tei:date[@type='source']/@when-custom)
-                        then($date/tei:date[@type='source']/@when-custom/string())
-                        else if($date/tei:date[@type='source']/@from)
-                        then($date/tei:date[@type='source']/@from/string())
-                        else if($date/tei:date[@type='source']/@from-custom)
-                        then($date/tei:date[@type='source']/@from-custom/string())
-                        else if($date/tei:date[@type='source']/@notBefore)
-                        then($date/tei:date[@type='source']/@notBefore/string())
-                        else if($date/tei:date[@type='source']/@notAfter)
-                        then($date/tei:date[@type='source']/@notAfter/string())
+                        if($date/tei:date[matches(@type,'^source')]/@when)
+                        then($date/tei:date[matches(@type,'^source')]/@when/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^source')]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from)
+                        then($date/tei:date[matches(@type,'^source')]/@from/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^source')]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^source')]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^source')]/@notAfter/string())
                         else('0000-00-00')
                     )
-                else if(count($date/tei:date[@type='editor' and @confidence])=1)
+                else if(count($date/tei:date[matches(@type,'^editor') and @confidence])=1)
                 then(
-                       $date/tei:date[@type='editor' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                       $date/tei:date[matches(@type,'^editor') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
                     )
-                else if(count($date/tei:date[@type='source' and @confidence])=1)
+                else if(count($date/tei:date[matches(@type,'^source') and @confidence])=1)
                 then(
-                       $date/tei:date[@type='source' and not(@confidence = '0.5')][@confidence = max(@confidence)]/@when
+                       $date/tei:date[matches(@type,'^source') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
                     )
-                    else if($date/tei:date[@type='editor' and @confidence = '0.5'])
+                    else if($date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')])
                 then(
-                       $date/tei:date[@type='editor' and @confidence ='0.5'][1]/@when
+                       $date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')][1]/@when
                     )
-                else if($date/tei:date[@type='source' and @confidence='0.5'])
+                else if($date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')])
                 then(
-                       $date/tei:date[@type='source' and @confidence ='0.5'][1]/@when
+                       $date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')][1]/@when
                     )
-                else if($date/tei:date[@type='editor'])
+                else if($date/tei:date[matches(@type,'^editor')])
                 then(
-                        if($date/tei:date[@type='editor']/@when)
-                        then($date/tei:date[@type='editor'][1]/@when/string())
-                        else if($date/tei:date[@type='editor']/@when-custom)
-                        then($date/tei:date[@type='editor'][1]/@when-custom/string())
-                        else if($date/tei:date[@type='editor']/@from)
-                        then($date/tei:date[@type='editor'][1]/@from/string())
-                        else if($date/tei:date[@type='editor']/@from-custom)
-                        then($date/tei:date[@type='editor'][1]/@from-custom/string())
-                        else if($date/tei:date[@type='editor']/@notBefore)
-                        then($date/tei:date[@type='editor'][1]/@notBefore/string())
+                        if($date/tei:date[matches(@type,'^editor')]/@when)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@when/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@from/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@notBefore/string())
                         else('0000-00-00')
                     )
-                else if(count($date/tei:date[@type='source']))
+                else if(count($date/tei:date[matches(@type,'^source')]))
                 then(
-                        if($date/tei:date[@type='source']/@when)
-                        then($date/tei:date[@type='source'][1]/@when/string())
-                        else if($date/tei:date[@type='source']/@when-custom)
-                        then($date/tei:date[@type='source'][1]/@when-custom/string())
-                        else if($date/tei:date[@type='source']/@from)
-                        then($date/tei:date[@type='source'][1]/@from/string())
-                        else if($date/tei:date[@type='source']/@from-custom)
-                        then($date/tei:date[@type='source'][1]/@from-custom/string())
-                        else if($date/tei:date[@type='source']/@notBefore)
-                        then($date/tei:date[@type='source'][1]/@notBefore/string())
-                        else if($date/tei:date[@type='source']/@notAfter)
-                        then($date/tei:date[@type='source'][1]/@notAfter/string())
+                        if($date/tei:date[matches(@type,'^source')]/@when)
+                        then($date/tei:date[matches(@type,'^source')][1]/@when/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^source')][1]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from)
+                        then($date/tei:date[matches(@type,'^source')][1]/@from/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^source')][1]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^source')][1]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^source')][1]/@notAfter/string())
                         else('0000-00-00')
                     )
                 else('0000-00-00')
@@ -145,7 +145,7 @@ declare function local:getDate($date) {
 declare function local:formatDate($dateRaw){
     let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
                   then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
-                  else if($dateRaw='0000' or $dateRaw='0000-00' or $dateRaw='0000-00-00')
+                  else if($dateRaw =('0000','0000-00','0000-00-00'))
                   then('[undatiert]')
                   else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
                   then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
@@ -227,7 +227,7 @@ let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
 
 declare function local:replaceToSortDist($input) {
 distinct-values(
-                replace(replace(replace(replace(replace(replace(replace(replace($input,'ö','oe'),'ä','ae'),'ü','ue'),'é','e'),'è','e'),'ê','e'),'á','a'),'à','a')
+                replace(replace(replace(replace(replace(replace(replace(replace(replace($input,'ö','oe'),'ä','ae'),'ü','ue'),'É','E'),'é','e'),'è','e'),'ê','e'),'á','a'),'à','a')
                 )
                 };
                 
@@ -241,7 +241,7 @@ return
 };
 
 declare function local:getReferences($idToReference) {
-    let $collectionReference := collection("/db/contents/jra/persons")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/institutions")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/texts")//tei:TEI//@key[.=$idToReference] | collection("/db/contents/jra/sources")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference] | collection("/db/contents/jra")//mei:mei//@auth[.=$idToReference]
+    let $collectionReference := (collection("/db/apps/jraPersons/data")//tei:TEI//@key[.=$idToReference], collection("/db/apps/jraInstitutions/data")//tei:TEI//@key[.=$idToReference], collection("/db/apps/jraTexts/data")//tei:TEI//@key[.=$idToReference], collection("/db/apps/jraSources/data")//tei:TEI//tei:note[@type='regeste']//@key[.=$idToReference], collection("/db/apps/jraWorks/data")//mei:mei//@auth[.=$idToReference])
         for $doc in $collectionReference
             let $docRoot := if($doc/ancestor::tei:TEI)
                             then($doc/ancestor::tei:TEI)
@@ -356,7 +356,7 @@ let $receiver := if($correspActionReceived/tei:persName[3]/text())
 };
 
 declare function local:getCorrespondance($idToReference){
-    let $correspondence := collection("/db/contents/jra/sources/documents/letters")//tei:TEI//@key[.=$idToReference][not(./ancestor::tei:note[@type='regeste'])]
+    let $correspondence := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI//@key[.=$idToReference][not(./ancestor::tei:note[@type='regeste'])]
     for $doc in $correspondence
         let $letter := $doc/ancestor::tei:TEI
         let $letterID := $letter/@xml:id/string()
@@ -380,24 +380,24 @@ declare function local:getCorrespondance($idToReference){
 };
 
 declare function local:getNameJoined($person){
- let $nameSurname := $person//tei:surname[@type = "used"][1]/text()[1]
+ let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]/text()[1]
  let $nameGenName := $person//tei:genName/text()
  let $nameSurnameFull := if($nameGenName)then(concat($nameSurname,' ',$nameGenName))else($nameSurname)
- let $nameForename := $person//tei:forename[@type = "used"][1]/text()[1]
+ let $nameForename := $person//tei:forename[matches(@type,"^used")][1]/text()[1]
  let $nameNameLink := $person//tei:nameLink[1]/text()[1]
- let $nameAddNameTitle := $person//tei:addName[@type="title"][1]/text()[1]
- let $nameAddNameEpitet := $person//tei:addName[@type="epithet"][1]/text()[1]
+ let $nameAddNameTitle := $person//tei:addName[matches(@type,"^title")][1]/text()[1]
+ let $nameAddNameEpitet := $person//tei:addName[matches(@type,"^epithet")][1]/text()[1]
  let $nameForeFull := concat(if($nameAddNameTitle)then(concat($nameAddNameTitle,' '))else(),
                              if($nameForename)then(concat($nameForename,' '))else(),
                              if($nameAddNameEpitet)then(concat($nameAddNameEpitet,' '))else(),
                              if($nameNameLink)then(concat($nameNameLink,' '))else()
                              )
- let $pseudonym := if ($person//node()[@type = 'pseudonym'])
-                   then (concat($person//tei:forename[@type = 'pseudonym'], ' ', $person//tei:surname[@type = 'pseudonym']))
+ let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
+                   then (concat($person//tei:forename[matches(@type,'^pseudonym')], ' ', $person//tei:surname[matches(@type,'^pseudonym')]))
                    else ()
  let $nameRoleName := $person//tei:roleName[1]/text()[1]
- let $nameAddNameNick := $person//tei:addName[@type="nick"][1]/text()[1]
- let $nameUnspec := $person//tei:name[@type = 'unspecified'][1]/text()[1]
+ let $nameAddNameNick := $person//tei:addName[matches(@type,"^nick")][1]/text()[1]
+ let $nameUnspec := $person//tei:name[matches(@type,'^unspecified')][1]/text()[1]
  
  let $nameToJoin := if ($nameSurnameFull and $nameForeFull)
                     then (concat($nameSurnameFull,', ',$nameForeFull))
@@ -419,48 +419,37 @@ declare function local:getNameJoined($person){
     $nameToJoin
 };
 
-declare function local:getWorks($work){
-    let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
-    let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-    let $initial := for $case in upper-case(substring($workName, 1, 1))
-                        return switch ($case)
-                        case 'É' return 'E'
-                        case '0' return '0–9'
-                        case '1' return '0–9'
-                        case '2' return '0–9'
-                        case '3' return '0–9'
-                        case '4' return '0–9'
-                        case '5' return '0–9'
-                        case '6' return '0–9'
-                        case '7' return '0–9'
-                        case '8' return '0–9'
-                        case '9' return '0–9'
-                        default return $case 
-    let $workID := $work/@xml:id/string()
-    return
-        <div
-        class="row {if($work//mei:term[string-length(.)>9])then('RegisterEntry2')else('RegisterEntry')}">
-            <div
-                class="col">{$workName}</div>
-            <div
-                class="col-2">{$opus}</div>
-            <div
-                class="col-2"><a onclick="pleaseWait()"
-                    href="work/{$workID}">{$workID}</a>
+declare function local:getWorks($cat){
+    let $works := collection('/db/apps/jraWorks/data')//mei:term[.=$cat]/ancestor::mei:mei
+    for $work in $works
+        let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
+        let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
+        let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
+        let $workID := $work/@xml:id/string()
+        return
+            <div titleToSort="{$opus}"
+            class="row {if(string-length($cat)>9)then('RegisterEntry2')else('RegisterEntry')}">
+                <div
+                    class="col">{$workName}</div>
+                <div
+                    class="col-2">{$opus}</div>
+                <div
+                    class="col-2"><a onclick="pleaseWait()"
+                        href="work/{$workID}">{$workID}</a>
+                </div>
             </div>
-        </div>
 };
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI, collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
+    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
+    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     let $lettersCrono := for $letter in $letters
-                        let $letterID := $letter/@xml:id/data(.)
-                        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
+                        let $letterID := $letter/@xml:id/string()
+                        let $correspActionSent := $letter//tei:correspAction[matches(@type,'^sent')]
+                        let $correspActionReceived := $letter//tei:correspAction[matches(@type,'^received')]
                         let $correspSent := local:getSender($correspActionSent)
                         let $correspSentTurned := local:getSenderTurned($correspActionSent)
                         let $correspReceived := local:getReceiver($correspActionReceived)
@@ -484,7 +473,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                              </div>)
      
      let $lettersGroupedByYears :=
-        for $groups in $lettersCrono[@name !='']
+        for $groups in $lettersCrono
         let $year := if($groups/@name/string()='0000')then('[Jahr nicht ermittelbar]')else($groups/@name/string())
         let $count := $groups/@count/string()
         order by $year
@@ -535,11 +524,11 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                        }
                                        </ul>
                                   </div>
-                        <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;"> <!-- style="position: relative; height:500px; overflow-y: scroll;" -->
+                        <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
                             {$lettersGroupedByYears}
                         </div>
                     </div>
-                  <div
+                  <!--<div
                     class="col-3">
                     <br/><br/>
                     <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
@@ -549,7 +538,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         onkeyup="myFilterLetter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
-                </div>
+                </div>-->
                   </div>
                     </div>
                 </div>
@@ -560,17 +549,15 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
 declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
+    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
+    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersSender := for $letter in ($letters//tei:correspAction[@type="sent"]//tei:persName,$letters//tei:correspAction[@type="sent"]//tei:orgName)
+    let $lettersSender := for $letter in ($letters//tei:correspAction[matches(@type,"^sent")]//tei:persName,$letters//tei:correspAction[matches(@type,"^sent")]//tei:orgName)
                         let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
-                       
-(:                        let $correspSentTurned :=  local:getSenderTurned($correspActionSent):)
+                        let $correspActionSent := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^sent")]
+                        let $correspActionReceived := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^received")]
                         let $correspSent :=  local:getSender($correspActionSent)
                         let $correspSentId := normalize-space(if($letter/@key)
                                               then($letter/@key)
@@ -610,8 +597,8 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
         order by $sender
         return
             (<div class="RegisterSortBox" sender="{$sender}" senderId="{$senderId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',if($senderId !='noID')then($senderId)else(translate(normalize-space($sender),',.’ ','____')))}">
-                                                    {if($sender='noReceiver')then('[N.N.]')else($sender)}
+                <div class="RegisterSortEntry" id="{concat('list-item-',if(not(matches($senderId, '^noID')))then($senderId)else(translate(normalize-space($sender),',.’ ','____')))}">
+                                                    {if(matches($sender,'^noReceiver'))then('[N.N.]')else($sender)}
                 </div>
                 {
                     for $group in $groups
@@ -642,12 +629,12 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                         for $sender in $lettersGroupedBySenders
                                         let $letterCount := $sender/@count/string()
                                         let $letterSender := $sender/@sender/string()
-                                        let $letterSenderId := if($sender/@senderId/string()!='noID')then(($sender/@senderId/string()))else(translate(normalize-space($letterSender),',.’ ','____'))
+                                        let $letterSenderId := if(not(matches($sender/@senderId/string(),'^noID')))then(($sender/@senderId/string()))else(translate(normalize-space($letterSender),',.’ ','____'))
                                             order by $letterSender
                                         return
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if($letterSenderId='noSender')then('[N.N.]')else($letterSender)}</span>
+                                                href="{concat('#list-item-',$letterSenderId)}"><span>{if(matches($letterSenderId,'^noSender'))then('[N.N.]')else($letterSender)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -670,15 +657,15 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
 declare function app:registryLettersReceiver($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
-    let $persons := collection('/db/contents/jra/persons')//tei:TEI
-    let $institutions := collection('/db/contents/jra/institutions')//tei:TEI
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
+    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
+    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersReceiver := for $letter in ($letters//tei:correspAction[@type="received"]//tei:persName,$letters//tei:correspAction[@type="received"]//tei:orgName)
+    let $lettersReceiver := for $letter in ($letters//tei:correspAction[matches(@type,"^received")]//tei:persName,$letters//tei:correspAction[matches(@type,"received")]//tei:orgName)
                         let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="sent"]
-                        let $correspActionReceived := $letter/ancestor::tei:correspDesc//tei:correspAction[@type="received"]
+                        let $correspActionSent := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"sent")]
+                        let $correspActionReceived := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"received")]
                         
                         let $correspSentTurned := local:getSenderTurned($correspActionSent)
                         let $correspSent := local:getSender($correspActionSent)
@@ -721,8 +708,8 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
         order by $receiver
         return
             (<div class="RegisterSortBox" receiver="{$receiver}" receiverId="{$receiverId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',if($receiverId !='noID')then($receiverId)else(translate(normalize-space($receiver),',.’[] ','______')))}">
-                                                    {if($receiver='noReceiver')then('[N.N.]')else($receiver)}
+                <div class="RegisterSortEntry" id="{concat('list-item-',if(not(matches($receiverId,'^noID')))then($receiverId)else(translate(normalize-space($receiver),',.’[] ','______')))}">
+                                                    {if(matches($receiver,'^noReceiver'))then('[N.N.]')else($receiver)}
                 </div>
                 {
                     for $group in $groups
@@ -754,12 +741,12 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                         for $receiver in $lettersGroupedByReceivers
                                         let $letterCount := $receiver/@count/string()
                                         let $letterReceiver := $receiver/@receiver/string()
-                                        let $letterReceiverId := if($receiver/@receiverId/string()!='noID')then($receiver/@receiverId/string())else(translate(normalize-space($letterReceiver),',.’[] ','______'))
+                                        let $letterReceiverId := if(not(matches($receiver/@receiverId/string(),'noID')))then($receiver/@receiverId/string())else(translate(normalize-space($letterReceiver),',.’[] ','______'))
                                             order by $letterReceiver
                                         return
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if($letterReceiver='noReceiver')then('[N.N.]') else ($letterReceiver)}</span>
+                                                href="{concat('#list-item-',$letterReceiverId)}"><span>{if(matches($letterReceiver,'^noReceiver'))then('[N.N.]') else ($letterReceiver)}</span>
                                                 <span
                                                     class="badge badge-jra badge-pill right">{$letterCount}</span>
                                             </a>
@@ -782,14 +769,14 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
 declare function app:letter($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("letter-id", "Fehler")
-    let $letter := collection("/db/contents/jra/sources/documents/letters")//tei:TEI[@xml:id = $id]
-    let $person := collection("/db/contents/jra/persons")//tei:TEI
+    let $letter := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI[@xml:id = $id]
+    let $person := collection("/db/apps/jraPersons/data")//tei:TEI
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
     let $datumSent := local:formatDate(local:getDate($letter//tei:correspAction[@type = "sent"]))
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
-    let $regeste := $letter//tei:note[@type='regeste']
+    let $regeste := $letter//tei:note[@type='regeste' and . !='']
     let $fulltext := $letter//tei:div[@type='volltext']
     return
         (
@@ -819,11 +806,11 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra"
                         data-toggle="tab"
                         href="#letterContentFull">Volltext</a></li>)else()}
-                <li
+                <!--<li
                     class="nav-item"><a
                         class="nav-link-jra"
                         data-toggle="tab"
-                        href="#viewXML">XML-Ansicht</a></li>
+                        href="#viewXML">XML-Ansicht</a></li>-->
             </ul>
                 <hr/>
             </div>
@@ -857,7 +844,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                     let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
                                     let $changerName := $change/@who/string()
                                     let $changeInfo := $change/string()
-                                    let $changeInfoButton := <img src="http://intern.raff-portal.ch/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
+                                    let $changeInfoButton := <img src="https://portal.raff-archiv.ch/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
                                     return
                                         (<span style="padding-left: 3px;"/>,$changeDate, $changeInfoButton, <br/>)
                                 }<br/>
@@ -867,7 +854,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('http://intern.raff-portal.ch/html/letter/',$id)}">{concat('http://intern.raff-portal.ch/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('https://portal.raff-archiv.ch/html/letter/',$id)}">{concat('https://portal.raff-archiv.ch/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                     </div>
@@ -895,7 +882,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                             </div>
                         </div>
                 </div>)else()}
-                <div
+                <!--<div
                     class="tab-pane fade"
                     id="viewXML">
                     <pre
@@ -904,7 +891,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                     {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                     </xmp>
                     </pre>
-                </div>
+                </div>-->
             </div>
         </div>
         </div>
@@ -913,17 +900,17 @@ declare function app:letter($node as node(), $model as map(*)) {
         )
 };
 
-declare function app:registryPersons($node as node(), $model as map(*)) {
+declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
     
-    let $persons := collection("/db/contents/jra/persons/")//tei:TEI
+    let $persons := collection("/db/apps/jraPersons/data/")//tei:TEI
     
     let $personsAlpha := for $person in $persons
                             let $persID := $person/@xml:id/string()
-                            let $initial := substring($person//tei:surname[@type = "used"][1], 1, 1)
-                            let $nameSurname := $person//tei:surname[@type = "used"][1]
+                            let $initial := substring($person//tei:surname[matches(@type,"^used")][1], 1, 1)
+                            let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                             let $role := $person//tei:roleName[1]/text()[1]
-                            let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
-                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                            let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
+                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
                                                else ()
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
@@ -976,12 +963,12 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             (<div
                                                 class="RegisterSortBox"
                                                 initial="{$initial}"
-                                                count="{$personsAlpha[@name = $initial]/@count}"
+                                                count="{$personsAlpha[@name=$initial]/@count}"
                                                 xmlns="http://www.w3.org/1999/xhtml">
                                                 <div
                                                     class="RegisterSortEntry"
                                                     id="{
-                                                            concat('list-item-', if ($initial = '') then
+                                                            concat('list-item-', if ($initial='') then
                                                                 ('unknown')
                                                             else
                                                                 ($initial))
@@ -1000,13 +987,91 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                                 }
                                             </div>)
     
+    return
+        
+        <div
+            class="container"
+            xmlns="http://www.w3.org/1999/xhtml">
+            <div
+                class="row">
+                <div
+                    class="col-9">
+                    <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                    <ul
+                        class="nav nav-tabs"
+                        id="myTab"
+                        role="tablist">
+                        <li
+                            class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra active"
+                                href="#alpha">Alphabetisch</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="registryPersonsBirth.html" onclick="pleaseWait()">Geburtsjahr</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="registryPersonsDeath.html" onclick="pleaseWait()">Sterbejahr</a></li>
+                    </ul>
+                    <div
+                        class="tab-content">
+                        <div
+                            class="tab-pane fade show active"
+                            id="alpha">
+                            <br/>
+                            <div
+                                class="row" >
+                                <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
+                                    {
+                                        for $each in $personsGroupedByInitials
+                                            let $initial := if ($each/@initial/string() = '') then
+                                                ('unknown')
+                                            else
+                                                ($each/@initial/string())
+                                            let $count := $each/@count/string()
+                                            order by $initial
+                                        return
+                                            <a
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', $initial)}"><span>{
+                                                        if (matches($initial,'unknown')) then
+                                                            ('[ohne Initial]')
+                                                        else
+                                                            ($initial)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$count}</span>
+                                            </a>
+                                    }
+                                
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
+                                    {$personsGroupedByInitials}
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+};
+
+declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
+    
+    let $persons := collection("/db/apps/jraPersons/data/")//tei:TEI
+    
     let $personsBirth := for $person in $persons
                              let $persID := $person/@xml:id/string()
                              let $nameJoined := local:getNameJoined($person)
-                             let $nameSurname := $person//tei:surname[@type = "used"][1]
+                             let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                              let $role := $person//tei:roleName[1]/text()[1]
-                             let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
-                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                             let $pseudonym := if ($person//*[matches(@type,'^pseudonym')][1]/text()[1])
+                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
                                                else ()
                              let $occupation := $person//tei:occupation[1]/text()[1]
                              
@@ -1045,7 +1110,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                              return
                                  (<div
                                      name="{
-                                             if ($birth != 'noBirth') then (distinct-values($birthFormatted)) else($birth)
+                                             if (not(matches($birth,'^noBirth'))) then (distinct-values($birthFormatted)) else($birth)
                                          }"
                                          birth="{$birth}"
                                      count="{count($name)}">
@@ -1067,13 +1132,13 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                           (<div
                                               class="RegisterSortBox"
                                               birth="{$birth}" birthToSort="{$birthToSort}"
-                                              count="{$personsBirth[@name = $birth]/@count}"
+                                              count="{$personsBirth[matches(@name,$birth)]/@count}"
                                               xmlns="http://www.w3.org/1999/xhtml">
                                               <div
                                                   class="RegisterSortEntry"
                                                   id="{concat('list-item-', translate($birth, '/. ', '___'))}">
                                                   {
-                                                      if ($birth = 'noBirth') then
+                                                      if (matches($birth,'^noBirth')) then
                                                           ('[Geburtsjahr nicht erfasst]')
                                                       else
                                                           ($birth)
@@ -1086,12 +1151,87 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                               }
                                           </div>)
     
+    return
+        
+        <div
+            class="container"
+            xmlns="http://www.w3.org/1999/xhtml">
+            <div
+                class="row">
+                <div
+                    class="col-9">
+                    <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                    <ul
+                        class="nav nav-tabs"
+                        id="myTab"
+                        role="tablist">
+                        <li
+                            class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="registryPersonsInitial.html" onclick="pleaseWait()">Alphabetisch</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra active"
+                                href="#birth">Geburtsjahr</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="registryPersonsDeath.html" onclick="pleaseWait()">Sterbejahr</a></li>
+                    </ul>
+                    <div
+                        class="tab-content">
+                         <div
+                            class="tab-pane fade show active"
+                            id="birth">
+                            <br/>
+                            <div
+                                class="row">
+                                <div id="navigatorTab2" class="list-group col-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="navTab2" class="nav hidden-xs hidden-sm">
+                                    {
+                                        for $each in $personsGroupedByBirth
+                                        let $birth := $each/@birth/string()
+                                        let $birthToSort := $each/@birthToSort/string()
+                                        let $count := $each/@count/string()
+                                        order by $birthToSort
+                                        return
+                                            <a
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', translate($birth, '/. ', '___'))}"><span>{
+                                                        if (matches($birth,'noBirth')) then
+                                                            ('[nicht erfasst]')
+                                                        else
+                                                            ($birth)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$count}</span>
+                                             </a>
+                                    }
+                                </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
+                                    {$personsGroupedByBirth}
+                                </div>
+                            </div>
+                        </div>
+                       </div>
+                </div>
+            </div>
+        </div>
+};
+ 
+ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
+    
+    let $persons := collection("/db/apps/jraPersons/data/")//tei:TEI
+    
     let $personsDeath := for $person in $persons
                             let $persID := $person/@xml:id/string()
-                            let $nameSurname := $person//tei:surname[@type = "used"][1]
+                            let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                             let $role := $person//tei:roleName[1]/text()[1]
-                            let $pseudonym := if ($person//node()[@type = 'pseudonym'][1]/text()[1])
-                                               then (string-join(($person//tei:forename[@type = 'pseudonym'], $person//tei:surname[@type = 'pseudonym']),' '))
+                            let $pseudonym := if ($person//*[matches(@type,'^pseudonym')][1]/text()[1])
+                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
                                                else ()
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
@@ -1130,7 +1270,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             return
                                 (<div
                                     name="{
-                                            if ($death != 'noDeath') then (distinct-values($deathFormatted)) else($death)
+                                            if (not(matches($death,'^noDeath'))) then (distinct-values($deathFormatted)) else($death)
                                         }"
                                     death="{$death}"
                                     count="{count($name)}">
@@ -1152,13 +1292,13 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                         (<div
                                             class="RegisterSortBox"
                                             death="{$death}" deathToSort="{$deathToSort}"
-                                            count="{$personsDeath[@name = $death]/@count}"
+                                            count="{$personsDeath[matches(@name,$death)]/@count}"
                                             xmlns="http://www.w3.org/1999/xhtml">
                                             <div
                                                 class="RegisterSortEntry"
                                                 id="{concat('list-item-', translate($death, '/. ', '___'))}">
                                                 {
-                                                    if ($death = 'noDeath') then
+                                                    if (matches($death,'^noDeath')) then
                                                         ('[Sterbejahr nicht erfasst]')
                                                     else
                                                         ($death)
@@ -1189,95 +1329,21 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                             class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li
                             class="nav-item"><a
-                                class="nav-link-jra active"
-                                data-toggle="tab"
-                                href="#alpha">Alphabetisch</a></li>
+                                class="nav-link-jra"
+                                href="registryPersonsInitial.html" onclick="pleaseWait()">Alphabetisch</a></li>
                         <li
                             class="nav-item"><a
                                 class="nav-link-jra"
-                                data-toggle="tab"
-                                href="#birth" onclick="activateTab2()">Geburtsjahr</a></li>
+                                href="registryPersonsBirth.html" onclick="pleaseWait()">Geburtsjahr</a></li>
                         <li
-                            class="nav-item"><a
+                            class="nav-item active"><a
                                 class="nav-link-jra"
-                                data-toggle="tab"
-                                href="#death" onclick="activateTab3()">Sterbejahr</a></li>
+                                href="#death">Sterbejahr</a></li>
                     </ul>
                     <div
                         class="tab-content">
-                        <div
-                            class="tab-pane fade show active"
-                            id="alpha">
-                            <br/>
-                            <div
-                                class="row" >
-                                <div id="navigator" class="list-group col-3" style="height:500px; overflow-y: scroll;">
-            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
-                                    {
-                                        for $each in $personsGroupedByInitials
-                                        let $initial := if ($each/@initial/string() = '') then
-                                            ('unknown')
-                                        else
-                                            ($each/@initial/string())
-                                        let $count := $each/@count/string()
-                                            order by $initial
-                                        return
-                                            <a
-                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', $initial)}"><span>{
-                                                        if ($initial = 'unknown') then
-                                                            ('[ohne Initial]')
-                                                        else
-                                                            ($initial)
-                                                    }</span>
-                                                <span
-                                                    class="badge badge-jra badge-pill right">{$count}</span>
-                                            </a>
-                                    }
-                                
-                                </ul>
-                                </div>
-                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
-                                    {$personsGroupedByInitials}
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="tab-pane fade"
-                            id="birth">
-                            <br/>
-                            <div
-                                class="row">
-                                <div id="navigatorTab2" class="list-group col-3" style="height:500px; overflow-y: scroll;">
-            					   <ul id="navTab2" class="nav hidden-xs hidden-sm">
-                                    {
-                                        for $each in $personsGroupedByBirth
-                                        let $birth := $each/@birth/string()
-                                        let $birthToSort := $each/@birthToSort/string()
-                                        let $count := $each/@count/string()
-                                        order by $birthToSort
-                                        return
-                                            <a
-                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                                href="{concat('#list-item-', translate($birth, '/. ', '___'))}"><span>{
-                                                        if ($birth = 'noBirth') then
-                                                            ('[nicht erfasst]')
-                                                        else
-                                                            ($birth)
-                                                    }</span>
-                                                <span
-                                                    class="badge badge-jra badge-pill right">{$count}</span>
-                                             </a>
-                                    }
-                                </ul>
-                                </div>
-                                <div data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-md-9 col-sm-9" style="position: relative; height:500px; overflow-y: scroll;">
-                                    {$personsGroupedByBirth}
-                                </div>
-                            </div>
-                        </div>
                        <div
-                            class="tab-pane fade"
+                            class="tab-pane fade show active"
                             id="death">
                             <br/>
                             <div
@@ -1294,7 +1360,7 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                                             <a
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', translate($death, '/. ', '___'))}"><span>{
-                                                        if ($death = 'noDeath') then
+                                                        if (matches($death,'noDeath')) then
                                                             ('[nicht erfasst]')
                                                         else
                                                             ($death)
@@ -1312,30 +1378,21 @@ declare function app:registryPersons($node as node(), $model as map(*)) {
                         </div>
                     </div>
                 </div>
-                <!--<div
-                    class="col-3">
-                    <br/><br/>
-                    <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
-                    <input
-                        type="text"
-                        id="myResearchInput"
-                        onkeyup="myFilter()"
-                        placeholder="Name oder ID"
-                        title="Type in a string"/>
-                </div>-->
             </div>
         </div>
 };
-
+ 
 declare function app:person($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("person-id", "Fehler")
-    let $person := collection("/db/contents/jra/persons")//tei:TEI[@xml:id = $id]
+    let $person := collection("/db/apps/jraPersons/data")//tei:TEI[@xml:id = $id]
     let $name := $person//tei:titleStmt/tei:title/normalize-space(data(.))
-    let $letters := collection("/db/contents/jra/sources/documents/letters")//tei:TEI
+    let $letters := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI
     let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
-    let $vorkommen := collection("/db/contents/jra")//tei:persName[@key=$id]/ancestor::tei:TEI
+    let $vorkommen := collection("/db/apps/jraInstitutions")//tei:persName[@key=$id]/ancestor::tei:TEI|
+                      collection("/db/apps/jraTexts")//tei:persName[@key=$id]/ancestor::tei:TEI|
+                      collection("/db/apps/jraSources")//tei:persName[@key=$id]/ancestor::tei:TEI
     
     return
         (
@@ -1373,11 +1430,11 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            <li
+                            <!--<li
                                 class="nav-item"><a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#xmlAnsicht">XML-Ansicht</a></li>
+                                    href="#xmlAnsicht">XML-Ansicht</a></li>-->
                         </ul>
                         <hr/>
             </div>
@@ -1422,7 +1479,7 @@ declare function app:person($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($name,'; ')}<a href="{concat('http://intern.raff-portal.ch/html/person/',$id)}">{concat('http://intern.raff-portal.ch/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,'; ')}<a href="{concat('https://portal.raff-archiv.ch/html/person/',$id)}">{concat('https://portal.raff-archiv.ch/html/person/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -1468,7 +1525,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            <div
+                            <!--<div
                                 class="tab-pane fade"
                                 id="xmlAnsicht">
                                 <pre
@@ -1477,7 +1534,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                         {transform:transform($person, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                                     </xmp>
                                 </pre>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -1488,7 +1545,7 @@ declare function app:person($node as node(), $model as map(*)) {
 
 declare function app:registryInstitutions($node as node(), $model as map(*)) {
     
-    let $institutions := collection("/db/contents/jra/institutions/")//tei:TEI
+    let $institutions := collection("/db/apps/jraInstitutions/data/")//tei:TEI
     
     let $institutionsAlpha := for $institution in $institutions
                                 let $instID := $institution/@xml:id/string()
@@ -1744,10 +1801,10 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
 declare function app:institution($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("institution-id", "Fehler")
-    let $persons := collection("/db/contents/jra/persons")//tei:TEI
-    let $institution := collection("/db/contents/jra/institutions")//tei:TEI[@xml:id = $id]
+    let $persons := collection("/db/apps/jraPersons/data")//tei:TEI
+    let $institution := collection("/db/apps/jraInstitutions/data")//tei:TEI[@xml:id = $id]
     let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
-    let $letters := (collection('/db/contents/jra/sources/documents/letters')//tei:TEI,collection('/db/contents/jra/sources/documents/others')//tei:TEI)
+    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
     let $affiliates := $persons//tei:affiliation[@key = $id]/ancestor::tei:TEI
     let $literature := $institution//tei:bibl[@type='links']
@@ -1788,11 +1845,11 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            <li
+                            <!--<li
                                 class="nav-item"><a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#xmlAnsicht">XML-Ansicht</a></li>
+                                    href="#xmlAnsicht">XML-Ansicht</a></li>-->
                         </ul>
                 <hr/>
             </div>
@@ -1833,7 +1890,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($name,'; ')}<a href="{concat('http://intern.raff-portal.ch/html/institution/',$id)}">{concat('http://intern.raff-portal.ch/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,'; ')}<a href="{concat('https://portal.raff-archiv.ch/html/institution/',$id)}">{concat('https://portal.raff-archiv.ch/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -1891,7 +1948,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            <div
+                            <!--<div
                                 class="tab-pane fade"
                                 id="xmlAnsicht">
                                 <pre
@@ -1900,7 +1957,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                         {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                                     </xmp>
                                 </pre>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -1912,7 +1969,7 @@ declare function app:institution($node as node(), $model as map(*)) {
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
     
-    let $works := collection('/db/contents/jra/works')//mei:mei
+    let $works := collection('/db/apps/jraWorks/data')//mei:mei
     let $worksOpus := $works//mei:workList//mei:title[@type = 'desc' and contains(., 'Opus')]/ancestor::mei:mei
     let $worksWoO := $works//mei:workList//mei:title[@type = 'desc' and contains(., 'WoO')]/ancestor::mei:mei
     let $perfRess := $works//mei:workList/mei:work/mei:perfMedium/mei:perfResList/mei:perfRes[not(@type = 'alt')]
@@ -1937,7 +1994,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 default return $case 
                             let $workID := $work/@xml:id/string()
                             let $name := <div
-                                            class="row RegisterEntry">
+                                            class="row RegisterEntry" titleToSort="{$withoutArticle}">
                                             <div
                                                 class="col">{$workName}</div>
                                             <div
@@ -1954,102 +2011,105 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     count="{count($name)}">
                                                     {
                                                         for $each in $name
-                                                          let $order := local:replaceToSortDist($each)
+                                                            let $orderWithoutArticle := $each/@titleToSort
+                                                            let $order := local:replaceToSortDist($orderWithoutArticle)
                                                             order by $order
-                                                        return
-                                                            $each
+                                                            return
+                                                                $each
                                                     }
                                                 </div>)
     
     let $worksGroupedByInitials := for $groups in $worksAlpha
-    let $initial := $groups/@name/string()
-    return
-        (<div
-            class="RegisterSortBox"
-            initial="{$initial}"
-            count="{$worksAlpha[@name = $initial]/@count}"
-            xmlns="http://www.w3.org/1999/xhtml">
-            <div
-                class="RegisterSortEntry"
-                id="{
-                        concat('list-item-', if ($initial = '') then
-                            ('unknown')
-                        else
-                            ($initial))
-                    }">
-                {
-                    if ($initial = '') then
-                        ('[N.N.]')
-                    else
-                        ($initial)
-                }
-            </div>
-            {
-                for $group in $groups
-                return
-                    $group
-            }
-        </div>)
+                                        let $initial := $groups/@name/string()
+                                        return
+                                            (<div
+                                                class="RegisterSortBox"
+                                                initial="{$initial}"
+                                                count="{$worksAlpha[@name = $initial]/@count}"
+                                                xmlns="http://www.w3.org/1999/xhtml">
+                                                <div
+                                                    class="RegisterSortEntry"
+                                                    id="{
+                                                            concat('list-item-', if ($initial = '') then
+                                                                ('unknown')
+                                                            else
+                                                                ($initial))
+                                                        }">
+                                                    {
+                                                        if ($initial = '') then
+                                                            ('[N.N.]')
+                                                        else
+                                                            ($initial)
+                                                    }
+                                                </div>
+                                                {
+                                                 for $group in $groups
+                                                 return
+                                                     $group
+                                                }
+                                            </div>)
     let $worksChrono := for $work in $works
-    let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
-    let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-    let $date := $work//mei:creation/mei:date[@type = 'composition']
-    let $compositionDate := if (count($date) = 1)
-                            then
-                                (
-                                if ($date/@startdate)
-                                then
-                                    ($date/@startdate/string())
-                                else
-                                    if ($date/@notbefore)
-                                    then
-                                        ($date/@notbefore/string())
-                                    else
-                                        ('0000')
-                                )
-                            else
-                                if ($date)
-                                then
-                                    (
-                                    if ($date[1]/@startdate)
-                                    then
-                                        ($date[1]/@startdate/string())
-                                    else
-                                        if ($date[1]/@notbefore)
-                                        then
-                                            ($date[1]/@notbefore/string())
-                                        else
-                                            ('0000')
-                                    )
-                                else
-                                    ('0000')
-    let $year := substring($compositionDate, 1, 4)
-    let $workID := $work/@xml:id/string()
-    let $name := <div
-        class="row RegisterEntry">
-        <!--<div class="col-2">{format-date(xs:date(replace($compositionDate,'00','01')),'[M,*-3]. [D]','de',(),())}</div>-->
-        <div
-            class="col">{$workName}</div>
-        <div
-            class="col-2">{$opus}</div>
-        <div
-            class="col-2"><a onclick="pleaseWait()"
-                href="work/{$workID}">{$workID}</a></div>
-    </div>
-        group by $year
-        order by $year
-    return
-        (<div
-            name="{$year}"
-            count="{count($name)}">
-            {
-                for $each in $name
-                   let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                return
-                    $each
-            }
-        </div>)
+                            let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
+                            let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
+                            let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
+                            let $date := $work//mei:creation/mei:date[@type = 'composition']
+                            let $compositionDate := if (count($date) = 1)
+                                                    then
+                                                        (
+                                                        if ($date/@startdate)
+                                                        then
+                                                            ($date/@startdate/string())
+                                                        else
+                                                            if ($date/@notbefore)
+                                                            then
+                                                                ($date/@notbefore/string())
+                                                            else
+                                                                ('0000')
+                                                        )
+                                                    else
+                                                        if ($date)
+                                                        then
+                                                            (
+                                                            if ($date[1]/@startdate)
+                                                            then
+                                                                ($date[1]/@startdate/string())
+                                                            else
+                                                                if ($date[1]/@notbefore)
+                                                                then
+                                                                    ($date[1]/@notbefore/string())
+                                                                else
+                                                                    ('0000')
+                                                            )
+                                                        else
+                                                            ('0000')
+                            let $year := substring($compositionDate, 1, 4)
+                            let $workID := $work/@xml:id/string()
+                            let $name := <div
+                                class="row RegisterEntry" titleToSort="{$withoutArticle}">
+                                <!--<div class="col-2">{format-date(xs:date(replace($compositionDate,'00','01')),'[M,*-3]. [D]','de',(),())}</div>-->
+                                <div
+                                    class="col">{$workName}</div>
+                                <div
+                                    class="col-2">{$opus}</div>
+                                <div
+                                    class="col-2"><a onclick="pleaseWait()"
+                                        href="work/{$workID}">{$workID}</a></div>
+                            </div>
+                                group by $year
+                                order by $year
+                            return
+                                (<div
+                                    name="{$year}"
+                                    count="{count($name)}">
+                                    {
+                                        for $each in $name
+                                            let $orderWithoutArticle := $each/@titleToSort
+                                            let $order := local:replaceToSortDist($orderWithoutArticle)
+                                            order by $order
+                                            return
+                                                $each
+                                    }
+                                </div>)
     
     let $worksGroupedByYears := for $groups in $worksChrono
     let $year := $groups/@name/string()
@@ -2080,67 +2140,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     $group
             }
         </div>)
-    let $worksPerfResPiano := for $perfRes in $perfRess[@auth='piano' and @solo='true']
-                            let $workName := $perfRes/ancestor::mei:mei//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
-                            let $opus := $perfRes/ancestor::mei:mei//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-                            let $workID := $perfRes/ancestor::mei:mei/@xml:id/string()
-                            let $name := <div
-                                class="row RegisterEntry">
-                                <!--<div class="col-2">{format-date(xs:date(replace($compositionDate,'00','01')),'[M,*-3]. [D]','de',(),())}</div>-->
-                                <div
-                                    class="col">{$workName}</div>
-                                <div
-                                    class="col-2">{$opus}</div>
-                                <div
-                                    class="col-2"><a onclick="pleaseWait()"
-                                        href="work/{$workID}">{$workID}</a></div>
-                            </div>
-                                group by $perfRes
-                                order by $perfRes
-                            return
-                                (<div
-                                    name="{$perfRes}"
-                                    count="{count($name)}">
-                                    {
-                                        for $each in $name
-                                         let $order := distinct-values(replace(replace(replace($each,'ö','oe'),'ä','ae'),'ü','ue'))
-                    order by $order
-                                        return
-                                            $each
-                                    }
-                                </div>)
-    
-    let $worksGroupedByPerfResPiano := for $groups in $worksPerfResPiano
-                                        let $perf := $groups/@name/string()
-                                        let $count := $groups/@count/string()
-                                        return
-                                            (<div
-                                                class="RegisterSortBox"
-                                                perf="{$perf}"
-                                                count="{$count}"
-                                                xmlns="http://www.w3.org/1999/xhtml">
-                                                <div
-                                                    class="RegisterSortEntry"
-                                                    id="{
-                                                            concat('list-item-', if ($perf = '') then
-                                                                ('unknown')
-                                                            else
-                                                                ($perf))
-                                                        }">
-                                                    {
-                                                        if ($perf = '') then
-                                                            ('[N.N.]')
-                                                        else
-                                                            ($perf)
-                                                    }
-                                                </div>
-                                                {
-                                                    for $group in $groups
-                                                    return
-                                                        $group
-                                                }
-                                            </div>)
-    
+   
     let $content := <div
         class="container">
         <br/>
@@ -2355,81 +2355,100 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-01">Chorwerke mit Orchester geistlich</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-01">Oratorien</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-01-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-02">Liturgische Werke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-01-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-01-01-03">Andere Chorwerke</div>
+                                            {let $works := 'cat-01-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-02">Chorwerke mit Orchester weltlich</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
-                                        <div
+                                        <!--<div
                                           class="RegisterSortEntry"
                                           id="cat-01-03">Chorwerke mit Klavier</div>
-                                          {for $work in $works//mei:classification//mei:term[.='cat-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                          {let $works := 'cat-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
-                                                    $worksByCat}
+                                                    $worksByCat}-->
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-04">Chorwerke a cappella geistlich</div>
-                                           {for $work in $works//mei:classification//mei:term[.='cat-01-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                           {let $works := 'cat-01-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-05">Chorwerke a cappella weltlich</div>
-                                           {for $work in $works//mei:classification//mei:term[.='cat-01-05']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                           {let $works := 'cat-01-05'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-06">Ensembles mit Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-06']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-01-06'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-07">Lieder mit Orchester</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-07']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                               {let $works := 'cat-01-07'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work 
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-08">Lieder mit Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-01-08']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-01-08'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         
@@ -2449,17 +2468,19 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-02-01">Opern</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-02-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-02-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-02-02">Schauspielmusiken</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-02-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-02-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2478,41 +2499,46 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-03-01">Symphonien</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-03-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-03-02">Suiten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-03-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-03-03">Konzertante Werke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-03-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                       <div
                                             class="RegisterSortEntry"
                                             id="cat-03-04">Ouvertüren und Vorspiele</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-03-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                      <div
                                             class="RegisterSortEntry"
                                             id="cat-03-05">Andere Orchesterwerke</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-03-05']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-03-05'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2531,114 +2557,163 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-01">Kammermusik ohne Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-01">Sinfonietta</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-02">Oktett</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-03">Sextett</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-04">Streichquartette</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-01-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-01-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-04-02">Kammermusik mit Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-01">Klavierquintette</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-02-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-02">Klavierquartette</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-02-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-03">Klaviertrios</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-02-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-04">Bläser und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-02-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-02-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-03">Violine und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-01">Sonaten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-03-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-02">Andere Werke für Violine und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-03-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-03-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
-                                        
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-03-03">«Fantasien und Variationen über fremde Themen für Violine und Klavier»</div>
+                                            {let $works := 'cat-04-03-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-04">Cello und Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-04-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-04-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-04-01">Sonaten</div>
+                                            {let $works := 'cat-04-04-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-04-02">Andere Werke für Cello und Klavier</div>
+                                            {let $works := 'cat-04-04-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                        <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-04-04-03">«Fantasien und Variationen über fremde Themen für Cello und Klavier»</div>
+                                            {let $works := 'cat-04-04-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2657,65 +2732,82 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-01">Klavier zweihändig</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-01">Sonaten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-01-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-02">Suiten</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-01-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-03">Weitere Stücke für Klavier zu zwei Händen</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-01-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-04">Fantasien und Variationen über fremde Themen</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-01-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-01-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
-                                                    $worksByCat}            
+                                                    $worksByCat} 
+                                       <div
+                                            class="RegisterSortEntry2"
+                                            id="cat-05-01-05">Klavierauszüge</div>
+                                            {let $works := 'cat-05-01-05'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-02">Klavier vierhändig</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-03">Zwei Klaviere</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-04">Orgel</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-05-04']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-05-04'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2734,25 +2826,28 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-01">Für Orchester</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-06-01']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-06-01'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-02">Für Kammermusik</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-06-02']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-06-02'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-03">Für Klavier</div>
-                                            {for $work in $works//mei:classification//mei:term[.='cat-06-03']/ancestor::mei:mei
-                                                let $worksByCat := local:getWorks($work)
-                                                order by $worksByCat/xhtml:div[2]
+                                            {let $works := 'cat-06-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                    </div>
@@ -2770,8 +2865,10 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
 declare function app:work($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("work-id", "Fehler")
-    let $work := collection("/db/contents/jra/works")//mei:mei[@xml:id = $id]
-    let $collection := collection("/db/contents/jra")//tei:TEI
+    let $work := collection("/db/apps/jraWorks/data")//mei:mei[@xml:id = $id]
+    let $collection := collection("/db/apps/jraInstitutions")//tei:TEI|
+                       collection("/db/apps/jraTexts")//tei:TEI|
+                       collection("/db/apps/jraSources")//tei:TEI
     let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
@@ -2802,12 +2899,12 @@ declare function app:work($node as node(), $model as map(*)) {
                                     data-toggle="tab"
                                     href="#references">Bezüge</a></li>
                                     )else()}
-                                    <li
+                                  <!--  <li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
                                     data-toggle="tab"
-                                    href="#viewXML">XML-Ansicht</a></li>
+                                    href="#viewXML">XML-Ansicht</a></li>-->
                         </ul>
             
                 <hr/>
@@ -2852,7 +2949,7 @@ declare function app:work($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($name,', ',$opus,'; ')}<a href="{concat('http://intern.raff-portal.ch/html/work/',$id)}">{concat('http://intern.raff-portal.ch/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($name,', ',$opus,'; ')}<a href="{concat('https://portal.raff-archiv.ch/html/work/',$id)}">{concat('https://portal.raff-archiv.ch/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                         </div>
@@ -2873,7 +2970,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            <div
+                   <!--         <div
                     class="tab-pane fade"
                     id="viewXML">
                     <pre
@@ -2882,7 +2979,7 @@ declare function app:work($node as node(), $model as map(*)) {
                     {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                     </xmp>
                     </pre>
-                </div>
+                </div>-->
         </div>
         </div>
         </div>
@@ -2893,7 +2990,7 @@ declare function app:work($node as node(), $model as map(*)) {
 
 declare function app:aboutProject($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutProject.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutProject.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -2923,7 +3020,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
 
 declare function app:aboutRaff($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutRaff.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutRaff.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -2939,7 +3036,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
 
 declare function app:aboutDocumentation($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutDocumentation.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutDocumentation.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -2969,7 +3066,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
 
 declare function app:aboutResources($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/aboutResources.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutResources.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -2999,7 +3096,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
 
 declare function app:indexPage($node as node(), $model as map(*)) {
     
-    let $text := doc('/db/contents/jra/texts/portal/index.xml')
+    let $text := doc('/db/apps/jraTexts/data/portal/index.xml')
     
     return
         (
@@ -3012,7 +3109,7 @@ declare function app:indexPage($node as node(), $model as map(*)) {
 
 declare function app:impressum($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/impressum.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/impressum.xml")/tei:TEI
     
     return
         (
@@ -3025,7 +3122,7 @@ declare function app:impressum($node as node(), $model as map(*)) {
 
 declare function app:privacyPolicy($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/privacyPolicy.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/privacyPolicy.xml")/tei:TEI
     
     return
         (
@@ -3038,7 +3135,7 @@ declare function app:privacyPolicy($node as node(), $model as map(*)) {
 
 declare function app:disclaimer($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/contents/jra/texts/portal/disclaimer.xml")/tei:TEI
+    let $text := doc("/db/apps/jraTexts/data/portal/disclaimer.xml")/tei:TEI
     
     return
         (
@@ -3053,7 +3150,7 @@ declare function app:errorReport($node as node(), $model as map(*)){
 
 let $mailto := 'mailto:ried-musikforschung@mail.de'
 let $subject := 'Error%20Report'
-let $occurance := replace(request:get-url(),'http://intern.raff-portal.ch','http://portal.raff-archiv.ch')
+let $occurance := replace(request:get-url(),'https://portal.raff-archiv.ch','https://portal.raff-archiv.ch')
 let $body := concat('Hey Guys,%0D%0A%0D%0Aplease%20check%20this%20url:%0D%0A%0D%0A',$occurance,'%0D%0A%0D%0Athanks!')
 let $href := concat($mailto,'?subject=',$subject,'&amp;body=',$body)
 return
@@ -3061,28 +3158,28 @@ return
 };
 
 declare function app:countLetters($node as node(), $model as map(*)){
-let $letters := collection("/db/contents/jra/sources/documents/letters") | collection("/db/contents/jra/sources/documents/others")
+let $letters := collection("/db/apps/jraSources/data/documents/letters") | collection("/db/apps/jraSources/data/documents/others")
 let $count := count($letters//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Postsachen</span>)
 };
 declare function app:countWorks($node as node(), $model as map(*)){
-let $works := collection("/db/contents/jra/works")
+let $works := collection("/db/apps/jraWorks/data")
 let $count := count($works//mei:mei)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Werke</span>)
 };
 declare function app:countPersons($node as node(), $model as map(*)){
-let $persons := collection("/db/contents/jra/persons")
+let $persons := collection("/db/apps/jraPersons/data")
 let $count := count($persons//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Personen</span>)
 };
 declare function app:countInstitutions($node as node(), $model as map(*)){
-let $institutions := collection("/db/contents/jra/institutions")
+let $institutions := collection("/db/apps/jraInstitutions/data")
 let $count := count($institutions//tei:TEI)
 return
     (<p class="counter">{$count}</p>,
