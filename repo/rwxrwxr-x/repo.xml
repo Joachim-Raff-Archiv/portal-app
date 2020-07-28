@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <meta xmlns="http://exist-db.org/xquery/repo">
-    <description>Joachim-Raff-Archiv Sources Data</description>
+    <description>Joachim-Raff-Archiv App</description>
     <author/>
     <website/>
     <status>alpha</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
-    <type>library</type>
-    <target>jraSources</target>
+    <type>application</type>
+    <target>raffArchive</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
     <permissions user="raff" password="dummy" group="raffArchive" mode="rwxrwxr-x"/>
