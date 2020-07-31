@@ -778,6 +778,7 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
     let $regeste := $letter//tei:note[@type='regeste' and . !='']
     let $fulltext := $letter//tei:div[@type='volltext']
+    let $facsimile := $letter//tei:facsimile[.//tei:graphic]
     return
         (
         <div
@@ -806,11 +807,18 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra"
                         data-toggle="tab"
                         href="#letterContentFull">Volltext</a></li>)else()}
-                <!--<li
+                {if ($facsimile) then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
                         data-toggle="tab"
-                        href="#viewXML">XML-Ansicht</a></li>-->
+                        href="#contentLetterFacsimile">Faksimile</a></li>)else()}
+                {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                then(<li
+                    class="nav-item"><a
+                        class="nav-link-jra"
+                        data-toggle="tab"
+                        href="#viewXML">XML-Ansicht</a></li>)
+                        else()}
             </ul>
                 <hr/>
             </div>
@@ -854,7 +862,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         <div class="suggestedCitation">
                             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
                             <br/>
-                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('https://portal.raff-archiv.ch/html/letter/',$id)}">{concat('https://portal.raff-archiv.ch/html/letter/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
+                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('https://portal.raff-archiv.ch/html/letter/',$id)}">{request:get-url()}<!--{concat('https://portal.raff-archiv.ch/html/letter/',$id)}--></a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
                          </div>
                         </div>
                     </div>
@@ -882,7 +890,46 @@ declare function app:letter($node as node(), $model as map(*)) {
                             </div>
                         </div>
                 </div>)else()}
-                <!--<div
+                {if ($facsimile)
+                 then(
+                 <div
+                    class="tab-pane fade"
+                    id="contentLetterFacsimile">
+                          <div class="tabbable">
+                          <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                              <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                  <span aria-hidden="true">«</span>
+                                  <span class="sr-only">Previous</span>
+                                </a>
+                              </li>
+                              {for $surface at $n in $facsimile//tei:surface
+                               return
+                                    <li class="page-item {if($n=1)then('active')else()}"><a class="page-link" href="#facsimile-{$n}">{$n}</a></li>
+                                }
+                              <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                  <span aria-hidden="true">»</span>
+                                  <span class="sr-only">Next</span>
+                                </a>
+                              </li>
+                            </ul>
+                          </nav>
+                        <div class="tab-content">
+                            {for $surface at $n in $facsimile//tei:surface
+                                let $graphicURL := $surface/tei:graphic/@url
+                               return
+                                <div class="tab-pane fade {if($n=1)then('show active')else()}" id="facsimile-{$n}">
+                                    <img src="{$graphicURL}" width="100px"/>
+                                </div>
+                            }
+                        </div>
+                      </div>
+                      </div>)
+                 else()}
+                {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                then(<div
                     class="tab-pane fade"
                     id="viewXML">
                     <pre
@@ -891,7 +938,8 @@ declare function app:letter($node as node(), $model as map(*)) {
                     {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                     </xmp>
                     </pre>
-                </div>-->
+                </div>)
+                else()}
             </div>
         </div>
         </div>
