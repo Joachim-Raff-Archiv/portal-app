@@ -784,7 +784,7 @@ declare function app:letter($node as node(), $model as map(*)) {
         <div
             class="container">
             <div
-                class="page-header">
+                class="page-header tabbable parentTabs">
                 <h5>{$datumSent}</h5>
                 <h2>Brief an {$nameTurned}</h2>
                 <h6>ID: {$id}</h6>
@@ -897,19 +897,19 @@ declare function app:letter($node as node(), $model as map(*)) {
                     id="contentLetterFacsimile">
                           <div class="tabbable">
                           <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center">
-                              <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
+                            <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs" role="tablist">
+                              <li class="nav-item prev">
+                                <a class="nav-link-jra" href="#" aria-label="Previous">
                                   <span aria-hidden="true">«</span>
                                   <span class="sr-only">Previous</span>
                                 </a>
                               </li>
                               {for $surface at $n in $facsimile//tei:surface
                                return
-                                    <li class="page-item {if($n=1)then('active')else()}"><a class="page-link" href="#facsimile-{$n}">{$n}</a></li>
+                                    <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" href="#facsimile-{$n}">{$n}</a></li>
                                 }
-                              <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
+                              <li class="nav-item next">
+                                <a class="nav-link-jra" href="#" aria-label="Next">
                                   <span aria-hidden="true">»</span>
                                   <span class="sr-only">Next</span>
                                 </a>
@@ -918,10 +918,46 @@ declare function app:letter($node as node(), $model as map(*)) {
                           </nav>
                         <div class="tab-content">
                             {for $surface at $n in $facsimile//tei:surface
-                                let $graphicURL := $surface/tei:graphic/@url
+                                let $source := $surface/tei:graphic/@source
+                                let $digiIdent := substring-before(substring-after($source,'urn:nbn:de:bvb:12-'),'-')
+                                let $graphicN := $surface/tei:graphic/@n
+                                let $surfaceBSBUrl := $surface/tei:graphic[tei:desc[@type='provider']='D-BSB']/@url/string()
+                                let $graphicBSBIdent := subsequence(tokenize($surfaceBSBUrl,'/'),4,1) 
+                                let $graphicBSBUrl := concat('http://daten.digitale-sammlungen.de/0010/', $graphicBSBIdent, '/images/', $graphicBSBIdent, '_', format-number(number($graphicN),'00000'), '.jpg')
+                                let $graphicUrl := if($surfaceBSBUrl)
+                                                   then($graphicBSBUrl)
+                                                   else($surface/tei:graphic/@url)
+                                
+                                
+                                let $graphicViewer := if($digiIdent)then(concat('http://daten.digitale-sammlungen.de/',$digiIdent,'/image_',$graphicN)) else($graphicUrl)
+                                
+                                let $provider := if($surface/tei:graphic/tei:desc[@type='provider']/text() = 'D-BSB')
+                                                 then('Bayerische Staatsbibliothek (BSB), München')
+                                                 else($surface/tei:graphic/tei:desc[@type='provider']/text())
                                return
                                 <div class="tab-pane fade {if($n=1)then('show active')else()}" id="facsimile-{$n}">
-                                    <img src="{$graphicURL}" width="100px"/>
+                                    <hr/>
+                                    <div class="container">
+                                        <img class="img-fluid mx-auto d-block" src="{$graphicUrl}" width="75%"/>
+                                    </div>
+                                    <hr/>
+                                    <div>
+                                    <table>
+                                        <tr>
+                                        <td>Bildquelle:</td>
+                                        <td><a href="{$graphicViewer}" target="_blank">{$surface/tei:graphic/@url/string()}</a></td>
+                                        </tr>
+                                        <tr>
+                                        <td>Bereitgestellt durch:</td>
+                                        <td>{$provider}</td>
+                                        </tr>
+                                        <tr>
+                                        <td>Lizenz:</td>
+                                        <td><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de">CC BY-NC-SA 4.0</a></td>
+                                        </tr>
+                                    </table>
+                                    </div>
+                                    <hr/>
                                 </div>
                             }
                         </div>
