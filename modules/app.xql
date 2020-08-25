@@ -947,14 +947,22 @@ declare function app:letter($node as node(), $model as map(*)) {
                                         <td>Bildquelle:</td>
                                         <td><a href="{$graphicViewer}" target="_blank">{$surface/tei:graphic/@url/string()}</a></td>
                                         </tr>
-                                        <tr>
-                                        <td>Bereitgestellt durch:</td>
-                                        <td>{$provider}</td>
-                                        </tr>
-                                        <tr>
-                                        <td>Lizenz:</td>
-                                        <td><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de">CC BY-NC-SA 4.0</a></td>
-                                        </tr>
+                                        {if($provider)
+                                        then(<tr>
+                                                <td>Bereitgestellt durch:</td>
+                                                <td>{$provider}</td>
+                                            </tr>)
+                                            else()}
+                                        {if($surface/tei:graphic/tei:desc[@type='licence']/text())
+                                        then(<tr>
+                                                <td>Lizenz:</td>
+                                                <td>
+                                                    {if($surface/tei:graphic[tei:desc[@type='provider']='D-BSB'])
+                                                     then(<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de">CC BY-NC-SA 4.0</a>)
+                                                     else($surface/tei:graphic/tei:desc[@type='licence']/text())}
+                                                </td>
+                                            </tr>)
+                                        else()}
                                     </table>
                                     </div>
                                     <hr/>
