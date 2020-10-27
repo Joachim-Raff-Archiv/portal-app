@@ -1,39 +1,23 @@
 xquery version "3.1";
 
 module namespace app = "https://portal.raff-archiv.ch/templates";
+
 import module namespace templates = "http://exist-db.org/xquery/templates";
 import module namespace config = "https://portal.raff-archiv.ch/config" at "config.xqm";
-
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
+
+import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
+import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "raffShared.xqm";
+(:import module namespace raffWork="https://portal.raff-archiv.ch/ns/baudiWork" at "raffWork.xqm";:)
+(:import module namespace raffSource="https://portal.raff-archiv.ch/ns/baudiSource" at "raffSource.xqm";:)
+
+import module namespace functx = "http://www.functx.com" at "functx.xqm";
 
 declare namespace tei = "http://www.tei-c.org/ns/1.0";
 declare namespace mei = "http://www.music-encoding.org/ns/mei";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
-declare namespace functx = "http://www.functx.com";
 declare namespace http = "http://expath.org/ns/http-client";
 (:declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";:)
-
-declare function functx:is-node-in-sequence-deep-equal
-($node as node()?,
-$seq as node()*) as xs:boolean {
-    
-    some $nodeInSeq in $seq
-        satisfies deep-equal($nodeInSeq, $node)
-};
-
-declare function functx:distinct-deep
-($nodes as node()*) as node()* {
-    
-    for $seq in (1 to count($nodes))
-    return
-        $nodes[$seq][not(functx:is-node-in-sequence-deep-equal(., $nodes[position() < $seq]))]
-};
-
-(:declare function app:search($node as node(), $model as map(*)) {
-for $x in doc("/db/apps/jraSources/data/documents/letters")//tei:TEI
- let $title := $x//LINE[ . ftcontains "romeo juliet " all words ]
- return $x/ancestor::tei:TEI/@xml:id
-};:)
 
 declare function app:search($node as node(), $model as map(*)) {
     let $collection := collection('/db/apps/jraPersons/data')//tei:TEI
@@ -917,57 +901,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                             </ul>
                           </nav>
                         <div class="tab-content">
-                            {for $surface at $n in $facsimile//tei:surface
-                                let $source := $surface/tei:graphic/@source
-                                let $digiIdent := substring-before(substring-after($source,'urn:nbn:de:bvb:12-'),'-')
-                                let $graphicN := $surface/tei:graphic/@n
-                                let $surfaceBSBUrl := $surface/tei:graphic[tei:desc[@type='provider']='D-BSB']/@url/string()
-                                let $graphicBSBIdent := subsequence(tokenize($surfaceBSBUrl,'/'),4,1) 
-                                let $graphicBSBUrl := concat('http://daten.digitale-sammlungen.de/0010/', $graphicBSBIdent, '/images/', $graphicBSBIdent, '_', format-number(number($graphicN),'00000'), '.jpg')
-                                let $graphicUrl := if($surfaceBSBUrl)
-                                                   then($graphicBSBUrl)
-                                                   else($surface/tei:graphic/@url)
-                                
-                                
-                                let $graphicViewer := if($digiIdent)then(concat('http://daten.digitale-sammlungen.de/',$digiIdent,'/image_',$graphicN)) else($graphicUrl)
-                                
-                                let $provider := if($surface/tei:graphic/tei:desc[@type='provider']/text() = 'D-BSB')
-                                                 then('Bayerische Staatsbibliothek (BSB), München')
-                                                 else($surface/tei:graphic/tei:desc[@type='provider']/text())
-                               return
-                                <div class="tab-pane fade {if($n=1)then('show active')else()}" id="facsimile-{$n}">
-                                    <hr/>
-                                    <div class="container">
-                                        <img class="img-fluid mx-auto d-block" src="{$graphicUrl}" width="75%"/>
-                                    </div>
-                                    <hr/>
-                                    <div>
-                                    <table>
-                                        <tr>
-                                        <td>Bildquelle:</td>
-                                        <td><a href="{$graphicViewer}" target="_blank">{$surface/tei:graphic/@url/string()}</a></td>
-                                        </tr>
-                                        {if($provider)
-                                        then(<tr>
-                                                <td>Bereitgestellt durch:</td>
-                                                <td>{$provider}</td>
-                                            </tr>)
-                                            else()}
-                                        {if($surface/tei:graphic/tei:desc[@type='licence']/text())
-                                        then(<tr>
-                                                <td>Lizenz:</td>
-                                                <td>
-                                                    {if($surface/tei:graphic[tei:desc[@type='provider']='D-BSB'])
-                                                     then(<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de">CC BY-NC-SA 4.0</a>)
-                                                     else($surface/tei:graphic/tei:desc[@type='licence']/text())}
-                                                </td>
-                                            </tr>)
-                                        else()}
-                                    </table>
-                                    </div>
-                                    <hr/>
-                                </div>
-                            }
+                            {raffShared:get-digitalization-tei-as-html($facsimile)}
                         </div>
                       </div>
                       </div>)
