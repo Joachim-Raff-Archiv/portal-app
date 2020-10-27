@@ -12,6 +12,7 @@ import module namespace functx="http://www.functx.com" at "functx.xqm";
 import module namespace json="http://www.json.org";
 import module namespace jsonp="http://www.jsonp.org";
 
+import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 declare namespace tei="http://www.tei-c.org/ns/1.0";
@@ -441,6 +442,111 @@ declare function raffShared:parse-header($header as xs:string) as xs:string {
 declare function raffShared:getSelectedLanguage($node as node()*,$selectedLang as xs:string) {
     raffShared:get-lang()
 };
+
+declare function raffShared:getDate($date) {
+
+    let $get := if(count($date/tei:date[matches(@type,'^editor')])=1)
+                then(
+                        if($date/tei:date[matches(@type,'^editor')]/@when)
+                        then($date/tei:date[matches(@type,'^editor')]/@when/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^editor')]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from)
+                        then($date/tei:date[matches(@type,'^editor')]/@from/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^editor')]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^editor')]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^editor')]/@notAfter/string())
+                        else('0000-00-00')
+                    )
+                else if(count($date/tei:date[matches(@type,'^source')])=1)
+                then(
+                        if($date/tei:date[matches(@type,'^source')]/@when)
+                        then($date/tei:date[matches(@type,'^source')]/@when/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^source')]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from)
+                        then($date/tei:date[matches(@type,'^source')]/@from/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^source')]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^source')]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^source')]/@notAfter/string())
+                        else('0000-00-00')
+                    )
+                else if(count($date/tei:date[matches(@type,'^editor') and @confidence])=1)
+                then(
+                       $date/tei:date[matches(@type,'^editor') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
+                    )
+                else if(count($date/tei:date[matches(@type,'^source') and @confidence])=1)
+                then(
+                       $date/tei:date[matches(@type,'^source') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
+                    )
+                    else if($date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')])
+                then(
+                       $date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')][1]/@when
+                    )
+                else if($date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')])
+                then(
+                       $date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')][1]/@when
+                    )
+                else if($date/tei:date[matches(@type,'^editor')])
+                then(
+                        if($date/tei:date[matches(@type,'^editor')]/@when)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@when/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@from/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^editor')][1]/@notBefore/string())
+                        else('0000-00-00')
+                    )
+                else if(count($date/tei:date[matches(@type,'^source')]))
+                then(
+                        if($date/tei:date[matches(@type,'^source')]/@when)
+                        then($date/tei:date[matches(@type,'^source')][1]/@when/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
+                        then($date/tei:date[matches(@type,'^source')][1]/@when-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from)
+                        then($date/tei:date[matches(@type,'^source')][1]/@from/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
+                        then($date/tei:date[matches(@type,'^source')][1]/@from-custom/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
+                        then($date/tei:date[matches(@type,'^source')][1]/@notBefore/string())
+                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
+                        then($date/tei:date[matches(@type,'^source')][1]/@notAfter/string())
+                        else('0000-00-00')
+                    )
+                else('0000-00-00')
+                
+    return
+        $get
+};
+
+declare function raffShared:formatDate($dateRaw){
+    let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
+                  then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
+                  else if($dateRaw =('0000','0000-00','0000-00-00'))
+                  then('[undatiert]')
+                  else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
+                  then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
+                  else if(contains($dateRaw,'0000-') and contains($dateRaw,'-00'))
+                  then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
+                  else if(starts-with($dateRaw,'0000-'))
+                  then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
+                  else($dateRaw)
+
+    let $replaceMay := replace($date,'Mai.','Mai')
+    return
+        $replaceMay
+};
+
 
 declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*){
     

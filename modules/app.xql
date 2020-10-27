@@ -8,6 +8,7 @@ import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "raffShared.xqm";
+import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
 (:import module namespace raffWork="https://portal.raff-archiv.ch/ns/baudiWork" at "raffWork.xqm";:)
 (:import module namespace raffSource="https://portal.raff-archiv.ch/ns/baudiSource" at "raffSource.xqm";:)
 
@@ -39,110 +40,6 @@ declare function app:search($node as node(), $model as map(*)) {
                 }</ul></div>
 };
 
-
-declare function local:getDate($date) {
-
-    let $get := if(count($date/tei:date[matches(@type,'^editor')])=1)
-                then(
-                        if($date/tei:date[matches(@type,'^editor')]/@when)
-                        then($date/tei:date[matches(@type,'^editor')]/@when/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
-                        then($date/tei:date[matches(@type,'^editor')]/@when-custom/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@from)
-                        then($date/tei:date[matches(@type,'^editor')]/@from/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
-                        then($date/tei:date[matches(@type,'^editor')]/@from-custom/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
-                        then($date/tei:date[matches(@type,'^editor')]/@notBefore/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@notAfter)
-                        then($date/tei:date[matches(@type,'^editor')]/@notAfter/string())
-                        else('0000-00-00')
-                    )
-                else if(count($date/tei:date[matches(@type,'^source')])=1)
-                then(
-                        if($date/tei:date[matches(@type,'^source')]/@when)
-                        then($date/tei:date[matches(@type,'^source')]/@when/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
-                        then($date/tei:date[matches(@type,'^source')]/@when-custom/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@from)
-                        then($date/tei:date[matches(@type,'^source')]/@from/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
-                        then($date/tei:date[matches(@type,'^source')]/@from-custom/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
-                        then($date/tei:date[matches(@type,'^source')]/@notBefore/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
-                        then($date/tei:date[matches(@type,'^source')]/@notAfter/string())
-                        else('0000-00-00')
-                    )
-                else if(count($date/tei:date[matches(@type,'^editor') and @confidence])=1)
-                then(
-                       $date/tei:date[matches(@type,'^editor') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
-                    )
-                else if(count($date/tei:date[matches(@type,'^source') and @confidence])=1)
-                then(
-                       $date/tei:date[matches(@type,'^source') and not(matches(@confidence,'0.5'))][@confidence = max(@confidence)]/@when
-                    )
-                    else if($date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')])
-                then(
-                       $date/tei:date[matches(@type,'^editor') and matches(@confidence,'0.5')][1]/@when
-                    )
-                else if($date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')])
-                then(
-                       $date/tei:date[matches(@type,'^source') and matches(@confidence,'0.5')][1]/@when
-                    )
-                else if($date/tei:date[matches(@type,'^editor')])
-                then(
-                        if($date/tei:date[matches(@type,'^editor')]/@when)
-                        then($date/tei:date[matches(@type,'^editor')][1]/@when/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@when-custom)
-                        then($date/tei:date[matches(@type,'^editor')][1]/@when-custom/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@from)
-                        then($date/tei:date[matches(@type,'^editor')][1]/@from/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@from-custom)
-                        then($date/tei:date[matches(@type,'^editor')][1]/@from-custom/string())
-                        else if($date/tei:date[matches(@type,'^editor')]/@notBefore)
-                        then($date/tei:date[matches(@type,'^editor')][1]/@notBefore/string())
-                        else('0000-00-00')
-                    )
-                else if(count($date/tei:date[matches(@type,'^source')]))
-                then(
-                        if($date/tei:date[matches(@type,'^source')]/@when)
-                        then($date/tei:date[matches(@type,'^source')][1]/@when/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@when-custom)
-                        then($date/tei:date[matches(@type,'^source')][1]/@when-custom/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@from)
-                        then($date/tei:date[matches(@type,'^source')][1]/@from/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@from-custom)
-                        then($date/tei:date[matches(@type,'^source')][1]/@from-custom/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@notBefore)
-                        then($date/tei:date[matches(@type,'^source')][1]/@notBefore/string())
-                        else if($date/tei:date[matches(@type,'^source')]/@notAfter)
-                        then($date/tei:date[matches(@type,'^source')][1]/@notAfter/string())
-                        else('0000-00-00')
-                    )
-                else('0000-00-00')
-                
-    return
-        $get
-};
-
-declare function local:formatDate($dateRaw){
-    let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
-                  then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
-                  else if($dateRaw =('0000','0000-00','0000-00-00'))
-                  then('[undatiert]')
-                  else if(string-length($dateRaw)=7 and not(contains($dateRaw,'00')))
-                  then (concat(upper-case(substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),1,1)),substring(format-date(xs:date(concat($dateRaw,'-01')),'[Mn,*-3]. [Y]','de',(),()),2)))
-                  else if(contains($dateRaw,'0000-') and contains($dateRaw,'-00'))
-                  then (concat(upper-case(substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),1,1)),substring(format-date(xs:date(replace(replace($dateRaw,'0000-','9999-'),'-00','-01')),'[Mn,*-3].','de',(),()),2)))
-                  else if(starts-with($dateRaw,'0000-'))
-                  then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
-                  else($dateRaw)
-
-    let $replaceMay := replace($date,'Mai.','Mai')
-    return
-        $replaceMay
-};
 
 declare function local:getBirth($person){
 if ($person//tei:birth[1][@when-iso])
@@ -247,7 +144,7 @@ declare function local:getReferences($idToReference) {
             let $correspSentTurned := local:getSenderTurned($correspActionSent)
             let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
             let $docDate := if(starts-with($docRoot/@xml:id,'A'))
-                            then(local:getDate($docRoot//tei:correspAction[@type='sent']))
+                            then(raffShared:getDate($docRoot//tei:correspAction[@type='sent']))
                             else(<br/>)
             let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
                              then($correspSentTurned,<br/>,'an ',$correspReceivedTurned)
@@ -271,7 +168,7 @@ declare function local:getReferences($idToReference) {
                                                 else()}
                                                 {$docType}
                                                 {if($docDate and starts-with($docRoot/@xml:id,'A'))
-                                                then(' vom ',local:formatDate($docDate))
+                                                then(' vom ',raffShared:formatDate($docDate))
                                                 else()}
                            </div>
                            <div class="col">{$docTitle}</div>
@@ -348,9 +245,9 @@ declare function local:getCorrespondance($idToReference){
         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
         let $correspSentTurned := local:getSenderTurned($correspActionSent)
         let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
-        let $date := local:getDate($correspActionSent)
+        let $date := raffShared:getDate($correspActionSent)
         let $year := substring($date,1,4)
-        let $dateFormatted := local:formatDate($date)
+        let $dateFormatted := raffShared:formatDate($date)
         
         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
@@ -438,9 +335,9 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         let $correspSentTurned := local:getSenderTurned($correspActionSent)
                         let $correspReceived := local:getReceiver($correspActionReceived)
                         let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
-                        let $date := local:getDate($correspActionSent)
+                        let $date := raffShared:getDate($correspActionSent)
                         let $year := substring($date,1,4)
-                        let $dateFormatted := local:formatDate($date)
+                        let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{if($date='0000-00-00')then(replace($date,'0000-','9999-'))else($date)}">{$dateFormatted}</div>
                                 <div class="col">{$correspSentTurned}<br/>an {$correspReceivedTurned}</div>
@@ -538,35 +435,35 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
     let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
     let $collection := ($persons, $institutions)
     
-    let $lettersSender := for $letter in ($letters//tei:correspAction[matches(@type,"^sent")]//tei:persName,$letters//tei:correspAction[matches(@type,"^sent")]//tei:orgName)
-                        let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^sent")]
-                        let $correspActionReceived := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^received")]
+    let $lettersSender := for $sender in ($letters//tei:correspAction[matches(@type,"^sent")]//tei:persName,$letters//tei:correspAction[matches(@type,"^sent")]//tei:orgName)
+                        let $letterID := $sender/ancestor::tei:TEI/@xml:id/data(.)
+                        let $correspActionSent := $sender/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^sent")]
+                        let $correspActionReceived := $sender/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^received")]
                         let $correspSent :=  local:getSender($correspActionSent)
-                        let $correspSentId := normalize-space(if($letter/@key)
-                                              then($letter/@key)
-                                              else('noID'))
+                        let $correspSentId := if($sender/@key)
+                                              then($sender/@key)
+                                              else('noID')
                         
                         let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
                         let $correspReceived := local:getReceiver($correspActionReceived)
-                        let $senderName := normalize-space(if($correspSentId!='noID')
-                                           then(for $data in $collection[range:eq(@xml:id,$correspSentId)]
-                                               let $title := $data//tei:titleStmt/tei:title/string()
-                                               return
-                                                $title)
-                                                else($correspSent))
+                        let $senderName := if($correspSentId != 'noID')
+                                            then(for $data in $collection[matches(@xml:id,$correspSentId)]
+                                                    let $title := local:getNameJoined($data)
+                                                    return
+                                                     $title)
+                                            else($correspSent)
                                                                    
-                        let $date := local:getDate($correspActionSent)
+                        let $date := raffShared:getDate($correspActionSent)
                         let $year := substring($date,1,4)
-                        let $dateFormatted := local:formatDate($date)
+                        let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">an {$correspReceivedTurned}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $senderName
+                        group by $correspSentId
                         return
-                            (<div sender="{distinct-values($senderName)}" senderId="{distinct-values($correspSentId)}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                            (<div sender="{distinct-values($senderName)}" senderId="{$correspSentId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
                                     order by $each/div/@dateToSort
                                     return
@@ -661,23 +558,23 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $correspReceived := local:getReceiver($correspActionReceived)
                         
                         let $receiverName := normalize-space(if($correspReceivedId !='noID')
-                                             then(for $data in $collection[range:eq(@xml:id,$correspReceivedId)]
-                                               let $title := $data//tei:titleStmt/tei:title/string()
+                                             then(for $data in $collection[matches(@xml:id,$correspReceivedId)]
+                                               let $title := local:getNameJoined($data)
                                                return
                                                 $title)
                                              else($correspReceived))
                                               
-                        let $date := local:getDate($correspActionSent)
+                        let $date := raffShared:getDate($correspActionSent)
                         let $year := substring($date,1,4)
-                        let $dateFormatted := local:formatDate($date)
+                        let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
                                 <div class="col">von {$correspSentTurned}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
-                        group by $receiverName
+                        group by $correspReceivedId
                         return
-                            (<div receiver="{distinct-values($receiverName)}" receiverId="{distinct-values($correspReceivedId)}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
+                            (<div receiver="{distinct-values($receiverName)}" receiverId="{$correspReceivedId}" count="{count($letterEntry)}" xmlns="http://www.w3.org/1999/xhtml">
                                 {for $each in $letterEntry
                                     order by $each/div/@dateToSort
                                     return
@@ -756,7 +653,7 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $letter := collection("/db/apps/jraSources/data/documents/letters")//tei:TEI[@xml:id = $id]
     let $person := collection("/db/apps/jraPersons/data")//tei:TEI
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
-    let $datumSent := local:formatDate(local:getDate($letter//tei:correspAction[@type = "sent"]))
+    let $datumSent := raffShared:formatDate(raffShared:getDate($letter//tei:correspAction[@type = "sent"]))
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
