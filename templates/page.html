@@ -190,7 +190,7 @@
         
         <!-- Template Main Javascript File -->
         <script src="https://portal.raff-archiv.ch/resources/js/main.js"/>
-        
+        <script type="text/javascript" src="http://localhost:8080/exist/apps/raffArchive/resources/js/pagination.js"/>
         <script>
             $(function () {
               $('[data-toggle="popover"]').popover()
@@ -212,41 +212,6 @@
             item.animatescroll({element: '#nav', padding:20});
             });
         </script>-->
-        <!--<script>
-            function activateTab2() {
-                document.getElementById("navTab2").firstChild.classList.add("active");
-              };
-            function activateTab3() {
-                document.getElementById("navTab3").firstChild.classList.add("active");
-              };
-        </script>-->
-        <script>
-            $('#facsimileTabs a').on('click', function (e) {
-                 e.preventDefault()
-                 $(this).tab('show')
-               });
-        </script>
-        <script>
-            $(document).ready(function() {
-              var pageItem = $(".pagination li").not(".prev,.next");
-              var prev = $(".pagination li.prev");
-              var next = $(".pagination li.next");
-            
-              pageItem.click(function() {
-                pageItem.removeClass("active");
-                $(this).not(".prev,.next").addClass("active");
-              });
-            
-              next.click(function() {
-                $('li.active').removeClass('active').next().addClass('active');
-              });
-            
-              prev.click(function() {
-                $('li.active').removeClass('active').prev().addClass('active');
-              });
-            
-            
-            });
-        </script>
+        
     </body>
 </html>
