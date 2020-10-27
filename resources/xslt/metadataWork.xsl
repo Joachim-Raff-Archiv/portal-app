@@ -27,8 +27,12 @@
                     <td>
                         <xsl:for-each select="//mei:dedication/mei:dedicatee">
                             <xsl:variable name="corresp" select="substring-after(@corresp,'#')"/>
+                            <xsl:variable name="dedicateeIntended" select="./@type"/>
                             <xsl:choose>
                                 <xsl:when test="mei:persName">
+                                    <xsl:if test="$dedicateeIntended = 'intended'">
+                                        [intendiert]
+                                    </xsl:if>
                                     <xsl:if test="$corresp">
                                         <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
                                     </xsl:if>
