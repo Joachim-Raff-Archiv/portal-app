@@ -20,7 +20,7 @@ declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace hc = "http://expath.org/ns/http-client";
 declare namespace range = "http://exist-db.org/xquery/range";
 
-declare function raffPostals:getSender($correspActionSent as node()){
+(:declare function raffPostals:getSender($correspActionSent as node()){
 let $senders := for $sender in ($correspActionSent//tei:persName/@key | $correspActionSent//tei:orgName/@key)
                     let $senderName := raffPostals:getName($sender,'full')
                     
@@ -28,7 +28,7 @@ let $senders := for $sender in ($correspActionSent//tei:persName/@key | $corresp
                         normalize-space($senderName)
   return
     string-join($senders, '/')
-};
+};:)
 
 declare function raffPostals:getName($key as xs:string, $param as xs:string){
 
@@ -50,6 +50,7 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
     let $nameUnspec := if($affiliation and $nameUnspecified)
                        then(concat($nameUnspecified, ' (',$affiliation,')'))
                        else($nameUnspecified)
+    let $institutionName := $institution//tei:org/tei:orgName/text()
     
     let $name := if ($person)
                  then(
@@ -57,10 +58,12 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                       then(
                            string-join(($nameAddNameTitle, $nameForename, $nameAddNameEpitet, $nameNameLink, $nameSurname, $nameUnspec, $nameGenName), ' ')
                           )
+                          
                       else if($person and $param = 'short')
                       then(
                            string-join(($nameForename, $nameNameLink, $nameSurname, $nameUnspec, $nameGenName), ' ')
                           )
+                          
                       else if($person and $param = 'reversed')
                       then(
                             if($nameSurname)
@@ -73,10 +76,12 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                                 if($nameGenName) then(concat(' (',$nameGenName,')')) else()
                             )
                            )
-                      else ('[N.N.]'))
-                      else if($institution)
-                      then($institution//tei:orgName/text())
-                      else('[N.N.]')
+                           
+                      else ('[NoPersonFound]')
+                     )
+                 else if($institution)
+                 then($institutionName)
+                 else('[NoInstitutionFound]')
     return
        $name
 };
