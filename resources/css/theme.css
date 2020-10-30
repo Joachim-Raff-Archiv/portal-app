@@ -253,6 +253,7 @@ button.bg-jra:hover{
     color:#641a85;
     background-color: rgb(240, 240, 240)
 }
+
 .nav-link-jra{
     display: block;
     padding: .5rem 1rem;
@@ -269,9 +270,9 @@ button.bg-jra:hover{
     background-color:#641a85
 }
 .nav-link-jra.disabled{
-    color: grey
+    color: grey;
     }
-    
+
 .page-link-jra{
     display: block;
     padding: .5rem 1rem;
@@ -521,4 +522,9 @@ div.letterContentFullView{
 .btn-outline-jra:disabled{
     color: #007bff;
     background-color: transparent
+}
+
+a.disabled{
+    pointer-events: none;
+    cursor: default;
 }

@@ -18,7 +18,7 @@
     <!-- Landing page -->
     <msg key="jra.landing.welcome">Willkommen!</msg>
     <msg key="jra.landing.catalogues">Kataloge</msg>
-    <msg key="jra.landing.catalogues.sub"></msg>
+    <msg key="jra.landing.catalogues.sub"/>
     <msg key="jra.landing.catalogues.works">Werke</msg>
     <msg key="jra.landing.catalogues.works.sub">Verzeichnis der Kompositionen.</msg>
     <msg key="jra.landing.catalogues.sources">Quellen</msg>
