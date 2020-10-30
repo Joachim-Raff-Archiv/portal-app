@@ -22,8 +22,8 @@ declare namespace http = "http://expath.org/ns/http-client";
 declare namespace range = "http://exist-db.org/xquery/range";
 
 declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
-declare variable $app:collectionPersons := collection('/db/apps/jraPersons')//tei:TEI;
-declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions')//tei:TEI;
+declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI;
+declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI;
 
 declare function app:search($node as node(), $model as map(*)) {
     let $collection := collection('/db/apps/jraPersons/data')//tei:TEI
@@ -336,24 +336,35 @@ declare function local:getWorks($cat){
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI, collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
-    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
-    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
-    let $collection := ($persons, $institutions)
+    let $letters := $app:collectionPostals
+    
     let $lettersCrono := for $letter in $letters
                         let $letterID := $letter/@xml:id/string()
-                        let $correspActionSent := $letter//tei:correspAction[matches(@type,'^sent')]
-                        let $correspActionReceived := $letter//tei:correspAction[matches(@type,'^received')]
-                        let $correspSent := local:getSender($correspActionSent)
-                        let $correspSentTurned := local:getSenderTurned($correspActionSent)
-                        let $correspReceived := local:getReceiver($correspActionReceived)
-                        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
+                        let $correspActionSent := $letter//tei:correspAction[matches(@type, "sent")]
+                        let $correspActionReceived := $letter//tei:correspAction[matches(@type, "received")]
+                        (:let $correspSentId := if($sender/@key)
+                                              then($sender/@key)
+                                              else():)
+                        let $correspSent := if($correspActionSent/tei:persName[@key])
+                                                then(for $each in $correspActionSent/tei:persName/@key
+                                                      return
+                                                        raffPostals:getName($each, 'short'))
+                                                else if($correspActionSent/tei:orgName[@key])
+                                                then(raffPostals:getName($correspActionSent/tei:orgName/@key, 'full'))
+                                                else('NO KEY FOUND')
+                        let $correspReceived := if($correspActionReceived/tei:persName[@key])
+                                                then(for $each in $correspActionReceived/tei:persName/@key
+                                                      return
+                                                        raffPostals:getName($each, 'short'))
+                                                else if($correspActionReceived/tei:orgName[@key])
+                                                then(raffPostals:getName($correspActionReceived/tei:orgName/@key, 'full'))
+                                                else('NO KEY FOUND')
                         let $date := raffShared:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{if($date='0000-00-00')then(replace($date,'0000-','9999-'))else($date)}">{$dateFormatted}</div>
-                                <div class="col">{$correspSentTurned}<br/>an {$correspReceivedTurned}</div>
+                                <div class="col">{$correspSent}<br/>an {$correspReceived}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $year
@@ -387,7 +398,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
         (<div class="container">
         <div class="row">
         <div class="col-10">
-        <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe und Postkarten.</p>
+        <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
@@ -501,7 +512,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
         (<div class="container">
             <div class="row">
                 <div class="col-10">
-                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe und Postkarten.</p>
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
@@ -547,38 +558,35 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
 declare function app:registryLettersReceiver($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
-    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
-    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
-    let $collection := ($persons, $institutions)
+    let $letters := $app:collectionPostals
     
-    let $lettersReceiver := for $letter in ($letters//tei:correspAction[matches(@type,"^received")]//tei:persName,$letters//tei:correspAction[matches(@type,"received")]//tei:orgName)
-                        let $letterID := $letter/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"sent")]
-                        let $correspActionReceived := $letter/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"received")]
+    let $lettersReceiver := for $receiver in ($letters//tei:correspAction[matches(@type,"received")]//tei:persName[@key],
+                                            $letters//tei:correspAction[matches(@type,"received")]//tei:orgName[@key])
+                        let $letterID := $receiver/ancestor::tei:TEI/@xml:id/data(.)
+                        let $correspActionSent := $receiver/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"sent")]
+                        let $correspActionReceived := $receiver/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"received")]
+                        let $correspReceivedId := if($receiver/@key)
+                                              then($receiver/@key)
+                                              else()
+                                              
+                        let $correspSent := if($correspActionSent/tei:persName[@key])
+                                                then(for $each in $correspActionSent/tei:persName/@key
+                                                      return
+                                                        raffPostals:getName($each, 'short'))
+                                                else if($correspActionSent/tei:orgName[@key])
+                                                then(raffPostals:getName($correspActionSent/tei:orgName/@key, 'full'))
+                                                else('NO KEY FOUND')
                         
-                        let $correspSentTurned := local:getSenderTurned($correspActionSent)
-                        let $correspSent := local:getSender($correspActionSent)
-                        let $correspReceivedId := normalize-space(if($letter/@key)
-                                              then($letter/@key)
-                                              else('noID'))
+(:                        let $correspReceived := local:getReceiver($correspActionReceived):)
                         
-(:                        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived):)
-                        let $correspReceived := local:getReceiver($correspActionReceived)
-                        
-                        let $receiverName := normalize-space(if($correspReceivedId !='noID')
-                                             then(for $data in $collection[matches(@xml:id,$correspReceivedId)]
-                                               let $title := local:getNameJoined($data)
-                                               return
-                                                $title)
-                                             else($correspReceived))
+                        let $receiverName := raffPostals:getName($receiver/@key,'reversed')
                                               
                         let $date := raffShared:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col">von {$correspSentTurned}</div>
+                                <div class="col">von {string-join($correspSent,'/')}</div>
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspReceivedId
@@ -598,8 +606,8 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
         order by $receiver
         return
             (<div class="RegisterSortBox" receiver="{$receiver}" receiverId="{$receiverId}" count="{$count}" xmlns="http://www.w3.org/1999/xhtml">
-                <div class="RegisterSortEntry" id="{concat('list-item-',if(not(matches($receiverId,'^noID')))then($receiverId)else(translate(normalize-space($receiver),',.’[] ','______')))}">
-                                                    {if(matches($receiver,'^noReceiver'))then('[N.N.]')else($receiver)}
+                <div class="RegisterSortEntry" id="{concat('list-item-',$receiverId)}">
+                                                    {raffPostals:getName($receiverId,'full')}
                 </div>
                 {
                     for $group in $groups
@@ -612,7 +620,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
          (<div class="container">
             <div class="row">
                 <div class="col-11">
-                    <p>Der Katalog verzeichnet derzeit {count($letters)} Briefe und Postkarten.</p>
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
