@@ -10,12 +10,12 @@ $(document).ready(function() {
             
               next.click(function() {
                 $('li.active').removeClass('active').next().addClass('active');
-                $('div[id^="facsimile-"]').removeClass('show').removeClass('active').next().addClass('show').addClass('active');
+                $('div[id^="facsimile-"].show.active').removeClass('show').removeClass('active').next().addClass('show').addClass('active');
               });
             
               prev.click(function() {
                 $('li.active').removeClass('active').prev().addClass('active');
-                $('div[id^="facsimile-"]').removeClass('show').removeClass('active').prev().addClass('show').addClass('active');
+                $('div[id^="facsimile-"].show.active').removeClass('show').removeClass('active').next().addClass('show').addClass('active');
               });
             
             
