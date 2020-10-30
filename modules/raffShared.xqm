@@ -568,7 +568,7 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
                                     )
                                 else(<img src="https://digilib.baumann-digital.de/JRA/img/JRA-Logo.png?dh=200" heigth="200"/>)
                     return
-                        <div class=" test tab-pane fade {if($n=1)then('show active')else()}" id="facsimile-{$n}">
+                        <div class="test tab-pane fade {if($n=1)then(' show active')else()}" id="facsimile-{$n}">
                             <hr/>
                             <div class="container">
                                 {$img}
