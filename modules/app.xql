@@ -19,8 +19,9 @@ declare namespace mei = "http://www.music-encoding.org/ns/mei";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace http = "http://expath.org/ns/http-client";
 (:declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";:)
+declare namespace range = "http://exist-db.org/xquery/range";
 
-declare variable $app:collectionPostals := collection('/db/apps/jraSources')//tei:TEI;
+declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
 declare variable $app:collectionPersons := collection('/db/apps/jraPersons')//tei:TEI;
 declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions')//tei:TEI;
 
@@ -442,28 +443,31 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
 
 declare function app:registryLettersSender($node as node(), $model as map(*)) {
 
-    let $letters := (collection('/db/apps/jraSources/data/documents/letters')//tei:TEI,collection('/db/apps/jraSources/data/documents/others')//tei:TEI)
-    let $persons := collection('/db/apps/jraPersons/data')//tei:TEI
-    let $institutions := collection('/db/apps/jraInstitutions/data')//tei:TEI
-    let $collection := ($persons, $institutions)
+    let $letters := $app:collectionPostals
     
-    let $lettersSender := for $sender in ($letters//tei:correspAction[matches(@type,"^sent")]//tei:persName[@key],$letters//tei:correspAction[matches(@type,"^sent")]//tei:orgName[@key])
+    let $lettersSender := for $sender in ($letters//tei:correspAction[matches(@type, "sent")]//tei:persName[@key],
+                                          $letters//tei:correspAction[matches(@type, "sent")]//tei:orgName[@key])
                         let $letterID := $sender/ancestor::tei:TEI/@xml:id/data(.)
-                        let $correspActionSent := $sender/ancestor::tei:correspAction[matches(@type,"^sent")]
-                        let $correspActionReceived := $sender/ancestor::tei:correspDesc/tei:correspAction[matches(@type,"^received")]
+                        let $correspActionSent := $sender/ancestor::tei:correspAction[matches(@type, "sent")]
+                        let $correspActionReceived := $sender/ancestor::tei:correspDesc/tei:correspAction[matches(@type, "received")]
                         let $correspSentId := if($sender/@key)
                                               then($sender/@key)
                                               else()
                         
-                        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
-                        let $correspReceived := local:getReceiver($correspActionReceived)
+                        let $correspReceived := if($correspActionReceived/tei:persName[@key])
+                                                then(for $each in $correspActionReceived/tei:persName/@key
+                                                      return
+                                                        raffPostals:getName($each, 'short'))
+                                                else if($correspActionReceived/tei:orgName[@key])
+                                                then(raffPostals:getName($correspActionReceived/tei:orgName/@key, 'full'))
+                                                else('NO KEY FOUND')
                         let $senderName := raffPostals:getName($sender/@key,'reversed')
                         let $date := raffShared:getDate($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                 <div class="col-3" dateToSort="{$date}">{$dateFormatted}</div>
-                                                <div class="col">an {$correspReceivedTurned}</div>
+                                                <div class="col">an {string-join($correspReceived,'/')}</div>
                                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                                             </div>
                         group by $correspSentId
