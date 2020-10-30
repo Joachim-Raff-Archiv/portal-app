@@ -2966,6 +2966,22 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
         )
 };
 
+declare function app:aboutArchive($node as node(), $model as map(*)) {
+    
+    let $text := doc("/db/apps/jraTexts/data/portal/aboutArchive.xml")/tei:TEI
+    let $title := $text//tei:titleStmt/tei:title/text()
+    let $subtitle := $text//tei:sourceDesc/tei:p[1]/text()
+    
+    return
+        (
+        <p class="title-b">{$title}</p>,
+        <p class="subtitle-b">{$subtitle}</p>,
+        <div>
+            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+        </div>
+        )
+};
+
 declare function app:aboutDocumentation($node as node(), $model as map(*)) {
     
     let $text := doc("/db/apps/jraTexts/data/portal/aboutDocumentation.xml")/tei:TEI
