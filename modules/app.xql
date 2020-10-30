@@ -788,22 +788,22 @@ declare function app:letter($node as node(), $model as map(*)) {
                           <div class="tabbable">
                           <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs" role="tablist">
-                              <li class="nav-item prev">
+                              <!--<li class="nav-item prev">
                                 <a class="nav-link-jra" href="#" aria-label="Previous">
                                   <span aria-hidden="true">«</span>
                                   <span class="sr-only">Previous</span>
                                 </a>
-                              </li>
+                              </li>-->
                               {for $surface at $n in $facsimile//tei:surface
                                return
-                                    <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" href="#facsimile-{$n}">{$n}</a></li>
+                                    <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-{$n}">{$n}</a></li>
                                 }
-                              <li class="nav-item next">
+                              <!--<li class="nav-item next">
                                 <a class="nav-link-jra" href="#" aria-label="Next">
                                   <span aria-hidden="true">»</span>
                                   <span class="sr-only">Next</span>
                                 </a>
-                              </li>
+                              </li>-->
                             </ul>
                           </nav>
                         <div class="tab-content">
