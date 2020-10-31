@@ -3174,14 +3174,7 @@ return
 };
 
 declare function app:alert($node as node(), $model as map(*)){
-    if (contains(request:get-url(),'localhost:8080'))
-    then (
-            <div class="alert alert-info" role="alert" style="padding-top: 67px;">
-               Dies ist eine Entwicklungsumgebung! Sie befinden sich auf http://localhost:8080
-            </div>
-         )
-    
-    else if (contains(request:get-url(),'dev.raff-archiv.ch'))
+    if (contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
     then (
             <div class="alert alert-warning" role="alert" style="padding-top: 67px;">
                Raff-Portal intern: Diese Umgebung kann sich in Inhalt und Erscheinung vom offiziellen Raff-Portal unterscheiden! Sie befinden sich auf https://dev.raff-archiv.ch
