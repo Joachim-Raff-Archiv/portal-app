@@ -2,7 +2,13 @@ xquery version "3.1";
 
 module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared";
 
+declare namespace tei="http://www.tei-c.org/ns/1.0";
+declare namespace mei="http://www.music-encoding.org/ns/mei";
+declare namespace xhtml = "http://www.w3.org/1999/xhtml";
+declare namespace hc = "http://expath.org/ns/http-client";
+
 import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
+
 import module namespace templates = "http://exist-db.org/xquery/templates";
 import module namespace config="https://portal.raff-archiv.ch/config" at "config.xqm";
 import module namespace request="http://exist-db.org/xquery/request";
@@ -14,11 +20,6 @@ import module namespace jsonp="http://www.jsonp.org";
 
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
-
-declare namespace tei="http://www.tei-c.org/ns/1.0";
-declare namespace mei="http://www.music-encoding.org/ns/mei";
-declare namespace xhtml = "http://www.w3.org/1999/xhtml";
-declare namespace hc = "http://expath.org/ns/http-client";
 
 
 declare function raffShared:get-lang() as xs:string? {
