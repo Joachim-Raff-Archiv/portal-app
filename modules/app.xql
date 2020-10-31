@@ -160,7 +160,7 @@ declare function local:getReferences($id) {
                                            else if($docRoot/name()='TEI')
                                            then($docRoot//tei:titleStmt/tei:title/string())
                                            else if($docRoot/name()='mei') 
-                                           then($docRoot//mei:titleStmt/mei:title/string())
+                                           then($docRoot//mei:fileDesc/mei:titleStmt/mei:title[1]/string())
                                            else('noTitle')
                           let $href := if(starts-with($docRoot/@xml:id,'A'))
                                           then('../letter/')
