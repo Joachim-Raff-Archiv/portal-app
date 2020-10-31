@@ -1,20 +1,20 @@
 <catalogue xml:lang="de">
 
     <!-- Main Nav -->
-    <msg key="jra.mainNav.catalog">Kataloge</msg>
-    <msg key="jra.mainNav.catalog.works">Werke</msg>
-    <msg key="jra.mainNav.catalog.sources">Quellen</msg>
-    <msg key="jra.mainNav.catalog.editions">Editionen</msg>
-    <msg key="jra.mainNav.catalog.persons">Personen</msg>
-    <msg key="jra.mainNav.catalog.letters">Briefe</msg>
-    <msg key="jra.mainNav.catalog.documents">Dokumente</msg>
-    <msg key="jra.mainNav.catalog.places">Orte</msg>
-    <msg key="jra.mainNav.catalog.institutions">Institutionen</msg>
-    <msg key="jra.mainNav.catalog.periodicals">Zeitschriften</msg>
+    <msg key="jra.mainNav.home">Home</msg>
+    <msg key="jra.mainNav.works">Werke</msg>
+    <msg key="jra.mainNav.sources">Quellen</msg>
+    <msg key="jra.mainNav.editions">Editionen</msg>
+    <msg key="jra.mainNav.persons">Personen</msg>
+    <msg key="jra.mainNav.letters">Briefe</msg>
+    <msg key="jra.mainNav.documents">Dokumente</msg>
+    <msg key="jra.mainNav.places">Orte</msg>
+    <msg key="jra.mainNav.institutions">Institutionen</msg>
     <msg key="jra.mainNav.project.about">Über das Projekt</msg>
-    <msg key="jra.mainNav.project.about.baudi">BauDi</msg>
     <msg key="jra.mainNav.project.about.documentation">Dokumentation</msg>
-
+    <msg key="jra.mainNav.documentation">Dokumentation</msg>
+    <msg key="jra.mainNav.resourcesUsed">verwendete Ressourcen</msg>
+    
     <!-- Landing page -->
     <msg key="jra.landing.welcome">Willkommen!</msg>
     <msg key="jra.landing.catalogues">Kataloge</msg>
@@ -239,10 +239,13 @@
     <msg key="jra.catalog.institutions">Institutionen-Katalog</msg>
     
     <!-- Letters -->
-    <msg key="jra.catalog.letters">Brief-Katalog</msg>
+    <msg key="jra.catalog.postals">Briefeverzeichnis</msg>
     
     <!-- Documents -->
     <msg key="jra.catalog.documents">Dokumenten-Katalog</msg>
+    
+    <!-- Places -->
+    <msg key="jra.catalog.places">Orteverzeichnis</msg>
     
     <!-- Tags -->
     <msg key="jra.catalog.tag.song">Lied</msg>
@@ -312,4 +315,9 @@
     <msg key="jra.catalog.mei.annot.place.botmar">unten</msg>
     <msg key="jra.catalog.mei.annot.place.leftmar">links</msg>
     <msg key="jra.catalog.mei.annot.place.rightmar">rechts</msg>
+    
+    <msg key="jra.search">Suche</msg>
+    <msg key="jra.privacyPolicy">Datenschutzerklärung</msg>
+    <msg key="jra.index">Startseite</msg>
+    <msg key="jra.impressum">Impressum</msg>
 </catalogue>
