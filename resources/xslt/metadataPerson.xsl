@@ -68,7 +68,7 @@
                     </xsl:if>
                     <xsl:if test="exists($person/persName/nameLink)">
                         <xsl:if test="$person/persName/genName[@type = 'used'] or exists($person/persName/genName)"> </xsl:if>
-                        <xsl:value-of select="$person/persName/nameLink"/>
+                        <xsl:value-of select="concat(' ', $person/persName/nameLink)"/>
                     </xsl:if>
                     <!--</xsl:for-each>-->
                 </td>
@@ -228,6 +228,18 @@
                 <tr>
                     <td>Sonstige:</td>
                     <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://digilib.baumann-digital.de/JRA/img/wikipedia-icon-5.jpg?dh=1000&amp;dw=1000" height="20" width="20"/></a></td>
+                </tr>
+            </xsl:if>
+        </table>
+        <table class="personView">
+            <xsl:if test="//relation[@name = 'reference']//item">
+                <tr>
+                    <td>Referenzen:</td>
+                    <td>
+                        <xsl:for-each select="//relation[@name = 'reference']//item[. != '']">
+                            <li><xsl:value-of select="./text()"/></li>
+                        </xsl:for-each>
+                    </td>
                 </tr>
             </xsl:if>
         </table>
