@@ -7,7 +7,7 @@
         <xsl:choose>
             <xsl:when test="$institution/ancestor::TEI/facsimile/graphic[1]/@url">
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-sm-6 col-md-4 col-lm-3">
                         <img src="{$graphic/@url}" class="img-thumbnail" width="200px"/>
                         <br/>
                         <br/>
