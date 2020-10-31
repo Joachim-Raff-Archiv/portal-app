@@ -695,7 +695,11 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
 declare function app:letter($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("letter-id", "Fehler")
-    let $letter := $app:collectionPostals[@xml:id = $id]
+    let $letterDeleted := $app:collectionPostals[@xml:id = $id]//tei:listRelation/tei:relation[@type='deleted']/@active/string()
+    let $letterIdToForward := substring-after($letterDeleted,'#')
+    let $letter := if($letterDeleted)
+                   then ($app:collectionPostals[@xml:id = $letterIdToForward])
+                   else ($app:collectionPostals[@xml:id = $id])
     let $person := $app:collectionPersons
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
     let $datumSent := raffShared:formatDate(raffShared:getDate($letter//tei:correspAction[@type = "sent"]))
@@ -713,7 +717,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                 class="page-header tabbable parentTabs">
                 <h5>{$datumSent}</h5>
                 <h2>Brief an {$nameTurned}</h2>
-                <h6>ID: {$id}</h6>
+                <h6>ID: {if($letterIdToForward) then(concat($letterIdToForward,' (umgeleitet)')) else($id)}</h6>
                 <hr/>
                 <ul
                 class="nav nav-pills"
