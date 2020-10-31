@@ -742,7 +742,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra"
                         data-toggle="tab"
                         href="#contentLetterFacsimile">Faksimile</a></li>)else()}
-                {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -852,7 +852,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                       </div>
                       </div>)
                  else()}
-                {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
@@ -1401,7 +1401,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -1498,7 +1498,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
@@ -1819,7 +1819,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -1924,7 +1924,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
@@ -2876,7 +2876,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                     data-toggle="tab"
                                     href="#references">Referenzen</a></li>
                                     )else()}
-                           {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                           {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -2948,7 +2948,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                   {if(contains(request:get-url(),'localhost:8080') or contains(request:get-url(),'dev.raff-archiv.ch'))
+                   {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
@@ -3178,7 +3178,14 @@ return
 };
 
 declare function app:alert($node as node(), $model as map(*)){
-    if (contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+    if (contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive'))
+    then (
+            <div class="alert alert-info" role="alert" style="padding-top: 67px;">
+               Raff-Portal Entwicklung –  Sie befinden sich auf http://localhost:8080
+            </div>
+         )
+         
+    else if (contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
     then (
             <div class="alert alert-warning" role="alert" style="padding-top: 67px;">
                Raff-Portal intern: Diese Umgebung kann sich in Inhalt und Erscheinung vom offiziellen Raff-Portal unterscheiden! Sie befinden sich auf https://dev.raff-archiv.ch
