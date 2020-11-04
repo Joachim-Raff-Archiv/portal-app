@@ -48,6 +48,21 @@ declare function app:search($node as node(), $model as map(*)) {
                 }</ul></div>
 };
 
+declare function local:filterInput(){
+    <input type="text"
+       id="myResearchInput"
+       onkeyup="myFilter()"
+       placeholder="Name, ID, …"
+       title="Type in a string"/>
+};
+
+declare function local:filterInputLetter(){
+    <input type="text"
+       id="myResearchInput"
+       onkeyup="myFilterLetter()"
+       placeholder="Name, ID, …"
+       title="Type in a string"/>
+};
 
 declare function local:getBirth($person){
 if ($person//tei:birth[1][@when-iso])
@@ -395,7 +410,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                                 else if($correspActionReceived/tei:orgName[@key])
                                                 then(raffPostals:getName($correspActionReceived/tei:orgName/@key, 'full'))
                                                 else('NO KEY FOUND')
-                        let $date := raffShared:getDate($correspActionSent)
+                        let $date := raffShared:getDateRegistryLetters($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
@@ -432,7 +447,14 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
     
     return
         (<div class="container">
-        <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
+            <div class="row  justify-content-between">
+                <div class="col-sm-9 	col-md-7 	col-lg-7">
+                    <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
+                </div>
+                <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                    {local:filterInputLetter()}
+                </div>
+            </div>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra active" href="#date">Datum</a></li>
@@ -467,7 +489,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                             {$lettersGroupedByYears}
                         </div>
                     </div>
-                  <!--<div
+                  <div
                     class="col-3">
                     <br/><br/>
                     <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie einen Namen oder eine ID ein. Der Filter zeigt nur Datensätze an, die Ihren Suchbegriff enthalten."/></h5>
@@ -477,7 +499,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         onkeyup="myFilterLetter()"
                         placeholder="Name oder ID"
                         title="Type in a string"/>
-                </div>-->
+                </div>
                 </div>
             </div>
         </div>
@@ -505,7 +527,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                                 then(raffPostals:getName($correspActionReceived/tei:orgName/@key, 'full'))
                                                 else('NO KEY FOUND')
                         let $senderName := raffPostals:getName($sender/@key,'reversed')
-                        let $date := raffShared:getDate($correspActionSent)
+                        let $date := raffShared:getDateRegistryLetters($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
@@ -542,9 +564,14 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
     
     return
         (<div class="container">
-            <div class="row">
-                <div>
+           <div class="row  justify-content-between">
+                <div class="col-sm-9 	col-md-7 	col-lg-7">
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
+                </div>
+                <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                    {local:filterInputLetter()}
+                </div>
+            </div>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
@@ -574,16 +601,13 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                     }
                                 </ul>
                                 </div>
-                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$lettersGroupedBySenders}
                                 </div>
                             </div>
                             </div>
                             </div>
                             </div>
-                            </div>
-                            </div>
-                    
         )
 
 };
@@ -613,7 +637,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         
                         let $receiverName := raffPostals:getName($receiver/@key,'reversed')
                                               
-                        let $date := raffShared:getDate($correspActionSent)
+                        let $date := raffShared:getDateRegistryLetters($correspActionSent)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDate($date)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
@@ -650,9 +674,14 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
     
     return
          (<div class="container">
-            <div class="row">
-                <div>
+            <div class="row  justify-content-between">
+                <div class="col-sm-9 	col-md-7 	col-lg-7">
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
+                </div>
+                <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                    {local:filterInputLetter()}
+                </div>
+            </div>
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item nav-linkless-jra">Sortierungen:</li>
                         <li class="nav-item"><a class="nav-link-jra" onclick="pleaseWait()" href="registryLettersDate.html">Datum</a></li>
@@ -683,11 +712,10 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                     }
                                 </ul>
                                 </div>
-                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$lettersGroupedByReceivers}
                                 </div>
                             </div>
-                            </div></div>
                             </div>
                             </div>
                             </div>
@@ -966,7 +994,14 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
         <div
             class="container"
             xmlns="http://www.w3.org/1999/xhtml">
-                    <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                    <div class="row  justify-content-between">
+                        <div class="col-sm-9 	col-md-7 	col-lg-7">
+                            <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                        </div>
+                        <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                            {local:filterInput()}
+                        </div>
+                    </div>
                     <ul
                         class="nav nav-tabs"
                         id="myTab"
@@ -1020,7 +1055,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                 
                                 </ul>
                                 </div>
-                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$personsGroupedByInitials}
                                 </div>
                             </div>
@@ -1123,11 +1158,14 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
         <div
             class="container"
             xmlns="http://www.w3.org/1999/xhtml">
-            <div
-                class="row">
-                <div
-                    class="col-9">
-                    <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                     <div class="row  justify-content-between">
+                        <div class="col-sm-9 	col-md-7 	col-lg-7">
+                            <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                        </div>
+                        <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                            {local:filterInput()}
+                        </div>
+                    </div>
                     <ul
                         class="nav nav-tabs"
                         id="myTab"
@@ -1178,12 +1216,10 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                     }
                                 </ul>
                                 </div>
-                                <div data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                <div  id="divResults" data-spy="scroll" data-target="#navigatorTab2" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$personsGroupedByBirth}
                                 </div>
                             </div>
-                        </div>
-                       </div>
                 </div>
             </div>
         </div>
@@ -1282,7 +1318,14 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
         <div
             class="container"
             xmlns="http://www.w3.org/1999/xhtml">
-                    <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                     <div class="row  justify-content-between">
+                        <div class="col-sm-9 	col-md-7 	col-lg-7">
+                            <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
+                        </div>
+                        <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                            {local:filterInput()}
+                        </div>
+                    </div>
                     <ul
                         class="nav nav-tabs"
                         id="myTab"
@@ -1333,7 +1376,7 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                                     }
                                 </ul>
                                 </div>
-                                <div data-spy="scroll" data-target="#navigatorTab3" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                <div id="divResults" data-spy="scroll" data-target="#navigatorTab3" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
                                     {$personsGroupedByDeath}
                                 </div>
                             </div>
