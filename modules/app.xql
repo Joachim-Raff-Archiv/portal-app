@@ -89,7 +89,7 @@ if ($person//tei:death[1][@when-iso])
                     };
 
 declare function local:formatLifedata($lifedata){
-if(starts-with($lifedata,'-')) then(concat(substring(format-number(number($lifedata),'##.##;##.##'),2),' v. Chr.')) else($lifedata)
+if(starts-with($lifedata,'-')) then(concat(substring(format-number(number($lifedata),'##;##'),2),' v. Chr.')) else($lifedata)
 };
 
 declare function local:getLifedata($person){
