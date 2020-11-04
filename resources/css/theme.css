@@ -61,12 +61,14 @@ body {
     color:black;
 }
 .RegisterSortBox:first-of-type {
+    width: 95%;
     margin-top: 0em;
     margin-left: auto;
     margin-right: auto;
 /*    padding-top: 0.25em;*/
 }
 .RegisterSortBox {
+    width: 95%;
     margin-top: 2em;
     margin-left: auto;
     margin-right: auto;
