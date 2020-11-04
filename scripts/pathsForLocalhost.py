@@ -11,6 +11,8 @@ def findReplace(directory, find, replace, filePattern):
             with open(filepath, "w") as f:
                 f.write(s)
 
+collection = "/Users/dried/Repositories/JRA/portal-app"
+
 old = 'href="https://portal.raff-archiv.ch'
 new = 'href="http://localhost:8080/exist/apps/raffArchive'
 
