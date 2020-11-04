@@ -65,6 +65,11 @@
             <arg value="${executable-full-path}"/>
         </exec>
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
+        <git command="reset">
+            <args>
+                <arg value="hard" />
+            </args>
+        </git>
     </target>
     
     <target name="xar" >
@@ -79,4 +84,19 @@
         <echo message="!!!!!!!!!!!    ${userPermissions}    !!!!!!!!!!!"/>
         <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
     </target>
+
+    <!--  git makro  -->
+    <macrodef name="git">
+        <attribute name="command" />
+        <attribute name="dir" default="" />
+        <element name="args" optional="true" />
+        <sequential>
+            <echo message="git @{command}" />
+            <exec executable="git" dir="@{dir}">
+                <arg value="@{command}" />
+                <args/>
+            </exec>
+        </sequential>
+    </macrodef>
+
 </project>
