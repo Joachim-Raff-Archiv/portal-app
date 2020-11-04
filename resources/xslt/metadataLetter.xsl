@@ -101,9 +101,12 @@
                     <xsl:choose>
                         <xsl:when test="not($correspAction[@type = 'sent']/date) or empty($correspAction[@type = 'sent']/date)"> [undatiert] </xsl:when>
                         <xsl:otherwise>
-                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'source']/@when">
-                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source' and @when][1]/@when)"/> (Quelle) <br/>
-                            </xsl:if>
+                            <xsl:choose>
+                                <xsl:when test="$correspAction[@type = 'sent']/date[@type = 'source']/@when">
+                                    <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source' and @when][1]/@when)"/> (Quelle) <br/>
+                                </xsl:when>
+                                <xsl:otherwise>Quelle undatiert<br/></xsl:otherwise>
+                            </xsl:choose>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'source']/@from-custom">
                                 <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source']/@from-custom)"/> bis <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source']/@to-custom)"/> (Quelle)<br/></xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@from">
