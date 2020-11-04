@@ -148,6 +148,15 @@ declare function local:getReferences($id) {
                                           else if(starts-with($docRoot/@xml:id,'D'))
                                           then('Institution')
                                           else('Sonstige')
+                          let $entryOrder := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('002')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then ('001')
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('003')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('004')
+                                          else('005')
                           let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
                           let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
                           let $correspSentTurned := local:getSenderTurned($correspActionSent)
@@ -186,21 +195,20 @@ declare function local:getReferences($id) {
                                        </div>
                           group by $docIDInitial
                           return
-                              (<div xmlns="http://www.w3.org/1999/xhtml" groupInitial="{$docIDInitial}">{for $each in $entry
-                                    where $each/div/@dateToSort
-                                    order by $each/div/@dateToSort
-                                    where $each/div/@docTitle
-                                    order by $each/div/@docTitle
+                              (<div xmlns="http://www.w3.org/1999/xhtml" groupInitial="{$docIDInitial}" order="{$entryOrder}">{for $each in $entry
+                                    order by if($each/div/@dateToSort !='') then($each/div/@dateToSort) else($each/div/@docTitle)
                                     return
                                         $each}</div>)
    let $entryGroupsShow := for $groups in $entryGroups
                               let $groupInitial := $groups/@groupInitial
+                              let $order := $groups/@order
                               let $registerSortEntryLabel := switch ($groupInitial/string())
                                                                  case 'A' return 'Briefe und Regesten'
                                                                  case 'B' return 'Werke'
                                                                  case 'C' return 'Personen'
                                                                  case 'D' return 'Institutionen'
                                                                  default return 'Weitere'
+                                order by $order
                                 return
                                  <div class="RegisterSortBox" xmlns="http://www.w3.org/1999/xhtml">
                                           <div class="RegisterSortEntry">{$registerSortEntryLabel}</div>
