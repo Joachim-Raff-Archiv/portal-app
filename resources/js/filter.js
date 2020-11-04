@@ -4,8 +4,9 @@ function myFilterLetter() {
     filter = input.value.toUpperCase();
     div = document.getElementById("divResults");
     entry = div.getElementsByClassName("RegisterEntry");
+    
     for (i = 0; i < entry.length; i++) {
-        a = entry[i].getElementsByTagName("div")[0];
+        a = entry[i]; /* getElementsByTagName("div") */
         b = a.parentNode;
         c = b.previousElementSibling;
         txtValue = a.textContent || a.innerText;
@@ -22,20 +23,24 @@ function myFilterLetter() {
 }
 
 function myFilter() {
-   var input, filter, ul, li, a, i, txtValue;
+    var input, filter, div, entry, a, b, c, i, txtValue;
     input = document.getElementById("myResearchInput");
     filter = input.value.toUpperCase();
     div = document.getElementById("divResults");
-    tr = div.getElementsByClassName("RegisterEntry");
-    td = tr.div;
-    for (i = 0; i < tr.length; i++) {
-        a = tr[i].getElementsByTagName("div")[0].parentNode;
+    entry = div.getElementsByClassName("RegisterEntry");
+    
+    for (i = 0; i < entry.length; i++) {
+        a = entry[i]; /* getElementsByTagName("div") */
+        b = a.parentNode;
+        c = b.previousElementSibling;
         txtValue = a.textContent || a.innerText;
         if (txtValue.toUpperCase().indexOf(filter) > -1) {
             a.style.display = "";
-/*            c.style.display = "";*/
+            b.style.display = "";
+            c.style.display = "";
         } else {
             a.style.display = "none";
+/*            b.style.display = "none";*/
 /*            c.style.display = "none";*/
         }
     }
