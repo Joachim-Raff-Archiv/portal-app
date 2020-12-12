@@ -13,7 +13,7 @@ def findReplace(directory, find, replace, filePattern):
 
 collection = "/Users/dried/Repositories/JRA/portal-app"
 
-old = 'https://portal.raff-archiv.ch'
+old = 'http://localhost:8080/exist/apps/raffArchive'
 new = 'http://localhost:8080/exist/apps/raffArchive'
 
 findReplace(collection, old, new, "*.*")

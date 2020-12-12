@@ -14,8 +14,11 @@
     <property name="xar.name" value="${project.app}-${project.version}-${DATETIME}.xar"/>
     <property name="xar.destination" value=""/>
     <property environment="env" />
-    <property name="executable-full-path"
-        location="scripts/pathsForLocalhost.py"/>
+    <property name="pathResolverLocalhost"
+        location="scripts/pathResolverLocalhost.py"/>
+    
+    <property name="pathResolverDev"
+        location="scripts/pathResolverDev.py"/>
     
     <!-- export EXIST_PATH=/opt/exist/exist-distribution-5.2.0 -->
     <typedef resource="org/exist/ant/antlib.xml" uri="http://exist-db.org/ant">
@@ -60,14 +63,55 @@
     <target name="xarLocal">
         <mkdir dir="${build.dir}"/>
         <delete file="./repo.xml"/>
-        <copyfile src="repo/rwxrwxr-x/repo.xml" dest="./repo.xml" forceoverwrite="yes"/>
+        <copy todir=".">
+            <file file="repo/rwxrwxr-x/repo.xml"/>
+        </copy>
+        <git command="stash">
+            <args>
+                <arg value="save"/>
+                <arg value="temp"/>
+            </args>
+        </git>
+        <git command="stash">
+            <args>
+                <arg value="apply"/>
+            </args>
+        </git>
         <exec executable="python">
-            <arg value="${executable-full-path}"/>
+            <arg value="${pathResolverLocalhost}"/>
         </exec>
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
         <git command="reset">
             <args>
-                <arg value="hard" />
+                <arg value="--hard" />
+            </args>
+        </git>
+    <git command="stash">
+            <args>
+                <arg value="apply"/>
+            </args>
+        </git>
+        <git command="stash">
+            <args>
+                <arg value="clear"/>
+            </args>
+        </git>
+    </target>
+    
+    <target name="deployDev" depends="xarDev">
+        
+    </target>
+    
+    <target name="xarDev">
+        <mkdir dir="${build.dir}"/>
+        <delete file="./repo.xml"/>
+        <copy todir=".">
+            <file file="repo/rwxrwx---/repo.xml"/>
+        </copy>
+        <zip basedir="." destfile="${build.dir}/${project.app}-dev-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
+        <git command="reset">
+            <args>
+                <arg value="--hard" />
             </args>
         </git>
     </target>
