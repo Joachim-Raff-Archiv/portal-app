@@ -1,53 +1,73 @@
-<nav xmlns:i18n="http://exist-db.org/xquery/i18n" data-template="i18n:translate" data-template-lang="en" data-template-catalogues="/db/apps/raffArchive/resources/lang" class="navbar navbar-expand-md fixed-top"> <!-- navbar-jra bg-jra -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav navbar-nav">
-                <li class="nav-item-jra-top">
-                    <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/index.html" onclick="pleaseWait()"><i18n:text key="jra.mainNav.home"/><span class="sr-only">(current)</span></a>
-                </li>
-                
-                <!--<li class="dropdown">
+<nav xmlns:i18n="http://exist-db.org/xquery/i18n" data-template="i18n:translate" data-template-lang="en"
+    data-template-catalogues="/db/apps/raffArchive/resources/lang" class="navbar navbar-expand-md fixed-top">
+    <!-- navbar-jra bg-jra -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="nav navbar-nav">
+            <li class="nav-item-jra-top">
+                <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/index.html" onclick="pleaseWait()">
+                    <i18n:text key="jra.mainNav.home"/>
+                    <span class="sr-only">(current)</span>
+                </a>
+            </li>
+
+            <!--<li class="dropdown">
                         <a href="" class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Verzeichnisse<span class="caret"/>
                         </a>
                         <ul class="dropdown-menu navbar-jra bg-jra">-->
-                <li>
-                    <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryWorks.html"><i18n:text key="jra.mainNav.works"/></a>
-                </li>
-                <!--<li>
+            <li>
+                <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryWorks.html">
+                    <i18n:text key="jra.mainNav.works"/>
+                </a>
+            </li>
+            <!--<li>
                                 <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/html/registrySources.html">Quellenverzeichnis</a>
                             </li>-->
-                <li>
-                    <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryLettersDate.html"><i18n:text key="jra.mainNav.letters"/></a>
-                </li>
-                <li>
-                    <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryPersonsInitial.html"><i18n:text key="jra.mainNav.persons"/></a>
-                </li>
-                <li>
-                    <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryInstitutions.html"><i18n:text key="jra.mainNav.institutions"/></a>
-                </li>
-                <!--<li>
+            <li>
+                <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryLettersDate.html">
+                    <i18n:text key="jra.mainNav.letters"/>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryPersonsInitial.html">
+                    <i18n:text key="jra.mainNav.persons"/>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link-jra-top" onclick="pleaseWait()" href="/html/registryInstitutions.html">
+                    <i18n:text key="jra.mainNav.institutions"/>
+                </a>
+            </li>
+            <!--<li>
                                 <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/html/registryPlaces.html"><i18n:text key="jra.mainNav.places"/></a>
                             </li>-->
-                <!--<li>
+            <!--<li>
                                 <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/html/libraryCatalogue.html"><i18n:text key="jra.mainNav.library"/></a>
                             </li>-->
-                <!--</ul>
+            <!--</ul>
                     </li>-->
-                <li class="dropdown">
-                    <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href=""><i18n:text key="jra.mainNav.documentation"/><span class="caret"/>
-                    </a>
-                    <ul class="dropdown-menu navbar-jra bg-jra">
-                        <!--<li>
+            <li class="dropdown">
+                <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false" href="">
+                    <i18n:text key="jra.mainNav.documentation"/>
+                    <span class="caret"/>
+                </a>
+                <ul class="dropdown-menu navbar-jra bg-jra">
+                    <!--<li>
                                 <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/html/aboutProject.html">Raff-Archiv-Online</a>
                             </li>-->
-                        <li>
-                            <a class="nav-link-jra-top" href="/html/aboutDocumentation.html"><i18n:text key="jra.mainNav.documentation"/></a>
-                        </li>
-                        <li>
-                            <a class="nav-link-jra-top" href="/html/aboutResources.html"><i18n:text key="jra.mainNav.resourcesUsed"/></a>
-                        </li>
-                    </ul>
-                </li>
-                <!--<li class="dropdown">
+                    <li>
+                        <a class="nav-link-jra-top" href="/html/aboutDocumentation.html">
+                            <i18n:text key="jra.mainNav.documentation"/>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link-jra-top" href="/html/aboutResources.html">
+                            <i18n:text key="jra.mainNav.resourcesUsed"/>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--<li class="dropdown">
                         <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="">Kontakt<span class="caret"/>
                         </a>
                         <ul class="dropdown-menu navbar-jra bg-jra">
@@ -62,22 +82,14 @@
                             </li>
                         </ul>
                     </li>-->
-            </ul>
-            <!--<li>
+        </ul>
+        <!--<li>
                         <a class="nav-link-jra-top" href="https://portal.raff-archiv.ch/html/search.html"><i18n:text key="jra.search"/></a>
                     </li>-->
-        </div>
-<!--    <div data-template="raffShared:langSwitch"/>-->
-        <div>
-            <ul class="nav navbar-nav">
-                <li class="nav-item-jra-top">
-                <a id="lang-switch-de" class="nav-link-jra-top" style="color: white!important;" href="?lang=de">DE</a>
-            </li>
-                <li class="nav-item-jra-top">
-                    <a id="lang-switch-en" class="nav-link-jra-top" style="color: white!important;" href="?lang=en">EN</a>
-            </li>
-            </ul>
-        </div>
+    </div>
+    <ul class="nav navbar-nav">
+        <div data-template="app:langSwitch"/>
+    </ul>
     <!--<form class="form-inline">
         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
         <!-\-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">start</button>-\->
