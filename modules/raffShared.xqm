@@ -724,3 +724,34 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
         $images
     
 };
+
+declare function raffShared:suggestedCitation() {
+    
+    let $itemLink := request:get-url()
+    
+    let $label := 'LABEL'
+    let $itemType := functx:substring-after-last-match(functx:substring-before-last($itemLink, '/'), '/')
+    let $itemTypeLabel := if($itemType = 'letter')
+                          then('Brief an')
+                          else('LABEL')
+    let $nameTurned := 'NAME'
+    let $datum := 'DATUM'
+    
+    let $labelFull := concat($label,': ', $itemTypeLabel, ' ', $nameTurned,' (',$datum,');')
+    
+    let $itemLinkLabel := if(contains($itemLink, 'http://localhost:8088/exist/apps/raffArchive'))
+                          then(replace($itemLink, 'http://localhost:8088/exist/apps/raffArchive', 'https://dev.raff-archiv.ch'))
+                          else if(contains($itemLink, 'http://localhost:8084/exist/apps/raffArchive'))
+                          then(replace($itemLink, 'http://localhost:8084/exist/apps/raffArchive', 'https://portal.raff-archiv.ch'))
+                          else if(contains($itemLink, 'http://localhost:8086/exist/apps/raffArchive'))
+                          then(replace($itemLink, 'http://localhost:8086/exist/apps/raffArchive', 'https://portal.raff-archiv.ch'))
+                          else($itemLink)
+    
+    return
+        <div class="suggestedCitation">
+            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
+            <br/>
+            {$labelFull} <a href="{$itemLinkLabel}">{$itemLinkLabel}</a>,
+            abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}.
+        </div>
+};
