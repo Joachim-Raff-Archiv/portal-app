@@ -728,16 +728,38 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
 declare function raffShared:suggestedCitation() {
     
     let $itemLink := request:get-url()
+    let $id := functx:substring-after-last-match(request:get-url(), '/')
+    let $doc := $app:collectionsAll/root()/node()[@xml:id = $id]
     
-    let $label := 'LABEL'
     let $itemType := functx:substring-after-last-match(functx:substring-before-last($itemLink, '/'), '/')
-    let $itemTypeLabel := if($itemType = 'letter')
-                          then('Brief an')
-                          else('LABEL')
-    let $nameTurned := 'NAME'
-    let $datum := 'DATUM'
+    let $name := if($itemType = 'letter')
+                 then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
+                 else if($itemType = 'person')
+                 then(
+                        if($id)
+                        then(raffPostals:getName($id, 'reversed'))
+                        else()
+                     )
+                 else if($itemType = 'institution')
+                 then($doc//tei:org/tei:orgName/text())
+                 else if($itemType = 'work')
+                 then(concat($doc//mei:work//mei:title[@type="uniform"]/text(), ' ', $doc//mei:work//mei:title[@type="desc"]/text()))
+                 else()
+    let $nameLetterTo := if($doc//tei:correspAction[@type="received"]//@key[1]/string())
+                         then(raffPostals:getName($doc//tei:correspAction[@type="received"]//@key[1]/string(), 'short'))
+                         else('')
+    let $letterDate := raffShared:formatDateRegistryLetters(raffShared:getDateRegistryLetters($doc//tei:correspAction[@type="sent"]))
     
-    let $labelFull := concat($label,': ', $itemTypeLabel, ' ', $nameTurned,' (',$datum,');')
+    let $label := if($itemType = 'letter')
+                  then(concat($name, ': Brief an ', $nameLetterTo, ' (', $letterDate, '); '))
+                  else if($itemType = 'person')
+                  then(concat($name, '; '))
+                  else if($itemType = 'institution')
+                  then(concat($name, '; '))
+                  else if($itemType = 'work')
+                  then(concat($name, '; '))
+                  else('LABEL')
+    
     
     let $itemLinkLabel := if(contains($itemLink, 'http://localhost:8088/exist/apps/raffArchive'))
                           then(replace($itemLink, 'http://localhost:8088/exist/apps/raffArchive', 'https://dev.raff-archiv.ch'))
@@ -751,7 +773,7 @@ declare function raffShared:suggestedCitation() {
         <div class="suggestedCitation">
             <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
             <br/>
-            {$labelFull} <a href="{$itemLinkLabel}">{$itemLinkLabel}</a>,
+            {$label} <a href="{$itemLinkLabel}">{$itemLinkLabel}</a>,
             abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}.
         </div>
 };
