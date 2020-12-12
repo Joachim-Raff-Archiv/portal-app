@@ -223,14 +223,40 @@
                 </tr>
             </xsl:if>
         </table>
+        <xsl:if test="//bibl[@type = 'links']/ref[@target]">
         <table class="personView">
-            <xsl:if test="//bibl[@type = 'links']/ref[@type='wikipedia']">
+            
+            <xsl:choose>
+            <xsl:when test="//bibl[@type = 'links'][1]/ref[@type='wikipedia']">
                 <tr>
-                    <td>Sonstige:</td>
-                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://digilib.baumann-digital.de/JRA/img/wikipedia-icon-5.jpg?dh=1000&amp;dw=1000" height="20" width="20"/></a></td>
+                    <td>Links:</td>
+                <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://digilib.baumann-digital.de/JRA/img/wikipedia-icon-5.jpg?dh=1000&amp;dw=1000" height="20" width="20"/></a></td>
                 </tr>
-            </xsl:if>
+            </xsl:when>
+                <xsl:when test="//bibl[@type = 'links'][1]">
+                    <tr>
+                        <td>Links:</td>
+                        <td><a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><xsl:value-of select="if(//bibl[@type = 'links'][1]/ref/text() = '')then('Externer Link')else(//bibl[@type = 'links'][1]/ref/text())"/></a></td>
+                    </tr>
+            </xsl:when>
+            </xsl:choose>
+                <xsl:for-each select="//bibl[@type = 'links'][position() > 1]">
+                <tr>
+                    <td/>
+                    <td>
+                        <a href="{./ref/@target}" target="_blank">
+                        <xsl:choose>
+                            <xsl:when test="not(./ref/text())">Externer Link</xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="./ref/text()"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        </a>
+                    </td>
+                </tr>
+                </xsl:for-each>
         </table>
+        </xsl:if>
         <table class="personView">
             <xsl:if test="//relation[@name = 'reference']//item">
                 <tr>
