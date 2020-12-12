@@ -815,11 +815,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                               </div>)
                             else()
                         }
-                        <div class="suggestedCitation">
-                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
-                            <br/>
-                            {concat($absender,': Brief an ',$nameTurned,' (',$datumSent,'); ')}<a href="{concat('https://portal.raff-archiv.ch/html/letter/',$id)}">{request:get-url()}<!--{concat('https://portal.raff-archiv.ch/html/letter/',$id)}--></a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
-                         </div>
+                        {raffShared:suggestedCitation()}
                         </div>
                     </div>
                 </div>
@@ -1479,11 +1475,7 @@ declare function app:person($node as node(), $model as map(*)) {
                               </div>)
                             else()
                         }
-                        <div class="suggestedCitation">
-                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
-                            <br/>
-                            {concat($name,'; ')}<a href="{concat('https://portal.raff-archiv.ch/html/person/',$id)}">{concat('https://portal.raff-archiv.ch/html/person/',if($personIdToForward)then($personIdToForward)else($id))}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
-                         </div>
+                        {raffShared:suggestedCitation()}
                         </div>
                         </div>
                             </div>
@@ -1891,11 +1883,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                               </div>)
                             else()
                         }
-                        <div class="suggestedCitation">
-                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
-                            <br/>
-                            {concat($name,'; ')}<a href="{concat('https://portal.raff-archiv.ch/html/institution/',$id)}">{concat('https://portal.raff-archiv.ch/html/institution/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
-                         </div>
+                        {raffShared:suggestedCitation()}
                         </div>
                         </div>
                         <!--
@@ -2951,11 +2939,7 @@ declare function app:work($node as node(), $model as map(*)) {
                               </div>)
                             else()
                         }
-                        <div class="suggestedCitation">
-                            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
-                            <br/>
-                            {concat($name,', ',$opus,'; ')}<a href="{concat('https://portal.raff-archiv.ch/html/work/',$id)}">{concat('https://portal.raff-archiv.ch/html/work/',$id)}</a>, abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}
-                         </div>
+                        {raffShared:suggestedCitation()}
                         </div>
                         </div>
                             </div>
