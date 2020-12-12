@@ -108,10 +108,34 @@
         <copy todir=".">
             <file file="repo/rwxrwx---/repo.xml"/>
         </copy>
+        <git command="stash">
+            <args>
+                <arg value="save"/>
+                <arg value="temp"/>
+            </args>
+        </git>
+        <git command="stash">
+            <args>
+                <arg value="apply"/>
+            </args>
+        </git>
+        <exec executable="python">
+            <arg value="${pathResolverDev}"/>
+        </exec>
         <zip basedir="." destfile="${build.dir}/${project.app}-dev-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
         <git command="reset">
             <args>
                 <arg value="--hard" />
+            </args>
+        </git>
+        <git command="stash">
+            <args>
+                <arg value="apply"/>
+            </args>
+        </git>
+        <git command="stash">
+            <args>
+                <arg value="clear"/>
             </args>
         </git>
     </target>
