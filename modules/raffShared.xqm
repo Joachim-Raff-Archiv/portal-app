@@ -675,13 +675,22 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
                     let $publisher := $surface//tei:bibl[1]/tei:publisher
                     let $publisherSwitched := switch ($publisher)
                                                 case 'D-Mbs' return 'Bayerische Staatsbibliothek München (BSB)'
+                                                case 'D-Dl' return 'Sächsische Landesbibliothek Dresden (SLUB)'
                                                 default return $publisher
-                    let $request := hc:send-request(<hc:request method="GET"/>, $url)
+                    let $request := if($publisher = 'D-Mbs')
+                                    then(hc:send-request(<hc:request method="GET"/>, $url))
+                                    else()
                     
                     let $img := if($publisher = 'D-Mbs')
                                 then(
                                         let $imgLinkBSB := $request//xhtml:img[@alt="Image"]/@src/string()
                                         let $imgLinkJRA := concat('https://daten.digitale-sammlungen.de',$imgLinkBSB)
+                                        return
+                                           <img src="{$imgLinkJRA}" class="img-fluid mx-auto d-block img-thumbnail" width="75%"/>
+                                    )
+                                else if($publisher = 'D-Dl')
+                                then(
+                                        let $imgLinkJRA := concat('https://digilib.baumann-digital.de/JRA/',$url)
                                         return
                                            <img src="{$imgLinkJRA}" class="img-fluid mx-auto d-block img-thumbnail" width="75%"/>
                                     )
@@ -695,17 +704,20 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
                             <hr/>
                             <div>
                             <table>
-                                <tr>
+                                {if($publisher = 'D-Mbs')
+                                then(<tr>
                                 <td>Zum Digitalisat:</td>
                                 <td><a href="{$url}" target="_blank">{$url/string()}</a></td>
-                                </tr>
+                                </tr>)
+                                else()}
                                 {if($publisher)
                                 then(<tr>
                                         <td>Bereitgestellt durch:</td>
                                         <td>{$publisherSwitched}</td>
                                     </tr>)
                                     else()}
-                                <tr>
+                                {if($publisher = 'D-Mbs')
+                                then(<tr>
                                         <td>Lizenz:</td>
                                         <td>
                                             {if($publisher = 'D-Mbs')
@@ -714,7 +726,8 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
                                              then('Lizenzinformationen derzeit nicht verfügbar.')
                                              else($surface//tei:licence/text())}
                                         </td>
-                                    </tr>
+                                    </tr>)
+                                    else()}
                             </table>
                             </div>
                             <hr/>
