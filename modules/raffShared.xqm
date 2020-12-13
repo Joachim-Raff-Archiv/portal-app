@@ -672,7 +672,7 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
     let $surfaces := $facsimile/tei:surface
     let $images := for $surface at $n in $surfaces
                     let $url := $surface/tei:graphic/@url
-                    let $publisher := $surface//tei:bibl[1]/tei:publisher
+                    let $publisher := $surface//tei:bibl[1]/tei:publisher/text()
                     let $publisherSwitched := switch ($publisher)
                                                 case 'D-Mbs' return 'Bayerische Staatsbibliothek München (BSB)'
                                                 case 'D-Dl' return 'Sächsische Landesbibliothek Dresden (SLUB)'
@@ -690,7 +690,7 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
                                     )
                                 else if($publisher = 'D-Dl')
                                 then(
-                                        let $imgLinkJRA := concat('https://digilib.baumann-digital.de/JRA/',$url)
+                                        let $imgLinkJRA := concat('https://digilib.baumann-digital.de/JRA/',$url,'?dh=1000&amp;dw=1000')
                                         return
                                            <img src="{$imgLinkJRA}" class="img-fluid mx-auto d-block img-thumbnail" width="75%"/>
                                     )
