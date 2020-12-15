@@ -1383,7 +1383,7 @@ declare function app:person($node as node(), $model as map(*)) {
     let $person := if($personDeleted)
                    then ($app:collectionsAll[@xml:id = $personIdToForward])
                    else ($app:collectionPersons[@xml:id = $id])
-    let $name := $person//tei:titleStmt/tei:title/normalize-space(data(.))
+    let $name := raffPostals:getName($id, 'full') (:$person//tei:titleStmt/tei:title/normalize-space(data(.)):)
     let $letters := $app:collectionPostals
     let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']

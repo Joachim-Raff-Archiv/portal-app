@@ -70,8 +70,8 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                       then(
                             if($nameSurname)
                             then(
-                                concat($nameSurname, ', ',string-join(($nameForename, $nameNameLink), ' '),
-                                if($nameGenName) then(concat(' (',$nameGenName,')')) else())
+                                concat($nameSurname, ' ', if($nameGenName) then(concat(' (',$nameGenName,')')) else()) ', ',string-join(($nameForename, $nameNameLink), ' '),
+                                
                                 )
                             else (
                                     if(not($nameForename) and not($nameNameLink) and not($nameUnspec))
