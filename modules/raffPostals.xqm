@@ -63,7 +63,7 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                           
                       else if($person and $param = 'short')
                       then(
-                           string-join(($nameForename, $nameNameLink, $nameSurname, $nameUnspec, if($nameGenName) then(concat(' (',$nameGenName,')')) else()), ' ')
+                           string-join(($nameForename, $nameNameLink, $nameSurname, if($nameGenName) then(concat(' (',$nameGenName,')')) else()), ' ')
                           )
                           
                       else if($person and $param = 'reversed')
@@ -73,7 +73,7 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                                 concat(
                                        $nameSurname, ' ',
                                        if($nameGenName) then(concat(' (',$nameGenName,')')) else(), ', ',
-                                       string-join(($nameForename, $nameNameLink), ' ')
+                                       string-join(($nameAddNameTitle, $nameForename, $nameNameLink), ' ')
                                        )
                                 
                                 )
