@@ -22,7 +22,7 @@ declare namespace http = "http://expath.org/ns/http-client";
 declare namespace range = "http://exist-db.org/xquery/range";
 declare namespace pkg = "http://expath.org/ns/pkg";
 
-declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
+declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI//tei:correspDesc/ancestor::tei:TEI;
 declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI;
 declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI;
 declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI;
