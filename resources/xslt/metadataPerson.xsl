@@ -211,7 +211,7 @@
             <xsl:if test="exists($person/idno[@type = 'GND'])">
                 <tr>
                     <td>Normdaten:</td>
-                    <td><a href="{concat('http://d-nb.info/gnd/',$person/idno[@type='GND'])}" target="_blank"><xsl:value-of select="$person/idno[@type = 'GND']"/></a> (GND)</td>
+                    <td><a href="{concat('http://d-nb.info/gnd/',$person/idno[@type='GND']/normalize-space(text()))}" target="_blank"><xsl:value-of select="$person/idno[@type = 'GND']/normalize-space(text())"/></a> (GND)</td>
                 </tr>
             </xsl:if>
             <xsl:if test="exists($person/idno[@type = 'VIAF'])">
@@ -220,7 +220,7 @@
                             <xsl:when test="exists($person/idno[@type = 'GND'])"/>
                         <xsl:otherwise>Normdaten:</xsl:otherwise>
                     </xsl:choose></td>
-                    <td><a href="{concat('https://viaf.org/viaf/',$person/idno[@type='VIAF'])}" target="_blank"><xsl:value-of select="$person/idno[@type = 'VIAF']"/></a>
+                    <td><a href="{concat('https://viaf.org/viaf/',$person/idno[@type='VIAF']/normalize-space(text()))}" target="_blank"><xsl:value-of select="$person/idno[@type = 'VIAF']/normalize-space(text())"/></a>
                         (VIAF)</td>
                 </tr>
             </xsl:if>
