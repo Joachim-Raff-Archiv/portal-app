@@ -790,6 +790,14 @@ declare function app:letter($node as node(), $model as map(*)) {
                           <div
                               class="tab-pane fade show active"
                               id="letterMetadata">
+                              {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
+                              contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                              then(<div class="alert alert-info" role="alert">{
+                                        if($letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text() != '')
+                                        then('Signatur (JRA): ', $letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text(), ' (Kopie)')
+                                        else()}
+                                   </div>)
+                              else()}
                               <br/>
                               {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
                           </div>

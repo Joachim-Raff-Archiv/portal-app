@@ -195,18 +195,6 @@
                     </td>
                 </tr>
             </xsl:if>
-            <!--<xsl:if test="$sourceDesc//msIdentifier/altIdentifier/idno != ''">
-                <tr>
-                    <td valign="top">Signatur:</td>
-                    <td>
-                        <xsl:value-of select="$sourceDesc//msIdentifier/altIdentifier/idno"/>
-                        <xsl:choose><xsl:when test="$sourceDesc//msIdentifier/altIdentifier/idno[@resp = 'JRA-copy']"> (Kopie im Joachim-Raff-Archiv)</xsl:when>
-                            <xsl:when test="$sourceDesc//msIdentifier/altIdentifier/idno[@resp = 'JRA']"> (Joachim-Raff-Archiv)</xsl:when>
-                            <xsl:when test="$sourceDesc//msIdentifier/altIdentifier/idno[@resp = 'BSB']"> (Bayerische Staatsbibliothek)</xsl:when>
-                            <xsl:otherwise><xsl:value-of select="$sourceDesc//msIdentifier/altIdentifier/idno"/></xsl:otherwise></xsl:choose>
-                    </td>
-                </tr>
-            </xsl:if>-->
             <xsl:if test="$sourceDesc//physDesc//supportDesc/extent != ''">
                 <tr>
                     <td valign="top">Umfang:</td>
