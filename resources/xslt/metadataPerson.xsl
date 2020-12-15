@@ -38,6 +38,10 @@
                     <xsl:if test="$person/persName/surname[@type = 'used']">
                         <xsl:value-of select="$person/persName/surname[@type = 'used']"/>
                     </xsl:if>
+                    <xsl:if test="exists($person/persName/genName)">
+                        <xsl:if test="$person/persName/genName"> </xsl:if>
+                        (<xsl:value-of select="$person/persName/genName"/>)
+                    </xsl:if>
                     <xsl:if test="$person/persName/surname[@type = 'altWriting']"> [Auch:
                             <xsl:value-of select="$person/persName/surname[@type = 'altWriting']"/>] </xsl:if>
                     <xsl:if test="$person/persName/surname[@type = 'birth']"> (geb. <xsl:value-of select="$person/persName/surname[@type = 'birth']"/>) </xsl:if>
@@ -62,10 +66,6 @@
                         <xsl:value-of select="$person/persName/forename[@type = 'used']"/>
                     </xsl:if>
                     <xsl:if test="$person/persName/forename[@type = 'altWriting']"> [Auch: <xsl:value-of select="$person/persName/forename[@type = 'altWriting']"/>] </xsl:if>
-                    <xsl:if test="exists($person/persName/genName)">
-                        <xsl:if test="$person/persName/genName[@type = 'used']"> </xsl:if>
-                        <xsl:value-of select="$person/persName/genName"/>
-                    </xsl:if>
                     <xsl:if test="exists($person/persName/nameLink)">
                         <xsl:if test="$person/persName/genName[@type = 'used'] or exists($person/persName/genName)"> </xsl:if>
                         <xsl:value-of select="concat(' ', $person/persName/nameLink)"/>
