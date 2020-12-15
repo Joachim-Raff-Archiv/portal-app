@@ -216,7 +216,10 @@
             </xsl:if>
             <xsl:if test="exists($person/idno[@type = 'VIAF'])">
                 <tr>
-                    <td><xsl:choose><xsl:when test="exists($person/idno[@type = 'GND'])"/><xsl:otherwise>Normdaten:</xsl:otherwise></xsl:choose></td>
+                    <td><xsl:choose>
+                            <xsl:when test="exists($person/idno[@type = 'GND'])"/>
+                        <xsl:otherwise>Normdaten:</xsl:otherwise>
+                    </xsl:choose></td>
                     <td><a href="{concat('https://viaf.org/viaf/',$person/idno[@type='VIAF'])}" target="_blank"><xsl:value-of select="$person/idno[@type = 'VIAF']"/></a>
                         (VIAF)</td>
                 </tr>
