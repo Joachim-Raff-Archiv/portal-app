@@ -34,17 +34,15 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
 
     let $person :=$app:collectionPersons[range:field-eq("person-id", $key)]
     let $institution := $app:collectionInstitutions[range:field-eq("institution-id", $key)]
-    let $nameForename := $person//tei:forename[matches(@type,"^used")][1]/text()[1]
+    let $nameForename := string-join($person//tei:forename[matches(@type,"^used")], ' ')
     let $nameNameLink := $person//tei:nameLink[1]/text()[1]
-    let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]/text()[1]
+    let $nameSurname := string-join($person//tei:surname[matches(@type,"^used")], ' ')
     let $nameGenName := $person//tei:genName/text()
     let $nameAddNameTitle := $person//tei:addName[matches(@type,"^title")][1]/text()[1]
     let $nameAddNameEpitet := $person//tei:addName[matches(@type,"^epithet")][1]/text()[1]
-    let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
-                      then (concat($person//tei:forename[matches(@type,'^pseudonym')], ' ', $person//tei:surname[matches(@type,'^pseudonym')]))
-                      else ()
+    let $pseudonym := string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]), ' ')
     let $nameRoleName := $person//tei:roleName[1]/text()[1]
-    let $nameAddNameNick := $person//tei:addName[matches(@type,"^nick")][1]/text()[1]
+    let $nameAddNameNick := string-join($person//tei:addName[matches(@type,"^nick")], ' ')
     let $affiliation := $person//tei:affiliation[1]/text()
     let $nameUnspecified := $person//tei:name[matches(@type,'^unspecified')][1]/text()[1]
     let $nameUnspec := if($affiliation and $nameUnspecified)
@@ -54,19 +52,25 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
     
     let $name := if ($person)
                  then(
-                      if($person and $param = 'full')
+                      if($param = 'full')
                       then(
-                            if(not($nameForename) and not($nameNameLink) and not($nameUnspec))
+                            if($nameAddNameTitle or $nameForename or $nameAddNameEpitet or $nameNameLink or $nameSurname or $nameGenName or $nameUnspec)
+                            then(string-join(($nameAddNameTitle, $nameForename, $nameAddNameEpitet, $nameNameLink, $nameSurname, $nameUnspec, if($nameGenName) then(concat(' (',$nameGenName,')')) else()), ' '))
+                            else if($pseudonym)
+                            then($pseudonym)
+                            else if($nameRoleName)
                             then($nameRoleName)
-                            else(string-join(($nameAddNameTitle, $nameForename, $nameAddNameEpitet, $nameNameLink, $nameSurname, $nameUnspec, if($nameGenName) then(concat(' (',$nameGenName,')')) else()), ' '))
+                            else if($nameAddNameNick)
+                            then($nameAddNameNick)
+                            else('N.N.')
                           )
                           
-                      else if($person and $param = 'short')
+                      else if($param = 'short')
                       then(
                            string-join(($nameForename, $nameNameLink, $nameSurname, if($nameGenName) then(concat(' (',$nameGenName,')')) else()), ' ')
                           )
                           
-                      else if($person and $param = 'reversed')
+                      else if($param = 'reversed')
                       then(
                             if($nameSurname)
                             then(

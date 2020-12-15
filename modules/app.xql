@@ -882,35 +882,44 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
     
     let $personsAlpha := for $person in $persons
                             let $persID := $person/@xml:id/string()
-                            let $initial := substring($person//tei:surname[matches(@type,"^used")][1], 1, 1)
-                            let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
+                            let $nameSurnames := $person//tei:surname[matches(@type,"^used")]
+                            let $nameForenames := $person//tei:forename[matches(@type,"^used")]
+                            let $initial := if(count($nameSurnames) > 0)
+                                            then(substring($nameSurnames[1], 1, 1))
+                                            else if(count($nameForenames) > 0)
+                                            then(substring($nameForenames[1], 1, 1))
+                                            else()
                             let $role := $person//tei:roleName[1]/text()[1]
-                            let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
-                                               then (string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]),' '))
-                                               else ()
+                            let $pseudonym := string-join(($person//tei:forename[matches(@type,'^pseudonym')],
+                                                           $person//tei:surname[matches(@type,'^pseudonym')]),' ')
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
                             let $lifeData := local:getLifedata($person)
-                            let $nameJoined := local:getNameJoined($person)
-                            let $nameToSort := local:replaceToSortDist($nameSurname)
+                            let $nameJoined := raffPostals:getName($persID, 'full')
+                            let $nameToSort := local:replaceToSortDist(if(count($nameSurnames) > 0) 
+                                                                       then(string-join($nameSurnames, ' '))
+                                                                       else if(count($nameForenames) > 0)
+                                                                       then(string-join($nameForenames, ' '))
+                                                                       else())
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
                                     class="col">
                                     {$nameJoined}
                                     {$lifeData}
-                                    {
-                                        if ($pseudonym or $role or $occupation)
-                                        then (<br/>,
-                                                <span class="sublevel">
-                                                    {concat('(',
-                                                            string-join((if($pseudonym)then(concat('Pseudonym: ', $pseudonym))else(),
-                                                                         if($role)then($role)else(),
-                                                                         if($occupation)then($occupation)else()),' | ')
-                                                            ,')')
-                                                    }
-                                                </span>)
-                                        else ()
+                                    {<br/>,
+                                     <span class="sublevel">
+                                        {if($pseudonym != '' or $role != '' or $occupation != '')
+                                        then(
+                                        concat('(',
+                                                string-join((if($pseudonym)then(concat('Pseudonym: ', $pseudonym))else(),
+                                                             if($role)then($role)else(),
+                                                             if($occupation)then($occupation)else()),' | ')
+                                                ,')')
+                                                )
+                                        else(<br/>)
+                                        }
+                                     </span>
                                     }
                                 </div>
                                 <div
@@ -1017,7 +1026,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
                                                         if (matches($initial,'unknown')) then
-                                                            ('[ohne Initial]')
+                                                            ('[weitere]')
                                                         else
                                                             ($initial)
                                                     }</span>
@@ -1043,7 +1052,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
     
     let $personsBirth := for $person in $persons
                              let $persID := $person/@xml:id/string()
-                             let $nameJoined := local:getNameJoined($person)
+                             let $nameJoined := raffPostals:getName($persID, 'full')
                              let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                              let $role := $person//tei:roleName[1]/text()[1]
                              let $pseudonym := if ($person//*[matches(@type,'^pseudonym')][1]/text()[1])
@@ -1215,7 +1224,7 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                             let $deathToSort := if (contains($death,'/')) then(substring-before($death,'/')) else($death)
                             let $deathFormatted := local:formatLifedata($death)
                             let $lifeData := local:getLifedata($person)
-                            let $nameJoined := local:getNameJoined($person)
+                            let $nameJoined := raffPostals:getName($persID, 'full')
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
