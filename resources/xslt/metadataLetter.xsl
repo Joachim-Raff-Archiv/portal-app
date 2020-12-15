@@ -271,10 +271,10 @@
             </tr>
         </table>
         </xsl:if>
-        <br/>
-        <br/>
-        <hr/>
-        <xsl:if test="//@cert">* Daten nicht verifiziert</xsl:if>
+        <xsl:if test="//@cert"><br/>
+            <hr/>
+            * Daten nicht verifiziert
+            <br/></xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>
