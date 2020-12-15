@@ -784,112 +784,87 @@ declare function app:letter($node as node(), $model as map(*)) {
                     class="row">
                     <div
                         class="col">
-            <div
-                class="tab-content">
-                <div
-                    class="tab-pane fade show active"
-                    id="letterMetadata">
-                    <br/>
-                    <div
-                        class="row">
                         
                         <div
-                            class="col-sm-6 col-md-8 col-lm-9">
-                            {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
-                        </div>
-                        <div
-                            class="col-sm-6 col-md-4 col-lm-3">
-                            {if($letter//tei:revisionDesc/tei:change)
-                                then(<div class="suggestedCitation">
-                                <span class="heading" style="font-size: medium;">Änderungen:</span>
-                                <br/>
-                                {
-                                for $change at $n in $letter//tei:revisionDesc/tei:change
-                                    let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
-                                    let $changerName := $change/@who/string()
-                                    let $changeInfo := $change/string()
-                                    let $changeInfoButton := <img src="https://portal.raff-archiv.ch/resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
-                                    return
-                                        (<span style="padding-left: 3px;"/>,$changeDate, $changeInfoButton, <br/>)
-                                }<br/>
-                              </div>)
-                            else()
-                        }
-                        {raffShared:suggestedCitation()}
-                        </div>
-                    </div>
-                </div>
-                {if ($regeste)
-                 then (<div
-                    class="tab-pane fade"
-                    id="contentLetterRegeste">
-                    <br/>
-                        <div
-                            class="row">
-                            <div class="col">
-                                {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/contentLetterRegeste.xsl"), ())}
-                            </div>
-                        </div>
-                </div>)else()}
-                {if ($fulltext/tei:p != '')
-                 then (<div
-                    class="tab-pane fade"
-                    id="letterContentFull">
-                        <div
-                            class="row">
-                            <div class="letterContentFullView">
-                                {transform:transform($letter//tei:body/tei:div[@type = "volltext"], doc("/db/apps/raffArchive/resources/xslt/contentLetterFull.xsl"), ())}
-                            </div>
-                        </div>
-                </div>)else()}
-                {if ($facsimile)
-                 then(
-                 <div
-                    class="tab-pane fade"
-                    id="contentLetterFacsimile">
-                          <div class="tabbable">
-                          <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs" role="tablist">
-                              <!--<li class="nav-item prev">
-                                <a class="nav-link-jra" href="#" aria-label="Previous">
-                                  <span aria-hidden="true">«</span>
-                                  <span class="sr-only">Previous</span>
-                                </a>
-                              </li>-->
-                              {for $surface at $n in $facsimile//tei:surface
-                               return
-                                    <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-{$n}">{$n}</a></li>
-                                }
-                              <!--<li class="nav-item next">
-                                <a class="nav-link-jra" href="#" aria-label="Next">
-                                  <span aria-hidden="true">»</span>
-                                  <span class="sr-only">Next</span>
-                                </a>
-                              </li>-->
-                            </ul>
-                          </nav>
-                        <div class="tab-content">
-                            {raffShared:get-digitalization-tei-as-html($facsimile)}
-                        </div>
+                            class="tab-content">
+                          <div
+                              class="tab-pane fade show active"
+                              id="letterMetadata">
+                              <br/>
+                              {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
+                          </div>
+                          {if ($regeste)
+                           then (<div
+                              class="tab-pane fade"
+                              id="contentLetterRegeste">
+                              <br/>
+                                  <div
+                                      class="row">
+                                      <div class="col">
+                                          {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/contentLetterRegeste.xsl"), ())}
+                                      </div>
+                                  </div>
+                          </div>)else()}
+                          {if ($fulltext/tei:p != '')
+                           then (<div
+                              class="tab-pane fade"
+                              id="letterContentFull">
+                                  <div
+                                      class="row">
+                                      <div class="letterContentFullView">
+                                          {transform:transform($letter//tei:body/tei:div[@type = "volltext"], doc("/db/apps/raffArchive/resources/xslt/contentLetterFull.xsl"), ())}
+                                      </div>
+                                  </div>
+                          </div>)else()}
+                          {if ($facsimile)
+                           then(
+                           <div
+                              class="tab-pane fade"
+                              id="contentLetterFacsimile">
+                                    <div class="tabbable">
+                                    <nav aria-label="Page navigation example">
+                                      <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs" role="tablist">
+                                        <!--<li class="nav-item prev">
+                                          <a class="nav-link-jra" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">«</span>
+                                            <span class="sr-only">Previous</span>
+                                          </a>
+                                        </li>-->
+                                        {for $surface at $n in $facsimile//tei:surface
+                                         return
+                                              <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-{$n}">{$n}</a></li>
+                                          }
+                                        <!--<li class="nav-item next">
+                                          <a class="nav-link-jra" href="#" aria-label="Next">
+                                            <span aria-hidden="true">»</span>
+                                            <span class="sr-only">Next</span>
+                                          </a>
+                                        </li>-->
+                                      </ul>
+                                    </nav>
+                                  <div class="tab-content">
+                                      {raffShared:get-digitalization-tei-as-html($facsimile)}
+                                  </div>
+                                </div>
+                                </div>)
+                           else()}
+                          {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                          then(<div
+                              class="tab-pane fade"
+                              id="viewXML">
+                              <pre>
+                                              <xmp>
+                              {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                              </xmp>
+                              </pre>
+                          </div>)
+                          else()}
                       </div>
-                      </div>)
-                 else()}
-                {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
-                then(<div
-                    class="tab-pane fade"
-                    id="viewXML">
-                    <pre>
-                                    <xmp>
-                    {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
-                    </xmp>
-                    </pre>
-                </div>)
-                else()}
+                      {raffShared:suggestedCitation()}
             </div>
-        </div>
-        </div>
-        </div>
-        </div>
+         </div>
+      </div>
+  </div>
         )
 };
 
@@ -1450,34 +1425,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                 class="tab-pane fade show active"
                                 id="metadata">
                                 <br/>
-                                <div
-                        class="row">
-                        
-                        <div
-                            class="col-sm-6 col-md-8 col-lm-9">
                                 {transform:transform($person, doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
-                                </div>
-                                <div
-                            class="col-sm-6 col-md-4 col-lm-3">
-                            {if($person//tei:revisionDesc/tei:change)
-                                then(<div class="suggestedCitation">
-                                <span class="heading" style="font-size: medium;">Änderungen:</span>
-                                <br/>
-                                {
-                                for $change at $n in $person//tei:revisionDesc/tei:change
-                                    let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
-                                    let $changerName := $change/@who/string()
-                                    let $changeInfo := $change/string()
-                                    let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
-                                    return
-                                        (<span style="padding-left: 3px;"/>,$changeDate, $changeInfoButton, <br/>)
-                                }<br/>
-                              </div>)
-                            else()
-                        }
-                        {raffShared:suggestedCitation()}
-                        </div>
-                        </div>
                             </div>
                             {
                                 if (local:getCorrespondance($id)) then
@@ -1532,6 +1480,7 @@ declare function app:person($node as node(), $model as map(*)) {
                 </div>)
                 else()}
                         </div>
+                        {raffShared:suggestedCitation()}
                     </div>
                 </div>
             </div>
@@ -1861,31 +1810,9 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 class="tab-pane fade show active"
                                 id="metadata">
                                 <br/>
-                                <div class="row">
-                                <div class="col-sm-6 col-md-8 col-lm-9">
                                 {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/metadataInstitution.xsl"), ())}
-                        </div>
-                                <div
-                            class="col-sm-6 col-md-4 col-lm-3">
-                            {if($institution//tei:revisionDesc/tei:change)
-                                then(<div class="suggestedCitation">
-                                <span class="heading" style="font-size: medium;">Änderungen:</span>
-                                <br/>
-                                {
-                                for $change at $n in $institution//tei:revisionDesc/tei:change
-                                    let $changeDate := concat(format-date(xs:date($change/@when), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
-                                    let $changerName := $change/@who/string()
-                                    let $changeInfo := $change/string()
-                                    let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
-                                    return
-                                        (<span style="padding-left: 3px;"/>,$changeDate, $changeInfoButton, <br/>)
-                                }<br/>
-                              </div>)
-                            else()
-                        }
-                        {raffShared:suggestedCitation()}
-                        </div>
-                        </div>
+                               
+                        
                         <!--
                         <br/>
                         <div>Zugehörige Personen:<br/>
@@ -1951,10 +1878,11 @@ declare function app:institution($node as node(), $model as map(*)) {
                     </pre>
                 </div>)
                 else()}
-                        </div>
                     </div>
-                </div>
-            </div>
+                    {raffShared:suggestedCitation()}
+                  </div>
+              </div>
+          </div>
         </div>
         )
 };
@@ -2867,114 +2795,89 @@ declare function app:work($node as node(), $model as map(*)) {
     
     return
         (
-            <div
-            class="container">
-            <div
-                class="page-header">
-                <h2>{$name}</h2>
-                <h5>{$opus}</h5>
-                <hr/>
-                <ul
-                            class="nav nav-pills"
-                            role="tablist">
-                            <li
-                                class="nav-item">
-                                <a
-                                    class="nav-link-jra active"
-                                    data-toggle="tab"
-                                    href="#metadata">Allgemein</a></li>
-                            {if (local:getReferences($id)) then(
-                            <li
-                                class="nav-item">
-                                <a
-                                    class="nav-link-jra"
-                                    data-toggle="tab"
-                                    href="#references">Referenzen</a></li>
-                                    )else()}
-                           {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
-                then(<li
-                    class="nav-item"><a
-                        class="nav-link-jra"
-                        data-toggle="tab"
-                        href="#viewXML">XML-Ansicht</a></li>)
-                        else()}
-                        </ul>
-            
-                <hr/>
-            </div>
-            <div
-                class="container">
-                <div
-                    class="row">
-                    <div
-                        class="col">
-                        <div
-                            class="tab-content">
-                            <div
-                                class="tab-pane fade show active"
-                                id="metadata">
-                                <br/>
-                                <div
-                        class="row">
-                        <div
-                            class="col-sm-6 col-md-8 col-lm-9">
-                {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
-                                </div>
-                                
-                        <div
-                            class="col-sm-6 col-md-4 col-lm-3">
-                            {if($work//mei:revisionDesc/mei:change)
-                                then(<div class="suggestedCitation">
-                                <span class="heading" style="font-size: medium;">Änderungen:</span>
-                                <br/>
-                                {
-                                for $change at $n in $work//mei:revisionDesc/mei:change
-                                    let $changeDate := concat(format-date(xs:date($change/@isodate), '[D]. [M,*-3]. [Y]', 'de', (), ()), ' ')
-                                    let $changerName := $change/@resp/string()
-                                    let $changeInfo := $change/mei:changeDesc/mei:p/string()
-                                    let $changeInfoButton := <img src="../../resources/fonts/feather/info.svg" width="18px" data-toggle="popover" data-original-title="{$changerName}" data-content="{$changeInfo}"/>
-                                    return
-                                        ($changeDate, $changeInfoButton, <br/>)
-                                }<br/>
-                              </div>)
-                            else()
-                        }
-                        {raffShared:suggestedCitation()}
-                        </div>
-                        </div>
-                            </div>
-                            {
-                                if (local:getReferences($id))
-                                then (<div
-                                        class="tab-pane fade"
-                                        id="references">
-                                        <br/>
-                                        <div >{
-                                            let $entrys := local:getReferences($id)
-                                            return
-                                                $entrys
-                                        }</div>
-                                      </div>
-                                )
-                                else
-                                    ()
-                            }
-                   {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
-                then(<div
-                    class="tab-pane fade"
-                    id="viewXML">
-                    <pre>
-                                    <xmp>
-                    {transform:transform($work/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
-                    </xmp>
-                    </pre>
-                </div>)
-                else()}
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
+  <div
+    class="container">
+     <div
+         class="page-header">
+         <h2>{$name}</h2>
+         <h5>{$opus}</h5>
+         <hr/>
+         <ul
+                     class="nav nav-pills"
+                     role="tablist">
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra active"
+                             data-toggle="tab"
+                             href="#metadata">Allgemein</a></li>
+                     {if (local:getReferences($id)) then(
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#references">Referenzen</a></li>
+                             )else()}
+                    {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+         then(<li
+             class="nav-item"><a
+                 class="nav-link-jra"
+                 data-toggle="tab"
+                 href="#viewXML">XML-Ansicht</a></li>)
+                 else()}
+                 </ul>
+     
+         <hr/>
+     </div>
+     <div
+         class="container">
+         <div
+             class="row">
+             <div
+                 class="col">
+                 <div
+                     class="tab-content">
+                     <div
+                         class="tab-pane fade show active"
+                         id="metadata">
+                         <br/>
+         {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
+                     </div>
+                     {
+                         if (local:getReferences($id))
+                         then (<div
+                                 class="tab-pane fade"
+                                 id="references">
+                                 <br/>
+                                 <div >{
+                                     let $entrys := local:getReferences($id)
+                                     return
+                                         $entrys
+                                 }</div>
+                               </div>
+                         )
+                         else
+                             ()
+                     }
+                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
+                         contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                     then(<div
+                         class="tab-pane fade"
+                         id="viewXML">
+                             <pre>
+                                 <xmp>
+                                     {transform:transform($work/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                                 </xmp>
+                             </pre>
+                         </div>)
+                     else()}
+                 </div>
+                 {raffShared:suggestedCitation()}
+             </div>
+         </div>
+     </div>
+  </div>
         )
 };
 

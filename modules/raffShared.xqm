@@ -783,10 +783,13 @@ declare function raffShared:suggestedCitation() {
                           else($itemLink)
     
     return
-        <div class="suggestedCitation">
-            <span class="heading" style="font-size: medium;">Zitiervorschlag:</span>
-            <br/>
-            {$label} <a href="{$itemLinkLabel}">{$itemLinkLabel}</a>,
-            abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}.
-        </div>
+        (<hr/>,
+        <div class="container">
+            <div class="suggestedCitation">
+                <span class="heading" style="font-size: medium;">Zitiervorschlag: </span>
+                {$label} <a href="{$itemLinkLabel}">{$itemLinkLabel}</a>,
+                abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}.
+            </div>
+        </div>,
+        <hr/>)
 };
