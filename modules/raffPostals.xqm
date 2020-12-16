@@ -75,9 +75,11 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                             if($nameSurname)
                             then(
                                 concat(
-                                       $nameSurname, ' ',
-                                       if($nameGenName) then(concat(' (',$nameGenName,')')) else(), ', ',
-                                       string-join(($nameAddNameTitle, $nameForename, $nameNameLink), ' ')
+                                       $nameSurname,
+                                       if($nameGenName) then(concat(' (',$nameGenName,')')) else(),
+                                       if($nameAddNameTitle or $nameForename or $nameNameLink)
+                                       then(', ', string-join(($nameAddNameTitle, $nameForename, $nameNameLink), ' '))
+                                       else()
                                        )
                                 
                                 )
@@ -91,11 +93,13 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                             )
                            )
                            
-                      else ('[NoPersonFound]')
+                      else ('[No person found]')
                      )
                  else if($institution)
-                 then($institutionName)
-                 else('[NoInstitutionFound]')
+                 then(if($institutionName)
+                      then($institutionName)
+                      else('[No institution found]'))
+                 else('[Not found]')
     return
        $name
 };

@@ -738,13 +738,12 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
     
 };
 
-declare function raffShared:suggestedCitation() {
+declare function raffShared:suggestedCitation($id as xs:string) {
     
-    let $itemLink := request:get-url()
-    let $id := functx:substring-after-last-match(request:get-url(), '/')
+    let $itemPath := functx:substring-before-last(request:get-url(), '/')
+    let $itemLink := concat($itemPath, '/', $id)
     let $doc := $app:collectionsAll/root()/node()[@xml:id = $id]
-    
-    let $itemType := functx:substring-after-last-match(functx:substring-before-last($itemLink, '/'), '/')
+    let $itemType := functx:substring-after-last-match($itemPath, '/')
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
                  else if($itemType = 'person')

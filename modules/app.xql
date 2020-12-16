@@ -868,7 +868,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                           </div>)
                           else()}
                       </div>
-                      {raffShared:suggestedCitation()}
+                      {raffShared:suggestedCitation($id)}
             </div>
          </div>
       </div>
@@ -1369,19 +1369,20 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
  
 declare function app:person($node as node(), $model as map(*)) {
     
-    let $id := request:get-parameter("person-id", "Fehler")
-    let $personDeleted := $app:collectionPersons[@xml:id = $id]//tei:listRelation/tei:relation[@type='deleted']/@active/string()
+    let $idParam := request:get-parameter("person-id", "Fehler")
+    let $personDeleted := collection('/db/apps/jraPersons/data')//tei:TEI[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string()
     let $personIdToForward := substring-after($personDeleted,'#')
-    let $person := if($personDeleted)
-                   then ($app:collectionsAll[@xml:id = $personIdToForward])
-                   else ($app:collectionPersons[@xml:id = $id])
-    let $name := raffPostals:getName($id, 'full') (:$person//tei:titleStmt/tei:title/normalize-space(data(.)):)
-    let $letters := $app:collectionPostals
-    let $correspondence := $letters//tei:persName[@key = $id]/ancestor::tei:TEI
+    let $id := if($personDeleted)
+               then ($personIdToForward)
+               else ($idParam)
+    let $person := $app:collectionsAll[@xml:id = $id]
+    let $name := raffPostals:getName($id, 'full')
+    let $correspondence := $app:collectionPostals//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
-    let $vorkommen := $app:collectionInstitutions//tei:persName[@key=$id]/ancestor::tei:TEI|
+    let $vorkommen := ($app:collectionInstitutions//tei:persName[@key=$id]/ancestor::tei:TEI|
                       $app:collectionTexts//tei:persName[@key=$id]/ancestor::tei:TEI|
-                      $app:collectionSources//tei:persName[@key=$id]/ancestor::tei:TEI
+                      $app:collectionSources//tei:persName[@key=$id]/ancestor::tei:TEI|
+                      $app:collectionWorks//mei:persName[@auth=$id]/ancestor::mei:mei)
     
     return
         (
@@ -1497,7 +1498,7 @@ declare function app:person($node as node(), $model as map(*)) {
                 </div>)
                 else()}
                         </div>
-                        {raffShared:suggestedCitation()}
+                        {raffShared:suggestedCitation($id)}
                     </div>
                 </div>
             </div>
@@ -1896,7 +1897,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                 </div>)
                 else()}
                     </div>
-                    {raffShared:suggestedCitation()}
+                    {raffShared:suggestedCitation($id)}
                   </div>
               </div>
           </div>
@@ -2890,7 +2891,7 @@ declare function app:work($node as node(), $model as map(*)) {
                          </div>)
                      else()}
                  </div>
-                 {raffShared:suggestedCitation()}
+                 {raffShared:suggestedCitation($id)}
              </div>
          </div>
      </div>
