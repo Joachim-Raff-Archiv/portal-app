@@ -741,10 +741,10 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
 
 declare function raffShared:suggestedCitation($id as xs:string) {
     
-    let $itemPath := functx:substring-before-last(request:get-url(), '/')
-    let $itemLink := concat($itemPath, '/', $id)
+    let $itemLink := request:get-url()
+    let $itemTypePath := functx:substring-before-last($itemLink, '/')
     let $doc := $app:collectionsAll/root()/node()[@xml:id = $id]
-    let $itemType := functx:substring-after-last-match($itemPath, '/')
+    let $itemType := functx:substring-after-last-match($itemTypePath, '/')
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
                  else if($itemType = 'person')
@@ -774,11 +774,11 @@ declare function raffShared:suggestedCitation($id as xs:string) {
                   else('LABEL')
     
     
-    let $itemLinkLabel := if(contains($itemLink, 'http://localhost:8088/exist/apps/raffArchive'))
+    let $itemLinkLabel := if(starts-with($itemLink, 'http://localhost:8088/exist/apps/raffArchive'))
                           then(replace($itemLink, 'http://localhost:8088/exist/apps/raffArchive', 'https://dev.raff-archiv.ch'))
-                          else if(contains($itemLink, 'http://localhost:8084/exist/apps/raffArchive'))
+                          else if(starts-with($itemLink, 'http://localhost:8084/exist/apps/raffArchive'))
                           then(replace($itemLink, 'http://localhost:8084/exist/apps/raffArchive', 'https://portal.raff-archiv.ch'))
-                          else if(contains($itemLink, 'http://localhost:8086/exist/apps/raffArchive'))
+                          else if(starts-with($itemLink, 'http://localhost:8086/exist/apps/raffArchive'))
                           then(replace($itemLink, 'http://localhost:8086/exist/apps/raffArchive', 'https://portal.raff-archiv.ch'))
                           else($itemLink)
     
