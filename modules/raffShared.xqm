@@ -6,6 +6,7 @@ declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace mei="http://www.music-encoding.org/ns/mei";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace hc = "http://expath.org/ns/http-client";
+declare namespace response = "http://exist-db.org/xquery/response";
 
 import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
 
@@ -791,4 +792,35 @@ declare function raffShared:suggestedCitation($id as xs:string) {
             </div>
         </div>,
         <hr/>)
+};
+
+declare function raffShared:forwardEntries($idParam as xs:string) {
+    let $currentUri := request:get-url()
+    let $basicPath := if(starts-with($currentUri, 'http://localhost:8088/exist/apps/raffArchive'))
+                          then('https://dev.raff-archiv.ch/html')
+                          else if(starts-with($currentUri, 'http://localhost:8084/exist/apps/raffArchive'))
+                          then('https://portal.raff-archiv.ch/html')
+                          else if(starts-with($currentUri, 'http://localhost:8086/exist/apps/raffArchive'))
+                          then('https://portal.raff-archiv.ch/html')
+                          else if(starts-with($currentUri, 'http://localhost:8080/exist/apps/raffArchive'))
+                          then('http://localhost:8080/exist/apps/raffArchive/html')
+                          else('/html/')
+    let $entryDeleted := $app:collFullAll[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string()
+    let $entryIdToForward := substring-after($entryDeleted,'#')
+    let $entryType := if(starts-with($entryIdToForward, 'A'))
+                     then('letter')
+                     else if(starts-with($entryIdToForward, 'B'))
+                     then('work')
+                     else if(starts-with($entryIdToForward, 'C'))
+                     then('person')
+                     else if(starts-with($entryIdToForward, 'D'))
+                     then('institution')
+                     else()
+    let $itemRootPath := functx:substring-before-last(functx:substring-before-last(request:get-url(), '/'), '/')
+    let $entryLink := concat($basicPath, '/', $entryType, '/', $entryIdToForward)
+    
+    return
+       if($entryDeleted)
+       then(response:redirect-to($entryLink))
+       else()
 };

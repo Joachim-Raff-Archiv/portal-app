@@ -30,6 +30,14 @@ declare variable $app:collectionTexts := collection('/db/apps/jraTexts/data')//t
 declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//mei:mei;
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
+declare variable $app:collFullPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
+declare variable $app:collFullPersons := collection('/db/apps/jraPersons/data')//tei:TEI;
+declare variable $app:collFullInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI;
+declare variable $app:collFullSources := collection('/db/apps/jraSources/data')//tei:TEI;
+declare variable $app:collFullTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
+declare variable $app:collFullWorks := collection('/db/apps/jraWorks/data')//mei:mei;
+declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks);
+
 declare function app:langSwitch($node as node(), $model as map(*)) {
     let $supportedLangVals := ('de', 'en')
     for $lang in $supportedLangVals
@@ -1369,13 +1377,15 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
  
 declare function app:person($node as node(), $model as map(*)) {
     
-    let $idParam := request:get-parameter("person-id", "Fehler")
-    let $personDeleted := collection('/db/apps/jraPersons/data')//tei:TEI[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string()
-    let $personIdToForward := substring-after($personDeleted,'#')
-    let $id := if($personDeleted)
+    let $id := request:get-parameter("person-id", "Fehler")
+    let $forwarding := raffShared:forwardEntries($id)
+(:    let $personDeleted := collection('/db/apps/jraPersons/data')//tei:TEI[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string():)
+(:    let $personIdToForward := substring-after($personDeleted,'#'):)
+(:    let $redirect := if($personDeleted) then() else():)
+    (:let $id := if($personDeleted)
                then ($personIdToForward)
-               else ($idParam)
-    let $person := $app:collectionsAll[@xml:id = $id]
+               else ($idParam):)
+    let $person := $app:collectionPersons[@xml:id = $id]
     let $name := raffPostals:getName($id, 'full')
     let $correspondence := $app:collectionPostals//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
