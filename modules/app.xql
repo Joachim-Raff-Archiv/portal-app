@@ -3130,7 +3130,7 @@ let $errorReportDir := '/db/apps/raffArchive/errors/'
 let $url := request:get-url()
 let $date := substring-before(string(current-dateTime()), '+')
 let $error := <error url="{$url}" timeStamp="{$date}"/>
-let $logIn := xmldb:login($errorReportDir,'dried', '')
+let $logIn := xmldb:login($errorReportDir,'errors', 'errorReport12345')
 let $store := xmldb:store($errorReportDir, concat('error_', replace($date,':','-'), '.xml'), $error)
 let $errorReport := if(contains($url, 'http://localhost:8080/exist/apps/raffArchive'))
                     then(<pre class="error templates:error-description"/>)
