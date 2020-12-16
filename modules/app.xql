@@ -729,11 +729,8 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
 declare function app:letter($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("letter-id", "Fehler")
-    let $letterDeleted := $app:collectionPostals[@xml:id = $id]//tei:listRelation/tei:relation[@type='deleted']/@active/string()
-    let $letterIdToForward := substring-after($letterDeleted,'#')
-    let $letter := if($letterDeleted)
-                   then ($app:collectionPostals[@xml:id = $letterIdToForward])
-                   else ($app:collectionPostals[@xml:id = $id])
+    let $forwarding := raffShared:forwardEntries($id)
+    let $letter := $app:collectionPostals[@xml:id = $id]
     let $person := $app:collectionPersons
     let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
     let $datumSent := raffShared:formatDate(raffShared:getDate($letter//tei:correspAction[@type = "sent"]))
@@ -751,7 +748,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                 class="page-header tabbable parentTabs">
                 <h5>{$datumSent}</h5>
                 <h2>Brief an {$nameTurned}</h2>
-                <h6>ID: {if($letterIdToForward) then(concat($letterIdToForward,' (umgeleitet)')) else($id)}</h6>
+                <h6>ID: {$id}</h6>
                 <hr/>
                 <ul
                 class="nav nav-pills"
@@ -1379,12 +1376,6 @@ declare function app:person($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("person-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
-(:    let $personDeleted := collection('/db/apps/jraPersons/data')//tei:TEI[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string():)
-(:    let $personIdToForward := substring-after($personDeleted,'#'):)
-(:    let $redirect := if($personDeleted) then() else():)
-    (:let $id := if($personDeleted)
-               then ($personIdToForward)
-               else ($idParam):)
     let $person := $app:collectionPersons[@xml:id = $id]
     let $name := raffPostals:getName($id, 'full')
     let $correspondence := $app:collectionPostals//tei:persName[@key = $id]/ancestor::tei:TEI
@@ -1401,7 +1392,7 @@ declare function app:person($node as node(), $model as map(*)) {
             <div
                 class="page-header">
                 <h2>{$name}</h2>
-                <h6>ID: {if($personIdToForward) then(concat($personIdToForward,' (umgeleitet)')) else($id)}</h6>
+                <h6>ID: {$id}</h6>
                 <hr/>
                     <ul
                             class="nav nav-pills"
@@ -1772,6 +1763,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
 declare function app:institution($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("institution-id", "Fehler")
+    let $forwarding := raffShared:forwardEntries($id)
     let $persons := $app:collectionPersons
     let $institution := $app:collectionInstitutions[@xml:id = $id]
     let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
