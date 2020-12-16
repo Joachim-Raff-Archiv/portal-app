@@ -8,7 +8,7 @@
         <xsl:choose>
             <xsl:when test="$person/ancestor::TEI/facsimile/graphic[1]/@url">
                 <div class="row">
-                <div class="col-3">
+                    <div class="col-sm-6 col-md-4 col-lm-3">
                     <img src="{$graphic/@url}" class="img-thumbnail" width="200px"/>
                     <br/>
                     <br/>
@@ -38,6 +38,9 @@
                     <xsl:if test="$person/persName/surname[@type = 'used']">
                         <xsl:value-of select="$person/persName/surname[@type = 'used']"/>
                     </xsl:if>
+                    <xsl:if test="exists($person/persName/genName)">
+                        (<xsl:value-of select="$person/persName/genName"/>)
+                    </xsl:if>
                     <xsl:if test="$person/persName/surname[@type = 'altWriting']"> [Auch:
                             <xsl:value-of select="$person/persName/surname[@type = 'altWriting']"/>] </xsl:if>
                     <xsl:if test="$person/persName/surname[@type = 'birth']"> (geb. <xsl:value-of select="$person/persName/surname[@type = 'birth']"/>) </xsl:if>
@@ -62,13 +65,9 @@
                         <xsl:value-of select="$person/persName/forename[@type = 'used']"/>
                     </xsl:if>
                     <xsl:if test="$person/persName/forename[@type = 'altWriting']"> [Auch: <xsl:value-of select="$person/persName/forename[@type = 'altWriting']"/>] </xsl:if>
-                    <xsl:if test="exists($person/persName/genName)">
-                        <xsl:if test="$person/persName/genName[@type = 'used']"> </xsl:if>
-                        <xsl:value-of select="$person/persName/genName"/>
-                    </xsl:if>
                     <xsl:if test="exists($person/persName/nameLink)">
                         <xsl:if test="$person/persName/genName[@type = 'used'] or exists($person/persName/genName)"> </xsl:if>
-                        <xsl:value-of select="$person/persName/nameLink"/>
+                        <xsl:value-of select="concat(' ', $person/persName/nameLink)"/>
                     </xsl:if>
                     <!--</xsl:for-each>-->
                 </td>
@@ -212,22 +211,63 @@
             <xsl:if test="exists($person/idno[@type = 'GND'])">
                 <tr>
                     <td>Normdaten:</td>
-                    <td><a href="{concat('http://d-nb.info/gnd/',$person/idno[@type='GND'])}" target="_blank"><xsl:value-of select="$person/idno[@type = 'GND']"/></a> (GND)</td>
+                    <td><a href="{concat('http://d-nb.info/gnd/',$person/idno[@type='GND']/normalize-space(text()))}" target="_blank"><xsl:value-of select="$person/idno[@type = 'GND']/normalize-space(text())"/></a> (GND)</td>
                 </tr>
             </xsl:if>
             <xsl:if test="exists($person/idno[@type = 'VIAF'])">
                 <tr>
-                    <td><xsl:choose><xsl:when test="exists($person/idno[@type = 'GND'])"/><xsl:otherwise>Normdaten:</xsl:otherwise></xsl:choose></td>
-                    <td><a href="{concat('https://viaf.org/viaf/',$person/idno[@type='VIAF'])}" target="_blank"><xsl:value-of select="$person/idno[@type = 'VIAF']"/></a>
+                    <td><xsl:choose>
+                            <xsl:when test="exists($person/idno[@type = 'GND'])"/>
+                        <xsl:otherwise>Normdaten:</xsl:otherwise>
+                    </xsl:choose></td>
+                    <td><a href="{concat('https://viaf.org/viaf/',$person/idno[@type='VIAF']/normalize-space(text()))}" target="_blank"><xsl:value-of select="$person/idno[@type = 'VIAF']/normalize-space(text())"/></a>
                         (VIAF)</td>
                 </tr>
             </xsl:if>
         </table>
+        <xsl:if test="//bibl[@type = 'links']/ref[@target]">
         <table class="personView">
-            <xsl:if test="//bibl[@type = 'links']/ref[@type='wikipedia']">
+            
+            <xsl:choose>
+            <xsl:when test="//bibl[@type = 'links'][1]/ref[@type='wikipedia']">
                 <tr>
-                    <td>Sonstige:</td>
-                    <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://portal.raff-archiv.ch/resources/img/wikipedia-icon-5.jpg" height="20" width="20"/></a></td>
+                    <td>Links:</td>
+                <td>Wikipedia <a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><img src="https://digilib.baumann-digital.de/JRA/img/wikipedia-icon-5.jpg?dh=1000&amp;dw=1000" height="20" width="20"/></a></td>
+                </tr>
+            </xsl:when>
+                <xsl:when test="//bibl[@type = 'links'][1]">
+                    <tr>
+                        <td>Links:</td>
+                        <td><a href="{//bibl[@type = 'links']/ref/@target}" target="_blank"><xsl:value-of select="if(//bibl[@type = 'links'][1]/ref/text() = '')then('Externer Link')else(//bibl[@type = 'links'][1]/ref/text())"/></a></td>
+                    </tr>
+            </xsl:when>
+            </xsl:choose>
+                <xsl:for-each select="//bibl[@type = 'links'][position() > 1]">
+                <tr>
+                    <td/>
+                    <td>
+                        <a href="{./ref/@target}" target="_blank">
+                        <xsl:choose>
+                            <xsl:when test="not(./ref/text())">Externer Link</xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="./ref/text()"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        </a>
+                    </td>
+                </tr>
+                </xsl:for-each>
+        </table>
+        </xsl:if>
+        <table class="personView">
+            <xsl:if test="//relation[@name = 'reference']//item">
+                <tr>
+                    <td>Referenzen:</td>
+                    <td>
+                        <xsl:for-each select="//relation[@name = 'reference']//item[. != '']">
+                            <li><xsl:value-of select="./text()"/></li>
+                        </xsl:for-each>
+                    </td>
                 </tr>
             </xsl:if>
         </table>

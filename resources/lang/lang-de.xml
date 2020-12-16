@@ -1,0 +1,323 @@
+<catalogue xml:lang="de">
+
+    <!-- Main Nav -->
+    <msg key="jra.mainNav.home">Home</msg>
+    <msg key="jra.mainNav.works">Werke</msg>
+    <msg key="jra.mainNav.sources">Quellen</msg>
+    <msg key="jra.mainNav.editions">Editionen</msg>
+    <msg key="jra.mainNav.persons">Personen</msg>
+    <msg key="jra.mainNav.letters">Briefe</msg>
+    <msg key="jra.mainNav.documents">Dokumente</msg>
+    <msg key="jra.mainNav.places">Orte</msg>
+    <msg key="jra.mainNav.institutions">Institutionen</msg>
+    <msg key="jra.mainNav.project.about">Über das Projekt</msg>
+    <msg key="jra.mainNav.project.about.documentation">Dokumentation</msg>
+    <msg key="jra.mainNav.documentation">Dokumentation</msg>
+    <msg key="jra.mainNav.resourcesUsed">verwendete Ressourcen</msg>
+    
+    <!-- Landing page -->
+    <msg key="jra.landing.welcome">Willkommen!</msg>
+    <msg key="jra.landing.catalogues">Kataloge</msg>
+    <msg key="jra.landing.catalogues.sub"/>
+    <msg key="jra.landing.catalogues.works">Werke</msg>
+    <msg key="jra.landing.catalogues.works.sub">Verzeichnis der Kompositionen.</msg>
+    <msg key="jra.landing.catalogues.sources">Quellen</msg>
+    <msg key="jra.landing.catalogues.sources.sub">Die musikalischen Quellen.</msg>
+    <msg key="jra.landing.catalogues.docs">Dokumente</msg>
+    <msg key="jra.landing.catalogues.docs.sub">Briefe, Urkunden, Dokumente.</msg>
+    <msg key="jra.landing.catalogues.gallery">Galerie</msg>
+    <msg key="jra.landing.catalogues.gallery.sub">Bilder rund um Ludwig Baumann.</msg>
+    <msg key="jra.landing.catalogues.editions">Editionen</msg>
+    <msg key="jra.landing.catalogues.editions.sub">Wissenschaftlich-kritische Edition der Werke Baumanns.</msg>
+    <msg key="jra.landing.catalogues.periodicals">Zeitschriftenarchiv</msg>
+    <msg key="jra.landing.catalogues.periodicals.sub">Tagespresse und Vereinszeitschriften.</msg>
+    <msg key="jra.landing.catalogues.persons">Personen</msg>
+    <msg key="jra.landing.catalogues.persons.sub">Personen, die im Rahmen dieses Projektes in Erscheinung treten.</msg>
+    <msg key="jra.landing.catalogues.institutions">Institutionen</msg>
+    <msg key="jra.landing.catalogues.institutions.sub">Institutionen, die im Rahmen dieses Projektes in Erscheinung treten.</msg>
+    <msg key="jra.landing.catalogues.loci">Orte</msg>
+    <msg key="jra.landing.catalogues.loci.sub">Orte, die genannt oder aufgesucht werden.</msg>
+    
+    <!-- About -->
+    <msg key="jra.landing.about.sub">Leben, Werk und Wirken</msg>
+    <msg key="jra.landing.about.start">Ein Glücksfund</msg>
+    <msg key="jra.landing.about.start.text">Lorem ipsum dolor</msg>
+    <msg key="jra.landing.about.thesis.ma">Drei Masterarbeiten</msg>
+    <msg key="jra.landing.about.thesis.ma.text">Lorem ipsum dolor</msg>
+    <msg key="jra.landing.about.thesis.phd">Beginn eines Promotionsprojektes</msg>
+    <msg key="jra.landing.about.thesis.phd.text">Lorem ipsum dolor</msg>
+    <msg key="jra.landing.about.portal.launch">Endlich online!</msg>
+    <msg key="jra.landing.about.portal.launch.text">Nach mehreren Jahren grundlegender Arbeiten ist das Baumann-Portal nun online. Und das, obwohl das Promotionsprojekt zu Baumann noch läuft! Aufgrund dieser Tatsache haben wir uns entschlossen zunächst nur allgemeine Katalogdaten zu teilen. Sobald die Disseration abgeschlossen ist, werden hier alle aufbereiteten Daten zu Ludwig Baumann online gehen!</msg>
+    <msg key="jra.landing.about.concert">Konzert: Kantate</msg>
+    <msg key="jra.landing.about.concert.text">Lorem ipsum dolor</msg>
+    <msg key="jra.landing.about.be.part">Werde</msg>
+    <msg key="jra.landing.about.of.our">Teil Dieser</msg>
+    <msg key="jra.landing.about.story">Geschichte!</msg>
+    
+    <!-- Team -->
+    <msg key="jra.landing.team">Unser Team</msg>
+    <msg key="jra.landing.team.desc">Seit 2016 auf den Spuren Ludwig Baumanns ...</msg>
+    <msg key="jra.landing.team.about">Vom Zufallsfund zum Forschungsprojekt – Als wir 2016 zufällig auf den Namen Ludwig Baumann stießen, dachte keiner von uns daran, dass wir einmal sein Leben und Werk schwerpunkmäßig erforschen würden. Um so mehr freut es uns die Ergebnisse unserer Arbeit zu teilen und Andere für dieses Thema zu begeistern.</msg>
+    <msg key="jra.landing.team.project.manager">Projektleiter</msg>
+    <msg key="jra.landing.team.technical.stuff">Technischer Support</msg>
+    <msg key="jra.landing.team.associate">Wissenschaftlicher Berater</msg>
+    
+    <!-- Contact form -->
+    <msg key="jra.landing.contact.us">Schreib uns!</msg>
+    <msg key="jra.landing.contact.us.sub">Wir bemühen uns Fragen zeitnah zu beantworten. (* erforderlich)</msg>
+    <msg key="jra.landing.contact.send.message">Absenden</msg>
+    <msg key="jra.landing.contact.your.name">Dein Name *</msg>
+    <msg key="jra.landing.contact.your.name.req">Bitte trage deinen Namen ein.</msg>
+    <msg key="jra.landing.contact.your.mail">Deine Email *</msg>
+    <msg key="jra.landing.contact.your.mail.req">Bitte trage deine Email-Adresse ein.</msg>
+    <msg key="jra.landing.contact.your.subject">Das Thema *</msg>
+    <msg key="jra.landing.contact.your.subject.req">Bitte gib einen Betreff ein.</msg>
+    <msg key="jra.landing.contact.your.message">Deine Nachricht an uns *</msg>
+    <msg key="jra.landing.contact.your.message.req">Bitte gib eine Nachricht ein.</msg>
+    
+    <!-- Catalog of Works -->
+    <msg key="jra.catalog.works">Werkkatalog</msg>
+    <msg key="jra.catalog.works.all">Alle Werke</msg>
+    <msg key="jra.catalog.works.song">Lieder</msg>
+    <msg key="jra.catalog.works.choir">Chöre</msg>
+    <msg key="jra.catalog.works.chamber">Kammermusik</msg>
+    <msg key="jra.catalog.works.ensemble">Ensemble</msg>
+    <msg key="jra.catalog.works.cantata">Kantaten</msg>
+    <msg key="jra.catalog.works.vocal">Vokalmusik</msg>
+    <msg key="jra.catalog.works.instrumental">Instrumentalmusik</msg>
+    <msg key="jra.catalog.works.orchestra">Orchestermusik</msg>
+    <msg key="jra.catalog.works.composer">Komponist</msg>
+    <msg key="jra.catalog.works.composer.female">Komponistin</msg>
+    <msg key="jra.catalog.works.lyricist">Textdichter</msg>
+    <msg key="jra.catalog.works.lyricist.female">Textdichterin</msg>
+    <msg key="jra.catalog.works.opus.no">Nr.</msg>
+    <msg key="jra.catalog.works.components">Enthaltene Werke</msg>
+    <msg key="jra.catalog.works.relSources">Verwandte Quellen</msg>
+    <msg key="jra.catalog.works.perfmedium">Besetzungsangabe</msg>
+    <msg key="jra.catalog.works.titleAlt">Alternativer Titel</msg>
+    <msg key="jra.catalog.works.subtitleAlt">Alternativer Untertitel</msg>
+    <msg key="jra.catalog.works.langUsed">Verwendete Sprache</msg>
+    <msg key="jra.catalog.works.langsUsed">Verwendete Sprachen</msg>
+    <msg key="jra.catalog.works.category">Werkgruppe</msg>
+    <msg key="jra.catalog.works.genre">Genre</msg>
+    <msg key="jra.catalog.works.key">Tonart</msg>
+    <msg key="jra.catalog.works.pname.c">c</msg>
+    <msg key="jra.catalog.works.pname.cf">ces</msg>
+    <msg key="jra.catalog.works.pname.cs">cis</msg>
+    <msg key="jra.catalog.works.pname.d">d</msg>
+    <msg key="jra.catalog.works.pname.df">des</msg>
+    <msg key="jra.catalog.works.pname.ds">dis</msg>
+    <msg key="jra.catalog.works.pname.e">e</msg>
+    <msg key="jra.catalog.works.pname.ef">es</msg>
+    <msg key="jra.catalog.works.pname.es">eis</msg>
+    <msg key="jra.catalog.works.pname.f">f</msg>
+    <msg key="jra.catalog.works.pname.ff">fes</msg>
+    <msg key="jra.catalog.works.pname.fs">fis</msg>
+    <msg key="jra.catalog.works.pname.g">g</msg>
+    <msg key="jra.catalog.works.pname.gf">ges</msg>
+    <msg key="jra.catalog.works.pname.gs">gis</msg>
+    <msg key="jra.catalog.works.pname.a">a</msg>
+    <msg key="jra.catalog.works.pname.af">as</msg>
+    <msg key="jra.catalog.works.pname.as">ais</msg>
+    <msg key="jra.catalog.works.pname.b">h</msg>
+    <msg key="jra.catalog.works.pname.bf">b</msg>
+    <msg key="jra.catalog.works.pname.bs">his</msg>
+    
+    <msg key="jra.catalog.works.major">Dur</msg>
+    <msg key="jra.catalog.works.minor">Moll</msg>
+    <msg key="jra.catalog.works.meter">Taktart</msg>
+    <msg key="jra.catalog.works.tempo">Tempoangabe</msg>
+    <msg key="jra.catalog.works.perfRes">Beteiligte Instrumente</msg>
+    <msg key="jra.catalog.works.perfRes.voice">Singstimme</msg>
+    <msg key="jra.catalog.works.perfRes.choirMen">Männerchor</msg>
+    <msg key="jra.catalog.works.perfRes.choirWomen">Frauenchor</msg>
+    <msg key="jra.catalog.works.perfRes.choirMixed">Gemischter Chor</msg>
+    <msg key="jra.catalog.works.perfRes.choirChildren">Kinderchor</msg>
+    <msg key="jra.catalog.works.perfRes.tenor">Tenor</msg>
+    <msg key="jra.catalog.works.perfRes.tenor.i">Tenor I</msg>
+    <msg key="jra.catalog.works.perfRes.tenor.ii">Tenor II</msg>
+    <msg key="jra.catalog.works.perfRes.bass">Bass</msg>
+    <msg key="jra.catalog.works.perfRes.bass.i">Bass I</msg>
+    <msg key="jra.catalog.works.perfRes.bass.ii">Bass II</msg>
+    <msg key="jra.catalog.works.perfRes.piano">Klavier</msg>
+    <msg key="jra.catalog.works.perfRes.organ">Orgel</msg>
+    <msg key="jra.catalog.works.perfRes.violin">Violine</msg>
+    <msg key="jra.catalog.works.perfRes.violinSolo">Solo-Violine</msg>
+    <msg key="jra.catalog.works.perfRes.violin.i">Violine I</msg>
+    <msg key="jra.catalog.works.perfRes.violin.ii">Violine II</msg>
+    <msg key="jra.catalog.works.perfRes.viola">Viola</msg>
+    <msg key="jra.catalog.works.perfRes.cello">Violoncello</msg>
+    <msg key="jra.catalog.works.perfRes.doubleBass">Kontrabass</msg>
+    
+    <!-- Catalog of Sources -->
+    <msg key="jra.catalog.sources">Quellenkatalog</msg>
+    <msg key="jra.catalog.sources.title">Titel</msg>
+    <msg key="jra.catalog.sources.titleUniform">Einheitssachtitel</msg>
+    <msg key="jra.catalog.sources.titleMain">Haupttitel</msg>
+    <msg key="jra.catalog.sources.titleSub">Untertitel</msg>
+    <msg key="jra.catalog.sources.titleDipl">Titel (diplomatisch)</msg>
+    <msg key="jra.catalog.sources.perfMedium">Besetzungshinweis</msg>
+    <msg key="jra.catalog.sources.composer">Komponist</msg>
+    <msg key="jra.catalog.sources.arranger">Bearbeiter</msg>
+    <msg key="jra.catalog.sources.editor">Herausgeber</msg>
+    <msg key="jra.catalog.sources.lyricist">Textdichter</msg>
+    <msg key="jra.catalog.sources.perfRes">Beteiligte Instrumente</msg>
+    
+    <msg key="jra.catalog.sources.all">Alle Quellen</msg>
+    <msg key="jra.catalog.sources.song">Lieder</msg>
+    <msg key="jra.catalog.sources.choir">Chöre</msg>
+    <msg key="jra.catalog.sources.cantata">Kantaten</msg>
+    <msg key="jra.catalog.sources.chamber">Kammermusik</msg>
+    <msg key="jra.catalog.sources.vocal">Vokalmusik</msg>
+    <msg key="jra.catalog.sources.instrumental">Instrumentalmusik</msg>
+    <msg key="jra.catalog.sources.orchestra">Orchestermusik</msg>
+    <msg key="jra.catalog.sources.opus.no">Nr.</msg>
+    <msg key="jra.catalog.sources.print">Druck</msg>
+    <msg key="jra.catalog.sources.prints">Drucke</msg>
+    <msg key="jra.catalog.sources.reprint">Nachdruck</msg>
+    <msg key="jra.catalog.sources.reprints">Nachdrucke</msg>
+    <msg key="jra.catalog.sources.manuscript">Handschrift</msg>
+    <msg key="jra.catalog.sources.manuscripts">Handschriften</msg>
+    <msg key="jra.catalog.sources.copy">Abschrift/Kopie</msg>
+    <msg key="jra.catalog.sources.copies">Abschriften/Kopien</msg>
+    <msg key="jra.catalog.sources.collection">Sammlung</msg>
+    <msg key="jra.catalog.sources.collections">Sammlungen</msg>
+    <msg key="jra.catalog.sources.part">Einzelstimme</msg>
+    <msg key="jra.catalog.sources.parts">Einzelstimmen</msg>
+    <msg key="jra.catalog.sources.collections.manuscript">Sammelquelle (Ms.)</msg>
+    <msg key="jra.catalog.sources.collections.manuscripts">Sammelquellen (Ms.)</msg>
+    <msg key="jra.catalog.sources.collections.print">Sammelquelle (Dr.)</msg>
+    <msg key="jra.catalog.sources.collections.prints">Sammelquellen (Dr.)</msg>
+    <msg key="jra.catalog.sources.todo">ToDo</msg>
+    <msg key="jra.catalog.sources.components">Enthaltene Quellen</msg>
+    <msg key="jra.catalog.sources.facsimile">Faksimile</msg>
+    <msg key="jra.catalog.sources.facsimile.source">Bildquelle</msg>
+    <msg key="jra.catalog.sources.tab.main">Überblick</msg>
+    <msg key="jra.catalog.sources.tab.detail">Beschreibung</msg>
+    <msg key="jra.catalog.sources.tab.lyrics">Text</msg>
+    <msg key="jra.catalog.sources.msDesc.repository">Standort</msg>
+    <msg key="jra.catalog.sources.msDesc.shelfmark">Signatur</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.dimensions">Abmessungen</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.dimensions.height">Höhe</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.dimensions.height.short">H</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.dimensions.width">Breite</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.dimensions.width.short">B</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.orientation">Ausrichtung</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.orientation.portrait">Hochformat</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.orientation.landscape">Querformat</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.folii">Folii</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.pages">Seiten</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.pagination">Paginierung</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.pagination.none">Keine Seitenzählung</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.pagination.arabic">Arabisch</msg>
+    <msg key="jra.catalog.sources.msDesc.paper.pagination.roman">Römisch</msg>
+    <msg key="jra.catalog.sources.msDesc.hands">Handschriftliche Einträge</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.composer">Vermerke des Komponisten</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.biblNote">Bibliothekarische Vermerke</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.publNote">Verlegerische Vermerke</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium">Medium</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.pencil">Bleistift</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.colouredPencil">Buntstift</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.colouredPencil.red">Buntstift (rot)</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.colouredPencil.green">Buntstift (grün)</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.colouredPencil.blue">Buntstift (blau)</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.colouredPencil.pink">Buntstift (rosa)</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.ink.blue">Blaue Tinte</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.ink.black">Schwarze Tinte</msg>
+    <msg key="jra.catalog.sources.msDesc.hands.medium.ink.red">Rote Tinte</msg>
+    <msg key="jra.catalog.sources.msDesc.paperNotes">Papiervermerke</msg>
+    <msg key="jra.catalog.sources.msDesc.stamps">Stempel</msg>
+    <msg key="jra.catalog.sources.msDesc.notes">Weitere Vermerke</msg>
+    <msg key="jra.catalog.sources.msDesc.scoreFormat">Partitureinrichtung</msg>
+    <msg key="jra.catalog.sources.msDesc.condition">Zustand</msg>
+    
+    <!-- Persons -->
+    <msg key="jra.catalog.persons">Personen-Katalog</msg>
+    <msg key="jra.catalog.persons.unknown">Kein Eintrag gefunden</msg>
+    
+    <!-- Institutions -->
+    <msg key="jra.catalog.institutions">Institutionen-Katalog</msg>
+    
+    <!-- Letters -->
+    <msg key="jra.catalog.postals">Briefeverzeichnis</msg>
+    
+    <!-- Documents -->
+    <msg key="jra.catalog.documents">Dokumenten-Katalog</msg>
+    
+    <!-- Places -->
+    <msg key="jra.catalog.places">Orteverzeichnis</msg>
+    
+    <!-- Tags -->
+    <msg key="jra.catalog.tag.song">Lied</msg>
+    <msg key="jra.catalog.tag.choir">Chor</msg>
+    <msg key="jra.catalog.tag.piano">Klavier</msg>
+    <msg key="jra.catalog.tag.cantata">Kantate</msg>
+    <msg key="jra.catalog.tag.duo">Duo</msg>
+    <msg key="jra.catalog.tag.trio">Trio</msg>
+    <msg key="jra.catalog.tag.quartet">Quartett</msg>
+    <msg key="jra.catalog.tag.vocal">Vokal</msg>
+    <msg key="jra.catalog.tag.chamber">Kammer</msg>
+    <msg key="jra.catalog.tag.orchestral">Orchester</msg>
+    <msg key="jra.catalog.tag.part">Einzelstimme</msg>
+    <msg key="jra.catalog.tag.ensemble">Ensemble</msg>
+    <msg key="jra.catalog.tag.autograph">Autograph</msg>
+    <msg key="jra.catalog.tag.manuscript">Handschrift</msg>
+    <msg key="jra.catalog.tag.print">Druck</msg>
+    <msg key="jra.catalog.tag.reprint">Nachdruck</msg>
+    <msg key="jra.catalog.tag.copy">Abschrift</msg>
+    <msg key="jra.catalog.tag.collection">Sammlung</msg>
+    
+    <msg key="jra.catalog.praeposition.with"> mit </msg>
+    
+    <!-- Bread crumb -->
+    <msg key="breadCrumb.catalogue">Katalog</msg>
+    <msg key="breadCrumb.persons">Personen</msg>
+    <msg key="breadCrumb.events">Ereignisse</msg>
+
+    <msg key="january">Januar</msg>
+    <msg key="february">Februar</msg>
+    <msg key="march">März</msg>
+    <msg key="april">April</msg>
+    <msg key="may">Mai</msg>
+    <msg key="june">Juni</msg>
+    <msg key="july">Juli</msg>
+    <msg key="august">August</msg>
+    <msg key="september">September</msg>
+    <msg key="october">Oktober</msg>
+    <msg key="november">November</msg>
+    <msg key="december">Dezember</msg>
+
+    <!-- lang -->
+    <msg key="jra.lang.de">deutsch</msg>
+    <msg key="jra.lang.en">englisch</msg>
+    <msg key="jra.lang.gb">britisch</msg>
+    <msg key="jra.lang.usa">US-englisch</msg>
+    <msg key="jra.lang.fr">französisch</msg>
+    <msg key="jra.lang.it">italienisch</msg>
+    <msg key="jra.lang.ch">schweizerisch</msg>
+    <msg key="jra.lang.a">österreichisch</msg>
+    <msg key="jra.lang.cz">tschechisch</msg>
+    
+    <!-- country -->
+    <msg key="jra.country.de">Deutschland</msg>
+    <msg key="jra.country.en">England</msg>
+    <msg key="jra.country.gb">Großbritannien</msg>
+    <msg key="jra.country.usa">Vereinigte Staaten</msg>
+    <msg key="jra.country.fr">Frankreich</msg>
+    <msg key="jra.country.it">Italien</msg>
+    <msg key="jra.country.ch">Schweiz</msg>
+    <msg key="jra.country.a">Österreich</msg>
+    <msg key="jra.country.cz">Tschechien</msg>
+    
+    <msg key="jra.catalog.delimiter.key">-</msg>
+    
+    <msg key="jra.catalog.mei.annot.place.topmar">oben</msg>
+    <msg key="jra.catalog.mei.annot.place.botmar">unten</msg>
+    <msg key="jra.catalog.mei.annot.place.leftmar">links</msg>
+    <msg key="jra.catalog.mei.annot.place.rightmar">rechts</msg>
+    
+    <msg key="jra.search">Suche</msg>
+    <msg key="jra.privacyPolicy">Datenschutzerklärung</msg>
+    <msg key="jra.index">Startseite</msg>
+    <msg key="jra.impressum">Impressum</msg>
+</catalogue>
