@@ -411,21 +411,21 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                                                         raffPostals:getName($each, 'short'))
                                                 else if($correspActionSent/tei:orgName[@key])
                                                 then(raffPostals:getName($correspActionSent/tei:orgName/@key, 'full'))
-                                                else('NO KEY FOUND')
+                                                else('N.N.')
                         let $correspReceived := if($correspActionReceived/tei:persName[@key])
                                                 then(for $each in $correspActionReceived/tei:persName/@key
                                                       return
                                                         raffPostals:getName($each, 'short'))
                                                 else if($correspActionReceived/tei:orgName[@key])
                                                 then(raffPostals:getName($correspActionReceived/tei:orgName/@key, 'full'))
-                                                else('NO KEY FOUND')
+                                                else('N.N.')
                         let $getDateArray := raffShared:getDateRegistryLetters($correspActionSent)
                         let $date := $getDateArray(1)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDateRegistryLetters($getDateArray)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-sm-4 col-md-3 col-lg-4" dateToSort="{if($date='0000-00-00')then(replace($date,'0000-','9999-'))else($date)}">{$dateFormatted}</div>
-                                <div class="col-sm-5 col-md-7 col-lg-6">{$correspSent}<br/>an {$correspReceived}</div>
+                                <div class="col-sm-5 col-md-7 col-lg-6">{string-join($correspSent, ' | ')}<br/>an {string-join($correspReceived, ' | ')}</div>
                                 <div class="col-sm-3 col-md-2 col-lg-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $year
@@ -524,7 +524,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                                                         raffPostals:getName($each, 'short'))
                                                 else if($correspActionReceived/tei:orgName[@key])
                                                 then(raffPostals:getName($correspActionReceived/tei:orgName/@key, 'full'))
-                                                else('NO KEY FOUND')
+                                                else('N.N.')
                         let $senderName := raffPostals:getName($sender/@key,'reversed')
                         let $getDateArray := raffShared:getDateRegistryLetters($correspActionSent)
                         let $date := $getDateArray(1)
@@ -532,7 +532,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                         let $dateFormatted := raffShared:formatDateRegistryLetters($getDateArray)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                                 <div class="col-sm-4 col-md-3 col-lg-4" dateToSort="{$date}">{$dateFormatted}</div>
-                                                <div class="col-sm-5 col-md-7 col-lg-6">an {string-join($correspReceived,'/')}</div>
+                                                <div class="col-sm-5 col-md-7 col-lg-6">an {string-join($correspReceived,' | ')}</div>
                                                 <div class="col-sm-3 col-md-2 col-lg-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                                             </div>
                         group by $correspSentId
@@ -631,7 +631,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                                         raffPostals:getName($each, 'short'))
                                                 else if($correspActionSent/tei:orgName[@key])
                                                 then(raffPostals:getName($correspActionSent/tei:orgName/@key, 'full'))
-                                                else('NO KEY FOUND')
+                                                else('N.N.')
                         
 (:                        let $correspReceived := local:getReceiver($correspActionReceived):)
                         
@@ -643,7 +643,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                         let $dateFormatted := raffShared:formatDateRegistryLetters($getDateArray)
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-sm-4 col-md-3 col-lg-4" dateToSort="{$date}">{$dateFormatted}</div>
-                                <div class="col-sm-5 col-md-7 col-lg-6">von {string-join($correspSent,'/')}</div>
+                                <div class="col-sm-5 col-md-7 col-lg-6">von {string-join($correspSent,' | ')}</div>
                                 <div class="col-sm-3 col-md-2 col-lg-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
                         group by $correspReceivedId
