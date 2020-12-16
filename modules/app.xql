@@ -3074,17 +3074,6 @@ declare function app:disclaimer($node as node(), $model as map(*)) {
         )
 };
 
-declare function app:errorReport($node as node(), $model as map(*)){
-
-let $mailto := 'mailto:ried-musikforschung@mail.de'
-let $subject := 'Error%20Report'
-let $occurance := replace(request:get-url(),'https://portal.raff-archiv.ch','https://portal.raff-archiv.ch')
-let $body := concat('Hey Guys,%0D%0A%0D%0Aplease%20check%20this%20url:%0D%0A%0D%0A',$occurance,'%0D%0A%0D%0Athanks!')
-let $href := concat($mailto,'?subject=',$subject,'&amp;body=',$body)
-return
-    <button class="btn list-item-jra"><a href="{$href}">report</a></button>
-};
-
 declare function app:countLetters($node as node(), $model as map(*)){
 let $count := count($app:collectionPostals)
 return
@@ -3133,4 +3122,19 @@ declare function app:portalVersion($node as node(), $model as map(*)){
  let $version := $package//pkg:package/@version/string()
     return
         <p class="subtitle-b">{concat('(Version ',$version,')')}</p>
+};
+
+declare function app:errorReport($node as node(), $model as map(*)){
+
+let $errorReportDir := '/db/apps/raffArchive/errors/'
+let $url := request:get-url()
+let $date := substring-before(string(current-dateTime()), '+')
+let $error := <error url="{$url}" timeStamp="{$date}"/>
+let $logIn := xmldb:login($errorReportDir,'dried', '')
+let $store := xmldb:store($errorReportDir, concat('error_', replace($date,':','-'), '.xml'), $error)
+let $errorReport := if(contains($url, 'http://localhost:8080/exist/apps/raffArchive'))
+                    then(<pre class="error templates:error-description"/>)
+                    else()
+return
+    $errorReport
 };

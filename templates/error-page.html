@@ -1,21 +1,21 @@
 <div xmlns="http://www.w3.org/1999/xhtml" class="templates:surround?with=templates/page.html&amp;at=content">
-    <h1>I'm sorry!</h1>
     <div class="row">
-        <div class="col-3">
-            <br/>
-            <img src="https://digilib.baumann-digital.de/JRA/img/JRA-Logo.png?dh=200"/>
-        </div>
+        <img class="col-3" src="https://digilib.baumann-digital.de/JRA/img/JRA-Logo.png?dh=500"/>
         <div class="col">
-            <div class="source-links">
-                <br/>
-                <h5>An error has occurred.</h5>
-                <br/>
-                <p>Please tell us about this error and then go back to <a href="https://portal.raff-archiv.ch/index.html">Mainpage</a><br/></p>
-                <div data-template="app:errorReport"/>
-                <br/>
-            </div>
+            <h1>Upps, …</h1>
+            <br/>
+            <h5>Da ist wohl etwas schiefgelaufen!</h5>
+            <br/>
+            <p>Unser Team wird über diese Fehlfunktion automatisch und anonym in Kenntnis gesetzt.<br/>Wir bemühen uns um eine baldige Lösung!</p>
+            <br/>
+        </div>
+        <br/>
+        <hr/>
+        <br/>
+        <div class="container" style="width: 90%;">
+            <pre class="error templates:error-description"/>
         </div>
     </div>
+    <div data-template="app:errorReport"/>
     <br/>
-    <div><pre class="error templates:error-description"/></div>
 </div>
