@@ -1,152 +1,43 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        
         <title data-template="config:app-title">Joachim-Raff-Archive</title>
-            <meta charset="utf-8"/>
-            <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="app-meta" data-template="config:app-meta" content="JRA"/>
         
-        <!-- font -->
+        
+        <!-- tab icon -->
+        <link rel="icon" href="https://portal.raff-archiv.ch/icon.png"/>
+        
+        
+        <!-- fonts -->
         <link href="//fonts.googleapis.com/css?family=Merriweather:hin,extra-light,light,100,200,300,400,500,600,700,800" rel="stylesheet" type="text/css"/>
         <link href="//fonts.googleapis.com/css?family=Montserrat:hin,extra-light,light,100,200,300,400,500,600,700,800" rel="stylesheet" type="text/css"/>
         
         <!-- Bootstrap CSS File -->
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
         
-<!--        <link href="http://portal.raff-archiv.ch/resources/css/bootstrap.min.css" rel="stylesheet"/>-->
-<!--        <link href="http://portal.raff-archiv.ch/resources/css/bootstrap-theme.min.css" rel="stylesheet"/>-->
-        <!--<link href="http://portal.raff-archiv.ch/resources/css/bootstrap-social.css" rel="stylesheet"/>-->
-        
         <!-- Libraries CSS Files -->
-        <link href="http://portal.raff-archiv.ch/resources/lib/animate/animate.min.css" rel="stylesheet"/>
-        <link href="http://portal.raff-archiv.ch/resources/lib/ionicons/resources/css/ionicons.min.css" rel="stylesheet"/>
-        <link href="http://portal.raff-archiv.ch/resources/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
-        <link href="http://portal.raff-archiv.ch/resources/lib/lightbox/resources/css/lightbox.min.css" rel="stylesheet"/>
+        <link href="https://portal.raff-archiv.ch/resources/lib/animate/animate.min.css" rel="stylesheet"/>
+        <link href="https://portal.raff-archiv.ch/resources/lib/ionicons/css/ionicons.min.css" rel="stylesheet"/>
+        <link href="https://portal.raff-archiv.ch/resources/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+        <link href="https://portal.raff-archiv.ch/resources/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
         
         <!-- Main Stylesheet File -->
-        <link href="http://portal.raff-archiv.ch/resources/css/theme.css" rel="stylesheet"/>
-<!--        <link href="http://portal.raff-archiv.ch/resources/css/style.css" rel="stylesheet"/>-->
+        <link href="https://portal.raff-archiv.ch/resources/css/theme.css" rel="stylesheet"/>
+<!--        <link href="https://portal.raff-archiv.ch/resources/css/style.css" rel="stylesheet"/>-->
         
         <!-- sticky-footer -->
-        <link href="http://portal.raff-archiv.ch/resources/css/sticky-footer-navbar.css" rel="stylesheet"/>
+        <link href="https://portal.raff-archiv.ch/resources/css/sticky-footer-navbar.css" rel="stylesheet"/>
         
-        
-<!--        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/jquery-1.11.3.min.js"/>-->
-<!--        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"/> <!-\- 1.10.2 -\->-->
-<!--        <script src="https://code.jquery.com/jquery-1.11.3.js"/>-->
-<!--        <script src="https://code.jquery.com/jquery-2.1.4.js"/>-->
-<!--        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"/>-->
-<!--        <script src="http://portal.raff-archiv.ch/resources/js/animatescroll/animatescroll.js"/>-->
-        <!--<script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.min.js"/>
-        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.bundle.js"/>
-        <script type="text/javascript" src="http://portal.raff-archiv.ch/resources/js/bootstrap.bundle.min.js"/>-->
-        <!--<script>
-            $('body').scrollspy({
-		      target: '#nav',
-		      offset: navHeight
-	        });
-        </script>-->
     </head>
     <body> <!--  id="body" data-spy="scroll" data-target="myScrollspy" -->
-        <nav class="navbar navbar-expand-lg"> <!-- navbar-jra bg-jra -->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="nav navbar-nav">
-                    <!--<li class="nav-item">
-                        <a class="nav-link-jra-top" href="http://raff-archiv.ch/" target="_blank"><img width="29" height="29" src="../resources/images/32x32.png"/><span class="sr-only">(current)</span></a>
-                    </li>
-                    <li><span class="sr-only">(current)</span></li>-->
-                    <li class="nav-item-jra-top">
-                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/index.html" onclick="pleaseWait()">Home<span class="sr-only">(current)</span>
-                                <!--<span class="glyphicon glyphicon-home" aria-hidden="true"/>-->
-                        </a>
-                    </li>
-                    <!--<li class="dropdown">
-                        <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="">Joachim Raff</a>
-                        <ul class="dropdown-menu navbar-jra bg-jra">
-                            <li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutRaff.html">Zur Person</a>
-                            </li>
-                            <li>
-                                <a class="nav-link-jra-top" target="_blank" href="http://joachim-raff.ch">Joachim–Raff–Gesellschaft</a>
-                            </li>
-                        </ul>
-                    </li>-->
-                    <!--<li class="dropdown">
-                        <a href="" class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Verzeichnisse<span class="caret"/>
-                        </a>
-                        <ul class="dropdown-menu navbar-jra bg-jra">-->
-                            <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryWorks.html">Werke</a>
-                            </li>
-                            <!--<li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/registrySources.html">Quellenverzeichnis</a>
-                            </li>-->
-                            <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryLettersDate.html">Briefe</a>
-                            </li>
-                            <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryPersonsInitial.html">Personen</a>
-                            </li>
-                            <li>
-                                <a class="nav-link-jra-top" onclick="pleaseWait()" href="http://portal.raff-archiv.ch/html/registryInstitutions.html">Institutionen</a>
-                            </li>
-                            <!--<li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/registryPlaces.html">Orteverzeichnis</a>
-                            </li>-->
-                            <!--<li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/libraryCatalogue.html">Bibliotheksakatalog</a>
-                            </li>-->
-                        <!--</ul>
-                    </li>-->
-                    <li class="dropdown">
-                        <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="">Dokumentation<span class="caret"/>
-                        </a>
-                        <ul class="dropdown-menu navbar-jra bg-jra">
-                            <!--<li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutProject.html">Raff-Archiv-Online</a>
-                            </li>-->
-                            <li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutDocumentation.html">Dokumentation</a>
-                            </li>
-                            <li>
-                                <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/aboutResources.html">verwendete Ressourcen</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!--<li class="dropdown">
-                        <a class="nav-link-jra-top dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="">Kontakt<span class="caret"/>
-                        </a>
-                        <ul class="dropdown-menu navbar-jra bg-jra">
-                    <li>
-                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/impressum.html">Impressum</a>
-                    </li>
-                    <li>
-                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/privacyPolicy.html">Datenschutzerklärung</a>
-                    </li>
-                            <li>
-                                <a class="nav-link-jra-top disabled" href="">Haftungsausschluss</a> <!-\- http://portal.raff-archiv.ch/html/disclaimer.html -\->
-                            </li>
-                        </ul>
-                    </li>-->
-                </ul>
-                    <!--<li>
-                        <a class="nav-link-jra-top" href="http://portal.raff-archiv.ch/html/search.html">Suche</a>
-                    </li>-->
-            </div>
-            <!--<form class="form-inline">
-<!-/-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>-/->
-                <input class="form-control mr-sm-2" type="text" placeholder="Suche" aria-label="Search" id="mySearch" onkeyup="mySearch()"/>
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">start</button>
-            </form>-->
-        </nav>
-        <div id="content" class="container"/>
-        <div><br/><br/><br/></div>
-        <footer class="footer">
-            <div class="container">
-                <p class="text-muted heading">© 2019 Joachim-Raff-Archiv, Lachen, SZ (CH)</p>
-            </div>
-        </footer>
+        <nav data-template="templates:include" data-template-path="templates/jraPortalNav.html"/>
+        <div data-template="app:alert"/>
+        <main role="main" class="container mt-1" id="content"/>
+        
+        <footer data-template="templates:include" data-template-path="templates/jraPortalFooter.html"/>
         
         <a href="#" class="back-to-top">
             <i class="fa fa-chevron-up"/>
@@ -155,70 +46,42 @@
         <!-- Bootstrap core JavaScript
 				 ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"/>-->
-<!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"/>-->
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"/>-->
-<!--        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>-->
-        <!--<script>
-            $('body').scrollspy({ target: '#myScrollspy' })
-        </script>-->
-        <!--<script>
-            $('#nav').on('activate.bs.scrollspy', function () {
-                item = $('#nav').find(".active").last();
-                item.animatescroll({element: '#nav', padding:20});
-            })
-        </script>-->
         
-       
-       
+
         <!-- JavaScript Libraries -->
-        <script src="http://portal.raff-archiv.ch/resources/lib/jquery/jquery.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/jquery/jquery-migrate.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/js/jquery.pleaseWait.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/popper/popper.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/bootstrap/js/bootstrap.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/easing/easing.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/counterup/jquery.waypoints.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/counterup/jquery.counterup.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/owlcarousel/owl.carousel.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/lightbox/js/lightbox.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/lib/typed/typed.min.js"/>
-        <script src="http://portal.raff-archiv.ch/resources/js/filter.js"/>
-<!--        <script src="http://portal.raff-archiv.ch/resources/js/animateScrollspy.js"/>-->
+        <script src="https://portal.raff-archiv.ch/resources/lib/jquery/jquery.min.js"/>
+<!--         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"/>-->
+        <script src="https://portal.raff-archiv.ch/resources/lib/jquery/jquery-migrate.min.js"/>
+        <script src="https://portal.raff-archiv.ch/resources/js/jquery.pleaseWait.js"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"/>
+<!--        <script src="https://portal.raff-archiv.ch/resources/lib/popper/popper.min.js"/>-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>
+<!--        <script src="https://portal.raff-archiv.ch/resources/lib/bootstrap/js/bootstrap.min.js"/>-->
+        <script src="https://portal.raff-archiv.ch/resources/lib/easing/easing.min.js"/>
+        <script src="https://portal.raff-archiv.ch/resources/lib/counterup/jquery.waypoints.min.js"/>
+        <script src="https://portal.raff-archiv.ch/resources/lib/counterup/jquery.counterup.js"/>
+        <script src="https://portal.raff-archiv.ch/resources/lib/owlcarousel/owl.carousel.min.js"/>
+<!--        <script src="https://portal.raff-archiv.ch/resources/lib/lightbox/js/lightbox.min.js"/>-->
+        <script src="https://portal.raff-archiv.ch/resources/lib/typed/typed.min.js"/>
+        <script src="https://portal.raff-archiv.ch/resources/js/filter.js"/>
+<!--        <script src="https://portal.raff-archiv.ch/resources/js/animateScrollspy.js"/>-->
+        
         <!-- Contact Form JavaScript File -->
-<!--        <script src="http://portal.raff-archiv.ch/resources/contactform/contactform.js"/>-->
+<!--        <script src="https://portal.raff-archiv.ch/resources/contactform/contactform.js"/>-->
         
         <!-- Template Main Javascript File -->
-        <script src="http://portal.raff-archiv.ch/resources/js/main.js"/>
+        <script src="https://portal.raff-archiv.ch/resources/js/main.js"/>
         
+        <script type="text/javascript" src="https://portal.raff-archiv.ch/resources/js/pagination.js"/>
         <script>
             $(function () {
               $('[data-toggle="popover"]').popover()
             })
         </script>
-        <!--<script>
-            $('[data-spy="scroll"]').each(function () {
-            var $spy = $(this).scrollspy('refresh')
-            })
-        </script>-->
         <script>
             function pleaseWait() { 
                 $('#content').pleaseWait();
             }
-        </script>
-        <!--<script>
-            $('#nav').on('activate.bs.scrollspy', function () {
-            item = $('#nav').find(".active").last();
-            item.animatescroll({element: '#nav', padding:20});
-            });
-        </script>-->
-        <script>
-            function activateTab2() {
-                document.getElementById("navTab2").firstChild.classList.add("active");
-              };
-            function activateTab3() {
-                document.getElementById("navTab3").firstChild.classList.add("active");
-              };
         </script>
     </body>
 </html>

@@ -44,4 +44,17 @@
             <xsl:apply-templates/> <!-- select="//table" -->
         </td>
     </xsl:template>
+    
+    <xsl:template match="listBibl">
+        
+        <ul>
+            <xsl:apply-templates/>
+        </ul>
+    </xsl:template>
+    
+    <xsl:template match="listBibl/bibl">
+        <li>
+            <xsl:apply-templates/>
+        </li>
+    </xsl:template>
 </xsl:stylesheet>

@@ -14,7 +14,7 @@ declare namespace functx = "http://www.functx.com";
 
 declare option exist:serialize "method=xml media-type=text/xml omit-xml-declaration=yes indent=yes";
 
-let $docsToUpdate := collection("/db/contents/jra/works/")
+let $docsToUpdate := collection("/db/apps/jraWorks/data/")
 let $pos := 1
 
 for $docToUpdate at $pos in $docsToUpdate

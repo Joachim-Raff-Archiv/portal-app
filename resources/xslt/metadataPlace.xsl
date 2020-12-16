@@ -41,7 +41,7 @@
     <!--    <xsl:include href="linking.xsl"/>-->
     <xsl:template match="persName">
         <xsl:choose>
-            <xsl:when test="doc-available(concat('../../../../contents/texts/persons/', ./@key, '.xml'))">
+            <xsl:when test="doc-available(concat('../../../../apps/jraPersons/data/', ./@key, '.xml'))">
                 <a href="{concat('../raffArchive/html/person/', ./@key, '.html')}">
                     <xsl:apply-templates/>
                 </a>
@@ -53,7 +53,7 @@
     </xsl:template>
     <xsl:template match="orgName">
         <xsl:choose>
-            <xsl:when test="doc-available(concat('../../../../contents/texts/institutions/', ./@key, '.xml'))">
+            <xsl:when test="doc-available(concat('../../../../apps/jraInstitutions/data/', ./@key, '.xml'))">
                 <a href="{concat('../raffArchive/html/institution/', ./@key, '.html')}">
                     <xsl:apply-templates/>
                 </a>
@@ -65,7 +65,7 @@
     </xsl:template>
     <xsl:template match="settlement">
         <xsl:choose>
-            <xsl:when test="doc-available(concat('../../../../contents/texts/loci/', ./@key, '.xml'))">
+            <xsl:when test="doc-available(concat('../../../../apps/jraLoci/data/', ./@key, '.xml'))">
                 <a href="{concat('../raffArchive/html/ort/', ./@key, '.html')}">
                     <xsl:apply-templates/>
                 </a>

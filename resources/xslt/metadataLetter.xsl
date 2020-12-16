@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://portal.raff-archive.ch/ns/local" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="https://portal.raff-archive.ch/ns/local" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8"/>
     <xsl:include href="linking.xsl"/>
     <xsl:include href="formattingDate.xsl"/>
@@ -8,20 +8,7 @@
     <xsl:variable name="graphic" select="$correspAction/ancestor::TEI/facsimile/graphic[1]"/>
 
     <xsl:template match="/">
-        <xsl:choose>
-            <xsl:when test="$correspAction/ancestor::TEI/facsimile/graphic">
-                <div class="row">
-                <div class="col-3"><img src="{$graphic/@url}" class="img-thumbnail" width="200px"/><br/><br/>
-                    <xsl:if test="$graphic/desc"><xsl:value-of select="$graphic/desc"/><br/></xsl:if>Quelle: <a href="{$graphic/@source}" target="_blank"><xsl:value-of select="$graphic/@resp"/></a></div>
-                <div class="col">
-                    <xsl:call-template name="letterMetadataView"/>
-                </div>
-                </div>
-            </xsl:when>
-            <xsl:otherwise>
                 <xsl:call-template name="letterMetadataView"/>
-            </xsl:otherwise>
-        </xsl:choose>
     </xsl:template>
 
     <xsl:template name="letterMetadataView">
@@ -38,7 +25,7 @@
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/persName/@cert">*</xsl:if>
-                        <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if><br/>
                         </xsl:for-each>
                     </xsl:if>
@@ -51,7 +38,7 @@
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/orgName/@cert">*</xsl:if>
-                        <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if>
                         </xsl:for-each>
                     </xsl:if>
@@ -79,7 +66,7 @@
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
                             </xsl:choose><xsl:if test="$correspAction[@type = 'received']/persName/@cert">*</xsl:if>
-                            <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                            <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if><br/>
                         </xsl:for-each>
                     </xsl:if>
@@ -92,7 +79,7 @@
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
                             </xsl:choose><xsl:if test="$correspAction[@type = 'received']/orgName/@cert">*</xsl:if>
-                            <xsl:if test="@key"> (<a href="{concat('http://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                            <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if>
                         </xsl:for-each>
                     </xsl:if>
@@ -114,9 +101,12 @@
                     <xsl:choose>
                         <xsl:when test="not($correspAction[@type = 'sent']/date) or empty($correspAction[@type = 'sent']/date)"> [undatiert] </xsl:when>
                         <xsl:otherwise>
-                            <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'source']/@when">
-                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source' and @when][1]/@when)"/> (Quelle) <br/>
-                            </xsl:if>
+                            <xsl:choose>
+                                <xsl:when test="$correspAction[@type = 'sent']/date[@type = 'source']/@when">
+                                    <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source' and @when][1]/@when)"/> (Quelle) <br/>
+                                </xsl:when>
+                                <xsl:otherwise>Quelle undatiert<br/></xsl:otherwise>
+                            </xsl:choose>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'source']/@from-custom">
                                 <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source']/@from-custom)"/> bis <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'source']/@to-custom)"/> (Quelle)<br/></xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@from">
@@ -205,18 +195,6 @@
                     </td>
                 </tr>
             </xsl:if>
-            <!--<xsl:if test="$sourceDesc//msIdentifier/altIdentifier/idno != ''">
-                <tr>
-                    <td valign="top">Signatur:</td>
-                    <td>
-                        <xsl:value-of select="$sourceDesc//msIdentifier/altIdentifier/idno"/>
-                        <xsl:choose><xsl:when test="$sourceDesc//msIdentifier/altIdentifier/idno[@resp = 'JRA-copy']"> (Kopie im Joachim-Raff-Archiv)</xsl:when>
-                            <xsl:when test="$sourceDesc//msIdentifier/altIdentifier/idno[@resp = 'JRA']"> (Joachim-Raff-Archiv)</xsl:when>
-                            <xsl:when test="$sourceDesc//msIdentifier/altIdentifier/idno[@resp = 'BSB']"> (Bayerische Staatsbibliothek)</xsl:when>
-                            <xsl:otherwise><xsl:value-of select="$sourceDesc//msIdentifier/altIdentifier/idno"/></xsl:otherwise></xsl:choose>
-                    </td>
-                </tr>
-            </xsl:if>-->
             <xsl:if test="$sourceDesc//physDesc//supportDesc/extent != ''">
                 <tr>
                     <td valign="top">Umfang:</td>
@@ -281,10 +259,10 @@
             </tr>
         </table>
         </xsl:if>
-        <br/>
-        <br/>
-        <hr/>
-        <xsl:if test="//@cert">* Daten nicht verifiziert</xsl:if>
+        <xsl:if test="//@cert"><br/>
+            <hr/>
+            * Daten nicht verifiziert
+            <br/></xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

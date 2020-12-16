@@ -61,12 +61,14 @@ body {
     color:black;
 }
 .RegisterSortBox:first-of-type {
+    width: 95%;
     margin-top: 0em;
     margin-left: auto;
     margin-right: auto;
 /*    padding-top: 0.25em;*/
 }
 .RegisterSortBox {
+    width: 95%;
     margin-top: 2em;
     margin-left: auto;
     margin-right: auto;
@@ -205,19 +207,19 @@ navbar-jra .navbar-brand{
 .navbar-jra .navbar-brand:hover{
     color: #641a85
 }
-.navbar-jra .navbar-nav .nav-link-jra{
+.navbar-jra .navbar-nav .nav-link-jra .page-link-jra{
     color: #641a85 /*rgba(127, 185, 29, 0.5)*/
 }
-.navbar-jra .navbar-nav .nav-link-jra:focus,
-.navbar-jra .navbar-nav .nav-link-jra:hover{
+.navbar-jra .navbar-nav .nav-link-jra:focus .page-link-jra:focus,
+.navbar-jra .navbar-nav .nav-link-jra:hover .page-link-jra:hover{
     color: #641a85/*rgba(127, 185, 29, .75)*/
 }
 .navbar-jra .navbar-nav .nav-link-jra.disabled{
     color: #641a85/*rgba(127, 185, 29, .25)*/
 }
 .navbar-jra .navbar-nav .active > .nav-link-jra,
-.navbar-jra .navbar-nav .nav-link-jra.active,
-.navbar-jra .navbar-nav .nav-link-jra.show,
+.navbar-jra .navbar-nav .nav-link-jra.active .page-link-jra.active,
+.navbar-jra .navbar-nav .nav-link-jra.show .page-link-jra.show,
 .navbar-jra .navbar-nav .show > .nav-link-jra{
     color: #641a85; /*#641a85*/
 }
@@ -253,6 +255,7 @@ button.bg-jra:hover{
     color:#641a85;
     background-color: rgb(240, 240, 240)
 }
+
 .nav-link-jra{
     display: block;
     padding: .5rem 1rem;
@@ -269,6 +272,25 @@ button.bg-jra:hover{
     background-color:#641a85
 }
 .nav-link-jra.disabled{
+    color: grey;
+    }
+
+.page-link-jra{
+    display: block;
+    padding: .5rem 1rem;
+    /*font-weight: bold;*/
+    font-family: Montserrat;
+    color:#641a85;
+    background-color: rgb(240, 240, 240)
+}
+.page-link-jra:focus,
+.page-link-jra:hover{
+    text-decoration: none;
+    font-weight:bold;
+    color:white;
+    background-color:#641a85
+}
+.page-link-jra.disabled{
     color: grey
     }
 /*.nav-tabs .nav-item.show .nav-link-jra,
@@ -481,4 +503,30 @@ div.letterContentFullView{
 }
 .start-catalog{
     
+}
+
+.btn-outline-jra{
+    color: #007bff;
+    background-color: transparent;
+    background-image: none;
+    border-color: #007bff
+}
+.btn-outline-jra:hover{
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff
+}
+.btn-outline-jra.focus,
+.btn-outline-jra:focus{
+    box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .5)
+}
+.btn-outline-jra.disabled,
+.btn-outline-jra:disabled{
+    color: #007bff;
+    background-color: transparent
+}
+
+a.disabled{
+    pointer-events: none;
+    cursor: default;
 }

@@ -6,7 +6,7 @@ import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
 let $create-collection := xmldb:create-collection("/db", "output")
 
-for $record in doc('/db/contents/texts/portal/baumann.xml')/tei:TEI/*
+for $record in doc('/db/.../dummy.xml')/tei:TEI/*
 
 let $split-record := 
     <tei:TEI xmlns="http://www.tei-c.org/ns/1.0">
