@@ -319,9 +319,8 @@ declare function local:getCorrespondance($id){
         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
         let $correspSentTurned := local:getSenderTurned($correspActionSent)
         let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
-        let $date := raffShared:getDate($correspActionSent)
-        let $year := substring($date,1,4)
-        let $dateFormatted := raffShared:formatDate($date)
+        let $date := raffShared:getDateRegistryLetters($correspActionSent)
+        let $dateFormatted := raffShared:formatDateRegistryLetters($date)
         
         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
@@ -329,7 +328,7 @@ declare function local:getCorrespondance($id){
                                 <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
                             </div>
         
-            order by $date
+            order by $date(1)
         return
         $letterEntry
 };
