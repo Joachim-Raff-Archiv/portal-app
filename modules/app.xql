@@ -899,7 +899,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
                             let $lifeData := local:getLifedata($person)
-                            let $nameJoined := raffPostals:getName($persID, 'full')
+                            let $nameJoined := raffPostals:getName($persID, 'reversed')
                             let $nameToSort := local:replaceToSortDist(if(count($nameSurnames) > 0) 
                                                                        then(string-join($nameSurnames, ' '))
                                                                        else if(count($nameForenames) > 0)
@@ -1056,7 +1056,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
     
     let $personsBirth := for $person in $persons
                              let $persID := $person/@xml:id/string()
-                             let $nameJoined := raffPostals:getName($persID, 'full')
+                             let $nameJoined := raffPostals:getName($persID, 'reversed')
                              let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]
                              let $role := $person//tei:roleName[1]/text()[1]
                              let $pseudonym := if ($person//*[matches(@type,'^pseudonym')][1]/text()[1])
@@ -1228,7 +1228,7 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                             let $deathToSort := if (contains($death,'/')) then(substring-before($death,'/')) else($death)
                             let $deathFormatted := local:formatLifedata($death)
                             let $lifeData := local:getLifedata($person)
-                            let $nameJoined := raffPostals:getName($persID, 'full')
+                            let $nameJoined := raffPostals:getName($persID, 'reversed')
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
