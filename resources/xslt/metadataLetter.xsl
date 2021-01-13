@@ -112,7 +112,10 @@
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@from">
                                 <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@from)"/> bis <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@to)"/> (ermittelt)<br/></xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'postal']/@when">
-                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'postal']/@when)"/> (Poststempel)<br/></xsl:if>
+                                <xsl:for-each select="$correspAction[@type = 'sent']/date[@type = 'postal']">
+                                    <xsl:value-of select="local:formatDate(./@when)"/> (Poststempel)<br/>
+                                </xsl:for-each>
+                            </xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore"> Frühestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore)"/> (ermittelt)<br/>
                             </xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter"> Spätestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter)"/> (ermittelt)<br/>
