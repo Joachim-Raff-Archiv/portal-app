@@ -36,19 +36,31 @@
     <xsl:template match="pb">
         <xsl:variable name="pageID" select="string-join(('page', @n, @rend), '-')"/>
         <div style="border-style: solid none solid none; border-width: 1px;
-                    margin-top: 1em; margin-bottom: 1em;" id="{$pageID}">
+                    margin-top: 1em; margin-bottom: 1em; text-align: center;"
+             id="{$pageID}">
         <xsl:choose>
                 <xsl:when test="@n and @rend = 'roman'">
-                    Beginn Seite <xsl:value-of select="@n"/> (römisch)
+                    Seite <xsl:choose>
+                        <xsl:when test="@n = '1'">I</xsl:when>
+                        <xsl:when test="@n = '2'">II</xsl:when>
+                        <xsl:when test="@n = '3'">III</xsl:when>
+                        <xsl:when test="@n = '4'">IV</xsl:when>
+                        <xsl:when test="@n = '5'">V</xsl:when>
+                        <xsl:when test="@n = '6'">VI</xsl:when>
+                        <xsl:when test="@n = '7'">VII</xsl:when>
+                        <xsl:when test="@n = '8'">VIII</xsl:when>
+                        <xsl:when test="@n = '9'">IX</xsl:when>
+                        <xsl:when test="@n = '10'">X</xsl:when>
+                    </xsl:choose>
                 </xsl:when>
             <xsl:when test="@n and not(@rend = 'roman') and not(@rend = 'none')">
-                Beginn Seite <xsl:value-of select="@n"/>
+                Seite <xsl:value-of select="@n"/>
             </xsl:when>
             <xsl:when test="@n and @rend = 'none'">
-                Beginn Seite [<xsl:value-of select="@n"/>]
+                Seite [<xsl:value-of select="@n"/>]
             </xsl:when>
             <xsl:when test="not(@n)">
-                <span style="color:gray;">Seitenumbruch</span>
+                <span style="color:gray;">– Seitenumbruch – </span>
             </xsl:when>
             </xsl:choose>
         </div>
