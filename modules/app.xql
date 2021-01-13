@@ -9,6 +9,7 @@ import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "raffShared.xqm";
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
 (:import module namespace raffWork="https://portal.raff-archiv.ch/ns/baudiWork" at "raffWork.xqm";:)
 (:import module namespace raffSource="https://portal.raff-archiv.ch/ns/baudiSource" at "raffSource.xqm";:)
 
@@ -2903,12 +2904,14 @@ declare function app:work($node as node(), $model as map(*)) {
 };
 
 declare function app:registryWritings($node as node(), $model as map(*)) {
-    let $collection := $app:collFullWritings
-    return
-        for $entry in $collection
+    <div class="container">
+        <ul>{
+        for $entry in $app:collFullWritings
             let $entryID := $entry/@xml:id/string()
             return
-                <li>{raffWritings:getTitle($entryID)}</li>
+                <li>{raffWritings:getTitle($entryID)}&#160;<a onclick="pleaseWait()" href="writing/{$entryID}">{$entryID}</a></li>
+        }</ul>
+    </div>
 };
 
 declare function app:writing($node as node(), $model as map(*)) {
@@ -2919,7 +2922,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                        $app:collectionTexts|
                        $app:collectionSources
     let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
-    let $name := $work//tei:fileDesc/tei:titleStmt/tei:title[1]/normalize-space(text())
+    let $name := $writing//tei:fileDesc/tei:titleStmt/tei:title[1]/normalize-space(text())
     
     return
         (
