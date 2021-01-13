@@ -2,7 +2,29 @@
     <xsl:output method="xhtml" encoding="UTF-8"/>
     <xsl:include href="linking.xsl"/>
     <xsl:variable name="docID" select="//TEI/@xml:id/data(.)"/>
-    <xsl:template match="p">
+    
+    <!--front
+    pb n="6" rend="roman"
+    pb n="1" rend="none"-->
+    
+    <xsl:template match="front">
+        <div style="padding: 25px; border: 1px solid gray; text-align: center; min-height: 450px" id="fulltextTitel">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+    <xsl:template match="back">
+        <div style="padding: 50px; border: 1px solid gray; text-align: center;">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+    
+    
+    <xsl:template match="front/p">
+        <p>
+            <xsl:apply-templates/>
+        </p>
+    </xsl:template>
+    <xsl:template match="p[not(parent::front)]">
         <p>
             <xsl:apply-templates/>
         </p>
@@ -11,9 +33,29 @@
         <br/>
         <xsl:apply-templates/>
     </xsl:template>
-    
+    <xsl:template match="pb">
+        <xsl:variable name="pageID" select="string-join(('page', @n, @rend), '-')"/>
+        <div style="border-style: solid none solid none; border-width: 1px;
+                    margin-top: 1em; margin-bottom: 1em;" id="{$pageID}">
+        <xsl:choose>
+                <xsl:when test="@n and @rend = 'roman'">
+                    Beginn Seite <xsl:value-of select="@n"/> (römisch)
+                </xsl:when>
+            <xsl:when test="@n and not(@rend = 'roman') and not(@rend = 'none')">
+                Beginn Seite <xsl:value-of select="@n"/>
+            </xsl:when>
+            <xsl:when test="@n and @rend = 'none'">
+                Beginn Seite [<xsl:value-of select="@n"/>]
+            </xsl:when>
+            <xsl:when test="not(@n)">
+                <span style="color:gray;">Seitenumbruch</span>
+            </xsl:when>
+            </xsl:choose>
+        </div>
+        <xsl:apply-templates/>
+    </xsl:template>
     <xsl:template match="div/head">
-        <b class="heading">
+        <b class="heading" style="padding-top: 1.5em;">
             <xsl:apply-templates/>
         </b>
     </xsl:template>
