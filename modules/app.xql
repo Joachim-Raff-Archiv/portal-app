@@ -28,6 +28,7 @@ declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitut
 declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI//tei:correspDesc/ancestor::tei:TEI;
 declare variable $app:collectionTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
 declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//mei:mei;
+declare variable $app:collectionWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
 declare variable $app:collFullPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
@@ -36,7 +37,8 @@ declare variable $app:collFullInstitutions := collection('/db/apps/jraInstitutio
 declare variable $app:collFullSources := collection('/db/apps/jraSources/data')//tei:TEI;
 declare variable $app:collFullTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
 declare variable $app:collFullWorks := collection('/db/apps/jraWorks/data')//mei:mei;
-declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks);
+declare variable $app:collFullWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
+declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks, $app:collFullWritings);
 
 declare function app:langSwitch($node as node(), $model as map(*)) {
     let $supportedLangVals := ('de', 'en')
@@ -2887,6 +2889,111 @@ declare function app:work($node as node(), $model as map(*)) {
                              <pre>
                                  <xmp>
                                      {transform:transform($work/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                                 </xmp>
+                             </pre>
+                         </div>)
+                     else()}
+                 </div>
+                 {raffShared:suggestedCitation($id)}
+             </div>
+         </div>
+     </div>
+  </div>
+        )
+};
+
+declare function app:registryWritings($node as node(), $model as map(*)) {
+    let $collection := $app:collFullWritings
+    return
+        for $entry in $collection
+            let $entryID := $entry/@xml:id/string()
+            return
+                <li>{raffWritings:getTitle($entryID)}</li>
+};
+
+declare function app:writing($node as node(), $model as map(*)) {
+    
+    let $id := request:get-parameter("writing-id", "E00000")
+    let $writing := $app:collectionWritings/id($id)
+    let $collection := $app:collectionInstitutions|
+                       $app:collectionTexts|
+                       $app:collectionSources
+    let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
+    let $name := $work//tei:fileDesc/tei:titleStmt/tei:title[1]/normalize-space(text())
+    
+    return
+        (
+  <div
+    class="container">
+     <div
+         class="page-header">
+         <h2>{$name}</h2>
+         <hr/>
+         <ul class="nav nav-pills"
+                     role="tablist">
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra active"
+                             data-toggle="tab"
+                             href="#metadata">Allgemein</a></li>
+                     {if (local:getReferences($id)) then(
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#references">Referenzen</a></li>
+                             )else()}
+                    {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+         then(<li
+             class="nav-item"><a
+                 class="nav-link-jra"
+                 data-toggle="tab"
+                 href="#viewXML">XML-Ansicht</a></li>)
+                 else()}
+                 </ul>
+     
+         <hr/>
+     </div>
+     <div
+         class="container">
+         <div
+             class="row">
+             <div
+                 class="col">
+                 <div
+                     class="tab-content">
+                     <div
+                         class="tab-pane fade show active"
+                         id="metadata">
+                         <br/>
+         {transform:transform($writing, doc("/db/apps/raffArchive/resources/xslt/metadataWriting.xsl"), ())}
+                     </div>
+                     {
+                         if (local:getReferences($id))
+                         then (<div
+                                 class="tab-pane fade"
+                                 id="references">
+                                 <br/>
+                                 <div >{
+                                     let $entrys := local:getReferences($id)
+                                     return
+                                         $entrys
+                                 }</div>
+                               </div>
+                         )
+                         else
+                             ()
+                     }
+                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
+                         contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                     then(<div
+                         class="tab-pane fade"
+                         id="viewXML">
+                             <pre>
+                                 <xmp>
+                                     {transform:transform($writing/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                                  </xmp>
                              </pre>
                          </div>)
