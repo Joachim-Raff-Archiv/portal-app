@@ -2922,7 +2922,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                        $app:collectionTexts|
                        $app:collectionSources
     let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
-    let $name := $writing//tei:fileDesc/tei:titleStmt/tei:title[1]/normalize-space(text())
+    let $name := raffWritings:getTitle($id)
     
     return
         (
@@ -2940,6 +2940,12 @@ declare function app:writing($node as node(), $model as map(*)) {
                              class="nav-link-jra active"
                              data-toggle="tab"
                              href="#metadata">Allgemein</a></li>
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#fulltext">Volltext</a></li>
                      {if (local:getReferences($id)) then(
                      <li
                          class="nav-item">
@@ -2971,7 +2977,13 @@ declare function app:writing($node as node(), $model as map(*)) {
                          class="tab-pane fade show active"
                          id="metadata">
                          <br/>
-         {transform:transform($writing, doc("/db/apps/raffArchive/resources/xslt/metadataWriting.xsl"), ())}
+         {transform:transform($writing//tei:teiHeader, doc("/db/apps/raffArchive/resources/xslt/metadataWriting.xsl"), ())}
+                     </div>
+                     <div
+                         class="tab-pane fade"
+                         id="fulltext">
+                         <br/>
+         {transform:transform($writing//tei:text, doc("/db/apps/raffArchive/resources/xslt/contentWriting.xsl"), ())}
                      </div>
                      {
                          if (local:getReferences($id))
