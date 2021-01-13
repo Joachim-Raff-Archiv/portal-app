@@ -143,8 +143,8 @@ declare function local:replaceToSortDist($input) {
 distinct-values(
                 replace(replace(replace(replace(replace(replace(replace(replace(replace($input,'ö','oe'),'ä','ae'),'ü','ue'),'É','E'),'é','e'),'è','e'),'ê','e'),'á','a'),'à','a')
                 )
-                };
-                
+};
+
 declare function local:turnName($nameToTurn){
 let $nameTurned := if(contains($nameToTurn,'['))
                    then($nameToTurn)
@@ -1933,12 +1933,28 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 case '9' return '0-9'
                                                 default return $case 
                             let $workID := $work/@xml:id/string()
+                            
+                            let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
+                            let $perfDesc := string-join($workPerfRess, ' | ')
+                            let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
+                            let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
                             let $name := <div
                                             class="row RegisterEntry" titleToSort="{$withoutArticle}">
                                             <div
-                                                class="col-sm-5 col-md-7 col-lg-8">{$workName}</div>
+                                                class="col-sm-5 col-md-7 col-lg-8">
+                                                {$workName}
+                                                
+                                                {if($perfDesc or $arranged)
+                                                then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
+                                                else()}
+                                                </div>
                                             <div
-                                                class="col-sm-4 col-md-3 col-lg-2">{$opus}</div>
+                                                class="col-sm-4 col-md-3 col-lg-2">{$opus}
+                                                <br/>
+                                                {if($lost)
+                                                then(<span class="sublevel">{$lost}</span>)
+                                                else()}
+                                            </div>
                                             <div
                                                 class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
                                                     href="work/{$workID}">{$workID}</a></div>
@@ -2083,7 +2099,9 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $content := <div
         class="container">
         <br/>
-        <ul
+        <div class="row  justify-content-between">
+        
+            <ul
             class="nav nav-tabs"
             role="tablist">
             <li
@@ -2109,6 +2127,10 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     data-toggle="tab"
                     href="#sortGenre">Kategorien</a></li>
         </ul>
+            <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                            {local:filterInput()}
+                        </div>
+        </div>
         <div
             class="tab-content">
             <div
