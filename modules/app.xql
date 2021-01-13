@@ -2904,14 +2904,162 @@ declare function app:work($node as node(), $model as map(*)) {
 };
 
 declare function app:registryWritings($node as node(), $model as map(*)) {
-    <div class="container">
+    (:<div class="container">
         <ul>{
         for $entry in $app:collFullWritings
             let $entryID := $entry/@xml:id/string()
             return
                 <li>{raffWritings:getTitle($entryID)}&#160;<a onclick="pleaseWait()" href="writing/{$entryID}">{$entryID}</a></li>
         }</ul>
+    </div>:)
+    
+    let $writings := $app:collFullWritings
+    
+    let $writingsAlpha := for $writing in $writings
+                            let $writingID := $writing/@xml:id/string()
+                            let $title := $writing//tei:sourceDesc//tei:title[1]/text()
+                            let $initial := substring(local:replaceCutArticlesForSort($title), 1, 1)
+                            let $author := $writing//tei:sourceDesc//tei:author[1]
+                            let $pubPlace := $writing//tei:sourceDesc//tei:imprint/tei:pubPlace[1]
+                            let $date := $writing//tei:sourceDesc//tei:imprint/tei:date[1]
+                            
+                            let $entry := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {$title}
+                                    {<br/>,
+                                     <span class="sublevel">
+                                        {if($pubPlace != '' or $date != '')
+                                        then(string-join(($pubPlace, $date),' '))
+                                        else(<br/>)
+                                        }
+                                     </span>
+                                    }
+                                </div>
+                                <div
+                                    class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
+                                        href="writing/{$writingID}">{$writingID}</a></div>
+                            </div>
+                                group by $initial
+                                order by $initial
+                            return
+                                (<div
+                                    name="{$initial}"
+                                    count="{count($entry)}">
+                                    {
+                                        for $each in $entry
+                                        let $order := local:replaceToSortDist($each)
+                                            order by $order
+                                        return
+                                            $each
+                                    }
+                                </div>)
+    
+    let $WritingsGroupedByInitials := for $groups in $writingsAlpha
+                                        group by $initial := $groups/@name/string()
+                                        return
+                                            (<div
+                                                class="RegisterSortBox"
+                                                initial="{$initial}"
+                                                count="{$writingsAlpha[@name=$initial]/@count}"
+                                                xmlns="http://www.w3.org/1999/xhtml">
+                                                <div
+                                                    class="RegisterSortEntry"
+                                                    id="{
+                                                            concat('list-item-', if ($initial='') then
+                                                                ('unknown')
+                                                            else
+                                                                ($initial))
+                                                        }">
+                                                    {
+                                                        if ($initial = '') then
+                                                            ('[ohne Initial]')
+                                                        else
+                                                            ($initial)
+                                                    }
+                                                </div>
+                                                {
+                                                    for $group in $groups
+                                                    return
+                                                        $group
+                                                }
+                                            </div>)
+    
+    return
+        
+        <div
+            class="container"
+            xmlns="http://www.w3.org/1999/xhtml">
+                    <div class="row  justify-content-between">
+                        <div class="col-sm-9 	col-md-7 	col-lg-7">
+                            <p>Der Katalog verzeichnet derzeit {count($writings)} Schriften.</p>
+                        </div>
+                        <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                            {local:filterInput()}
     </div>
+                    </div>
+                    <ul
+                        class="nav nav-tabs"
+                        id="myTab"
+                        role="tablist">
+                        <li
+                            class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra active"
+                                href="#alpha">Alphabetisch</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="#alpha" onclick="pleaseWait()">Jahr</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="#alpha" onclick="pleaseWait()">Ort</a></li>
+                    </ul>
+                    <div
+                        class="tab-content">
+                        <div
+                            class="tab-pane fade show active"
+                            id="alpha">
+                            <br/>
+                            <div
+                                class="container row">
+                                <div id="navigator" class="list-group col-sm-4 col-md-3 col-lg-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
+                                    {
+                                        for $each in $WritingsGroupedByInitials
+                                            let $initial := if ($each/@initial/string() = '') then
+                                                ('unknown')
+                                            else
+                                                ($each/@initial/string())
+                                            let $count := $each/@count/string()
+                                            order by $initial
+                                        return
+                                            <a
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', $initial)}"><span>{
+                                                        if (matches($initial,'unknown')) then
+                                                            ('[weitere]')
+                                                        else
+                                                            ($initial)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$count}</span>
+                                            </a>
+                                    }
+                                
+                                </ul>
+                                </div>
+                                <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                    {$WritingsGroupedByInitials}
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+    
 };
 
 declare function app:writing($node as node(), $model as map(*)) {
@@ -3251,6 +3399,13 @@ let $count := count($app:collectionInstitutions)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Institutionen</span>)
+};
+
+declare function app:countWritings($node as node(), $model as map(*)){
+let $count := count($app:collectionWritings)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Schriften</span>)
 };
 
 declare function app:alert($node as node(), $model as map(*)){
