@@ -25,10 +25,12 @@ import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 declare function raffWritings:getTitle($id as xs:string?) {
     
     let $file := $app:collFullWritings/id($id)
+    let $title := $file//tei:sourceDesc//tei:title[1]/normalize-space(text())
+    let $author := $file//tei:sourceDesc//tei:author[1]/normalize-space(text())
     
     return
-    if(doc-available($file))
-    then($file//tei:title[1])
-    else('[no Title]')
+        if($title or $author)
+        then(string-join(($author, $title), ': '))
+        else('[N.N.]')
 
 };
