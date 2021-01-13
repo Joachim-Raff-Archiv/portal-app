@@ -2112,9 +2112,12 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
    
     let $content := <div
         class="container">
-        <br/>
         <div class="row  justify-content-between">
-        
+            <div class="col"/>
+            <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                {local:filterInput()}
+            </div>
+        </div>
             <ul
             class="nav nav-tabs"
             role="tablist">
@@ -2141,10 +2144,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                     data-toggle="tab"
                     href="#sortGenre">Kategorien</a></li>
         </ul>
-            <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                            {local:filterInput()}
-                        </div>
-        </div>
+            
         <div
             class="tab-content">
             <div
