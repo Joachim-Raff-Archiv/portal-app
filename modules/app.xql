@@ -3011,7 +3011,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                                        else()
                    let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
                    return
-                   <li class="nav-item"><a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}">Seite: {$pageNoLabel}</a></li>
+                   <li class="nav-item"><a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}">Seite {$pageNoLabel}</a></li>
                }</ul>
                </div>
             </div>
