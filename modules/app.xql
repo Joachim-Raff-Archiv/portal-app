@@ -2983,7 +2983,39 @@ declare function app:writing($node as node(), $model as map(*)) {
                          class="tab-pane fade"
                          id="fulltext">
                          <br/>
-         {transform:transform($writing//tei:text, doc("/db/apps/raffArchive/resources/xslt/contentWriting.xsl"), ())}
+         <div class="row">
+            <div class="col">
+            {transform:transform($writing//tei:text, doc("/db/apps/raffArchive/resources/xslt/contentWriting.xsl"), ())}
+            </div>
+            <div class="col-2">
+               <h5>Navigation</h5>
+               <div style="height:400px; overflow-y: scroll;">
+               <ul class="nav flex-column">
+               <a class="nav-link" href="#fulltextTitel">Titelseite</a>
+               {
+               for $pb in $writing//tei:text//tei:pb[@n]
+                   let $pageNo := $pb/@n/string()
+                   let $pageNoRoman := if($pb[@rend = 'roman'])
+                                       then(switch ($pageNo)
+                                            case '1' return 'I'
+                                            case '2' return 'II'
+                                            case '3' return 'III'
+                                            case '4' return 'IV'
+                                            case '5' return 'V'
+                                            case '6' return 'VI'
+                                            case '7' return 'VII'
+                                            case '8' return 'VIII'
+                                            case '9' return 'IX'
+                                            case '10' return 'X'
+                                            default return $pageNo)
+                                       else()
+                   let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
+                   return
+                   <li class="nav-item"><a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}">Seite: {$pageNoLabel}</a></li>
+               }</ul>
+               </div>
+            </div>
+            </div>
                      </div>
                      {
                          if (local:getReferences($id))
