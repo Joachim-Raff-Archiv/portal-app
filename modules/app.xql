@@ -140,9 +140,23 @@ let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
                 };
 
 declare function local:replaceToSortDist($input) {
-distinct-values(
-                replace(replace(replace(replace(replace(replace(replace(replace(replace($input,'ö','oe'),'ä','ae'),'ü','ue'),'É','E'),'é','e'),'è','e'),'ê','e'),'á','a'),'à','a')
-                )
+
+let $fr := 	('ö','ä','ü','É','é','è','ê','á','à')
+let $to := 	('oe','ae','ue','E','e','e','e','a','a')
+   
+   return
+      functx:replace-multi(lower-case($input),$fr,$to)
+        => distinct-values()
+
+};
+
+declare function local:replaceCutArticlesForSort($input) {
+
+   let $fr := 	('der', 'die', 'das', 'ein', 'eine', '[N.N.]','den','la','le','l’')
+   let $to := 	('', '', '', '', '', '', '', '', '', '')
+   
+   return
+      normalize-space(functx:replace-multi(lower-case($input),$fr,$to))
 };
 
 declare function local:turnName($nameToTurn){
@@ -1917,7 +1931,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $worksAlpha := for $work in $works
                             let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
                             let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-                            let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
+                            let $withoutArticle := local:replaceCutArticlesForSort($workName)
                             let $initial := for $case in upper-case(substring($withoutArticle, 1, 1))
                                                 return switch ($case)
                                                 case 'É' return 'E'
