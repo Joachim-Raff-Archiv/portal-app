@@ -1957,7 +1957,6 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             <div
                                                 class="col-sm-5 col-md-7 col-lg-8">
                                                 {$workName}
-                                                
                                                 {if($perfDesc or $arranged)
                                                 then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
                                                 else()}
@@ -1966,7 +1965,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 class="col-sm-4 col-md-3 col-lg-2">{$opus}
                                                 <br/>
                                                 {if($lost)
-                                                then(<span class="sublevel">{$lost}</span>)
+                                                then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
                                                 else()}
                                             </div>
                                             <div
@@ -2054,12 +2053,27 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                             ('0000')
                             let $year := substring($compositionDate, 1, 4)
                             let $workID := $work/@xml:id/string()
+                            
+                            let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
+                            let $perfDesc := string-join($workPerfRess, ' | ')
+                            let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
+                            let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
                             let $name := <div
                                 class="row RegisterEntry" titleToSort="{$withoutArticle}">
                                 <div
-                                    class="col-sm-5 col-md-7 col-lg-8">{$workName}</div>
+                                    class="col-sm-5 col-md-7 col-lg-8">
+                                    {$workName}
+                                    {if($perfDesc or $arranged)
+                                                then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
+                                                else()}
+                                </div>
                                 <div
-                                    class="col-sm-4 col-md-3 col-lg-2">{$opus}</div>
+                                    class="col-sm-4 col-md-3 col-lg-2">{$opus}
+                                    <br/>
+                                                {if($lost)
+                                                then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
+                                                else()}
+                                </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
                                         href="work/{$workID}">{$workID}</a></div>
@@ -2164,14 +2178,28 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
                                 let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
                                 let $workID := $work/@xml:id/normalize-space(data(.))
-                                    order by $opus ascending
+                                
+                                let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
+                                let $perfDesc := string-join($workPerfRess, ' | ')
+                                let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
+                                let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
+                                
+                                order by $opus ascending
                                 return
                                     <div
                                         class="row RegisterEntry">
                                         <div
-                                            class="col-sm-4 col-md-3 col-lg-2">{$opus}</div>
+                                            class="col-sm-4 col-md-3 col-lg-2">{$opus}
+                                            <br/>
+                                                {if($lost)
+                                                then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
+                                                else()}</div>
                                         <div
-                                            class="col-sm-5 col-md-7 col-lg-8">{$name}</div>
+                                            class="col-sm-5 col-md-7 col-lg-8">{$name}
+                                            {if($perfDesc or $arranged)
+                                                then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
+                                                else()}
+                                        </div>
                                         <div
                                             class="col-sm-3 col-md-2 col-lg-2"><a
                                                 href="work/{$workID}">{$workID}</a></div>
@@ -2185,14 +2213,28 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
                                 let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
                                 let $workID := $work/@xml:id/normalize-space(data(.))
-                                    order by $opus ascending
+                                
+                                let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
+                                let $perfDesc := string-join($workPerfRess, ' | ')
+                                let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
+                                let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
+                                
+                                order by $opus ascending
                                 return
                                     <div
                                         class="row RegisterEntry">
                                         <div
-                                            class="col-sm-4 col-md-3 col-lg-2">{$opus}</div>
+                                            class="col-sm-4 col-md-3 col-lg-2">{$opus}
+                                            <br/>
+                                                {if($lost)
+                                                then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
+                                                else()}</div>
                                         <div
-                                            class="col-sm-5 col-md-7 col-lg-8">{$name}</div>
+                                            class="col-sm-5 col-md-7 col-lg-8">{$name}
+                                            {if($perfDesc or $arranged)
+                                                then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
+                                                else()}
+                                        </div>
                                         <div
                                             class="col-sm-3 col-md-2 col-lg-2"><a
                                                 href="work/{$workID}">{$workID}</a></div>
