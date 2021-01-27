@@ -23,10 +23,10 @@ declare namespace http = "http://expath.org/ns/http-client";
 declare namespace range = "http://exist-db.org/xquery/range";
 declare namespace pkg = "http://expath.org/ns/pkg";
 
-declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI//tei:correspDesc/ancestor::tei:TEI;
-declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI//tei:person/ancestor::tei:TEI;
-declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI//tei:org/ancestor::tei:TEI;
-declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI//tei:correspDesc/ancestor::tei:TEI;
+declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspDesc];
+declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
+declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI[.//tei:org];
+declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI[.//tei:correspDesc];
 declare variable $app:collectionTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
 declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//mei:mei;
 declare variable $app:collectionWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
@@ -391,7 +391,7 @@ declare function local:getNameJoined($person){
 };
 
 declare function local:getWorks($cat){
-    let $works := $app:collectionWorks//mei:term[.=$cat]/ancestor::mei:mei
+    let $works := $app:collectionWorks[matches(.//mei:term, $cat)]
     for $work in $works
         let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
         let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
@@ -746,9 +746,9 @@ declare function app:letter($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("letter-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
-    let $letter := $app:collectionPostals[@xml:id = $id]
+    let $letter := $app:collectionPostals/id($id)
     let $person := $app:collectionPersons
-    let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
+    let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person/id($letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key)/tei:forename[@type='used']:)
     let $datumSent := raffShared:formatDate(raffShared:getDate($letter//tei:correspAction[@type = "sent"]))
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
@@ -1392,7 +1392,7 @@ declare function app:person($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("person-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
-    let $person := $app:collectionPersons[@xml:id = $id]
+    let $person := $app:collectionPersons/id($id)
     let $name := raffPostals:getName($id, 'full')
     let $correspondence := $app:collectionPostals//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
@@ -1781,7 +1781,7 @@ declare function app:institution($node as node(), $model as map(*)) {
     let $id := request:get-parameter("institution-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
     let $persons := $app:collectionPersons
-    let $institution := $app:collectionInstitutions[@xml:id = $id]
+    let $institution := $app:collectionInstitutions/id($id)
     let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
     let $letters := $app:collectionPostals
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
@@ -2885,7 +2885,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
 declare function app:work($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("work-id", "Fehler")
-    let $work := $app:collectionWorks[@xml:id = $id]
+    let $work := $app:collectionWorks/id($id)
     let $collection := $app:collectionInstitutions|
                        $app:collectionTexts|
                        $app:collectionSources

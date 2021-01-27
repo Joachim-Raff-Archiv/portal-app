@@ -32,17 +32,21 @@ let $senders := for $sender in ($correspActionSent//tei:persName/@key | $corresp
 
 declare function raffPostals:getName($key as xs:string, $param as xs:string){
 
-    let $person :=$app:collectionPersons[range:field-eq("person-id", $key)]
-    let $institution := $app:collectionInstitutions[range:field-eq("institution-id", $key)]
-    let $nameForename := string-join($person//tei:forename[matches(@type,"^used")], ' ')
+    let $person :=$app:collectionPersons/id($key) (:[range:field-eq("person-id", $key)]:)
+    let $institution := $app:collectionInstitutions/id($key) (:[range:field-eq("institution-id", $key)]:)
+    let $nameForename := $person//tei:forename[matches(@type,"used")]
+                          => string-join(' ')
     let $nameNameLink := $person//tei:nameLink[1]/text()[1]
-    let $nameSurname := string-join($person//tei:surname[matches(@type,"^used")], ' ')
+    let $nameSurname := $person//tei:surname[matches(@type,"^used")]
+                         => string-join(' ')
     let $nameGenName := $person//tei:genName/text()
-    let $nameAddNameTitle := $person//tei:addName[matches(@type,"^title")][1]/text()[1]
+    let $nameAddNameTitle := $person//tei:addName[matches(@type,"title")][1]/text()[1]
     let $nameAddNameEpitet := $person//tei:addName[matches(@type,"^epithet")][1]/text()[1]
-    let $pseudonym := string-join(($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')]), ' ')
+    let $pseudonym := ($person//tei:forename[matches(@type,'^pseudonym')], $person//tei:surname[matches(@type,'^pseudonym')])
+                        => string-join(' ')
     let $nameRoleName := $person//tei:roleName[1]/text()[1]
-    let $nameAddNameNick := string-join($person//tei:addName[matches(@type,"^nick")], ' ')
+    let $nameAddNameNick := $person//tei:addName[matches(@type,"^nick")]
+                             => string-join(' ')
     let $affiliation := $person//tei:affiliation[1]/text()
     let $nameUnspecified := $person//tei:name[matches(@type,'^unspecified')][1]/text()[1]
     let $nameUnspec := if($affiliation and $nameUnspecified)

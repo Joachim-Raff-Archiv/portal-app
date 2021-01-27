@@ -663,7 +663,7 @@ declare function raffShared:formatDateRegistryLetters($dateArray){
                   else($dateRaw)
     
     let $replace := replace($date,'Mai.','Mai')
-    let $bracketify := if($type = 'editor') then(concat('[', $replace, ']')) else($replace)
+    let $bracketify := if(matches($type, 'editor')) then(concat('[', $replace, ']')) else($replace)
     return
         $bracketify
 };
@@ -744,7 +744,7 @@ declare function raffShared:suggestedCitation($id as xs:string) {
     
     let $itemLink := request:get-url()
     let $itemTypePath := functx:substring-before-last($itemLink, '/')
-    let $doc := $app:collectionsAll/root()/node()[@xml:id = $id]
+    let $doc := $app:collectionsAll/root()/node()/id($id)
     let $itemType := functx:substring-after-last-match($itemTypePath, '/')
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
@@ -810,7 +810,7 @@ declare function raffShared:forwardEntries($idParam as xs:string) {
                           else if(starts-with($currentUri, 'http://localhost:8080/exist/apps/raffArchive'))
                           then('http://localhost:8080/exist/apps/raffArchive/html')
                           else('/html/')
-    let $entryDeleted := $app:collFullAll[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string()
+    let $entryDeleted := $app:collFullAll/id($idParam)//tei:relation[@type='deleted']/@active/string()
     let $entryIdToForward := substring-after($entryDeleted,'#')
     let $entryType := if(starts-with($entryIdToForward, 'A'))
                      then('letter')
