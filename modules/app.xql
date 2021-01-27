@@ -172,13 +172,9 @@ return
 };
 
 declare function local:getReferences($id) {
-    let $collectionReference := ($app:collectionPersons//@key[.=$id], $app:collectionInstitutions//@key[.=$id], $app:collectionTexts//@key[.=$id], $app:collectionSources//tei:note[@type='regeste']//@key[.=$id], $app:collectionWorks//@auth[.=$id])
+    let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)], $app:collectionInstitutions[matches(.//@key,$id)], $app:collectionTexts[matches(.//@key,$id)], $app:collectionSources//tei:note[@type='regeste'][matches(.//@key,$id)], $app:collectionWorks[matches(.//@auth,$id)])
     let $entryGroups := for $doc in $collectionReference
-                          let $docRoot := if($doc/ancestor::tei:TEI)
-                                          then($doc/ancestor::tei:TEI)
-                                          else if($doc/ancestor::mei:mei)
-                                          then($doc/ancestor::mei:mei)
-                                          else('unknownNamespace')
+                          let $docRoot := $doc/root()/node()
                           let $docID := $docRoot/@xml:id
                           let $docIDInitial := substring($docID,1,1)
                           let $docType := if(starts-with($docRoot/@xml:id,'A'))
@@ -328,7 +324,7 @@ let $receiver := if($correspActionReceived/tei:persName[3]/text())
 };
 
 declare function local:getCorrespondance($id){
-    let $correspondence := $app:collectionPostals//@key[.=$id][not(./ancestor::tei:note[@type='regeste'])]
+    let $correspondence := $app:collectionPostals[matches(.//@key[not(./ancestor::tei:note[@type='regeste'])], $id)]
     for $doc in $correspondence
         let $letter := $doc/ancestor::tei:TEI
         let $letterID := $letter/@xml:id/string()
