@@ -35,7 +35,7 @@
                                             [intendiert]
                                         </xsl:if>
                                     <xsl:if test="$corresp">
-                                            <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                            <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                         </xsl:if>
                                         <xsl:value-of select="."/>
                                         <xsl:if test="@auth">
@@ -49,7 +49,7 @@
                                 <xsl:when test="mei:corpName">
                                     <xsl:for-each select="mei:corpName">
                                         <xsl:if test="$corresp">
-                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                     </xsl:if>
                                     <xsl:value-of select="."/>
                                     <xsl:if test="@auth">
@@ -62,7 +62,7 @@
                                     </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:if test="$corresp">
-                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                     </xsl:if>
                                     <xsl:value-of select="."/>
                                     <br/>
@@ -89,14 +89,14 @@
                             </a>)
                                 </xsl:if>
                             <xsl:if test="$corresp">
-                                <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
+                                <xsl:value-of select="concat(' [Nr. ',//mei:mdiv/id($corresp)/@n,']')"/>
                             </xsl:if>
                             <br/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="."/>
                                 <xsl:if test="$corresp">
-                                    <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
+                                    <xsl:value-of select="concat(' [Nr. ',//mei:mdiv/id($corresp)/@n,']')"/>
                                 </xsl:if>
                                 <br/>
                             </xsl:otherwise>
@@ -295,7 +295,7 @@
                         <ul style="list-style-type:circle">
                             <xsl:for-each select="//mei:componentList/mei:manifestation/mei:itemList/mei:item">
                                 <xsl:variable name="sourceClass" select="//mei:componentList/mei:manifestation/mei:itemList/mei:item/@codedval"/>
-                                <li> [<xsl:value-of select="document('../../../../apps/jraDefinitions/data/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category[@xml:id = $sourceClass]/mei:desc[@xml:lang = 'de']"/>] <xsl:value-of select=".//mei:locus"/>
+                                <li> [<xsl:value-of select="document('../../../../apps/jraDefinitions/data/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category/id($sourceClass)/mei:desc[@xml:lang = 'de']"/>] <xsl:value-of select=".//mei:locus"/>
                                 </li>
                             </xsl:for-each>
                         </ul>

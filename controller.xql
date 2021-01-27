@@ -287,63 +287,33 @@ else
 						</error-handler>
 					</dispatch>
 					
-						
-						(: if its an manuskript :)
-					else
-						if (matches($exist:path, "/sources/manuscript/")) then
-							<dispatch
-								xmlns="http://exist.sourceforge.net/NS/exist">
-								<forward
-									url="{$exist:controller}/html/sources/viewManuscript.html">
-									<add-parameter
-										name="source-id"
-										value="{$exist:resource}"/>
-								</forward>
-								<view>
-									<forward
-										url="{$exist:controller}/modules/view.xql">
-										<add-parameter
-											name="source-id"
-											value="{$exist:resource}"/>
-									</forward>
-								</view>
-								<error-handler>
-									<forward
-										url="{$exist:controller}/templates/error-page.html"
-										method="get"/>
-									<forward
-										url="{$exist:controller}/modules/view.xql"/>
-								</error-handler>
-							</dispatch>
-							
-							
-							(: if its an druck :)
-						else
-							if (matches($exist:path, "/sources/print/")) then
-								<dispatch
-									xmlns="http://exist.sourceforge.net/NS/exist">
-									<forward
-										url="{$exist:controller}/html/sources/viewPrint.html">
-										<add-parameter
-											name="source-id"
-											value="{$exist:resource}"/>
-									</forward>
-									<view>
-										<forward
-											url="{$exist:controller}/modules/view.xql">
-											<add-parameter
-												name="source-id"
-												value="{$exist:resource}"/>
-										</forward>
-									</view>
-									<error-handler>
-										<forward
-											url="{$exist:controller}/templates/error-page.html"
-											method="get"/>
-										<forward
-											url="{$exist:controller}/modules/view.xql"/>
-									</error-handler>
-								</dispatch>
+			(: if it's a writing :)
+			else
+				if (matches($exist:path, "/writing/")) then
+					<dispatch
+						xmlns="http://exist.sourceforge.net/NS/exist">
+						<forward
+							url="{$exist:controller}/html/viewWriting.html">
+							<add-parameter
+								name="work-id"
+								value="{$exist:resource}"/>
+						</forward>
+						<view>
+							<forward
+								url="{$exist:controller}/modules/view.xql">
+								<add-parameter
+									name="writing-id"
+									value="{$exist:resource}"/>
+							</forward>
+						</view>
+						<error-handler>
+							<forward
+								url="{$exist:controller}/templates/error-page.html"
+								method="get"/>
+							<forward
+								url="{$exist:controller}/modules/view.xql"/>
+						</error-handler>
+					</dispatch>
 							
 							
 							else

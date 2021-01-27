@@ -3,6 +3,7 @@
     <!-- Main Nav -->
     <msg key="jra.mainNav.home">Home</msg>
     <msg key="jra.mainNav.works">Works</msg>
+    <msg key="jra.mainNav.writings">Writings</msg>
     <msg key="jra.mainNav.sources">Sources</msg>
     <msg key="jra.mainNav.editions">Editions</msg>
     <msg key="jra.mainNav.persons">Persons</msg>
@@ -144,6 +145,9 @@
     <msg key="jra.catalog.works.perfRes.viola">Viola</msg>
     <msg key="jra.catalog.works.perfRes.cello">Cello</msg>
     <msg key="jra.catalog.works.perfRes.doubleBass">Double bass</msg>
+    
+    <!-- Catalog of Writings -->
+    <msg key="jra.catalog.writings">Catalog of writings</msg>
     
     <!-- Catalog of Sources -->
     <msg key="jra.catalog.sources">Catalog of sources</msg>

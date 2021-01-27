@@ -5,6 +5,16 @@
   License: https://bootstrapmade.com/license/
 */
 
+@font-face{
+    font-family: bravura;
+    src: url('../fonts/BravuraText.woff');
+}
+
+span.bravura {
+    font-family: bravura;
+    vertical-align: middle;
+}
+
 /*======================================
 //--//-->   STYLES GENERALES
 ======================================*/
