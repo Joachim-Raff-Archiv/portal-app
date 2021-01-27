@@ -86,6 +86,16 @@
             <xsl:apply-templates/>
         </span>
     </xsl:template>
+    <xsl:template match="hi[@rend = 'spaced']">
+        <span style="letter-spacing: 3px;">
+            <xsl:apply-templates/>
+        </span>
+    </xsl:template>
+    <xsl:template match="hi[@rend = 'latin']">
+        <i>
+            <xsl:apply-templates/>
+        </i>
+    </xsl:template>
     <xsl:template match="hi[@rend = 'strike']">
         <span class="text-decoration: line-through;">
             <xsl:apply-templates/>
@@ -149,5 +159,16 @@
             </span>
         </xsl:for-each>
     </xsl:template>
-
+    
+    <xsl:template match="note">
+        <xsl:variable name="noteContent" select="./text()"/>
+        <xsl:variable name="noteCounter">
+            <xsl:if test="@n = '1'">*)</xsl:if>
+            <xsl:if test="@n = '2'">**)</xsl:if>
+        </xsl:variable>
+        <span data-container="body" data-toggle="popover" title="Fußnote {$noteCounter}" data-placement="top" data-content="{$noteContent}" style="color: #641a85;">
+            <xsl:value-of select="$noteCounter"/>
+        </span>
+    </xsl:template>
+    
 </xsl:stylesheet>
