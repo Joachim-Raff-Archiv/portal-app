@@ -66,28 +66,16 @@
         <copy todir=".">
             <file file="repo/rwxrwxr-x/repo.xml"/>
         </copy>
-        <exec executable="bash">
+        <exec executable="/bin/bash">
             <arg value="scripts/stashTemp.sh"/>
         </exec>
         <exec executable="python">
             <arg value="${pathResolverLocalhost}"/>
         </exec>
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
-        <!--<git command="reset">
-            <args>
-                <arg value="-\-hard" />
-            </args>
-        </git>-->
-        <!--<git command="stash">
-            <args>
-                <arg value="apply"/>
-            </args>
-        </git>-->
-        <!--<git command="stash">
-            <args>
-                <arg value="clear"/>
-            </args>
-        </git>-->
+        <exec executable="/bin/bash">
+            <arg value="scripts/resetAndClear.sh"/>
+        </exec>
     </target>
     
     <target name="deployDev" depends="xarDev">
