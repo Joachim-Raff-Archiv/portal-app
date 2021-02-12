@@ -12,6 +12,20 @@
                     </td>
                 </tr>
                 
+                <tr>
+                    <td valign="top">Alternativer Titel:</td>
+                    <td>
+                        <xsl:value-of select="//mei:workList/mei:work/mei:title[@type = 'alt' and @xml:lang = 'de']/normalize-space(text())"/>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td valign="top">Populärtitel:</td>
+                    <td>
+                        <xsl:value-of select="//mei:workList/mei:work/mei:title[@type = 'popular' and @xml:lang = 'de']/normalize-space(text())"/>
+                    </td>
+                </tr>
+                
 <!--                <xsl:if test="//mei:creation/mei:dedication/text()/normalize-space(.) !=''">-->
                 <tr>
                     <td valign="top">Widmung:</td>
