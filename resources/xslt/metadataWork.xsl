@@ -11,16 +11,20 @@
                         <xsl:value-of select="mei:mei/@xml:id"/>
                     </td>
                 </tr>
-                </table>
-            <table class="workView">
-                <xsl:if test="//mei:creation/mei:dedication/text()/normalize-space(.) !=''">
+                
+<!--                <xsl:if test="//mei:creation/mei:dedication/text()/normalize-space(.) !=''">-->
                 <tr>
                     <td valign="top">Widmung:</td>
                     <td>
-                        <xsl:value-of select="//mei:creation/mei:dedication/text()[1]"/>
+                        <xsl:choose>
+                            <xsl:when test="//mei:creation/mei:dedication/text()[1]">
+                                <xsl:value-of select="//mei:creation/mei:dedication/text()[1]"/>
+                            </xsl:when>
+                            <xsl:otherwise>[ohne]</xsl:otherwise>
+                        </xsl:choose>
                     </td>
                 </tr>
-                </xsl:if>
+                <!--</xsl:if>-->
                                 <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee/normalize-space(.) !=''">
                 <tr>
                     <td valign="top">Widmungsträger:</td>
@@ -35,7 +39,7 @@
                                             [intendiert]
                                         </xsl:if>
                                     <xsl:if test="$corresp">
-                                            <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                            <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                         </xsl:if>
                                         <xsl:value-of select="."/>
                                         <xsl:if test="@auth">
@@ -49,7 +53,7 @@
                                 <xsl:when test="mei:corpName">
                                     <xsl:for-each select="mei:corpName">
                                         <xsl:if test="$corresp">
-                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                     </xsl:if>
                                     <xsl:value-of select="."/>
                                     <xsl:if test="@auth">
@@ -62,7 +66,7 @@
                                     </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:if test="$corresp">
-                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,' – ')"/>
+                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                     </xsl:if>
                                     <xsl:value-of select="."/>
                                     <br/>
@@ -89,14 +93,14 @@
                             </a>)
                                 </xsl:if>
                             <xsl:if test="$corresp">
-                                <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
+                                <xsl:value-of select="concat(' [Nr. ',//mei:mdiv/id($corresp)/@n,']')"/>
                             </xsl:if>
                             <br/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="."/>
                                 <xsl:if test="$corresp">
-                                    <xsl:value-of select="concat(' [Nr. ',//mei:mdiv[@xml:id=$corresp]/@n,']')"/>
+                                    <xsl:value-of select="concat(' [Nr. ',//mei:mdiv/id($corresp)/@n,']')"/>
                                 </xsl:if>
                                 <br/>
                             </xsl:otherwise>
@@ -105,8 +109,6 @@
                     </td>
                 </tr>
                 </xsl:if>
-            </table>
-            <table class="workView">
                 <tr>
                     <td valign="top">Besetzung:</td>
                     <td>
@@ -123,7 +125,7 @@
                         </xsl:choose>
                     </td>
                 </tr>
-                                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList//mei:perfRes[@type='alt'])">
+                <xsl:if test="exists(//mei:workList/mei:work/mei:perfMedium/mei:perfResList//mei:perfRes[@type='alt'])">
                 <tr>
                     <td valign="top">Alternative Besetzung:</td>
                     <td>
@@ -143,17 +145,18 @@
 
                 </xsl:if>
             </table>
-                            <xsl:if test="//mei:creation/mei:date[@type='composition']">
+<!--                            <xsl:if test="//mei:creation/mei:date[@type='composition']">-->
             <table class="workView">
-                <xsl:if test="//mei:creation/mei:date[@type='composition']/@isodate">
+                <xsl:choose>
+                <xsl:when test="//mei:creation/mei:date[@type='composition']/@isodate">
                 <tr>
                     <td valign="top">Kompositionsdatum:</td>
                     <td>
                         <xsl:value-of select="local:formatDate(//mei:creation/mei:date[@type = 'composition']/@isodate)"/>
                     </td>
                 </tr>
-                </xsl:if>
-                <xsl:if test="//mei:creation/mei:date[@type='composition']/@notbefore and //mei:creation/mei:date[@type='composition']/@notafter">
+                </xsl:when>
+                <xsl:when test="//mei:creation/mei:date[@type='composition']/@notbefore and //mei:creation/mei:date[@type='composition']/@notafter">
                 <tr>
                     <td valign="top">Kompositionszeitraum:</td>
                     <td>
@@ -161,25 +164,32 @@
                             <xsl:value-of select="local:formatDate(//mei:creation/mei:date[@type = 'composition']/@notafter)"/>
                     </td>
                 </tr>
-                </xsl:if>
-                                <xsl:if test="//mei:creation/mei:date[@type='composition']/@notbefore and not(//mei:creation/mei:date[@type='composition']/@notafter)">
+                </xsl:when>
+                <xsl:when test="//mei:creation/mei:date[@type='composition']/@notbefore and not(//mei:creation/mei:date[@type='composition']/@notafter)">
                 <tr>
                     <td>Kompositionszeitraum:</td>
                     <td>Nach <xsl:if test="string-length(//mei:creation/mei:date[@type = 'composition']/@notbefore)=10">dem </xsl:if><xsl:value-of select="local:formatDate(//mei:creation/mei:date[@type = 'composition']/@notbefore)"/>
                     </td>
                 </tr>
-                </xsl:if>
-                <xsl:if test="not(//mei:creation/mei:date[@type='composition']/@notbefore) and //mei:creation/mei:date[@type='composition']/@notafter">
+                </xsl:when>
+                <xsl:when test="not(//mei:creation/mei:date[@type='composition']/@notbefore) and //mei:creation/mei:date[@type='composition']/@notafter">
                 <tr>
                     <td>Kompositionszeitraum:</td>
                     <td>Vor <xsl:if test="string-length(//mei:creation/mei:date[@type = 'composition']/@notafter)=10">dem </xsl:if><xsl:value-of select="local:formatDate(//mei:creation/mei:date[@type = 'composition']/@notafter)"/>
                     </td>
                 </tr>
-                </xsl:if>
-            </table>
-                        </xsl:if>
+                </xsl:when>
+                <xsl:otherwise>
+                    <tr>
+                        <td valign="top">Kompositionsdatum:</td>
+                        <td>
+                            [unbekannt]
+                        </td>
+                    </tr>
+                </xsl:otherwise>
+                </xsl:choose>
+                        <!--</xsl:if>-->
             
-            <table class="workView">
                 <xsl:if test="//mei:history/mei:eventList/mei:event[@type='entstehung']">
                 <tr>
                     <td>Entstehungsgeschichte:</td>
@@ -190,7 +200,7 @@
                     </td>
                 </tr>
                 </xsl:if>
-            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            
+<!--            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            -->
                 <tr>
                     <td valign="top">Uraufführung:</td>
                     <td>
@@ -224,32 +234,9 @@
                         </xsl:if>
                     </td>
                 </tr>
-            </xsl:if>
+            <!--</xsl:if>-->
             </table>
             
-            <xsl:if test="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
-            <table class="workView">
-                <tr>
-                    <td>Erfasste Ausgaben:</td>
-                    <td>
-                        <xsl:choose>
-                            <xsl:when test="//mei:componentList/mei:manifestation/mei:biblList/count(mei:bibl) = 1">
-                                <xsl:value-of select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl/concat(./mei:publisher, ' (', ./mei:date, ')')"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <ul>
-                                    <xsl:for-each select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
-                                        <li>
-                                            <xsl:value-of select="concat(./mei:publisher, ' (', ./mei:date, ')')"/>
-                                        </li>
-                                    </xsl:for-each>
-                                </ul>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </td>
-                </tr>
-            </table>
-            </xsl:if>
             <xsl:if test="//mei:music/mei:body/mei:mdiv/@label">
             <table class="workView">
                 <tr>
@@ -285,6 +272,7 @@
                 </tr>
             </table>
             </xsl:if>
+            
             <xsl:if test="exists(//mei:componentList/mei:manifestation/mei:itemList/mei:item)">
             <table class="workView">
                 <tr>
@@ -295,13 +283,36 @@
                         <ul style="list-style-type:circle">
                             <xsl:for-each select="//mei:componentList/mei:manifestation/mei:itemList/mei:item">
                                 <xsl:variable name="sourceClass" select="//mei:componentList/mei:manifestation/mei:itemList/mei:item/@codedval"/>
-                                <li> [<xsl:value-of select="document('../../../../apps/jraDefinitions/data/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category[@xml:id = $sourceClass]/mei:desc[@xml:lang = 'de']"/>] <xsl:value-of select=".//mei:locus"/>
+                                <li> [<xsl:value-of select="document('../../../../apps/jraDefinitions/data/sourceClassification.xml')//mei:classDecls/mei:taxonomy/mei:category/id($sourceClass)/mei:desc[@xml:lang = 'de']"/>] <xsl:value-of select=".//mei:locus"/>
                                 </li>
                             </xsl:for-each>
                         </ul>
                     </td>
                 </tr>
             </table>
+            </xsl:if>
+            <xsl:if test="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
+                <table class="workView">
+                    <tr>
+                        <td>Erfasste Ausgaben:</td>
+                        <td>
+                            <xsl:choose>
+                                <xsl:when test="//mei:componentList/mei:manifestation/mei:biblList/count(mei:bibl) = 1">
+                                    <xsl:value-of select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl/concat(./mei:publisher, ' (', ./mei:date, ')')"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <ul>
+                                        <xsl:for-each select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
+                                            <li>
+                                                <xsl:value-of select="concat(./mei:publisher, ' (', ./mei:date, ')')"/>
+                                            </li>
+                                        </xsl:for-each>
+                                    </ul>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </td>
+                    </tr>
+                </table>
             </xsl:if>
         </div>
     </xsl:template>

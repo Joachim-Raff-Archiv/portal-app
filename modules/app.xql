@@ -9,6 +9,7 @@ import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "raffShared.xqm";
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
 (:import module namespace raffWork="https://portal.raff-archiv.ch/ns/baudiWork" at "raffWork.xqm";:)
 (:import module namespace raffSource="https://portal.raff-archiv.ch/ns/baudiSource" at "raffSource.xqm";:)
 
@@ -22,12 +23,13 @@ declare namespace http = "http://expath.org/ns/http-client";
 declare namespace range = "http://exist-db.org/xquery/range";
 declare namespace pkg = "http://expath.org/ns/pkg";
 
-declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI//tei:correspDesc/ancestor::tei:TEI;
-declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI//tei:person/ancestor::tei:TEI;
-declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI//tei:org/ancestor::tei:TEI;
-declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI//tei:correspDesc/ancestor::tei:TEI;
+declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspDesc];
+declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
+declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI[.//tei:org];
+declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI[.//tei:correspDesc];
 declare variable $app:collectionTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
 declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//mei:mei;
+declare variable $app:collectionWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
 declare variable $app:collFullPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
@@ -36,7 +38,8 @@ declare variable $app:collFullInstitutions := collection('/db/apps/jraInstitutio
 declare variable $app:collFullSources := collection('/db/apps/jraSources/data')//tei:TEI;
 declare variable $app:collFullTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
 declare variable $app:collFullWorks := collection('/db/apps/jraWorks/data')//mei:mei;
-declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks);
+declare variable $app:collFullWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
+declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks, $app:collFullWritings);
 
 declare function app:langSwitch($node as node(), $model as map(*)) {
     let $supportedLangVals := ('de', 'en')
@@ -169,13 +172,9 @@ return
 };
 
 declare function local:getReferences($id) {
-    let $collectionReference := ($app:collectionPersons//@key[.=$id], $app:collectionInstitutions//@key[.=$id], $app:collectionTexts//@key[.=$id], $app:collectionSources//tei:note[@type='regeste']//@key[.=$id], $app:collectionWorks//@auth[.=$id])
+    let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)], $app:collectionInstitutions[matches(.//@key,$id)], $app:collectionTexts[matches(.//@key,$id)], $app:collectionSources//tei:note[@type='regeste'][matches(.//@key,$id)], $app:collectionWorks[matches(.//@auth,$id)])
     let $entryGroups := for $doc in $collectionReference
-                          let $docRoot := if($doc/ancestor::tei:TEI)
-                                          then($doc/ancestor::tei:TEI)
-                                          else if($doc/ancestor::mei:mei)
-                                          then($doc/ancestor::mei:mei)
-                                          else('unknownNamespace')
+                          let $docRoot := $doc/root()/node()
                           let $docID := $docRoot/@xml:id
                           let $docIDInitial := substring($docID,1,1)
                           let $docType := if(starts-with($docRoot/@xml:id,'A'))
@@ -325,7 +324,7 @@ let $receiver := if($correspActionReceived/tei:persName[3]/text())
 };
 
 declare function local:getCorrespondance($id){
-    let $correspondence := $app:collectionPostals//@key[.=$id][not(./ancestor::tei:note[@type='regeste'])]
+    let $correspondence := $app:collectionPostals[matches(.//@key[not(./ancestor::tei:note[@type='regeste'])], $id)]
     for $doc in $correspondence
         let $letter := $doc/ancestor::tei:TEI
         let $letterID := $letter/@xml:id/string()
@@ -388,21 +387,36 @@ declare function local:getNameJoined($person){
 };
 
 declare function local:getWorks($cat){
-    let $works := $app:collectionWorks//mei:term[.=$cat]/ancestor::mei:mei
+    let $works := $app:collectionWorks[matches(.//mei:term, $cat)]
     for $work in $works
         let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
         let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
         let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
         let $workID := $work/@xml:id/string()
+        
+        let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
+                            let $perfDesc := string-join($workPerfRess, ' | ')
+                            let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
+                            let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
+        
         return
             <div titleToSort="{$opus}"
             class="row {if(string-length($cat)>9)then('RegisterEntry2')else('RegisterEntry')}">
+                <div class="col-sm-5 col-md-7 col-lg-8">
+                    {$workName}
+                    {if($perfDesc or $arranged)
+                     then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
+                     else()}
+                </div>
                 <div
-                    class="col">{$workName}</div>
+                    class="col-sm-4 col-md-3 col-lg-2">{$opus}
+                    <br/>
+                    {if($lost)
+                    then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
+                    else()}
+                </div>
                 <div
-                    class="col-2">{$opus}</div>
-                <div
-                    class="col-2"><a onclick="pleaseWait()"
+                    class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
                         href="work/{$workID}">{$workID}</a>
                 </div>
             </div>
@@ -743,9 +757,9 @@ declare function app:letter($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("letter-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
-    let $letter := $app:collectionPostals[@xml:id = $id]
+    let $letter := $app:collectionPostals/id($id)
     let $person := $app:collectionPersons
-    let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person[@xml:id= $letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key]/tei:forename[@type='used']:)
+    let $absender := $letter//tei:correspAction[@type = "sent"]/tei:persName[1]/text()[1] (:$person/id($letter//tei:correspAction[@type="sent"]/tei:persName[1]/@key)/tei:forename[@type='used']:)
     let $datumSent := raffShared:formatDate(raffShared:getDate($letter//tei:correspAction[@type = "sent"]))
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
@@ -1389,7 +1403,7 @@ declare function app:person($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("person-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
-    let $person := $app:collectionPersons[@xml:id = $id]
+    let $person := $app:collectionPersons/id($id)
     let $name := raffPostals:getName($id, 'full')
     let $correspondence := $app:collectionPostals//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
@@ -1778,7 +1792,7 @@ declare function app:institution($node as node(), $model as map(*)) {
     let $id := request:get-parameter("institution-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
     let $persons := $app:collectionPersons
-    let $institution := $app:collectionInstitutions[@xml:id = $id]
+    let $institution := $app:collectionInstitutions/id($id)
     let $name := $institution//tei:titleStmt/tei:title/normalize-space(data(.))
     let $letters := $app:collectionPostals
     let $correspondence := $letters//tei:orgName[@key = $id]/ancestor::tei:TEI
@@ -2357,6 +2371,11 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                          class="nav-link-jra"
                          data-toggle="tab"
                          href="#arrangements">Bearbeitungen</a></li>
+                         <li
+                     class="nav-item"><a
+                         class="nav-link-jra"
+                         data-toggle="tab"
+                         href="#foreignMaterial">Fremdmaterial</a></li>
                          <li class="nav-item nav-linkless-jra d-flex justify-content-between"></li>
                 </ul>
                 <div class="tab-content">
@@ -2842,7 +2861,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         class="RegisterSortBox">
                                         <div
                                             class="RegisterSortEntry"
-                                            id="cat-06-01">Für Orchester</div>
+                                            id="cat-06-01">Orchestrierungen</div>
                                             {let $works := 'cat-06-01'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
@@ -2851,8 +2870,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
-                                            id="cat-06-02">Für Kammermusik</div>
-                                            {let $works := 'cat-06-02'
+                                            id="cat-06-04">Klavierauszüge eigener Werke</div>
+                                            {let $works := 'cat-05-01-05'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
@@ -2860,8 +2879,17 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
-                                            id="cat-06-03">Für Klavier</div>
+                                            id="cat-06-03">Transkriptionen für Klavier</div>
                                             {let $works := 'cat-06-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                       <div
+                                            class="RegisterSortEntry"
+                                            id="cat-06-02">Kammermusik</div>
+                                            {let $works := 'cat-06-02'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
@@ -2871,6 +2899,28 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                </div>
                         </div>
                     </div>
+                    <div
+                        class="tab-pane fade"
+                        id="foreignMaterial">
+                        <br/>
+                        <div
+                            class="row">
+                            <div id="navigatorForeign" class="list-group col-sm col-md col-lg" style="height:500px; overflow-y: scroll;">
+                                    <div
+                                        class="RegisterSortBox">
+                                        <!--<div class="RegisterSortEntry"
+                                            id="cat-06-01">Orchestrierungen</div>-->
+                                            {let $works := 'cat-07'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                   </div>
+                               </div>
+                        </div>
+                    </div>
+                
                 </div>
             </div>
         </div>
@@ -2882,7 +2932,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
 declare function app:work($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("work-id", "Fehler")
-    let $work := $app:collectionWorks[@xml:id = $id]
+    let $work := $app:collectionWorks/id($id)
     let $collection := $app:collectionInstitutions|
                        $app:collectionTexts|
                        $app:collectionSources
@@ -2965,6 +3015,305 @@ declare function app:work($node as node(), $model as map(*)) {
                              <pre>
                                  <xmp>
                                      {transform:transform($work/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                                 </xmp>
+                             </pre>
+                         </div>)
+                     else()}
+                 </div>
+                 {raffShared:suggestedCitation($id)}
+             </div>
+         </div>
+     </div>
+  </div>
+        )
+};
+
+declare function app:registryWritings($node as node(), $model as map(*)) {
+    (:<div class="container">
+        <ul>{
+        for $entry in $app:collFullWritings
+            let $entryID := $entry/@xml:id/string()
+            return
+                <li>{raffWritings:getTitle($entryID)}&#160;<a onclick="pleaseWait()" href="writing/{$entryID}">{$entryID}</a></li>
+        }</ul>
+    </div>:)
+    
+    let $writings := $app:collFullWritings
+    
+    let $writingsAlpha := for $writing in $writings
+                            let $writingID := $writing/@xml:id/string()
+                            let $title := $writing//tei:sourceDesc//tei:title[1]/text()
+                            let $initial := substring(local:replaceCutArticlesForSort($title), 1, 1)
+                            let $author := $writing//tei:sourceDesc//tei:author[1]
+                            let $pubPlace := $writing//tei:sourceDesc//tei:imprint/tei:pubPlace[1]
+                            let $date := $writing//tei:sourceDesc//tei:imprint/tei:date[1]
+                            
+                            let $entry := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {$title}
+                                    {<br/>,
+                                     <span class="sublevel">
+                                        {if($pubPlace != '' or $date != '')
+                                        then(string-join(($pubPlace, $date),' '))
+                                        else(<br/>)
+                                        }
+                                     </span>
+                                    }
+                                </div>
+                                <div
+                                    class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
+                                        href="writing/{$writingID}">{$writingID}</a></div>
+                            </div>
+                                group by $initial
+                                order by $initial
+                            return
+                                (<div
+                                    name="{$initial}"
+                                    count="{count($entry)}">
+                                    {
+                                        for $each in $entry
+                                        let $order := local:replaceToSortDist($each)
+                                            order by $order
+                                        return
+                                            $each
+                                    }
+                                </div>)
+    
+    let $WritingsGroupedByInitials := for $groups in $writingsAlpha
+                                        group by $initial := $groups/@name/string()
+                                        return
+                                            (<div
+                                                class="RegisterSortBox"
+                                                initial="{$initial}"
+                                                count="{$writingsAlpha[@name=$initial]/@count}"
+                                                xmlns="http://www.w3.org/1999/xhtml">
+                                                <div
+                                                    class="RegisterSortEntry"
+                                                    id="{
+                                                            concat('list-item-', if ($initial='') then
+                                                                ('unknown')
+                                                            else
+                                                                ($initial))
+                                                        }">
+                                                    {
+                                                        if ($initial = '') then
+                                                            ('[ohne Initial]')
+                                                        else
+                                                            ($initial)
+                                                    }
+                                                </div>
+                                                {
+                                                    for $group in $groups
+                                                    return
+                                                        $group
+                                                }
+                                            </div>)
+    
+    return
+        
+        <div
+            class="container"
+            xmlns="http://www.w3.org/1999/xhtml">
+                    <div class="row  justify-content-between">
+                        <div class="col-sm-9 	col-md-7 	col-lg-7">
+                            <p>Der Katalog verzeichnet derzeit {count($writings)} Schriften.</p>
+                        </div>
+                        <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                            {local:filterInput()}
+    </div>
+                    </div>
+                    <ul
+                        class="nav nav-tabs"
+                        id="myTab"
+                        role="tablist">
+                        <li
+                            class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra active"
+                                href="#alpha">Alphabetisch</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="#alpha" onclick="pleaseWait()">Jahr</a></li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra"
+                                href="#alpha" onclick="pleaseWait()">Ort</a></li>
+                    </ul>
+                    <div
+                        class="tab-content">
+                        <div
+                            class="tab-pane fade show active"
+                            id="alpha">
+                            <br/>
+                            <div
+                                class="container row">
+                                <div id="navigator" class="list-group col-sm-4 col-md-3 col-lg-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
+                                    {
+                                        for $each in $WritingsGroupedByInitials
+                                            let $initial := if ($each/@initial/string() = '') then
+                                                ('unknown')
+                                            else
+                                                ($each/@initial/string())
+                                            let $count := $each/@count/string()
+                                            order by $initial
+                                        return
+                                            <a
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', $initial)}"><span>{
+                                                        if (matches($initial,'unknown')) then
+                                                            ('[weitere]')
+                                                        else
+                                                            ($initial)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$count}</span>
+                                            </a>
+                                    }
+                                
+                                </ul>
+                                </div>
+                                <div id="divResults" data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                    {$WritingsGroupedByInitials}
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+    
+};
+
+declare function app:writing($node as node(), $model as map(*)) {
+    
+    let $id := request:get-parameter("writing-id", "E00000")
+    let $writing := $app:collectionWritings/id($id)
+    let $collection := $app:collectionInstitutions|
+                       $app:collectionTexts|
+                       $app:collectionSources
+    let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
+    let $name := raffWritings:getTitle($id)
+    
+    return
+        (
+  <div
+    class="container">
+     <div
+         class="page-header">
+         <h2>{$name}</h2>
+         <hr/>
+         <ul class="nav nav-pills"
+                     role="tablist">
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra active"
+                             data-toggle="tab"
+                             href="#metadata">Allgemein</a></li>
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#fulltext">Volltext</a></li>
+                     {if (local:getReferences($id)) then(
+                     <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#references">Referenzen</a></li>
+                             )else()}
+                    {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+         then(<li
+             class="nav-item"><a
+                 class="nav-link-jra"
+                 data-toggle="tab"
+                 href="#viewXML">XML-Ansicht</a></li>)
+                 else()}
+                 </ul>
+     
+         <hr/>
+     </div>
+     <div
+         class="container">
+         <div
+             class="row">
+             <div
+                 class="col">
+                 <div
+                     class="tab-content">
+                     <div
+                         class="tab-pane fade show active"
+                         id="metadata">
+                         <br/>
+         {transform:transform($writing//tei:teiHeader, doc("/db/apps/raffArchive/resources/xslt/metadataWriting.xsl"), ())}
+                     </div>
+                     <div
+                         class="tab-pane fade"
+                         id="fulltext">
+                         <br/>
+         <div class="row">
+            <div class="col">
+            {transform:transform($writing//tei:text, doc("/db/apps/raffArchive/resources/xslt/contentWriting.xsl"), ())}
+            </div>
+            <div class="col-2">
+               <h5>Navigation</h5>
+               <div style="height:400px; overflow-y: scroll;">
+               <ul class="nav flex-column">
+               <a class="nav-link" href="#fulltextTitel">Titelseite</a>
+               {
+               for $pb in $writing//tei:text//tei:pb[@n]
+                   let $pageNo := $pb/@n/string()
+                   let $pageNoRoman := if($pb[@rend = 'roman'])
+                                       then(switch ($pageNo)
+                                            case '1' return 'I'
+                                            case '2' return 'II'
+                                            case '3' return 'III'
+                                            case '4' return 'IV'
+                                            case '5' return 'V'
+                                            case '6' return 'VI'
+                                            case '7' return 'VII'
+                                            case '8' return 'VIII'
+                                            case '9' return 'IX'
+                                            case '10' return 'X'
+                                            default return $pageNo)
+                                       else()
+                   let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
+                   return
+                   <li class="nav-item"><a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}">Seite {$pageNoLabel}</a></li>
+               }</ul>
+               </div>
+            </div>
+            </div>
+                     </div>
+                     {
+                         if (local:getReferences($id))
+                         then (<div
+                                 class="tab-pane fade"
+                                 id="references">
+                                 <br/>
+                                 <div >{
+                                     let $entrys := local:getReferences($id)
+                                     return
+                                         $entrys
+                                 }</div>
+                               </div>
+                         )
+                         else
+                             ()
+                     }
+                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
+                         contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                     then(<div
+                         class="tab-pane fade"
+                         id="viewXML">
+                             <pre>
+                                 <xmp>
+                                     {transform:transform($writing/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
                                  </xmp>
                              </pre>
                          </div>)
@@ -3175,6 +3524,13 @@ let $count := count($app:collectionInstitutions)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Institutionen</span>)
+};
+
+declare function app:countWritings($node as node(), $model as map(*)){
+let $count := count($app:collectionWritings)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Schriften</span>)
 };
 
 declare function app:alert($node as node(), $model as map(*)){

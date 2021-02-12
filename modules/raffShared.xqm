@@ -20,6 +20,7 @@ import module namespace json="http://www.json.org";
 import module namespace jsonp="http://www.jsonp.org";
 
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 (:  Schön formatiertes Datum: format-date($date, "[D]. [MNn,*-4] [Y]", $lang, (), ()) :)
@@ -662,7 +663,7 @@ declare function raffShared:formatDateRegistryLetters($dateArray){
                   else($dateRaw)
     
     let $replace := replace($date,'Mai.','Mai')
-    let $bracketify := if($type = 'editor') then(concat('[', $replace, ']')) else($replace)
+    let $bracketify := if(matches($type, 'editor')) then(concat('[', $replace, ']')) else($replace)
     return
         $bracketify
 };
@@ -743,7 +744,7 @@ declare function raffShared:suggestedCitation($id as xs:string) {
     
     let $itemLink := request:get-url()
     let $itemTypePath := functx:substring-before-last($itemLink, '/')
-    let $doc := $app:collectionsAll/root()/node()[@xml:id = $id]
+    let $doc := $app:collectionsAll/root()/node()/id($id)
     let $itemType := functx:substring-after-last-match($itemTypePath, '/')
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
@@ -757,6 +758,8 @@ declare function raffShared:suggestedCitation($id as xs:string) {
                  then($doc//tei:org/tei:orgName/text())
                  else if($itemType = 'work')
                  then(concat($doc//mei:work//mei:title[@type="uniform"]/text(), ' ', $doc//mei:work//mei:title[@type="desc"]/text()))
+                 else if($itemType = 'writing')
+                 then(raffWritings:getTitle($id))
                  else()
     let $nameLetterTo := if($doc//tei:correspAction[@type="received"]//@key[1]/string())
                          then(raffPostals:getName($doc//tei:correspAction[@type="received"]//@key[1]/string(), 'short'))
@@ -770,6 +773,8 @@ declare function raffShared:suggestedCitation($id as xs:string) {
                   else if($itemType = 'institution')
                   then(concat($name, '; '))
                   else if($itemType = 'work')
+                  then(concat($name, '; '))
+                  else if($itemType = 'writing')
                   then(concat($name, '; '))
                   else('LABEL')
     
@@ -805,16 +810,18 @@ declare function raffShared:forwardEntries($idParam as xs:string) {
                           else if(starts-with($currentUri, 'http://localhost:8080/exist/apps/raffArchive'))
                           then('http://localhost:8080/exist/apps/raffArchive/html')
                           else('/html/')
-    let $entryDeleted := $app:collFullAll[@xml:id = $idParam]//tei:relation[@type='deleted']/@active/string()
+    let $entryDeleted := $app:collFullAll/id($idParam)//tei:relation[@type='deleted']/@active/string()
     let $entryIdToForward := substring-after($entryDeleted,'#')
     let $entryType := if(starts-with($entryIdToForward, 'A'))
                      then('letter')
-                     (:else if(starts-with($entryIdToForward, 'B'))
-                     then('work'):)
+                     else if(starts-with($entryIdToForward, 'B'))
+                     then('work')
                      else if(starts-with($entryIdToForward, 'C'))
                      then('person')
                      else if(starts-with($entryIdToForward, 'D'))
                      then('institution')
+                     else if(starts-with($entryIdToForward, 'E'))
+                     then('writing')
                      else()
     let $itemRootPath := functx:substring-before-last(functx:substring-before-last(request:get-url(), '/'), '/')
     let $entryLink := concat($basicPath, '/', $entryType, '/', $entryIdToForward)
