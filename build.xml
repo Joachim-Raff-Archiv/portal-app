@@ -66,17 +66,9 @@
         <copy todir=".">
             <file file="repo/rwxrwxr-x/repo.xml"/>
         </copy>
-        <git command="stash">
-            <args>
-                <arg value="save"/>
-                <arg value="temp"/>
-            </args>
-        </git>
-        <!--<git command="stash">
-            <args>
-                <arg value="apply"/>
-            </args>
-        </git>-->
+        <exec executable="bash">
+            <arg value="scripts/stashTemp.sh"/>
+        </exec>
         <exec executable="python">
             <arg value="${pathResolverLocalhost}"/>
         </exec>
