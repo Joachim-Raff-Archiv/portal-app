@@ -72,30 +72,30 @@
                 <arg value="temp"/>
             </args>
         </git>
-        <git command="stash">
+        <!--<git command="stash">
             <args>
                 <arg value="apply"/>
             </args>
-        </git>
+        </git>-->
         <exec executable="python">
             <arg value="${pathResolverLocalhost}"/>
         </exec>
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
-        <git command="reset">
+        <!--<git command="reset">
             <args>
-                <arg value="--hard" />
+                <arg value="-\-hard" />
             </args>
-        </git>
-    <git command="stash">
+        </git>-->
+        <!--<git command="stash">
             <args>
                 <arg value="apply"/>
             </args>
-        </git>
-        <git command="stash">
+        </git>-->
+        <!--<git command="stash">
             <args>
                 <arg value="clear"/>
             </args>
-        </git>
+        </git>-->
     </target>
     
     <target name="deployDev" depends="xarDev">
