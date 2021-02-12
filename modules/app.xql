@@ -393,15 +393,30 @@ declare function local:getWorks($cat){
         let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
         let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
         let $workID := $work/@xml:id/string()
+        
+        let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
+                            let $perfDesc := string-join($workPerfRess, ' | ')
+                            let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
+                            let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
+        
         return
             <div titleToSort="{$opus}"
             class="row {if(string-length($cat)>9)then('RegisterEntry2')else('RegisterEntry')}">
+                <div class="col-sm-5 col-md-7 col-lg-8">
+                    {$workName}
+                    {if($perfDesc or $arranged)
+                     then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
+                     else()}
+                </div>
                 <div
-                    class="col">{$workName}</div>
+                    class="col-sm-4 col-md-3 col-lg-2">{$opus}
+                    <br/>
+                    {if($lost)
+                    then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
+                    else()}
+                </div>
                 <div
-                    class="col-2">{$opus}</div>
-                <div
-                    class="col-2"><a onclick="pleaseWait()"
+                    class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
                         href="work/{$workID}">{$workID}</a>
                 </div>
             </div>
@@ -2356,6 +2371,11 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                          class="nav-link-jra"
                          data-toggle="tab"
                          href="#arrangements">Bearbeitungen</a></li>
+                         <li
+                     class="nav-item"><a
+                         class="nav-link-jra"
+                         data-toggle="tab"
+                         href="#foreignMaterial">Fremdmaterial</a></li>
                          <li class="nav-item nav-linkless-jra d-flex justify-content-between"></li>
                 </ul>
                 <div class="tab-content">
@@ -2841,7 +2861,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         class="RegisterSortBox">
                                         <div
                                             class="RegisterSortEntry"
-                                            id="cat-06-01">Für Orchester</div>
+                                            id="cat-06-01">Orchestrierungen</div>
                                             {let $works := 'cat-06-01'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
@@ -2850,8 +2870,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
-                                            id="cat-06-02">Für Kammermusik</div>
-                                            {let $works := 'cat-06-02'
+                                            id="cat-06-04">Klavierauszüge eigener Werke</div>
+                                            {let $works := 'cat-05-01-05'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
@@ -2859,8 +2879,17 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
-                                            id="cat-06-03">Für Klavier</div>
+                                            id="cat-06-03">Transkriptionen für Klavier</div>
                                             {let $works := 'cat-06-03'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                       <div
+                                            class="RegisterSortEntry"
+                                            id="cat-06-02">Kammermusik</div>
+                                            {let $works := 'cat-06-02'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
                                                 order by local:replaceToSortDist($worksByCat/@titleToSort)
@@ -2870,6 +2899,28 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                </div>
                         </div>
                     </div>
+                    <div
+                        class="tab-pane fade"
+                        id="foreignMaterial">
+                        <br/>
+                        <div
+                            class="row">
+                            <div id="navigatorForeign" class="list-group col-sm col-md col-lg" style="height:500px; overflow-y: scroll;">
+                                    <div
+                                        class="RegisterSortBox">
+                                        <!--<div class="RegisterSortEntry"
+                                            id="cat-06-01">Orchestrierungen</div>-->
+                                            {let $works := 'cat-07'
+                                                for $work in local:getWorks($works)
+                                                let $worksByCat := $work
+                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                return
+                                                    $worksByCat}
+                                   </div>
+                               </div>
+                        </div>
+                    </div>
+                
                 </div>
             </div>
         </div>
