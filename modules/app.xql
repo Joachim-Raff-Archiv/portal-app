@@ -2673,7 +2673,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
-                                            id="cat-04-02-04">Bläser und Klavier</div>
+                                            id="cat-04-02-04">Horn und Klavier</div>
                                             {let $works := 'cat-04-02-04'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
@@ -2709,7 +2709,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
-                                            id="cat-04-03-03">«Fantasien und Variationen über fremde Themen für Violine und Klavier»</div>
+                                            id="cat-04-03-03">Fantasien und Variationen über fremde Themen für Violine und Klavier</div>
                                             {let $works := 'cat-04-03-03'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
@@ -2745,7 +2745,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
-                                            id="cat-04-04-03">«Fantasien und Variationen über fremde Themen für Cello und Klavier»</div>
+                                            id="cat-04-04-03">Fantasien und Variationen über fremde Themen für Cello und Klavier</div>
                                             {let $works := 'cat-04-04-03'
                                                 for $work in local:getWorks($works)
                                                 let $worksByCat := $work
