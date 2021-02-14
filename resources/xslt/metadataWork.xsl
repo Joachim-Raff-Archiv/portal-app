@@ -90,8 +90,23 @@
                     </td>
                 </tr>
                 </xsl:if>
-                                <xsl:if test="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist != ''">
-                                    
+                <xsl:if test="//mei:workList/mei:work/mei:composer[@type='theme'] != ''">
+                    <tr>
+                        <td valign="top">Themenlieferant:</td>
+                        <td>
+                            
+                            <xsl:for-each select="//mei:workList/mei:work/mei:composer[@type='theme']">
+                                <xsl:value-of select="mei:persName"/>
+                                <xsl:if test="mei:persName/@auth">
+                                    (<a href="{concat($viewPerson, mei:persName/@auth)}">
+                                        <xsl:value-of select="mei:persName/@auth"/>
+                                    </a>)
+                                </xsl:if>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
+                </xsl:if>
+                <xsl:if test="//mei:manifestationList/mei:manifestation/mei:titleStmt/mei:lyricist != ''">
                 <tr>
                     <td valign="top">Textdichter:</td>
                     <td>
