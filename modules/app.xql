@@ -70,99 +70,11 @@ declare function app:search($node as node(), $model as map(*)) {
                 }</ul></div>
 };
 
-declare function local:filterInput(){
+declare function app:filterInput(){
     <div>
         <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
         <input type="text" id="myResearchInput" onkeyup="myFilter()" placeholder="Name, ID, …" title="Type in a string"/>
    </div>
-};
-
-
-declare function local:getReferences($id) {
-    let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)], $app:collectionInstitutions[matches(.//@key,$id)], $app:collectionTexts[matches(.//@key,$id)], $app:collectionSources//tei:note[@type='regeste'][matches(.//@key,$id)], $app:collectionWorks[matches(.//@auth,$id)])
-    let $entryGroups := for $doc in $collectionReference
-                          let $docRoot := $doc/root()/node()
-                          let $docID := $docRoot/@xml:id
-                          let $docIDInitial := substring($docID,1,1)
-                          let $docType := if(starts-with($docRoot/@xml:id,'A'))
-                                          then($docRoot//tei:textClass//tei:term)
-                                          else if (starts-with($docRoot/@xml:id,'B'))
-                                          then ('Werk')
-                                          else if(starts-with($docRoot/@xml:id,'C'))
-                                          then('Person')
-                                          else if(starts-with($docRoot/@xml:id,'D'))
-                                          then('Institution')
-                                          else('Sonstige')
-                          let $entryOrder := if(starts-with($docRoot/@xml:id,'A'))
-                                          then('002')
-                                          else if (starts-with($docRoot/@xml:id,'B'))
-                                          then ('001')
-                                          else if(starts-with($docRoot/@xml:id,'C'))
-                                          then('003')
-                                          else if(starts-with($docRoot/@xml:id,'D'))
-                                          then('004')
-                                          else('005')
-                          let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
-                          let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
-                          let $correspSentTurned := raffPostals:getSenderTurned($correspActionSent)
-                          let $correspReceivedTurned := raffPostals:getReceiverTurned($correspActionReceived)
-                          let $docDate := if(starts-with($docRoot/@xml:id,'A'))
-                                          then(raffShared:getDate($docRoot//tei:correspAction[@type='sent']))
-                                          else(<br/>)
-                          let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
-                                           then($correspSentTurned,<br/>,'an ',$correspReceivedTurned)
-                                           else if($docRoot/name()='TEI')
-                                           then($docRoot//tei:titleStmt/tei:title/string())
-                                           else if($docRoot/name()='mei') 
-                                           then($docRoot//mei:fileDesc/mei:titleStmt/mei:title[1]/string())
-                                           else('noTitle')
-                          let $href := if(starts-with($docRoot/@xml:id,'A'))
-                                          then('../letter/')
-                                          else if (starts-with($docRoot/@xml:id,'B'))
-                                          then ('../work/')
-                                          else if(starts-with($docRoot/@xml:id,'C'))
-                                          then('../person/')
-                                          else if(starts-with($docRoot/@xml:id,'D'))
-                                          then('../institution/')
-                                          else()
-                          let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                          <div class="col-3" dateToSort="{$docDate}">
-                                            {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
-                                              then('Regeste',<br/>)
-                                              else()}
-                                              {$docType}
-                                              {if($docDate and starts-with($docRoot/@xml:id,'A'))
-                                              then(' vom ',raffShared:formatDate($docDate))
-                                              else()}
-                                         </div>
-                                         <div class="col" docTitle="{normalize-space($docTitle[1])}">{$docTitle}</div>
-                                         <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
-                                       </div>
-                          group by $docIDInitial
-                          return
-                              (<div xmlns="http://www.w3.org/1999/xhtml" groupInitial="{$docIDInitial}" order="{$entryOrder}">{for $each in $entry
-                                    order by if($each/div/@dateToSort !='') then($each/div/@dateToSort) else($each/div/@docTitle)
-                                    return
-                                        $each}</div>)
-   let $entryGroupsShow := for $groups in $entryGroups
-                              let $groupInitial := $groups/@groupInitial
-                              let $order := $groups/@order
-                              let $registerSortEntryLabel := switch ($groupInitial/string())
-                                                                 case 'A' return 'Briefe und Regesten'
-                                                                 case 'B' return 'Werke'
-                                                                 case 'C' return 'Personen'
-                                                                 case 'D' return 'Institutionen'
-                                                                 default return 'Weitere'
-                                order by $order
-                                return
-                                 <div class="RegisterSortBox" xmlns="http://www.w3.org/1999/xhtml">
-                                          <div class="RegisterSortEntry">{$registerSortEntryLabel}</div>
-                                          {for $group in $groups
-                                              return
-                                                  $group}
-                                 </div>
-   return
-    $entryGroupsShow
 };
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
@@ -233,7 +145,7 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
                 </div>
                 <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                    {local:filterInput()}
+                    {app:filterInput()}
                 </div>
             </div>
                     <ul class="nav nav-pills" role="tablist">
@@ -340,7 +252,7 @@ declare function app:registryLettersSender($node as node(), $model as map(*)) {
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
                 </div>
                 <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                    {local:filterInput()}
+                    {app:filterInput()}
                 </div>
             </div>
                     <ul class="nav nav-pills" role="tablist">
@@ -404,7 +316,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                                                 then(raffPostals:getName($correspActionSent/tei:orgName/@key, 'full'))
                                                 else('N.N.')
                         
-(:                        let $correspReceived := local:getReceiver($correspActionReceived):)
+(:                        let $correspReceived := raffPostals:getReceiver($correspActionReceived):)
                         
                         let $receiverName := raffPostals:getName($receiver/@key,'reversed')
                                               
@@ -451,7 +363,7 @@ declare function app:registryLettersReceiver($node as node(), $model as map(*)) 
                     <p>Der Katalog verzeichnet derzeit {count($letters)} Postsachen.</p>
                 </div>
                 <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                    {local:filterInput()}
+                    {app:filterInput()}
                 </div>
             </div>
                     <ul class="nav nav-pills" role="tablist">
@@ -756,7 +668,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                             <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
                         </div>
                         <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                            {local:filterInput()}
+                            {app:filterInput()}
                         </div>
                     </div>
                     <ul
@@ -920,7 +832,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                             <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
                         </div>
                         <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                            {local:filterInput()}
+                            {app:filterInput()}
                         </div>
                     </div>
                     <ul
@@ -1080,7 +992,7 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                             <p>Der Katalog verzeichnet derzeit {count($persons)} Personen.</p>
                         </div>
                         <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                            {local:filterInput()}
+                            {app:filterInput()}
                         </div>
                     </div>
                     <ul
@@ -1179,7 +1091,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#correspondence">Korrespondenz</a></li>)else()}
-                            {if (local:getReferences($id)) then(<li
+                            {if (raffShared:getReferences($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
@@ -1232,13 +1144,13 @@ declare function app:person($node as node(), $model as map(*)) {
                                     ()
                             }
                             {
-                                if (local:getReferences($id))
+                                if (raffShared:getReferences($id))
                                 then (<div
                                         class="tab-pane fade"
                                         id="references">
                                         <br/>
                                         <div >{
-                                            let $entrys := local:getReferences($id)
+                                            let $entrys := raffShared:getReferences($id)
                                             return
                                                 $entrys
                                         }</div>
@@ -1417,7 +1329,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                    <p>Der Katalog verzeichnet derzeit {count($institutions)} Institutionen.</p>
                </div>
                <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                   {local:filterInput()}
+                   {app:filterInput()}
                </div>
             </div>
                     <ul
@@ -1566,7 +1478,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#correspondence">Korrespondenz</a></li>)else()}
-                            {if (local:getReferences($id)) then(<li
+                            {if (raffShared:getReferences($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
@@ -1633,13 +1545,13 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     ()
                             }
                             {
-                                if (local:getReferences($id)) then
+                                if (raffShared:getReferences($id)) then
                                     (<div
                                         class="tab-pane fade"
                                         id="references">
                                         <br/>
                                         <div >{
-                                            let $entrys := local:getReferences($id)
+                                            let $entrys := raffShared:getReferences($id)
                                             return
                                                 $entrys
                                         }</div>
@@ -1886,7 +1798,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         <div class="row  justify-content-between">
             <div class="col"/>
             <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                {local:filterInput()}
+                {app:filterInput()}
             </div>
         </div>
             <ul
@@ -2701,7 +2613,7 @@ declare function app:work($node as node(), $model as map(*)) {
                              class="nav-link-jra active"
                              data-toggle="tab"
                              href="#metadata">Allgemein</a></li>
-                     {if (local:getReferences($id)) then(
+                     {if (raffShared:getReferences($id)) then(
                      <li
                          class="nav-item">
                          <a
@@ -2735,13 +2647,13 @@ declare function app:work($node as node(), $model as map(*)) {
          {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
                      </div>
                      {
-                         if (local:getReferences($id))
+                         if (raffShared:getReferences($id))
                          then (<div
                                  class="tab-pane fade"
                                  id="references">
                                  <br/>
                                  <div >{
-                                     let $entrys := local:getReferences($id)
+                                     let $entrys := raffShared:getReferences($id)
                                      return
                                          $entrys
                                  }</div>
@@ -2864,7 +2776,7 @@ declare function app:registryWritings($node as node(), $model as map(*)) {
                             <p>Der Katalog verzeichnet derzeit {count($writings)} Schriften.</p>
                         </div>
                         <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
-                            {local:filterInput()}
+                            {app:filterInput()}
     </div>
                     </div>
                     <ul
@@ -2962,7 +2874,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                              class="nav-link-jra"
                              data-toggle="tab"
                              href="#fulltext">Volltext</a></li>
-                     {if (local:getReferences($id)) then(
+                     {if (raffShared:getReferences($id)) then(
                      <li
                          class="nav-item">
                          <a
@@ -3034,13 +2946,13 @@ declare function app:writing($node as node(), $model as map(*)) {
             </div>
                      </div>
                      {
-                         if (local:getReferences($id))
+                         if (raffShared:getReferences($id))
                          then (<div
                                  class="tab-pane fade"
                                  id="references">
                                  <br/>
                                  <div >{
-                                     let $entrys := local:getReferences($id)
+                                     let $entrys := raffShared:getReferences($id)
                                      return
                                          $entrys
                                  }</div>

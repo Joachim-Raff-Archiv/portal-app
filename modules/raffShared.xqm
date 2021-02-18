@@ -804,6 +804,115 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
     
 };
 
+declare function raffShared:getReferences($id) {
+    let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)],
+                                 $app:collectionInstitutions[matches(.//@key,$id)],
+                                 $app:collectionTexts[matches(.//@key,$id)],
+                                 $app:collectionSources//tei:note[@type='regeste'][matches(.//@key,$id)],
+                                 $app:collectionWorks[matches(.//@auth,$id)],
+                                 $app:collectionWritings[matches(.//@key,$id)])
+    
+    let $entryGroups := for $doc in $collectionReference
+                          let $docRoot := $doc/root()/node()
+                          let $docID := $docRoot/@xml:id
+                          let $docIDInitial := substring($docID,1,1)
+                          let $docType := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('Brief')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then ($doc//mei:title[@type="desc"]/text())
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('Person')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('Institution')
+                                          else if(starts-with($docRoot/@xml:id,'E'))
+                                          then(
+                                                if($doc//tei:analytic)
+                                                then('Artikel')
+                                                else ('Monographie')
+                                              )
+                                          else('Sonstige')
+                          let $entryOrder := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('002')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then ('001')
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('003')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('004')
+                                          else if(starts-with($docRoot/@xml:id,'E'))
+                                          then('005')
+                                          else('006')
+                          let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
+                          let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
+                          let $correspSentTurned := raffPostals:getSenderTurned($correspActionSent)
+                          let $correspReceivedTurned := raffPostals:getReceiverTurned($correspActionReceived)
+                          let $docDate := if(starts-with($docRoot/@xml:id,'A'))
+                                          then(raffShared:getDate($docRoot//tei:correspAction[@type='sent']))
+                                          else(<br/>)
+                          let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
+                                           then($correspSentTurned,<br/>,'an ',$correspReceivedTurned)
+                                           else if(starts-with($docRoot/@xml:id,'B')) 
+                                           then($docRoot//mei:workList/mei:work[1]/mei:title[1]/string())
+                                           else if(starts-with($docRoot/@xml:id,'E'))
+                                           then($docRoot//tei:biblStruct//tei:title[1]/text())
+                                           else if($docRoot/name()='TEI')
+                                           then($docRoot//tei:titleStmt/tei:title/string())
+                                           else('noTitle')
+                          let $href := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('../letter/')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then ('../work/')
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('../person/')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('../institution/')
+                                          else if(starts-with($docRoot/@xml:id,'E'))
+                                          then('../writing/')
+                                          else()
+                          let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                          <div class="col-3" dateToSort="{$docDate}">
+                                            {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
+                                              then('Regeste',<br/>)
+                                              else()}
+                                              {$docType}
+                                              {if($docDate and starts-with($docRoot/@xml:id,'A'))
+                                              then(' vom ',raffShared:formatDate($docDate))
+                                              else()}
+                                         </div>
+                                         <div class="col" docTitle="{normalize-space($docTitle[1])}">{$docTitle}</div>
+                                         <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
+                                       </div>
+                          group by $docIDInitial
+                          return
+                              (<div xmlns="http://www.w3.org/1999/xhtml" groupInitial="{$docIDInitial}" order="{$entryOrder}">{for $each in $entry
+                                    order by if($each/div/@dateToSort !='')
+                                             then($each/div/@dateToSort)
+                                             else ($each/div/@docTitle)
+                                    return
+                                        $each}</div>)
+   let $entryGroupsShow := for $groups in $entryGroups
+                              let $groupInitial := $groups/@groupInitial
+                              let $order := $groups/@order
+                              let $registerSortEntryLabel := switch ($groupInitial/string())
+                                                                 case 'A' return 'Briefe und Regesten'
+                                                                 case 'B' return 'Werke'
+                                                                 case 'C' return 'Personen'
+                                                                 case 'D' return 'Institutionen'
+                                                                 case 'E' return 'Schriften'
+                                                                 default return 'Weitere'
+                                order by $order
+                                return
+                                 <div class="RegisterSortBox" xmlns="http://www.w3.org/1999/xhtml">
+                                          <div class="RegisterSortEntry">{$registerSortEntryLabel}</div>
+                                          {for $group in $groups
+                                              return
+                                                  $group}
+                                 </div>
+   return
+    $entryGroupsShow
+};
+
+
 declare function raffShared:suggestedCitation($id as xs:string) {
     
     let $itemLink := request:get-url()
