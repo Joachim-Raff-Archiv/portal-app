@@ -10,7 +10,7 @@ import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "raffShared.xqm";
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
 import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
-(:import module namespace raffWork="https://portal.raff-archiv.ch/ns/baudiWork" at "raffWork.xqm";:)
+import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
 (:import module namespace raffSource="https://portal.raff-archiv.ch/ns/baudiSource" at "raffSource.xqm";:)
 
 import module namespace functx = "http://www.functx.com" at "functx.xqm";

@@ -21,6 +21,7 @@ import module namespace jsonp="http://www.jsonp.org";
 
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
 import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
+import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 (:  Schön formatiertes Datum: format-date($date, "[D]. [MNn,*-4] [Y]", $lang, (), ()) :)

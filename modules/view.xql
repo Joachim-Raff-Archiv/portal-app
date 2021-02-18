@@ -7,6 +7,7 @@ xquery version "3.0";
 
 import module namespace templates="http://exist-db.org/xquery/templates" ;
 import module namespace i18n="http://exist-db.org/xquery/i18n-templates" at "i18n-templates.xql";
+import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
 
 (: 
  : The following modules provide functions which will be called by the 
