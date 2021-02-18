@@ -1,4 +1,4 @@
-<project default="xar" name="${package(abbrev)}">
+<project default="deployLocal" name="${package(abbrev)}">
     <xmlproperty file="./expath-pkg.xml"/>
     <tstamp>
         <format property="DATETIME" pattern="yyyyMMdd-HHmm"  locale="en,UK" />
