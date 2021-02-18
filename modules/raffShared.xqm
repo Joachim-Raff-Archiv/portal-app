@@ -8,21 +8,21 @@ declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace hc = "http://expath.org/ns/http-client";
 declare namespace response = "http://exist-db.org/xquery/response";
 
-import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
+import module namespace app="https://portal.raff-archiv.ch/templates" at "/db/apps/raffArchive/modules/app.xql";
+import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "/db/apps/raffArchive/modules/raffWritings.xqm";
+import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
+import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config="https://portal.raff-archiv.ch/config" at "config.xqm";
+(:import module namespace config="https://portal.raff-archiv.ch/config" at "/db/apps/raffArchive/modules/config.xqm";:)
 import module namespace request="http://exist-db.org/xquery/request";
 import module namespace transform="http://exist-db.org/xquery/transform";
 
-import module namespace functx="http://www.functx.com" at "functx.xqm";
+import module namespace functx="http://www.functx.com" at "/db/apps/raffArchive/modules/functx.xqm";
 import module namespace json="http://www.json.org";
 import module namespace jsonp="http://www.jsonp.org";
 
-import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
-import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
-import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
-import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 (:  Schön formatiertes Datum: format-date($date, "[D]. [MNn,*-4] [Y]", $lang, (), ()) :)
 
@@ -647,7 +647,6 @@ declare function raffShared:getDateRegistryLetters($correspAction as node()*) as
         [$get, $type]
 };
 
-
 declare function raffShared:formatDateRegistryLetters($dateArray){
     let $dateRaw := $dateArray(1)
     let $type := $dateArray(2)
@@ -669,6 +668,70 @@ declare function raffShared:formatDateRegistryLetters($dateArray){
         $bracketify
 };
 
+declare function raffShared:getBirth($person){
+if ($person//tei:birth[1][@when-iso])
+    then
+        ($person//tei:birth[1]/@when-iso)
+    else
+        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+        then
+            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
+        else
+            if ($person//tei:birth[1][@notBefore])
+            then
+                ($person//tei:birth[1]/@notBefore)
+            else
+                if ($person//tei:birth[1][@notAfter])
+                then
+                    ($person//tei:birth[1]/@notAfter)
+                else
+                    ('noBirth')
+};
+declare function raffShared:getDeath($person){
+if ($person//tei:death[1][@when-iso])
+    then
+        ($person//tei:death[1]/@when-iso)
+    else
+        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
+        then
+            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
+        else
+            if ($person//tei:death[1][@notBefore])
+            then
+                ($person//tei:death[1]/@notBefore)
+            else
+                if ($person//tei:death[1][@notAfter])
+                then
+                    ($person//tei:death[1]/@notAfter)
+                else
+                    ('noDeath')
+                    };
+
+declare function raffShared:formatLifedata($lifedata){
+if(starts-with($lifedata,'-')) then(concat(substring(string(number($lifedata)),2),' v. Chr.')) else($lifedata)
+};
+
+declare function raffShared:getLifedata($person){
+let $birth := if(raffShared:getBirth($person)='noBirth')then()else(raffShared:getBirth($person))
+let $birthFormatted := raffShared:formatLifedata($birth)
+let $death := if(raffShared:getDeath($person)='noDeath')then()else(raffShared:getDeath($person))
+let $deathFormatted := raffShared:formatLifedata($death)
+let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
+                then
+                    (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
+                else
+                    if ($birthFormatted and not($deathFormatted))
+                    then
+                        (concat(' (*', $birthFormatted, ')'))
+                    else
+                        if ($deathFormatted and not($birthFormatted))
+                        then
+                            (concat(' (†', $deathFormatted, ')'))
+                        else
+                            ()
+    return
+        $lifedata
+                };
 
 declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*){
     
@@ -832,3 +895,26 @@ declare function raffShared:forwardEntries($idParam as xs:string) {
        then(response:redirect-to($entryLink))
        else()
 };
+
+
+declare function raffShared:replaceToSortDist($input) {
+
+let $fr := 	('ö','ä','ü','É','é','è','ê','á','à')
+let $to := 	('oe','ae','ue','E','e','e','e','a','a')
+   
+   return
+      functx:replace-multi(lower-case($input),$fr,$to)
+        => distinct-values()
+
+};
+
+declare function raffShared:replaceCutArticlesForSort($input) {
+
+   let $fr := 	('der', 'die', 'das', 'ein', 'eine', '[N.N.]','den','la','le','l’')
+   let $to := 	('', '', '', '', '', '', '', '', '', '')
+   
+   return
+      normalize-space(functx:replace-multi(lower-case($input),$fr,$to))
+};
+
+

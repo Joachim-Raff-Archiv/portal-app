@@ -11,7 +11,7 @@ import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared"
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
 import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
 import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
-(:import module namespace raffSource="https://portal.raff-archiv.ch/ns/baudiSource" at "raffSource.xqm";:)
+(:import module namespace raffSources="https://portal.raff-archiv.ch/ns/baudiSources" at "raffSources.xqm";:)
 
 import module namespace functx = "http://www.functx.com" at "functx.xqm";
 
@@ -77,99 +77,6 @@ declare function local:filterInput(){
    </div>
 };
 
-declare function local:getBirth($person){
-if ($person//tei:birth[1][@when-iso])
-    then
-        ($person//tei:birth[1]/@when-iso)
-    else
-        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
-        then
-            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
-        else
-            if ($person//tei:birth[1][@notBefore])
-            then
-                ($person//tei:birth[1]/@notBefore)
-            else
-                if ($person//tei:birth[1][@notAfter])
-                then
-                    ($person//tei:birth[1]/@notAfter)
-                else
-                    ('noBirth')
-};
-declare function local:getDeath($person){
-if ($person//tei:death[1][@when-iso])
-    then
-        ($person//tei:death[1]/@when-iso)
-    else
-        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
-        then
-            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
-        else
-            if ($person//tei:death[1][@notBefore])
-            then
-                ($person//tei:death[1]/@notBefore)
-            else
-                if ($person//tei:death[1][@notAfter])
-                then
-                    ($person//tei:death[1]/@notAfter)
-                else
-                    ('noDeath')
-                    };
-
-declare function local:formatLifedata($lifedata){
-if(starts-with($lifedata,'-')) then(concat(substring(string(number($lifedata)),2),' v. Chr.')) else($lifedata)
-};
-
-declare function local:getLifedata($person){
-let $birth := if(local:getBirth($person)='noBirth')then()else(local:getBirth($person))
-let $birthFormatted := local:formatLifedata($birth)
-let $death := if(local:getDeath($person)='noDeath')then()else(local:getDeath($person))
-let $deathFormatted := local:formatLifedata($death)
-let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
-                then
-                    (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
-                else
-                    if ($birthFormatted and not($deathFormatted))
-                    then
-                        (concat(' (*', $birthFormatted, ')'))
-                    else
-                        if ($deathFormatted and not($birthFormatted))
-                        then
-                            (concat(' (†', $deathFormatted, ')'))
-                        else
-                            ()
-    return
-        $lifedata
-                };
-
-declare function local:replaceToSortDist($input) {
-
-let $fr := 	('ö','ä','ü','É','é','è','ê','á','à')
-let $to := 	('oe','ae','ue','E','e','e','e','a','a')
-   
-   return
-      functx:replace-multi(lower-case($input),$fr,$to)
-        => distinct-values()
-
-};
-
-declare function local:replaceCutArticlesForSort($input) {
-
-   let $fr := 	('der', 'die', 'das', 'ein', 'eine', '[N.N.]','den','la','le','l’')
-   let $to := 	('', '', '', '', '', '', '', '', '', '')
-   
-   return
-      normalize-space(functx:replace-multi(lower-case($input),$fr,$to))
-};
-
-declare function local:turnName($nameToTurn){
-let $nameTurned := if(contains($nameToTurn,'['))
-                   then($nameToTurn)
-                   else(concat(string-join(subsequence(tokenize($nameToTurn,', '),2),' '),
-                   ' ',subsequence(tokenize($nameToTurn,', '),1,1)))
-return
-    $nameTurned
-};
 
 declare function local:getReferences($id) {
     let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)], $app:collectionInstitutions[matches(.//@key,$id)], $app:collectionTexts[matches(.//@key,$id)], $app:collectionSources//tei:note[@type='regeste'][matches(.//@key,$id)], $app:collectionWorks[matches(.//@auth,$id)])
@@ -197,8 +104,8 @@ declare function local:getReferences($id) {
                                           else('005')
                           let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
                           let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
-                          let $correspSentTurned := local:getSenderTurned($correspActionSent)
-                          let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
+                          let $correspSentTurned := raffPostals:getSenderTurned($correspActionSent)
+                          let $correspReceivedTurned := raffPostals:getReceiverTurned($correspActionReceived)
                           let $docDate := if(starts-with($docRoot/@xml:id,'A'))
                                           then(raffShared:getDate($docRoot//tei:correspAction[@type='sent']))
                                           else(<br/>)
@@ -256,170 +163,6 @@ declare function local:getReferences($id) {
                                  </div>
    return
     $entryGroupsShow
-};
-
-declare function local:getSenderTurned($correspActionSent){
-let $sender := if($correspActionSent/tei:persName[3]/text())
-                then(concat(local:turnName($correspActionSent/tei:persName[1]/text()[1]),'/', local:turnName($correspActionSent/tei:persName[2]/text()[1]),'/', local:turnName($correspActionSent/tei:persName[3]/text()[1]))) 
-                else if($correspActionSent/tei:persName[2]/text())
-                        then(concat(local:turnName($correspActionSent/tei:persName[1]/text()[1]),' und ',local:turnName($correspActionSent/tei:persName[2]/text()[1]))) 
-                        else if($correspActionSent/tei:persName/text()) 
-                             then(local:turnName($correspActionSent/tei:persName/text()[1])) 
-                             else if($correspActionSent/tei:orgName/text()) 
-                                  then($correspActionSent/tei:orgName/text()[1]) 
-                                  else('[N.N.]')
-  return
-    $sender
-};
-declare function local:getSender($correspActionSent){
-let $sender := if($correspActionSent/tei:persName)
-               then(
-                    if(($correspActionSent/tei:persName) > 2)
-                    then(string-join($correspActionSent/tei:persName/text()[1],'/')) 
-                    else if(count($correspActionSent/tei:persName) = 2)
-                    then(string-join($correspActionSent/tei:persName/text()[1],' und ')) 
-                    else($correspActionSent/tei:persName/text()[1])
-                   )
-               else if($correspActionSent/tei:orgName)
-               then(
-                    if(count($correspActionSent/tei:orgName) > 2)
-                    then(string-join($correspActionSent/tei:orgName/text()[1],'/')) 
-                    else if(count($correspActionSent/tei:orgName) = 2)
-                    then(string-join($correspActionSent/tei:orgName/text()[1],' und ')) 
-                    else($correspActionSent/tei:orgName/text()[1])
-                   )
-               else('[N.N.]')
-  return
-    $sender
-};
-
-declare function local:getReceiverTurned($correspActionReceived){
-
-let $receiver := if($correspActionReceived/tei:persName[3]/text()) 
-                                then(concat(local:turnName($correspActionReceived/tei:persName[1]/text()[1]),'/', local:turnName($correspActionReceived/tei:persName[2]/text()[1]),'/', local:turnName($correspActionReceived/tei:persName[3]/text()[1]))) 
-                                else if($correspActionReceived/tei:persName[2]/text()) 
-                                     then(concat(local:turnName($correspActionReceived/tei:persName[1]/text()[1]),' und ', local:turnName($correspActionReceived/tei:persName[2]/text()[1]))) 
-                                     else if($correspActionReceived/tei:persName/text()) 
-                                          then(local:turnName($correspActionReceived/tei:persName/text()[1])) 
-                                          else if($correspActionReceived/tei:orgName/text()) 
-                                               then($correspActionReceived/tei:orgName/text()[1]) 
-                                               else ('[N.N.]')
- return
-     $receiver
-};
-
-declare function local:getReceiver($correspActionReceived){
-
-let $receiver := if($correspActionReceived/tei:persName[3]/text()) 
-                                then(concat($correspActionReceived/tei:persName[1]/text()[1],'/', $correspActionReceived/tei:persName[2]/text()[1],'/', $correspActionReceived/tei:persName[3]/text()[1])) 
-                                else if($correspActionReceived/tei:persName[2]/text()) 
-                                     then(concat($correspActionReceived/tei:persName[1]/text()[1],' und ', $correspActionReceived/tei:persName[2]/text()[1])) 
-                                     else if($correspActionReceived/tei:persName/text()) 
-                                          then($correspActionReceived/tei:persName/text()[1]) 
-                                          else if($correspActionReceived/tei:orgName/text()) 
-                                               then($correspActionReceived/tei:orgName/text()[1]) 
-                                               else ('[N.N.]')
- return
-     $receiver
-};
-
-declare function local:getCorrespondance($id){
-    let $correspondence := $app:collectionPostals[matches(.//@key[not(./ancestor::tei:note[@type='regeste'])], $id)]
-    for $doc in $correspondence
-        let $letter := $doc/ancestor::tei:TEI
-        let $letterID := $letter/@xml:id/string()
-        let $correspActionSent := $letter//tei:correspAction[@type="sent"]
-        let $correspActionReceived := $letter//tei:correspAction[@type="received"]
-        let $correspSentTurned := local:getSenderTurned($correspActionSent)
-        let $correspReceivedTurned := local:getReceiverTurned($correspActionReceived)
-        let $date := raffShared:getDateRegistryLetters($correspActionSent)
-        let $dateFormatted := raffShared:formatDateRegistryLetters($date)
-        
-        let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                <div class="col-3">{$dateFormatted}</div>
-                                <div class="col">{$correspSentTurned}<br/>an {$correspReceivedTurned}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
-                            </div>
-        
-            order by $date(1)
-        return
-        $letterEntry
-};
-
-declare function local:getNameJoined($person){
- let $nameSurname := $person//tei:surname[matches(@type,"^used")][1]/text()[1]
- let $nameGenName := $person//tei:genName/text()
- let $nameSurnameFull := if($nameGenName)then(concat($nameSurname,' ',$nameGenName))else($nameSurname)
- let $nameForename := $person//tei:forename[matches(@type,"^used")][1]/text()[1]
- let $nameNameLink := $person//tei:nameLink[1]/text()[1]
- let $nameAddNameTitle := $person//tei:addName[matches(@type,"^title")][1]/text()[1]
- let $nameAddNameEpitet := $person//tei:addName[matches(@type,"^epithet")][1]/text()[1]
- let $nameForeFull := concat(if($nameAddNameTitle)then(concat($nameAddNameTitle,' '))else(),
-                             if($nameForename)then(concat($nameForename,' '))else(),
-                             if($nameAddNameEpitet)then(concat($nameAddNameEpitet,' '))else(),
-                             if($nameNameLink)then(concat($nameNameLink,' '))else()
-                             )
- let $pseudonym := if ($person//tei:forename[matches(@type,'^pseudonym')] or $person//tei:surname[matches(@type,'^pseudonym')])
-                   then (concat($person//tei:forename[matches(@type,'^pseudonym')], ' ', $person//tei:surname[matches(@type,'^pseudonym')]))
-                   else ()
- let $nameRoleName := $person//tei:roleName[1]/text()[1]
- let $nameAddNameNick := $person//tei:addName[matches(@type,"^nick")][1]/text()[1]
- let $nameUnspec := $person//tei:name[matches(@type,'^unspecified')][1]/text()[1]
- 
- let $nameToJoin := if ($nameSurnameFull and $nameForeFull)
-                    then (concat($nameSurnameFull,', ',$nameForeFull))
-                    else if ($nameSurnameFull)
-                    then ($nameSurnameFull)
-                    else if($nameForeFull)
-                    then ($nameForeFull)
-                    else if($pseudonym)
-                    then ($pseudonym)
-                    else if($nameRoleName)
-                    then ($nameRoleName)
-                    else if ($nameAddNameNick)
-                    then ($nameAddNameNick)
-                    else if ($nameUnspec)
-                    then ($nameUnspec)
-                    else ('[N.N.]')
- 
- return
-    $nameToJoin
-};
-
-declare function local:getWorks($cat){
-    let $works := $app:collectionWorks[matches(.//mei:term, $cat)]
-    for $work in $works
-        let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/normalize-space(text())
-        let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/normalize-space(text())
-        let $withoutArticle := replace(replace(replace(replace(replace(replace($workName,'Der ',''),'Den ',''), 'Die ',''), 'La ',''), 'Le ',''), 'L’','')
-        let $workID := $work/@xml:id/string()
-        
-        let $workPerfRess := $work//mei:workList/mei:work[1]//mei:perfResList/mei:perfRes[not(@type = 'alt')]
-                            let $perfDesc := string-join($workPerfRess, ' | ')
-                            let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
-                            let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
-        
-        return
-            <div titleToSort="{$opus}"
-            class="row {if(string-length($cat)>9)then('RegisterEntry2')else('RegisterEntry')}">
-                <div class="col-sm-5 col-md-7 col-lg-8">
-                    {$workName}
-                    {if($perfDesc or $arranged)
-                     then(<br/>,<span class="sublevel">{if($arranged)then('Bearbeitet für ')else()}{$perfDesc}</span>)
-                     else()}
-                </div>
-                <div
-                    class="col-sm-4 col-md-3 col-lg-2">{$opus}
-                    <br/>
-                    {if($lost)
-                    then(<span class="sublevel">{concat('(', $lost, ')')}</span>)
-                    else()}
-                </div>
-                <div
-                    class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
-                        href="work/{$workID}">{$workID}</a>
-                </div>
-            </div>
 };
 
 declare function app:registryLettersDate($node as node(), $model as map(*)) {
@@ -926,9 +669,9 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                            $person//tei:surname[matches(@type,'^pseudonym')]),' ')
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
-                            let $lifeData := local:getLifedata($person)
+                            let $lifeData := raffShared:getLifedata($person)
                             let $nameJoined := raffPostals:getName($persID, 'reversed')
-                            let $nameToSort := local:replaceToSortDist(if(count($nameSurnames) > 0) 
+                            let $nameToSort := raffShared:replaceToSortDist(if(count($nameSurnames) > 0) 
                                                                        then(string-join($nameSurnames, ' '))
                                                                        else if(count($nameForenames) > 0)
                                                                        then(string-join($nameForenames, ' '))
@@ -966,7 +709,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                     count="{count($name)}">
                                     {
                                         for $each in $name
-                                        let $order := local:replaceToSortDist($each)
+                                        let $order := raffShared:replaceToSortDist($each)
                                             order by $order
                                         return
                                             $each
@@ -1092,10 +835,10 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                                else ()
                              let $occupation := $person//tei:occupation[1]/text()[1]
                              
-                             let $birth := local:getBirth($person)
+                             let $birth := raffShared:getBirth($person)
                              let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth)
-                             let $birthFormatted := local:formatLifedata($birth)
-                             let $lifeData := local:getLifedata($person)
+                             let $birthFormatted := raffShared:formatLifedata($birth)
+                             let $lifeData := raffShared:getLifedata($person)
                              
                              let $name := <div
                                  class="row RegisterEntry">
@@ -1132,7 +875,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                      count="{count($name)}">
                                      {
                                          for $each in $name
-                                         let $order := local:replaceToSortDist($each)
+                                         let $order := raffShared:replaceToSortDist($each)
                                              order by $order
                                          return
                                              $each
@@ -1252,10 +995,10 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                                                else ()
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
-                            let $death := local:getDeath($person)
+                            let $death := raffShared:getDeath($person)
                             let $deathToSort := if (contains($death,'/')) then(substring-before($death,'/')) else($death)
-                            let $deathFormatted := local:formatLifedata($death)
-                            let $lifeData := local:getLifedata($person)
+                            let $deathFormatted := raffShared:formatLifedata($death)
+                            let $lifeData := raffShared:getLifedata($person)
                             let $nameJoined := raffPostals:getName($persID, 'reversed')
                             let $name := <div
                                 class="row RegisterEntry">
@@ -1292,7 +1035,7 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                                     count="{count($name)}">
                                     {
                                         for $each in $name
-                                            let $order := local:replaceToSortDist($each)
+                                            let $order := raffShared:replaceToSortDist($each)
                                             order by $order
                                         return
                                             $each
@@ -1430,7 +1173,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra active"
                                     data-toggle="tab"
                                     href="#metadata">Allgemein</a></li>
-                            {if (local:getCorrespondance($id)) then(<li
+                            {if (raffPostals:getCorrespondance($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
@@ -1474,13 +1217,13 @@ declare function app:person($node as node(), $model as map(*)) {
                                 {transform:transform($person, doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
                             </div>
                             {
-                                if (local:getCorrespondance($id)) then
+                                if (raffPostals:getCorrespondance($id)) then
                                     (<div
                                         class="tab-pane fade"
                                         id="correspondence">
                                         <br/>
                                         <div >{
-                                            let $entrys := local:getCorrespondance($id)
+                                            let $entrys := raffPostals:getCorrespondance($id)
                                             return
                                                 $entrys
                                         }</div>
@@ -1564,7 +1307,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                         count="{count($name)}">
                                         {
                                             for $each in $name
-                                                let $order := local:replaceToSortDist($each)
+                                                let $order := raffShared:replaceToSortDist($each)
                                                 order by $order
                                             return
                                                 $each
@@ -1626,7 +1369,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                         count="{count($name)}">
                                         {
                                             for $each in $name
-                                                let $order := local:replaceToSortDist($each)
+                                                let $order := raffShared:replaceToSortDist($each)
                                                 order by $order
                                             return
                                                 $each
@@ -1817,7 +1560,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra active"
                                     data-toggle="tab"
                                     href="#metadata">Allgemein</a></li>
-                            {if (local:getCorrespondance($id)) then(<li
+                            {if (raffPostals:getCorrespondance($id)) then(<li
                                 class="nav-item">
                                 <a
                                     class="nav-link-jra"
@@ -1875,13 +1618,13 @@ declare function app:institution($node as node(), $model as map(*)) {
                         -->
                             </div>
                             {
-                                if (local:getCorrespondance($id)) then
+                                if (raffPostals:getCorrespondance($id)) then
                                     (<div
                                         class="tab-pane fade"
                                         id="correspondence">
                                         <br/>
                                         <div >{
-                                            let $entrys := local:getCorrespondance($id)
+                                            let $entrys := raffPostals:getCorrespondance($id)
                                             return
                                                 $entrys
                                         }</div>
@@ -1945,7 +1688,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
     let $worksAlpha := for $work in $works
                             let $workName := $work//mei:workList//mei:title[@type = 'uniform']/normalize-space(text())
                             let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
-                            let $withoutArticle := local:replaceCutArticlesForSort($workName)
+                            let $withoutArticle := raffShared:replaceCutArticlesForSort($workName)
                             let $initial := for $case in upper-case(substring($withoutArticle, 1, 1))
                                                 return switch ($case)
                                                 case 'É' return 'E'
@@ -1995,7 +1738,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                     {
                                                         for $each in $name
                                                             let $orderWithoutArticle := $each/@titleToSort
-                                                            let $order := local:replaceToSortDist($orderWithoutArticle)
+                                                            let $order := raffShared:replaceToSortDist($orderWithoutArticle)
                                                             order by $order
                                                             return
                                                                 $each
@@ -2101,7 +1844,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                     {
                                         for $each in $name
                                             let $orderWithoutArticle := $each/@titleToSort
-                                            let $order := local:replaceToSortDist($orderWithoutArticle)
+                                            let $order := raffShared:replaceToSortDist($orderWithoutArticle)
                                             order by $order
                                             return
                                                 $each
@@ -2392,99 +2135,99 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             class="RegisterSortEntry"
                                             id="cat-01-01">Chorwerke mit Orchester geistlich</div>
                                             {let $works := 'cat-01-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-01">Oratorien</div>
                                             {let $works := 'cat-01-01-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-02">Liturgische Werke</div>
                                             {let $works := 'cat-01-01-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-01-01-03">Andere Chorwerke</div>
                                             {let $works := 'cat-01-01-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-02">Chorwerke mit Orchester weltlich</div>
                                             {let $works := 'cat-01-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <!--<div
                                           class="RegisterSortEntry"
                                           id="cat-01-03">Chorwerke mit Klavier</div>
                                           {let $works := 'cat-01-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}-->
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-04">Chorwerke a cappella geistlich</div>
                                            {let $works := 'cat-01-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                            class="RegisterSortEntry"
                                            id="cat-01-05">Chorwerke a cappella weltlich</div>
                                            {let $works := 'cat-01-05'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-06">Ensembles mit Klavier</div>
                                             {let $works := 'cat-01-06'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-07">Lieder mit Orchester</div>
                                                {let $works := 'cat-01-07'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work 
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-01-08">Lieder mit Klavier</div>
                                             {let $works := 'cat-01-08'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         
@@ -2505,18 +2248,18 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             class="RegisterSortEntry"
                                             id="cat-02-01">Opern</div>
                                             {let $works := 'cat-02-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-02-02">Schauspielmusiken</div>
                                             {let $works := 'cat-02-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2536,45 +2279,45 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             class="RegisterSortEntry"
                                             id="cat-03-01">Symphonien</div>
                                             {let $works := 'cat-03-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-03-02">Suiten</div>
                                             {let $works := 'cat-03-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-03-03">Konzertante Werke</div>
                                             {let $works := 'cat-03-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                       <div
                                             class="RegisterSortEntry"
                                             id="cat-03-04">Ouvertüren und Vorspiele</div>
                                             {let $works := 'cat-03-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                      <div
                                             class="RegisterSortEntry"
                                             id="cat-03-05">Andere Orchesterwerke</div>
                                             {let $works := 'cat-03-05'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2594,162 +2337,162 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             class="RegisterSortEntry"
                                             id="cat-04-01">Kammermusik ohne Klavier</div>
                                             {let $works := 'cat-04-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-01">Sinfonietta</div>
                                             {let $works := 'cat-04-01-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-02">Oktett</div>
                                             {let $works := 'cat-04-01-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-03">Sextett</div>
                                             {let $works := 'cat-04-01-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-01-04">Streichquartette</div>
                                             {let $works := 'cat-04-01-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-04-02">Kammermusik mit Klavier</div>
                                             {let $works := 'cat-04-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-01">Klavierquintette</div>
                                             {let $works := 'cat-04-02-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-02">Klavierquartette</div>
                                             {let $works := 'cat-04-02-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-03">Klaviertrios</div>
                                             {let $works := 'cat-04-02-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-02-04">Horn und Klavier</div>
                                             {let $works := 'cat-04-02-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-03">Violine und Klavier</div>
                                             {let $works := 'cat-04-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-01">Sonaten</div>
                                             {let $works := 'cat-04-03-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-02">Andere Werke für Violine und Klavier</div>
                                             {let $works := 'cat-04-03-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-03-03">Fantasien und Variationen über fremde Themen für Violine und Klavier</div>
                                             {let $works := 'cat-04-03-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-04-04">Cello und Klavier</div>
                                             {let $works := 'cat-04-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-04-01">Sonaten</div>
                                             {let $works := 'cat-04-04-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-04-02">Andere Werke für Cello und Klavier</div>
                                             {let $works := 'cat-04-04-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-04-04-03">Fantasien und Variationen über fremde Themen für Cello und Klavier</div>
                                             {let $works := 'cat-04-04-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2769,81 +2512,81 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             class="RegisterSortEntry"
                                             id="cat-05-01">Klavier zweihändig</div>
                                             {let $works := 'cat-05-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-01">Sonaten</div>
                                             {let $works := 'cat-05-01-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-02">Suiten</div>
                                             {let $works := 'cat-05-01-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-03">Weitere Stücke für Klavier zu zwei Händen</div>
                                             {let $works := 'cat-05-01-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-04">Fantasien und Variationen über fremde Themen</div>
                                             {let $works := 'cat-05-01-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat} 
                                        <div
                                             class="RegisterSortEntry2"
                                             id="cat-05-01-05">Klavierauszüge</div>
                                             {let $works := 'cat-05-01-05'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-02">Klavier vierhändig</div>
                                             {let $works := 'cat-05-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-03">Zwei Klaviere</div>
                                             {let $works := 'cat-05-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-05-04">Orgel</div>
                                             {let $works := 'cat-05-04'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         </div>
@@ -2863,36 +2606,36 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             class="RegisterSortEntry"
                                             id="cat-06-01">Orchestrierungen</div>
                                             {let $works := 'cat-06-01'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-04">Klavierauszüge eigener Werke</div>
                                             {let $works := 'cat-05-01-05'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-03">Transkriptionen für Klavier</div>
                                             {let $works := 'cat-06-03'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-06-02">Kammermusik</div>
                                             {let $works := 'cat-06-02'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                    </div>
@@ -2911,9 +2654,9 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <!--<div class="RegisterSortEntry"
                                             id="cat-06-01">Orchestrierungen</div>-->
                                             {let $works := 'cat-07'
-                                                for $work in local:getWorks($works)
+                                                for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
-                                                order by local:replaceToSortDist($worksByCat/@titleToSort)
+                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
                                                 return
                                                     $worksByCat}
                                    </div>
@@ -3043,7 +2786,7 @@ declare function app:registryWritings($node as node(), $model as map(*)) {
     let $writingsAlpha := for $writing in $writings
                             let $writingID := $writing/@xml:id/string()
                             let $title := $writing//tei:sourceDesc//tei:title[1]/text()
-                            let $initial := substring(local:replaceCutArticlesForSort($title), 1, 1)
+                            let $initial := substring(raffShared:replaceCutArticlesForSort($title), 1, 1)
                             let $author := $writing//tei:sourceDesc//tei:author[1]
                             let $pubPlace := $writing//tei:sourceDesc//tei:imprint/tei:pubPlace[1]
                             let $date := $writing//tei:sourceDesc//tei:imprint/tei:date[1]
@@ -3074,7 +2817,7 @@ declare function app:registryWritings($node as node(), $model as map(*)) {
                                     count="{count($entry)}">
                                     {
                                         for $each in $entry
-                                        let $order := local:replaceToSortDist($each)
+                                        let $order := raffShared:replaceToSortDist($each)
                                             order by $order
                                         return
                                             $each
