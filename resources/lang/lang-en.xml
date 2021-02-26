@@ -11,6 +11,7 @@
     <msg key="jra.mainNav.documents">Documents</msg>
     <msg key="jra.mainNav.places">Places</msg>
     <msg key="jra.mainNav.institutions">Institutions</msg>
+    <msg key="jra.mainNav.search">Search</msg>
     <msg key="jra.mainNav.project.about">About the project</msg>
     <msg key="jra.mainNav.documentation">Documentation</msg>
     <msg key="jra.mainNav.resourcesUsed">Used resources</msg>
