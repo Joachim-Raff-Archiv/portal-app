@@ -124,24 +124,6 @@ declare function raffShared:translate($content) {
 :
 :)
 
-declare %templates:wrap function raffShared:listMultiSelectOptions($node as node(), $model as map(*), $listName as xs:string) {
-    let $list := if ($listName = 'personRefs2RegerTypes')
-                    then ($app:personRefs2RegerTypes)
-                    else if ($listName = 'mriPersonaliaOrgaClassificationTypes')
-                    then ($app:mriPersonaliaOrgaClassificationTypes)
-                    else if ($listName = 'mriPostalObjektTypes')
-                    then ($app:mriPostalObjektTypes)
-                    else if ($listName = 'mriEventTypes')
-                    then ($app:mriEventTypes)
-                    else ()
-
-    for $type in $list
-        let $typeLabel := raffShared:translate($type)
-        order by $typeLabel
-        return
-            <option value="{$type}">{$typeLabel}</option>
-};
-
 
 
 (: DATES:)
@@ -180,102 +162,7 @@ declare function raffShared:monthName($monthNo as xs:integer) as xs:string {
 :
 :)
 
-declare function raffShared:customDate($dateVal as xs:string) as xs:string {
-    let $dateValT := tokenize($dateVal, '-')
-    let $hasDay := if (number($dateValT[3]) > 0)
-                    then (number($dateValT[3]))
-                    else ()
-    let $hasMonth := if (number($dateValT[2]) > 0)
-                        then (number($dateValT[2]))
-                        else ()
-    let $hasYear := if (number($dateValT[1]) > 0)
-                    then (number($dateValT[1]))
-                    else ()
-    return
-        if ($hasDay and $hasMonth and $hasYear)
-        then (xs:date($dateVal))
-        else if ($hasMonth and $hasYear)
-        then (
-            concat(
-                raffShared:monthName($dateValT[2]),
-                ' ',
-                $dateValT[1],
-                ' [',
-                raffShared:translate('raffArchive.entry.postalObject.date.day'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasDay and $hasMonth)
-        then (
-            concat(
-                format-number($dateValT[3], '0'),
-                '.&#160;',
-                raffShared:monthName($dateValT[2]),
-                ', [',
-                raffShared:translate('raffArchive.entry.postalObject.date.year'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasMonth)
-        then (
-            concat(
-                raffShared:monthName($dateValT[2]),
-                ', [',
-                raffShared:translate('raffArchive.entry.postalObject.date.day'),
-                '/',
-                raffShared:translate('raffArchive.entry.postalObject.date.year'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasDay)
-        then (
-            concat(
-                format-number($dateValT[3], '0'),
-                '., [',
-                raffShared:translate('raffArchive.entry.postalObject.date.month'),
-                '/',
-                raffShared:translate('raffArchive.entry.postalObject.date.year'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasYear)
-        then (
-            concat(
-                $dateValT[1],
-                ', [',
-                raffShared:translate('raffArchive.entry.postalObject.date.day'),
-                '/',
-                raffShared:translate('raffArchive.entry.postalObject.date.month'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else (raffShared:translate('raffArchive.entry.postalObject.date.type.undated'))
 
-};
-
-
-(:~
-: Format xs:date with respect to language and desired form
-:
-: @param $date the date
-: @param $form the form (e.g. full, short, …)
-: @param $lang the requested language
-:
-: @return a i18n date string.
-:
-: ToDo: find the right type of $date for raffShared:getBirthDeathDates
-:
-:)
 
 declare function raffShared:formatDate($date, $form as xs:string, $lang as xs:string) as xs:string {
     let $date := if (functx:atomic-type($date) = 'xs:date')
@@ -337,10 +224,6 @@ declare function raffShared:shortenAndFormatDates($dateFrom, $dateTo, $form as x
 };
 
 
-
-
-
-
 declare function raffShared:getBirthDeathDates($dates, $lang) {
     let $date := if ($dates/tei:date)
                         then (raffShared:formatDate($dates/tei:date, 'full', $lang))
@@ -373,10 +256,6 @@ declare function raffShared:queryKey() {
 };
 
 
-declare %templates:wrap function raffShared:readCache($node as node(), $model as map(*), $cacheName as xs:string) {
-    doc(concat('xmldb:exist:///db/apps/raffArchive/caches/', $cacheName, '.xml'))/*
-};
-
 
 (: Patrick integrates https://jaketrent.com/post/xquery-browser-language-detection/ :)
 
@@ -387,19 +266,6 @@ declare function raffShared:get-browser-lang() as xs:string? {
   else
     ()
 };
-
-(:declare function raffShared:get-lang() as xs:string? {
-  let $lang := if(string-length(request:get-parameter("lang", "")) gt 0) then
-      (\: use http parameter lang as selected language :\)
-      request:get-parameter("lang", "")
-  else
-     if(string-length(request:get-cookie-value("forceLang")) gt 0) then
-       request:get-cookie-value("forceLang")
-     else
-       raffShared:get-browser-lang()
-  (\: limit to de and en; en default :\)
-  return if($lang != "en" and $lang != "de") then "en" else $lang
-};:)
 
 declare function raffShared:get-top-supported-lang($ordered-langs as xs:string*, $translations as xs:string*) as xs:string? {
   if (fn:empty($ordered-langs)) then
