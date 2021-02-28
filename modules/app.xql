@@ -23,10 +23,18 @@ declare namespace http = "http://expath.org/ns/http-client";
 declare namespace range = "http://exist-db.org/xquery/range";
 declare namespace pkg = "http://expath.org/ns/pkg";
 
+declare variable $app:dbRootUrl as xs:string := request:get-url();
+declare variable $app:dbRootLocalhost as xs:string := 'http://localhost:8080/exist/apps/raffArchive';
+declare variable $app:dbRootDev as xs:string := 'http://localhost:8088/exist/apps/raffArchive';
+declare variable $app:dbRootPortal as xs:string := 'http://localhost:8082/exist/apps/raffArchive';
+declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
+declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
+
+
 declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspDesc];
 declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
 declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI[.//tei:org];
-declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI[.//tei:correspDesc];
+declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI;
 declare variable $app:collectionTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
 declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//mei:mei;
 declare variable $app:collectionWritings := collection('/db/apps/jraWritings/data')//tei:TEI;

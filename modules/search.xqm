@@ -58,8 +58,6 @@ declare function search:content()
 {
     let $term := request:get-parameter("term",())
 
-    let $collections := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks)
-    
     let $options := <options>
                         {
                          if (request:get-parameter("type",()) = "exactmatch")
@@ -85,14 +83,19 @@ declare function search:content()
                     }
                   </query>
     
-    let $hits := $collections[ft:query(., $query, $options)]
+    let $hits := $app:collectionPostals//tei:note[ft:query(., $query, $options)]
+    | $app:collectionPersons//tei:person[ft:query(., $query, $options)]
+    | $app:collectionInstitutions//tei:org[ft:query(., $query, $options)]
+                 | $app:collectionSources//tei:text[ft:query(., $query, $options)]
+                 | $app:collectionTexts//tei:text[ft:query(., $query, $options)]
+                 | $app:collectionWorks//mei:work[ft:query(., $query, $options)]
     
     return 
             if (count($hits) gt 0)
                 then
                     <div>
                        <div class="row mb-2">
-                            {count($hits)}&#160;{raffShared:translate('jra.search.result.result')}&#160;<i>{request:get-parameter("term",())}</i>
+                            {count($hits)}&#160;{raffShared:translate('jra.search.result.result')}&#160;<i>{request:get-parameter("term",())}</i><br/>
                             <!--{
                              if (request:get-parameter("type",()) = "exactmatch")
                                 then ()
@@ -102,15 +105,30 @@ declare function search:content()
                           { 
                             for $hit in $hits
                             
-                            let $docid := string-join($hit/root()/node()/string(@xml:id), '|')
+                            let $docRoot := $hit/root()//tei:TEI | $hit/root()//mei:mei
+                            let $docid := if($docRoot[@xml:id])
+                                          then($docRoot/string(@xml:id))
+                                          else ('noID')
                             
-(:                            let $docurl := "http://localhost:8080/exist/apps/raffArchive/html/letter/" || $docid:)
+                            let $href := if(starts-with($docid,'A'))
+ then('/letter/')
+                            else if (starts-with($docid,'B'))
+                                          then ('/work/')
+                            else if(starts-with($docid,'C'))
+                            then('/person/')
+                                          else if(starts-with($docid,'D'))
+                                          then('/institution/')
+                                          else if(starts-with($docid,'E'))
+                                          then('/writing/')
+                                          else()
+                            
+                            let $docurl := $app:dbRoot || $href || $docid
                             
                             order by $docid
                             return
                                 <div class="row">
                                      <div class="col-10">{kwic:summarize($hit, <config width="50"/>)}</div>
-                                     <div class="col-2"><a href="">{$docid}</a></div>
+                                     <div class="col-2"><a href="{$docurl}" target="_blank">{$docid}</a></div>
                                  </div>
                           }
                     </div>
