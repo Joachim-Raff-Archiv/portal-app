@@ -58,30 +58,17 @@ declare function app:langSwitch($node as node(), $model as map(*)) {
             </li>
 };
 
-declare function app:search($node as node(), $model as map(*)) {
-    let $collection := $app:collectionPersons
-    return
-        <div>
-            <p>Es wurden {count($collection//tei:surname[contains(., 'Raff')])} Ergebnisse gefunden.</p>
-            <br/>
-            <ul
-                id="myResults">
-                {
-                    for $search at $n in $collection//tei:surname
-                        where $search[contains(., 'Raff')]
-                    let $result := $search/parent::node()/string()
-                    let $resultID := $search/ancestor::tei:TEI/@xml:id
-                        order by $result
-                    return
-                        <li>{$result} (<a
-                                href="person/{$resultID}">{$resultID/string()}</a>)</li>
-                }</ul></div>
-};
-
 declare function app:filterInput(){
     <div>
         <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
         <input type="text" id="myResearchInput" onkeyup="myFilter()" placeholder="Name, ID, …" title="Type in a string"/>
+   </div>
+};
+
+declare function app:filterInputWorks(){
+    <div>
+        <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
+        <input type="text" id="myResearchInput" onkeyup="myFilterWorks()" placeholder="Name, ID, …" title="Type in a string"/>
    </div>
 };
 
@@ -1837,7 +1824,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
         </ul>
             
         <div
-            class="tab-content">
+            class="tab-content" id="divResults">
             <div
                 class="tab-pane fade show active"
                 id="sortWork">
