@@ -16,7 +16,7 @@ import module namespace i18n="http://exist-db.org/xquery/i18n" at "/db/apps/raff
 
 
 declare function raffWorks:getWorks($cat){
-    let $works := $app:collectionWorks[matches(.//mei:term, $cat)]
+    let $works := $app:collectionWorks[.//mei:term = $cat]
     for $work in $works
         let $workName := $work//mei:workList//mei:title[matches(@type,'uniform')]/text() => normalize-space()
         let $opus := $work//mei:workList//mei:title[matches(@type,'desc')]/text() => normalize-space()
