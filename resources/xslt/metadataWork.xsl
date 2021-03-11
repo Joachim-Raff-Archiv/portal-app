@@ -204,8 +204,15 @@
                 <tr>
                     <td valign="top">Kompositionszeitraum:</td>
                     <td>
-                        <xsl:value-of select="local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notbefore)"/> bis
-                        <xsl:value-of select="local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notafter)"/>
+                        <xsl:choose>
+                            <xsl:when test="local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notafter) = local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notbefore)">
+                                <xsl:value-of select="local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notbefore)"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notbefore)"/> bis
+                                <xsl:value-of select="local:formatDate(//mei:work//mei:creation/mei:date[@type = 'composition']/@notafter)"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </td>
                 </tr>
                 </xsl:when>
