@@ -21,7 +21,7 @@
                 </xsl:if>
                 <xsl:if test="//mei:workList/mei:work/mei:title[@type = 'popular' and @xml:lang = 'de']">
                 <tr>
-                    <td valign="top">Populärtitel:</td>
+                    <td valign="top">Populartitel:</td>
                     <td>
                         <xsl:value-of select="//mei:workList/mei:work/mei:title[@type = 'popular' and @xml:lang = 'de']/normalize-space(text())"/>
                     </td>
@@ -189,7 +189,7 @@
 
                 </xsl:if>
             </table>
-<!--                            <xsl:if test="//mei:creation/mei:date[@type='composition']">-->
+                            <xsl:if test="//mei:creation/mei:date[@type='composition']">
             <table class="workView">
                 <xsl:choose>
                     <xsl:when test="//mei:work//mei:creation/mei:date[@type='composition']/@isodate">
@@ -244,7 +244,7 @@
                     </td>
                 </tr>
                 </xsl:if>
-            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            
+            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">
                 <tr>
                     <td valign="top">Uraufführung:</td>
                     <td>
@@ -280,7 +280,7 @@
                 </tr>
             </xsl:if>
             </table>
-            
+            </xsl:if>
             <xsl:if test="//mei:music/mei:body/mei:mdiv/@label">
             <table class="workView">
                 <tr>
@@ -293,6 +293,9 @@
                                 </xsl:when>
                                 <xsl:when test="@type= 'component'">
                                     <xsl:value-of select="concat('Teil ', @n, ': ', @label)"/>
+                                </xsl:when>
+                                <xsl:when test="@type= 'issue'">
+                                    <xsl:value-of select="concat('Heft ', @n, ': ', @label)"/>
                                 </xsl:when>
                                 <xsl:when test="number(@n) &lt; 1000">
                                     <xsl:value-of select="concat('Nr. ', ./@label)"/>
