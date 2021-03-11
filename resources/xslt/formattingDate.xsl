@@ -21,9 +21,8 @@
                     <xsl:variable name="date" select="$dateRaw"/>
                     <xsl:value-of select="format-date(xs:date($date), '[D]. [M]. [Y]', (), (), ())"/>
                 </xsl:when>
-                
                 <xsl:otherwise>
-                    DATUM
+                    [undatiert]
                 </xsl:otherwise>
             </xsl:choose>
     </xsl:function>
