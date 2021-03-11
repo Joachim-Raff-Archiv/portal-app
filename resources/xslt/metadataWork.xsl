@@ -288,11 +288,17 @@
                     <td>
                         <xsl:for-each select="//mei:music/mei:body/mei:mdiv">
                             <xsl:choose>
-                                <xsl:when test="contains(@label,'Abteilung') or contains(@label,'Teil')">
-                                    <xsl:value-of select="@label"/>
+                                <xsl:when test="@type= 'section'">
+                                    <xsl:value-of select="concat('Abteilung ', @n, ': ', @label)"/>
+                                </xsl:when>
+                                <xsl:when test="@type= 'component'">
+                                    <xsl:value-of select="concat('Teil ', @n, ': ', @label)"/>
+                                </xsl:when>
+                                <xsl:when test="number(@n) &lt; 1000">
+                                    <xsl:value-of select="concat('Nr. ', ./@label)"/>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:value-of select="concat('Nr. ', ./@label)"/>
+                                    <xsl:value-of select="@label"/>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <br/>
@@ -300,11 +306,17 @@
                                 <ul>
                                     <xsl:for-each select="./mei:mdiv">
                                         <xsl:choose>
-                                            <xsl:when test="contains(@label,'Abteilung') or contains(@label,'Teil')">
-                                                <xsl:value-of select="concat(./@n, ' ', ./@label)"/>
+                                            <xsl:when test="number(@n) &lt; 1000 and @label">
+                                                <xsl:value-of select="concat('Nr. ', @n, '. ', ./@label)"/>
+                                            </xsl:when>
+                                            <xsl:when test="number(@n) &lt; 1000">
+                                                <xsl:value-of select="concat('Nr. ', @n)"/>
+                                            </xsl:when>
+                                            <xsl:when test="@n and @label">
+                                                <xsl:value-of select="concat(@n, '. ', @label)"/>
                                             </xsl:when>
                                             <xsl:otherwise>
-                                                <xsl:value-of select="concat('Nr. ', ./@n, ' ', ./@label)"/>
+                                                <xsl:value-of select="@label"/>
                                             </xsl:otherwise>
                                         </xsl:choose>
                                         <br/>
