@@ -2521,7 +2521,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         <div
                                             class="RegisterSortEntry"
                                             id="cat-06-04">Klavierauszüge eigener Werke</div>
-                                            {let $works := 'cat-05-01-05'
+                                            {let $works := 'cat-06-04'
                                                 for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
                                                 order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
