@@ -404,7 +404,7 @@ declare function raffShared:formatDate($dateRaw){
                   then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
                   else($dateRaw)
     
-    let $replaceMay := replace($date,'Mai.','Mai')
+    let $replaceMay := $date => replace('Mai.','Mai') => replace('May.','May')
     return
         $replaceMay
 };
