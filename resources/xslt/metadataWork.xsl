@@ -244,14 +244,14 @@
                     </td>
                 </tr>
                 </xsl:if>
-<!--            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            -->
+            <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">            
                 <tr>
                     <td valign="top">Uraufführung:</td>
                     <td>
                         <xsl:variable name="UAdate" select="local:formatDate(//mei:eventList/mei:event[@type = 'UA']/mei:date/text())"/>
                         <xsl:variable name="UAort" select="//mei:eventList/mei:event[@type = 'UA']/mei:geogName/text()"/>
                         <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor']/text()"/>
-                        <xsl:variable name="UAinterpret" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]"/>
+                        <xsl:variable name="UAinterpret" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]/text()"/>
                         <xsl:choose>
                             <xsl:when test="not(empty($UAdate)) and not(empty($UAort))">
                                 <xsl:value-of select="concat('Am ', $UAdate, ' in ', $UAort)"/>
@@ -278,7 +278,7 @@
                         </xsl:if>
                     </td>
                 </tr>
-            <!--</xsl:if>-->
+            </xsl:if>
             </table>
             
             <xsl:if test="//mei:music/mei:body/mei:mdiv/@label">
