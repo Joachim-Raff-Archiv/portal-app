@@ -562,15 +562,15 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
     
     let $persons := $app:collectionPersons
     
-    let $personsAlpha := for $person in $persons
+    let $personsAlphaAll := for $person in $persons
                             let $persID := $person/@xml:id/string()
                             let $nameSurnames := $person//tei:surname[matches(@type,"^used")]
                             let $nameForenames := $person//tei:forename[matches(@type,"^used")]
-                            let $initial := if(count($nameSurnames) > 0)
+                            let $initial := upper-case(if(count($nameSurnames) > 0)
                                             then(substring($nameSurnames[1], 1, 1))
                                             else if(count($nameForenames) > 0)
                                             then(substring($nameForenames[1], 1, 1))
-                                            else()
+                                            else())
                             let $role := $person//tei:roleName[1]/text()[1]
                             let $pseudonym := string-join(($person//tei:forename[matches(@type,'^pseudonym')],
                                                            $person//tei:surname[matches(@type,'^pseudonym')]),' ')
@@ -617,11 +617,187 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                     {
                                         for $each in $name
                                         let $order := raffShared:replaceToSortDist($each)
+                                            order by upper-case($order)
+                                        return
+                                            $each
+                                    }
+                                </div>)
+    
+    let $personsAlphaBirth := for $person in $persons[.//tei:surname[matches(@type,"^birth")]]
+                            let $persID := $person/@xml:id/string()
+                            let $nameSurnames := $person//tei:surname[matches(@type,"^birth")]
+                            let $nameForenames := $person//tei:forename[matches(@type,"^used")]
+                            let $initial := upper-case(if(count($nameSurnames) > 0)
+                                            then(substring($nameSurnames[1], 1, 1))
+                                            else if(count($nameForenames) > 0)
+                                            then(substring($nameForenames[1], 1, 1))
+                                            else())
+                            let $role := $person//tei:roleName[1]/text()[1]
+                            let $pseudonym := string-join(($person//tei:forename[matches(@type,'^pseudonym')],
+                                                           $person//tei:surname[matches(@type,'^pseudonym')]),' ')
+                            let $occupation := $person//tei:occupation[1]/text()[1]
+                            
+                            let $lifeData := raffShared:getLifedata($person)
+                            let $nameJoined := raffPostals:getName($persID, 'birth-rev')
+                            let $nameToSort := raffShared:replaceToSortDist(if(count($nameSurnames) > 0) 
+                                                                       then(string-join($nameSurnames, ' '))
+                                                                       else if(count($nameForenames) > 0)
+                                                                       then(string-join($nameForenames, ' '))
+                                                                       else())
+                            let $name := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {$nameJoined}
+                                    {$lifeData}
+                                    {<br/>,
+                                     <span class="sublevel">
+                                        {if($pseudonym != '' or $role != '' or $occupation != '')
+                                        then(
+                                        concat('(&#8658; ',
+                                                raffPostals:getName($persID, 'reversed')
+                                                ,')')
+                                                )
+                                        else(<br/>)
+                                        }
+                                     </span>
+                                    }
+                                </div>
+                                <div
+                                    class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
+                                        href="person/{$persID}">{$persID}</a></div>
+                            </div>
+                                group by $initial
+                                order by $initial
+                            return
+                                (<div
+                                    name="{$initial}"
+                                    count="{count($name)}">
+                                    {
+                                        for $each in $name
+                                        let $order := raffShared:replaceToSortDist($each)
+                                            order by upper-case($order)
+                                        return
+                                            $each
+                                    }
+                                </div>)
+    
+    let $personsAlphaMarried := for $person in $persons[.//tei:surname[matches(@type,"^married")]]
+                            let $persID := $person/@xml:id/string()
+                            let $nameSurnames := $person//tei:surname[matches(@type,"^married")]
+                            let $nameForenames := $person//tei:forename[matches(@type,"^used")]
+                            let $initial := upper-case(if(count($nameSurnames) > 0)
+                                            then(substring($nameSurnames[1], 1, 1))
+                                            else if(count($nameForenames) > 0)
+                                            then(substring($nameForenames[1], 1, 1))
+                                            else())
+                            let $role := $person//tei:roleName[1]/text()[1]
+                            let $pseudonym := string-join(($person//tei:forename[matches(@type,'^pseudonym')],
+                                                           $person//tei:surname[matches(@type,'^pseudonym')]),' ')
+                            let $occupation := $person//tei:occupation[1]/text()[1]
+                            
+                            let $lifeData := raffShared:getLifedata($person)
+                            let $nameJoined := raffPostals:getName($persID, 'married-rev')
+                            let $nameToSort := raffShared:replaceToSortDist(if(count($nameSurnames) > 0) 
+                                                                       then(string-join($nameSurnames, ' '))
+                                                                       else if(count($nameForenames) > 0)
+                                                                       then(string-join($nameForenames, ' '))
+                                                                       else())
+                            let $name := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {$nameJoined}
+                                    {$lifeData}
+                                    {<br/>,
+                                     <span class="sublevel">
+                                        {if($pseudonym != '' or $role != '' or $occupation != '')
+                                        then(
+                                        concat('(&#8658; ',
+                                                raffPostals:getName($persID, 'reversed')
+                                                ,')')
+                                                )
+                                        else(<br/>)
+                                        }
+                                     </span>
+                                    }
+                                </div>
+                                <div
+                                    class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
+                                        href="person/{$persID}">{$persID}</a></div>
+                            </div>
+                                group by $initial
+                                order by $initial
+                            return
+                                (<div
+                                    name="{$initial}"
+                                    count="{count($name)}">
+                                    {
+                                        for $each in $name
+                                        let $order := upper-case(raffShared:replaceToSortDist($each))
                                             order by $order
                                         return
                                             $each
                                     }
                                 </div>)
+    
+    let $personsAlphaPseudonym := for $person in $persons[.//tei:surname[matches(@type,"^pseudonym")] or .//tei:forename[matches(@type,"^pseudonym")]]
+                            let $persID := $person/@xml:id/string()
+                            let $nameSurnames := $person//tei:surname[matches(@type,"^pseudonym")]
+                            let $nameForenames := $person//tei:forename[matches(@type,"^pseudonym")]
+                            let $initial := upper-case(
+                                                if(count($nameSurnames) > 0)
+                                                then(substring($nameSurnames[1], 1, 1))
+                                                else if(count($nameForenames) > 0)
+                                                then(substring($nameForenames[1], 1, 1))
+                                                else()
+                                                )
+                            
+                            let $nameJoined := if($nameSurnames and $nameForenames)
+                                               then(concat(string-join($nameSurnames, ' '), ', ', string-join($nameForenames, ' ')))
+                                               else if($nameSurnames)
+                                               then(string-join($nameSurnames, ' '))
+                                               else(string-join($nameForenames, ' '))
+                            let $nameToSort := raffShared:replaceToSortDist(if(count($nameSurnames) > 0) 
+                                                                       then(string-join($nameSurnames, ' '))
+                                                                       else if(count($nameForenames) > 0)
+                                                                       then(string-join($nameForenames, ' '))
+                                                                       else())
+                            let $name := <div
+                                class="row RegisterEntry">
+                                <div
+                                    class="col">
+                                    {concat($nameJoined, ' (Pseudonym)')}
+                                    {<br/>,
+                                     <span class="sublevel">
+                                        {concat('(&#8658; ',
+                                                raffPostals:getName($persID, 'reversed')
+                                                ,')')
+                                        }
+                                        <br/>
+                                     </span>
+                                    }
+                                </div>
+                                <div
+                                    class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
+                                        href="person/{$persID}">{$persID}</a></div>
+                            </div>
+                                group by $initial
+                                order by $initial
+                            return
+                                (<div
+                                    name="{$initial}"
+                                    count="{count($name)}">
+                                    {
+                                        for $each in $name
+                                        let $order := upper-case(raffShared:replaceToSortDist($each))
+                                            order by $order
+                                        return
+                                            $each
+                                    }
+                                </div>)
+    
+    let $personsAlpha := ($personsAlphaAll | $personsAlphaBirth | $personsAlphaMarried | $personsAlphaPseudonym)
     
     let $personsGroupedByInitials := for $groups in $personsAlpha
                                         group by $initial := $groups/@name/string()
