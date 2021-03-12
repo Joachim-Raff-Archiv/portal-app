@@ -35,6 +35,10 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
     let $nameNameLink := $person//tei:nameLink[1]/text()[1]
     let $nameSurname := $person//tei:surname[matches(@type,"^used")]
                          => string-join(' ')
+    let $nameSurnameBirth := $person//tei:surname[matches(@type,"^birth")]
+                         => string-join(' ')
+    let $nameSurnameMarried := $person//tei:surname[matches(@type,"^married")]
+                         => string-join(' ')
     let $nameGenName := $person//tei:genName/text()
     let $nameAddNameTitle := $person//tei:addName[matches(@type,"title")][1]/text()[1]
     let $nameAddNameEpitet := $person//tei:addName[matches(@type,"^epithet")][1]/text()[1]
@@ -89,9 +93,50 @@ declare function raffPostals:getName($key as xs:string, $param as xs:string){
                                            string-join(($nameForename, $nameNameLink, $nameUnspec), ' '),
                                            if($nameGenName) then(concat(' (',$nameGenName,')')) else()
                                         )
-                            )
+                                 )
                            )
-                           
+                      else if($param = 'birth-rev')
+                      then(
+                            if($nameSurnameBirth)
+                            then(
+                                concat(
+                                       $nameSurnameBirth,
+                                       if($nameGenName) then(concat(' (',$nameGenName,')')) else(),
+                                       if($nameAddNameTitle or $nameForename or $nameNameLink)
+                                       then(concat(', ', string-join(($nameAddNameTitle, $nameForename, $nameNameLink), ' ')))
+                                       else()
+                                       )
+                                )
+                            else (
+                                    if(not($nameForename) and not($nameNameLink) and not($nameUnspec))
+                                    then($nameRoleName)
+                                    else(
+                                           string-join(($nameForename, $nameNameLink, $nameUnspec), ' '),
+                                           if($nameGenName) then(concat(' (',$nameGenName,')')) else()
+                                        )
+                                 )
+                           )
+                      else if($param = 'married-rev')
+                      then(
+                            if($nameSurnameMarried)
+                            then(
+                                concat(
+                                       $nameSurnameMarried,
+                                       if($nameGenName) then(concat(' (',$nameGenName,')')) else(),
+                                       if($nameAddNameTitle or $nameForename or $nameNameLink)
+                                       then(concat(', ', string-join(($nameAddNameTitle, $nameForename, $nameNameLink), ' ')))
+                                       else()
+                                       )
+                                )
+                            else (
+                                    if(not($nameForename) and not($nameNameLink) and not($nameUnspec))
+                                    then($nameRoleName)
+                                    else(
+                                           string-join(($nameForename, $nameNameLink, $nameUnspec), ' '),
+                                           if($nameGenName) then(concat(' (',$nameGenName,')')) else()
+                                        )
+                                 )
+                           )
                       else ('[No person found]')
                      )
                  else if($institution)
