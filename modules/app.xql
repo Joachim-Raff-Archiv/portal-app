@@ -608,20 +608,9 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
                                         href="person/{$persID}">{$persID}</a></div>
                             </div>
-                                group by $initial
-                                order by $initial
+                            
                             return
-                                (<div
-                                    name="{$initial}"
-                                    count="{count($name)}">
-                                    {
-                                        for $each in $name
-                                        let $order := raffShared:replaceToSortDist($each)
-                                            order by upper-case($order)
-                                        return
-                                            $each
-                                    }
-                                </div>)
+                                $name
     
     let $personsAlphaBirth := for $person in $persons[.//tei:surname[matches(@type,"^birth")]]
                             let $persID := $person/@xml:id/string()
@@ -667,20 +656,9 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
                                         href="person/{$persID}">{$persID}</a></div>
                             </div>
-                                group by $initial
-                                order by $initial
+                            
                             return
-                                (<div
-                                    name="{$initial}"
-                                    count="{count($name)}">
-                                    {
-                                        for $each in $name
-                                        let $order := raffShared:replaceToSortDist($each)
-                                            order by upper-case($order)
-                                        return
-                                            $each
-                                    }
-                                </div>)
+                                $name
     
     let $personsAlphaMarried := for $person in $persons[.//tei:surname[matches(@type,"^married")]]
                             let $persID := $person/@xml:id/string()
@@ -726,21 +704,10 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
                                         href="person/{$persID}">{$persID}</a></div>
                             </div>
-                                group by $initial
-                                order by $initial
+                            
                             return
-                                (<div
-                                    name="{$initial}"
-                                    count="{count($name)}">
-                                    {
-                                        for $each in $name
-                                        let $order := upper-case(raffShared:replaceToSortDist($each))
-                                            order by $order
-                                        return
-                                            $each
-                                    }
-                                </div>)
-    
+                                $name
+
     let $personsAlphaPseudonym := for $person in $persons[.//tei:surname[matches(@type,"^pseudonym")] or .//tei:forename[matches(@type,"^pseudonym")]]
                             let $persID := $person/@xml:id/string()
                             let $nameSurnames := $person//tei:surname[matches(@type,"^pseudonym")]
@@ -782,22 +749,29 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
                                         href="person/{$persID}">{$persID}</a></div>
                             </div>
+                            
+                            return
+                                $name
+                            
+                            
+    let $personsAlpha := for $entry in ($personsAlphaAll | $personsAlphaBirth | $personsAlphaMarried | $personsAlphaPseudonym)
+                            
+                            let $initial := upper-case(substring($entry/div/text(), 1, 1))
+                            
                                 group by $initial
                                 order by $initial
                             return
                                 (<div
                                     name="{$initial}"
-                                    count="{count($name)}">
-                                    {
-                                        for $each in $name
-                                        let $order := upper-case(raffShared:replaceToSortDist($each))
+                                    count="{count($entry)}">
+                                    {for $each in $entry
+                                        let $order := raffShared:replaceToSortDist($each)
                                             order by $order
                                         return
                                             $each
                                     }
                                 </div>)
     
-    let $personsAlpha := ($personsAlphaAll | $personsAlphaBirth | $personsAlphaMarried | $personsAlphaPseudonym)
     
     let $personsGroupedByInitials := for $groups in $personsAlpha
                                         group by $initial := $groups/@name/string()
