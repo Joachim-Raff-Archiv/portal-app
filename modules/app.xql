@@ -790,8 +790,8 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                                 ($initial))
                                                         }">
                                                     {
-                                                        if ($initial = '') then
-                                                            ('[ohne Nachname]')
+                                                        if ($initial = '[') then
+                                                            ('[ohne Namensbezeichnung]')
                                                         else
                                                             ($initial)
                                                     }
@@ -847,7 +847,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
             					   <ul id="nav" class="nav hidden-xs hidden-sm"> <!-- position: relative; style="height: 500px; overflow-y: scroll; width: 200px;" -->
                                     {
                                         for $each in $personsGroupedByInitials
-                                            let $initial := if ($each/@initial/string() = '') then
+                                            let $initial := if ($each/@initial/string() = '[') then
                                                 ('unknown')
                                             else
                                                 ($each/@initial/string())
@@ -858,7 +858,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                 class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                                                 href="{concat('#list-item-', $initial)}"><span>{
                                                         if (matches($initial,'unknown')) then
-                                                            ('[weitere]')
+                                                            ('[N.N.]')
                                                         else
                                                             ($initial)
                                                     }</span>
