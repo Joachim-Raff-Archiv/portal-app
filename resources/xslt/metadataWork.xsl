@@ -2,6 +2,34 @@
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes"/>
     <xsl:include href="formattingText.xsl"/>
     <xsl:include href="formattingDate.xsl"/>
+    
+    <xsl:function name="local:switch2Roman">
+        <xsl:param name="n"/>
+        <xsl:choose>
+            <xsl:when test="$n = '1'">I</xsl:when>
+            <xsl:when test="$n = '2'">II</xsl:when>
+            <xsl:when test="$n = '3'">III</xsl:when>
+            <xsl:when test="$n = '4'">IV</xsl:when>
+            <xsl:when test="$n = '5'">V</xsl:when>
+            <xsl:when test="$n = '6'">VI</xsl:when>
+            <xsl:when test="$n = '7'">VII</xsl:when>
+            <xsl:when test="$n = '8'">VIII</xsl:when>
+            <xsl:when test="$n = '9'">IX</xsl:when>
+            <xsl:when test="$n = '10'">X</xsl:when>
+            <xsl:when test="$n = '11'">XI</xsl:when>
+            <xsl:when test="$n = '12'">XII</xsl:when>
+            <xsl:when test="$n = '13'">XIII</xsl:when>
+            <xsl:when test="$n = '14'">XIV</xsl:when>
+            <xsl:when test="$n = '15'">XV</xsl:when>
+            <xsl:when test="$n = '16'">XVI</xsl:when>
+            <xsl:when test="$n = '17'">XVII</xsl:when>
+            <xsl:when test="$n = '18'">XVIII</xsl:when>
+            <xsl:when test="$n = '19'">XIX</xsl:when>
+            <xsl:when test="$n = '20'">XX</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$n"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
     <xsl:template match="/">
         <div>
             <table class="workView">
@@ -291,7 +319,12 @@
             <xsl:if test="//mei:music/mei:body/mei:mdiv/@label">
             <table class="workView">
                 <tr>
-                    <td>Musikalische Abschnitte:</td>
+                    <td>
+                        <xsl:choose>
+                            <xsl:when test="//mei:music/mei:body/mei:mdiv[@type]">Musikalische Abschnitte:</xsl:when>
+                            <xsl:otherwise>Sätze:</xsl:otherwise>
+                        </xsl:choose>
+                    </td>
                     <td>
                         <xsl:for-each select="//mei:music/mei:body/mei:mdiv">
                             <xsl:choose>
@@ -304,8 +337,11 @@
                                 <xsl:when test="@type= 'issue'">
                                     <xsl:value-of select="concat('Heft ', @n, ': ', @label)"/>
                                 </xsl:when>
-                                <xsl:when test="number(@n) &lt; 1000">
+                                <!--<xsl:when test="number(@n) &lt; 1000">
                                     <xsl:value-of select="concat('Nr. ', ./@label)"/>
+                                </xsl:when>-->
+                                <xsl:when test="@n">
+                                    <xsl:value-of select="concat(local:switch2Roman(@n), '. ', @label)"/>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:value-of select="@label"/>
@@ -316,14 +352,8 @@
                                 <ul>
                                     <xsl:for-each select="./mei:mdiv">
                                         <xsl:choose>
-                                            <xsl:when test="number(@n) &lt; 1000 and @label">
-                                                <xsl:value-of select="concat('Nr. ', @n, '. ', ./@label)"/>
-                                            </xsl:when>
-                                            <xsl:when test="number(@n) &lt; 1000">
-                                                <xsl:value-of select="concat('Nr. ', @n)"/>
-                                            </xsl:when>
-                                            <xsl:when test="@n and @label">
-                                                <xsl:value-of select="concat(@n, '. ', @label)"/>
+                                            <xsl:when test="@n">
+                                                <xsl:value-of select="concat(local:switch2Roman(@n), '. ', @label)"/>
                                             </xsl:when>
                                             <xsl:otherwise>
                                                 <xsl:value-of select="@label"/>
