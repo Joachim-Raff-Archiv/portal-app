@@ -26,6 +26,16 @@
             <xsl:when test="$n = '18'">XVIII</xsl:when>
             <xsl:when test="$n = '19'">XIX</xsl:when>
             <xsl:when test="$n = '20'">XX</xsl:when>
+            <xsl:when test="$n = '21'">XXI</xsl:when>
+            <xsl:when test="$n = '22'">XXII</xsl:when>
+            <xsl:when test="$n = '23'">XXIII</xsl:when>
+            <xsl:when test="$n = '24'">XXIV</xsl:when>
+            <xsl:when test="$n = '25'">XXV</xsl:when>
+            <xsl:when test="$n = '26'">XXVI</xsl:when>
+            <xsl:when test="$n = '27'">XXVII</xsl:when>
+            <xsl:when test="$n = '28'">XXVIII</xsl:when>
+            <xsl:when test="$n = '29'">XXIX</xsl:when>
+            <xsl:when test="$n = '30'">XXX</xsl:when>
             <xsl:otherwise><xsl:value-of select="$n"/></xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -347,7 +357,6 @@
                                     <xsl:value-of select="@label"/>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <br/>
                             <xsl:if test="exists(./mei:mdiv)">
                                 <ul>
                                     <xsl:for-each select="./mei:mdiv">
@@ -360,9 +369,25 @@
                                             </xsl:otherwise>
                                         </xsl:choose>
                                         <br/>
+                                        <xsl:if test="exists(./mei:mdiv)">
+                                            <ul>
+                                                <xsl:for-each select="./mei:mdiv">
+                                                    <xsl:choose>
+                                                        <xsl:when test="@n">
+                                                            <xsl:value-of select="concat(local:switch2Roman(@n), '. ', @label)"/>
+                                                        </xsl:when>
+                                                        <xsl:otherwise>
+                                                            <xsl:value-of select="@label"/>
+                                                        </xsl:otherwise>
+                                                    </xsl:choose>
+                                                    <br/>
+                                                </xsl:for-each>
+                                            </ul>
+                                        </xsl:if>
                                     </xsl:for-each>
                                 </ul>
                             </xsl:if>
+                            <xsl:if test="not(./mei:mdiv)"><br/></xsl:if>
                         </xsl:for-each>
                     </td>
                 </tr>
