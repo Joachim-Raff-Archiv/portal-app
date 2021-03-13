@@ -1724,12 +1724,12 @@ declare function app:institution($node as node(), $model as map(*)) {
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
-                    <pre>
-                                    <xmp>
-                    {transform:transform($institution/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
-                    </xmp>
-                    </pre>
-                </div>)
+                        <pre>
+                            <xmp>
+                                {transform:transform($institution/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                            </xmp>
+                        </pre>
+                    </div>)
                 else()}
                     </div>
                     {raffShared:suggestedCitation($id)}
