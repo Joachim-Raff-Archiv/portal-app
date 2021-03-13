@@ -672,6 +672,35 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
     
 };
 
+declare function raffShared:get-digitalization-work-as-html($facsimile as node()*, $facsType){
+    
+    let $surfaces := $facsimile[@type=$facsType]/mei:surface
+    let $images := for $surface at $n in $surfaces
+                    let $url := $surface/mei:graphic/@target
+                    let $publisher := 'Joachim-Raff-Archiv' (:$surface/ancestor::mei:mei//mei:sourceDesc/mei:source/tei:bibl[1]/text():)
+                    
+                    let $img := <img src="{concat('https://digilib.baumann-digital.de/JRA/',$url,'?dh=1000&amp;dw=1000')}" class="img-fluid mx-auto d-block img-thumbnail" width="75%"/>
+                    return
+                        <div class="test tab-pane fade {if($n=1)then(' show active')else()}" id="facsimile-{$n}">
+                            <hr/>
+                            <div class="container">
+                                {$img}
+                            </div>
+                            <hr/>
+                            <div>
+                            <table>
+                                <tr>
+                                    <td>Bereitgestellt durch:</td>
+                                    <td>{$publisher}</td>
+                                </tr>
+                            </table>
+                            </div>
+                            <hr/>
+                        </div>
+    return
+        $images
+};
+
 declare function raffShared:getReferences($id) {
     let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)],
                                  $app:collectionInstitutions[matches(.//@key,$id)],

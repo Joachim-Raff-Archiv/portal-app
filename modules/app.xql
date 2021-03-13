@@ -2771,7 +2771,7 @@ declare function app:work($node as node(), $model as map(*)) {
     let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
-    
+    let $facsWvSchaefer := $work//mei:facsimile[@type='wvSchaefer']
     return
         (
   <div
@@ -2798,6 +2798,12 @@ declare function app:work($node as node(), $model as map(*)) {
                              data-toggle="tab"
                              href="#references">Referenzen</a></li>
                              )else()}
+                    {if($facsWvSchaefer)
+                    then(<li class="nav-item">
+                         <a class="nav-link-jra" data-toggle="tab"
+                             href="#wvSchaefer">WV Schäfer (1888)</a></li>
+                             )
+                    else()}
                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
          then(<li
              class="nav-item"><a
@@ -2839,6 +2845,38 @@ declare function app:work($node as node(), $model as map(*)) {
                          else
                              ()
                      }
+                     {if ($facsWvSchaefer)
+                           then(
+                           <div
+                              class="tab-pane fade"
+                              id="wvSchaefer">
+                                    <div class="tabbable">
+                                    <nav aria-label="Page navigation example">
+                                      <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs" role="tablist">
+                                        <!--<li class="nav-item prev">
+                                          <a class="nav-link-jra" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">«</span>
+                                            <span class="sr-only">Previous</span>
+                                          </a>
+                                        </li>-->
+                                        {for $surface at $n in $facsWvSchaefer//mei:surface
+                                         return
+                                              <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-{$n}">{$n}</a></li>
+                                          }
+                                        <!--<li class="nav-item next">
+                                          <a class="nav-link-jra" href="#" aria-label="Next">
+                                            <span aria-hidden="true">»</span>
+                                            <span class="sr-only">Next</span>
+                                          </a>
+                                        </li>-->
+                                      </ul>
+                                    </nav>
+                                  <div class="tab-content">
+                                      {raffShared:get-digitalization-work-as-html($facsWvSchaefer, 'wvSchaefer')}
+                                  </div>
+                                </div>
+                                </div>)
+                           else()}
                      {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
                          contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
                      then(<div
