@@ -788,7 +788,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                 <div
                                                     class="RegisterSortEntry"
                                                     id="{
-                                                            concat('list-item-', if ($initial='') then
+                                                            concat('list-item-', if ($initial='[') then
                                                                 ('unknown')
                                                             else
                                                                 ($initial))
