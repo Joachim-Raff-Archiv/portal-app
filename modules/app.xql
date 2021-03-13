@@ -945,14 +945,13 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
     
     let $personsGroupedByBirth := for $groups in $personsBirth
                                      let $birthToSort := $groups/@birth/string()
-                                     (:if (contains($groups/@birth/string(),'-')) then(substring($groups/@birth,1,5)) else($groups/@birth/number()):)
+                                     let $count := $groups/@count/string()
                                      group by $birth := $groups/@name/normalize-space(string())
-                                     order by $birthToSort
                                       return
                                           (<div
                                               class="RegisterSortBox"
                                               birth="{$birth}" birthToSort="{$birthToSort}"
-                                              count="{$personsBirth[matches(@name,$birth)]/@count}"
+                                              count="{$count}"
                                               xmlns="http://www.w3.org/1999/xhtml">
                                               <div
                                                   class="RegisterSortEntry"
