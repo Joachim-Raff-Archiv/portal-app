@@ -1015,7 +1015,16 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                     {
                                         for $each in $personsGroupedByBirth
                                         let $birth := $each/@birth/string()
-                                        let $birthToSort := $each/@birthToSort/string()
+                                        let $birthToSortRaw := $each/@birthToSort/string()
+                                        let $birthToSort := if(contains($birthToSortRaw, 'nach'))
+                                                            then(number(substring-after($birthToSortRaw, 'nach ')))
+                                                            else if(contains($birthToSortRaw, 'vor'))
+                                                            then(number(substring-after($birthToSortRaw, 'vor ')))
+                                                            else if(contains($birthToSortRaw, ' '))
+                                                            then(number(substring-before($birthToSortRaw, ' ')))
+                                                            else if(contains($birthToSortRaw, '/'))
+                                                            then(number(substring-before($birthToSortRaw, '/')))
+                                                            else(number($birthToSortRaw))
                                         let $count := $each/@count/string()
                                         order by $birthToSort
                                         return
