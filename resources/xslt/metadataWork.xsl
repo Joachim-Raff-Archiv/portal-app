@@ -65,34 +65,25 @@
                     </td>
                 </tr>
                 </xsl:if>
-<!--                <xsl:if test="//mei:creation/mei:dedication/text()/normalize-space(.) !=''">-->
+                <xsl:if test="//mei:creation/mei:dedication/text()/normalize-space(.) !=''">
                 <tr>
                     <td valign="top">Widmung:</td>
                     <td>
-                        <xsl:choose>
-                            <xsl:when test="//mei:creation/mei:dedication/text()[1]">
-                                <xsl:value-of select="//mei:creation/mei:dedication/text()[1]"/>
-                            </xsl:when>
-                            <xsl:otherwise>[ohne]</xsl:otherwise>
-                        </xsl:choose>
+                        <xsl:value-of select="string-join(//mei:creation/mei:dedication//text(), ' ')"/>
                     </td>
                 </tr>
-                <!--</xsl:if>-->
-                <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee/normalize-space(.) !=''">
+                </xsl:if>
+                <xsl:if test="//mei:creation/mei:dedication/mei:dedicatee//text() !=''">
                 <tr>
                     <td valign="top">Widmungsträger:</td>
                     <td>
-                        <xsl:for-each select="//mei:dedication/mei:dedicatee">
-                            <xsl:variable name="corresp" select="substring-after(@corresp,'#')"/>
+                        <xsl:for-each select="//mei:work//mei:dedication/mei:dedicatee">
                             <xsl:variable name="dedicateeIntended" select="./@type"/>
                             <xsl:choose>
                                 <xsl:when test="mei:persName">
                                     <xsl:for-each select="mei:persName">
                                         <xsl:if test="$dedicateeIntended = 'intended'">
                                             [intendiert]
-                                        </xsl:if>
-                                    <xsl:if test="$corresp">
-                                            <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
                                         </xsl:if>
                                         <xsl:value-of select="."/>
                                         <xsl:if test="@auth">
@@ -105,9 +96,6 @@
                                     </xsl:when>
                                 <xsl:when test="mei:corpName">
                                     <xsl:for-each select="mei:corpName">
-                                        <xsl:if test="$corresp">
-                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
-                                    </xsl:if>
                                     <xsl:value-of select="."/>
                                     <xsl:if test="@auth">
                                         (<a href="{concat($viewPerson, @auth)}">
@@ -118,9 +106,6 @@
                                     </xsl:for-each>
                                     </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:if test="$corresp">
-                                        <xsl:value-of select="concat('Nr. ',//mei:mdiv/id($corresp)/@n,' – ')"/>
-                                    </xsl:if>
                                     <xsl:value-of select="."/>
                                     <br/>
                                 </xsl:otherwise>
