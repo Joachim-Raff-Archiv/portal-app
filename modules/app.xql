@@ -1113,14 +1113,14 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
     
     let $personsGroupedByDeath := for $groups in $personsDeath
                                     let $deathToSort := $groups/@death/string()
-                                    (:if(contains($groups/@death,'/')) then(substring($groups/@death,1,4)) else($groups/@death/number()):)
+                                    let $count := $groups/@count/string()
                                     group by $death := $groups/@name/normalize-space(string())
                                     order by $deathToSort
                                     return
                                         (<div
                                             class="RegisterSortBox"
                                             death="{$death}" deathToSort="{$deathToSort}"
-                                            count="{$personsDeath[matches(@name,$death)]/@count}"
+                                            count="{$count}"
                                             xmlns="http://www.w3.org/1999/xhtml">
                                             <div
                                                 class="RegisterSortEntry"
@@ -1183,8 +1183,17 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
             					   <ul id="navTab3" class="nav hidden-xs hidden-sm">
                                     {
                                         for $each in $personsGroupedByDeath
-                                        let $deathToSort := $each/@deathToSort/string()
                                         let $death := $each/@death/string()
+                                        let $deathToSortRaw := $each/@deathToSort/string()
+                                        let $deathToSort := if(contains($deathToSortRaw, 'nach'))
+                                                            then(number(substring-after($deathToSortRaw, 'nach ')))
+                                                            else if(contains($deathToSortRaw, 'vor'))
+                                                            then(number(substring-after($deathToSortRaw, 'vor ')))
+                                                            else if(contains($deathToSortRaw, ' '))
+                                                            then(number(substring-before($deathToSortRaw, ' ')))
+                                                            else if(contains($deathToSortRaw, '/'))
+                                                            then(number(substring-before($deathToSortRaw, '/')))
+                                                            else(number($deathToSortRaw))
                                         let $count := $each/@count/string()
                                         order by $deathToSort
                                         return
