@@ -323,7 +323,7 @@
     
     <msg key="jra.search">Suche</msg>
     <msg key="jra.search.term">Suchbegriff</msg>
-    <msg key="jra.search.match">Exakter Begriff</msg>
+    <msg key="jra.search.match">Exakten Begriff suchen</msg>
     <msg key="jra.search.submit">absenden</msg>
     <msg key="jra.search.result.notice">Die Suchergebnisse werden hier angezeigt</msg>
     <msg key="jra.search.result.result">Ergebisse für</msg>
