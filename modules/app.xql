@@ -3,13 +3,13 @@ xquery version "3.1";
 module namespace app = "https://portal.raff-archiv.ch/templates";
 
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config = "https://portal.raff-archiv.ch/config" at "config.xqm";
+import module namespace config = "https://portal.raff-archiv.ch/config" at "/db/apps/raffArchive/modules/config.xqm";
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
-import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "raffShared.xqm";
-import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
-import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
+import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "/db/apps/raffArchive/modules/raffShared.xqm";
+import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "/db/apps/raffArchive/modules/raffWritings.xqm";
 import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
 (:import module namespace raffSources="https://portal.raff-archiv.ch/ns/baudiSources" at "raffSources.xqm";:)
 
@@ -29,7 +29,6 @@ declare variable $app:dbRootDev as xs:string := 'http://localhost:8088/exist/app
 declare variable $app:dbRootPortal as xs:string := 'http://localhost:8082/exist/apps/raffArchive';
 declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
-
 
 declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspDesc];
 declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
@@ -60,14 +59,14 @@ declare function app:langSwitch($node as node(), $model as map(*)) {
 
 declare function app:filterInput(){
     <div>
-        <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
+        <h5>Filter​n <img src="{concat($app:dbRoot,'/resources/fonts/feather/info.svg')}" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
         <input type="text" id="myResearchInput" onkeyup="myFilter()" placeholder="Name, ID, …" title="Type in a string"/>
    </div>
 };
 
 declare function app:filterInputWorks(){
     <div>
-        <h5>Filter​n <img src="../resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
+        <h5>Filter​n <img src="{concat($app:dbRoot,'/resources/fonts/feather/info.svg')}" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
         <input type="text" id="myResearchInput" onkeyup="myFilterWorks()" placeholder="Name, ID, …" title="Type in a string"/>
    </div>
 };
@@ -101,10 +100,11 @@ declare function app:registryLettersDate($node as node(), $model as map(*)) {
                         let $date := $getDateArray(1)
                         let $year := substring($date,1,4)
                         let $dateFormatted := raffShared:formatDateRegistryLetters($getDateArray)
+                        let $href := if(contains(request:get-url(),'letter/')) then('') else('letter/')
                         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-sm-4 col-md-3 col-lg-4" dateToSort="{if($date='0000-00-00')then(replace($date,'0000-','9999-'))else($date)}">{$dateFormatted}</div>
                                 <div class="col-sm-5 col-md-7 col-lg-6">{string-join($correspSent, ' | ')}<br/>an {string-join($correspReceived, ' | ')}</div>
-                                <div class="col-sm-3 col-md-2 col-lg-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                <div class="col-sm-3 col-md-2 col-lg-2"><a href="{concat($href, $letterID)}">{$letterID}</a></div>
                             </div>
                         group by $year
                         order by $year
@@ -583,6 +583,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                                        else if(count($nameForenames) > 0)
                                                                        then(string-join($nameForenames, ' '))
                                                                        else())
+                            let $href := if(contains(request:get-url(),'person/')) then('') else('person/')
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
@@ -606,7 +607,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                 </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
-                                        href="person/{$persID}">{$persID}</a></div>
+                                        href="{concat($href, $persID)}">{$persID}</a></div>
                             </div>
                             
                             return
@@ -633,6 +634,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                                        else if(count($nameForenames) > 0)
                                                                        then(string-join($nameForenames, ' '))
                                                                        else())
+                            let $href := if(contains(request:get-url(),'person/')) then('') else('person/')
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
@@ -654,7 +656,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                 </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
-                                        href="person/{$persID}">{$persID}</a></div>
+                                        href="{concat($href, $persID)}">{$persID}</a></div>
                             </div>
                             
                             return
@@ -681,6 +683,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                                        else if(count($nameForenames) > 0)
                                                                        then(string-join($nameForenames, ' '))
                                                                        else())
+                            let $href := if(contains(request:get-url(),'person/')) then('') else('person/')
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
@@ -702,7 +705,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                 </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
-                                        href="person/{$persID}">{$persID}</a></div>
+                                        href="{concat($href, $persID)}">{$persID}</a></div>
                             </div>
                             
                             return
@@ -730,6 +733,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                                                        else if(count($nameForenames) > 0)
                                                                        then(string-join($nameForenames, ' '))
                                                                        else())
+                            let $href := if(contains(request:get-url(),'person/')) then('') else('person/')
                             let $name := <div
                                 class="row RegisterEntry">
                                 <div
@@ -747,7 +751,7 @@ declare function app:registryPersonsInitial($node as node(), $model as map(*)) {
                                 </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
-                                        href="person/{$persID}">{$persID}</a></div>
+                                        href="{concat($href, $persID)}">{$persID}</a></div>
                             </div>
                             
                             return
@@ -1344,6 +1348,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                 let $nameInstitution := $institution//tei:org/tei:orgName[1]
                                 let $desc := $institution//tei:org/tei:desc[1]
                                 let $place := string-join($institution//tei:org/tei:place/tei:placeName, '/')
+                                let $href := if(contains(request:get-url(),'institution/')) then('') else('institution/')
                                 let $name := <div
                                     class="row RegisterEntry">
                                     <div
@@ -1354,7 +1359,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                         class="col-sm-4 col-md-4 col-lg-4">{$place}</div>
                                     <div
                                         class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
-                                            href="institution/{$instID}">{$instID}</a></div>
+                                            href="{concat($href, $instID)}">{$instID}</a></div>
                                 </div>
                                     group by $initial
                                     order by $initial
@@ -1406,6 +1411,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                 let $nameInstitution := $place/ancestor::tei:org/tei:orgName[1]
                                 let $desc := $place/ancestor::tei:org/tei:desc[1]
                                 let $places := if(count($place/ancestor::tei:org/tei:place/tei:placeName)>1)then(string-join($place/ancestor::tei:org/tei:place/tei:placeName, '/'))else()
+                                let $href := if(contains(request:get-url(),'institution/')) then('') else('institution/')
                                 let $name := <div
                                     class="row RegisterEntry">
                                     <div
@@ -1416,7 +1422,7 @@ declare function app:registryInstitutions($node as node(), $model as map(*)) {
                                         class="col-sm-4 col-md-4 col-lg-4">{$places}</div>
                                     <div
                                         class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
-                                            href="institution/{$instID}">{$instID}</a></div>
+                                            href="{concat($href, $instID)}">{$instID}</a></div>
                                 </div>
                                     group by $place
                             (:        order by $place:)
@@ -1766,6 +1772,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                             let $perfDesc := string-join($workPerfRess, ' | ')
                             let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
                             let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
+                            let $href := if(contains(request:get-url(),'work/')) then('') else('work/')
                             let $name := <div
                                             class="row RegisterEntry" titleToSort="{$withoutArticle}">
                                             <div
@@ -1784,7 +1791,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                             </div>
                                             <div
                                                 class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
-                                                    href="work/{$workID}">{$workID}</a></div>
+                                                    href="{concat($href,$workID)}">{$workID}</a></div>
                                         </div>
                                             group by $initial
                                             order by $initial
@@ -1872,6 +1879,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                             let $perfDesc := string-join($workPerfRess, ' | ')
                             let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
                             let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
+                            let $href := if(contains(request:get-url(),'work/')) then('') else('work/')
                             let $name := <div
                                 class="row RegisterEntry" titleToSort="{$withoutArticle}">
                                 <div
@@ -1890,7 +1898,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
-                                        href="work/{$workID}">{$workID}</a></div>
+                                        href="{concat($href,$workID)}">{$workID}</a></div>
                             </div>
                                 group by $year
                                 order by $year
@@ -1997,7 +2005,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 let $perfDesc := string-join($workPerfRess, ' | ')
                                 let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
                                 let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
-                                
+                                let $href := if(contains(request:get-url(),'work/')) then('') else('work/')
                                 order by $opus ascending
                                 return
                                     <div
@@ -2016,7 +2024,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         </div>
                                         <div
                                             class="col-sm-3 col-md-2 col-lg-2"><a
-                                                href="work/{$workID}">{$workID}</a></div>
+                                                href="{concat($href,$workID)}">{$workID}</a></div>
                                     </div>
                             }
                             <div
@@ -2032,7 +2040,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                 let $perfDesc := string-join($workPerfRess, ' | ')
                                 let $arranged := if(contains($work//mei:arranger, 'Raff')) then(true()) else (false())
                                 let $lost := $work//mei:event[mei:head/text() = 'Textverlust']/mei:desc/text()
-                                
+                                let $href := if(contains(request:get-url(),'work/')) then('') else('work/')
                                 order by $opus ascending
                                 return
                                     <div
@@ -2051,7 +2059,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                         </div>
                                         <div
                                             class="col-sm-3 col-md-2 col-lg-2"><a
-                                                href="work/{$workID}">{$workID}</a></div>
+                                                href="{concat($href,$workID)}">{$workID}</a></div>
                                     </div>
                             }
                         </div>
@@ -2848,6 +2856,8 @@ declare function app:registryWritings($node as node(), $model as map(*)) {
                             let $pubPlace := $writing//tei:sourceDesc//tei:imprint/tei:pubPlace[1]
                             let $date := $writing//tei:sourceDesc//tei:imprint/tei:date[1]
                             
+                            let $href := if(contains(request:get-url(),'writing/')) then('') else('writing/')
+                            
                             let $entry := <div
                                 class="row RegisterEntry">
                                 <div
@@ -2864,7 +2874,7 @@ declare function app:registryWritings($node as node(), $model as map(*)) {
                                 </div>
                                 <div
                                     class="col-sm-3 col-md-2 col-lg-2"><a  onclick="pleaseWait()"
-                                        href="writing/{$writingID}">{$writingID}</a></div>
+                                        href="{concat($href, $writingID)}">{$writingID}</a></div>
                             </div>
                                 group by $initial
                                 order by $initial
