@@ -152,26 +152,62 @@
                     </td>
                 </tr>
                 </xsl:if>
-                <xsl:if test="//mei:componentList/mei:work != ''">
+                <xsl:if test="//mei:workList/mei:work/mei:componentList/mei:work != ''">
                     <tr>
                         <td valign="top">Enthaltene Werke:</td>
                         <td>
-                            
-                            <xsl:for-each select="//mei:componentList/mei:work">
-                                Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
+                            <xsl:for-each select="//mei:workList/mei:work/mei:componentList/mei:work">
+                                
                                 <xsl:choose>
-                                    <xsl:when test="mei:lyricist/mei:persName/@auth">
-                                        &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
+                                    <xsl:when test="@type='issue'">
+                                        <xsl:choose>
+                                            <xsl:when test="@label"><xsl:value-of select="concat('Heft ', @n, ': ', @label)"/></xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="concat('Heft ', @n)"/>
+                                        </xsl:otherwise>
+                                        </xsl:choose>
+                                        <xsl:if test="exists(./mei:componentList)">
+                                            <ul>
+                                                <xsl:for-each select="./mei:componentList/mei:work">
+                                                Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
+                                                <xsl:if test="mei:lyricist">
+                                                    <xsl:choose>
+                                                        <xsl:when test="mei:lyricist/mei:persName/@auth">
+                                                            &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
+                                                        </xsl:when>
+                                                        <xsl:when test="mei:lyricist/mei:persName">
+                                                            &#160;(<xsl:value-of select="mei:lyricist/mei:persName/text()"/>)
+                                                        </xsl:when>
+                                                        <xsl:when test="mei:lyricist/normalize-space(text()) != ''">&#160;(<xsl:value-of select="mei:lyricist/text()"/>)</xsl:when>
+                                                        <xsl:otherwise>
+                                                            &#160;(unbekannt)
+                                                        </xsl:otherwise>
+                                                    </xsl:choose>
+                                                </xsl:if>
+                                                <br/>
+                                                </xsl:for-each>
+                                            </ul>
+                                        </xsl:if>
                                     </xsl:when>
-                                    <xsl:when test="mei:lyricist/mei:persName">
-                                        &#160;(<xsl:value-of select="mei:lyricist/mei:persName/text()"/>)
-                                    </xsl:when>
-                                    <xsl:when test="mei:lyricist/normalize-space(text()) != ''">&#160;(<xsl:value-of select="mei:lyricist/text()"/>)</xsl:when>
                                     <xsl:otherwise>
-                                        &#160;(unbekannt])
+                                        Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
+                                        <xsl:if test="mei:lyricist">
+                                        <xsl:choose>
+                                            <xsl:when test="mei:lyricist/mei:persName/@auth">
+                                                &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
+                                            </xsl:when>
+                                            <xsl:when test="mei:lyricist/mei:persName">
+                                                &#160;(<xsl:value-of select="mei:lyricist/mei:persName/text()"/>)
+                                            </xsl:when>
+                                            <xsl:when test="mei:lyricist/normalize-space(text()) != ''">&#160;(<xsl:value-of select="mei:lyricist/text()"/>)</xsl:when>
+                                            <xsl:otherwise>
+                                                &#160;(unbekannt)
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                        </xsl:if>
+                                        <br/>
                                     </xsl:otherwise>
                                 </xsl:choose>
-                                <br/>
                             </xsl:for-each>
                         </td>
                     </tr>
