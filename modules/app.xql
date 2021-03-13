@@ -1098,7 +1098,9 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                             return
                                 (<div
                                     name="{
-                                            if (not(matches($death,'^noDeath'))) then (distinct-values($deathFormatted)) else($death)
+                                            if (not(matches($death,'^noDeath')))
+                                            then (distinct-values($deathFormatted)) 
+                                            else ($death)
                                         }"
                                     death="{$death}"
                                     count="{count($name)}">
@@ -1112,14 +1114,19 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                                 </div>)
     
     let $personsGroupedByDeath := for $groups in $personsDeath
-                                    let $deathToSort := $groups/@death/string()
+                                    let $deathToSort := $groups/@death/number()
+                                    let $groupParam := $groups/@name/normalize-space(string())
+                                    let $death := if(functx:contains-any-of($groupParam, ('Chr.', 'nach', 'vor', '/')))
+                                                    then($groupParam)
+                                                    else(string(number($groupParam)))
                                     let $count := $groups/@count/string()
-                                    group by $death := $groups/@name/normalize-space(string())
+                                    group by $death
                                     order by $deathToSort
                                     return
                                         (<div
                                             class="RegisterSortBox"
-                                            death="{$death}" deathToSort="{$deathToSort}"
+                                            death="{$death}"
+                                            deathToSort="{$deathToSort}"
                                             count="{$count}"
                                             xmlns="http://www.w3.org/1999/xhtml">
                                             <div
