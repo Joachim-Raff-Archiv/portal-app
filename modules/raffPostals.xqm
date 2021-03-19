@@ -268,10 +268,10 @@ let $receiver := if($correspActionReceived/tei:persName[3]/text())
      $receiver
 };
 
-declare function raffPostals:getCorrespondance($id){
-    let $correspondence := $app:collectionPostals[matches(.//@key[not(./ancestor::tei:note[@type='regeste'])], $id)]
-    for $doc in $correspondence
-        let $letter := $doc/ancestor::tei:TEI
+        
+declare function raffPostals:getCorrespondance($id as xs:string){
+    let $correspondence := collection($app:collectionDocuments)//tei:TEI[matches(.//@key[not(./ancestor::tei:note[@type='regeste'])], $id)]
+    for $letter in $correspondence
         let $letterID := $letter/@xml:id/string()
         let $correspActionSent := $letter//tei:correspAction[@type="sent"]
         let $correspActionReceived := $letter//tei:correspAction[@type="received"]
