@@ -2249,15 +2249,6 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                                 return
                                                     $worksByCat}
                                         <div
-                                            class="RegisterSortEntry2"
-                                            id="cat-01-01-03">Andere Chorwerke</div>
-                                            {let $works := 'cat-01-01-03'
-                                                for $work in raffWorks:getWorks($works)
-                                                let $worksByCat := $work
-                                                order by raffShared:replaceToSortDist($worksByCat/@titleToSort)
-                                                return
-                                                    $worksByCat}
-                                        <div
                                             class="RegisterSortEntry"
                                             id="cat-01-02">Chorwerke mit Orchester weltlich</div>
                                             {let $works := 'cat-01-02'
