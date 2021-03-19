@@ -1239,12 +1239,7 @@ declare function app:person($node as node(), $model as map(*)) {
     let $forwarding := raffShared:forwardEntries($id)
     let $person := $app:collectionPersons/id($id)
     let $name := raffPostals:getName($id, 'full')
-    let $correspondence := $app:collectionPostals//tei:persName[@key = $id]/ancestor::tei:TEI
     let $literature := $person//tei:bibl[@type='links']
-    let $vorkommen := ($app:collectionInstitutions//tei:persName[@key=$id]/ancestor::tei:TEI|
-                      $app:collectionTexts//tei:persName[@key=$id]/ancestor::tei:TEI|
-                      $app:collectionSources//tei:persName[@key=$id]/ancestor::tei:TEI|
-                      $app:collectionWorks//mei:persName[@auth=$id]/ancestor::mei:mei)
     
     return
         (
