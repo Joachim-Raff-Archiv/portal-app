@@ -30,7 +30,8 @@ declare variable $app:dbRootPortal as xs:string := 'http://localhost:8082/exist/
 declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
 
-declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspDesc];
+declare variable $app:collectionDocuments := '/db/apps/jraSources/data/documents';
+declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspAction];
 declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
 declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI[.//tei:org];
 declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI;
