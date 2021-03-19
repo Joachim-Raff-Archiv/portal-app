@@ -581,7 +581,7 @@ declare function raffShared:getLifedata($person){
 let $birth := if(raffShared:getBirth($person)='noBirth')then()else(raffShared:getBirth($person))
 let $birthFormatted := raffShared:formatLifedata($birth)
 let $death := if(raffShared:getDeath($person)='noDeath')then()else(string(number(raffShared:getDeath($person))))
-let $deathFormatted := if (contains($birthFormatted, ' v. Chr.'))
+let $deathFormatted := if (contains($birthFormatted, ' v. Chr.') and not(contains(raffShared:formatLifedata($death), 'v. Chr.')))
                        then(concat(raffShared:formatLifedata($death), ' n. Chr.'))
                        else (raffShared:formatLifedata($death))
 let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
