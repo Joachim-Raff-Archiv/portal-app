@@ -2763,6 +2763,7 @@ declare function app:work($node as node(), $model as map(*)) {
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
     let $facsWvSchaefer := $work//mei:facsimile[@type='wvSchaefer']
+    let $facsWvMuellerReuter := $work//mei:facsimile[@type='wvMuellerReuter']
     return
         (
   <div
@@ -2792,7 +2793,13 @@ declare function app:work($node as node(), $model as map(*)) {
                     {if($facsWvSchaefer)
                     then(<li class="nav-item">
                          <a class="nav-link-jra" data-toggle="tab"
-                             href="#wvSchaefer">WV Schäfer (1888)</a></li>
+                             href="#wvSchaefer">Schäfer (1888)</a></li>
+                             )
+                    else()}
+                    {if($facsWvMuellerReuter)
+                    then(<li class="nav-item">
+                         <a class="nav-link-jra" data-toggle="tab"
+                             href="#wvMuellerReuter">Müller-Reuter (1909)</a></li>
                              )
                     else()}
                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
@@ -2843,7 +2850,7 @@ declare function app:work($node as node(), $model as map(*)) {
                               id="wvSchaefer">
                                     <div class="tabbable">
                                     <nav aria-label="Page navigation example">
-                                      <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs" role="tablist">
+                                      <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs-wvSchaefer" role="tablist">
                                         <!--<li class="nav-item prev">
                                           <a class="nav-link-jra" href="#" aria-label="Previous">
                                             <span aria-hidden="true">«</span>
@@ -2852,7 +2859,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                         </li>-->
                                         {for $surface at $n in $facsWvSchaefer//mei:surface
                                          return
-                                              <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-{$n}">{$n}</a></li>
+                                              <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-wvSchaefer-{$n}">{$n}</a></li>
                                           }
                                         <!--<li class="nav-item next">
                                           <a class="nav-link-jra" href="#" aria-label="Next">
@@ -2864,6 +2871,38 @@ declare function app:work($node as node(), $model as map(*)) {
                                     </nav>
                                   <div class="tab-content">
                                       {raffShared:get-digitalization-work-as-html($facsWvSchaefer, 'wvSchaefer')}
+                                  </div>
+                                </div>
+                                </div>)
+                           else()}
+                     {if ($facsWvMuellerReuter)
+                           then(
+                           <div
+                              class="tab-pane fade"
+                              id="wvMuellerReuter">
+                                    <div class="tabbable">
+                                    <nav aria-label="Page navigation example">
+                                      <ul class="pagination justify-content-center nav nav-pills" id="facsimileTabs-wvMuellerReuter" role="tablist">
+                                        <!--<li class="nav-item prev">
+                                          <a class="nav-link-jra" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">«</span>
+                                            <span class="sr-only">Previous</span>
+                                          </a>
+                                        </li>-->
+                                        {for $surface at $n in $facsWvMuellerReuter//mei:surface
+                                         return
+                                              <li class="nav-item {if($n=1)then('active')else()}"><a class="nav-link-jra" data-toggle="tab" href="#facsimile-wvMuellerReuter-{$n}">{$n}</a></li>
+                                          }
+                                        <!--<li class="nav-item next">
+                                          <a class="nav-link-jra" href="#" aria-label="Next">
+                                            <span aria-hidden="true">»</span>
+                                            <span class="sr-only">Next</span>
+                                          </a>
+                                        </li>-->
+                                      </ul>
+                                    </nav>
+                                  <div class="tab-content">
+                                      {raffShared:get-digitalization-work-as-html($facsWvMuellerReuter, 'wvMuellerReuter')}
                                   </div>
                                 </div>
                                 </div>)
