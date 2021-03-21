@@ -672,9 +672,9 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
     
 };
 
-declare function raffShared:get-digitalization-work-as-html($facsimile as node()*, $facsType){
+declare function raffShared:get-digitalization-work-as-html($facsimile as node()*, $facsType as xs:string){
     
-    let $bibl := $facsimile/ancestor::mei:mei//mei:source[@xml:id="wvMuellerReuter"]//text() => normalize-space()
+    let $bibl := $facsimile/ancestor::mei:mei//mei:source[@xml:id=$facsType]//text() => string-join(' ') => normalize-space()
     let $surfaces := $facsimile[@type=$facsType]/mei:surface
     let $images := for $surface at $n in $surfaces
                     let $url := $surface/mei:graphic/@target
@@ -684,7 +684,7 @@ declare function raffShared:get-digitalization-work-as-html($facsimile as node()
                     return
                         <div class="test tab-pane fade {if($n=1)then(' show active')else()}" id="facsimile-{$facsType}-{$n}">
                             <hr/>
-                            {$bibl}
+                            <span class="sublevel">{$bibl}</span>
                             <hr/>
                             <div class="container">
                                 {$img}
