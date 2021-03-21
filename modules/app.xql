@@ -2204,12 +2204,12 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                          class="nav-link-jra"
                          data-toggle="tab"
                          href="#arrangements">Bearbeitungen</a></li>
-                         <li
+                         <!--<li
                      class="nav-item"><a
                          class="nav-link-jra"
                          data-toggle="tab"
                          href="#foreignMaterial">Fremdmaterial</a></li>
-                         <li class="nav-item nav-linkless-jra d-flex justify-content-between"></li>
+                         <li class="nav-item nav-linkless-jra d-flex justify-content-between"></li>-->
                 </ul>
                 <div class="tab-content">
                     <div
@@ -2723,7 +2723,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                </div>
                         </div>
                     </div>
-                    <div
+                    <!--<div
                         class="tab-pane fade"
                         id="foreignMaterial">
                         <br/>
@@ -2732,8 +2732,8 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                             <div id="navigatorForeign" class="list-group col-sm col-md col-lg" style="height:500px; overflow-y: scroll;">
                                     <div
                                         class="RegisterSortBox">
-                                        <!--<div class="RegisterSortEntry"
-                                            id="cat-06-01">Orchestrierungen</div>-->
+                                        <!-/-<div class="RegisterSortEntry"
+                                            id="cat-06-01">Orchestrierungen</div>-/->
                                             {let $works := 'cat-07'
                                                 for $work in raffWorks:getWorks($works)
                                                 let $worksByCat := $work
@@ -2743,8 +2743,7 @@ declare function app:registryWorks($node as node(), $model as map(*)) {
                                    </div>
                                </div>
                         </div>
-                    </div>
-                
+                    </div>-->
                 </div>
             </div>
         </div>
