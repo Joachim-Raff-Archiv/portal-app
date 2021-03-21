@@ -260,7 +260,7 @@
         </table>
         </xsl:if>
         <table class="personView">
-            <xsl:if test="//relation[@name = 'reference']//item">
+            <xsl:if test="//relation[@name = 'reference']//item[. != '']">
                 <tr>
                     <td>Referenzen:</td>
                     <td>
