@@ -235,14 +235,6 @@
                     </td>
                 </tr>
             </xsl:if>-->
-            <xsl:if test="$sourceDesc/bibl != ''">
-                <tr>
-                    <td valign="top">Veröffentlichung:</td>
-                    <td>
-                        <xsl:value-of select="$sourceDesc/bibl"/>
-                    </td>
-                </tr>
-            </xsl:if>
         </table>
         <table class="letterView">
             <tr>
@@ -261,6 +253,16 @@
                 </td>
             </tr>
         </table>
+        </xsl:if>
+        <xsl:if test="$sourceDesc/bibl != ''">
+            <table class="letterView">
+             <tr>
+                 <td valign="top">Veröffentlichung:</td>
+                 <td>
+                     <xsl:value-of select="$sourceDesc/bibl"/>
+                 </td>
+             </tr>
+            </table>
         </xsl:if>
         <xsl:if test="//@cert"><br/>
             <hr/>
