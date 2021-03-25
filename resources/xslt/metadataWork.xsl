@@ -130,7 +130,7 @@
                         </td>
                     </tr>
                 </xsl:if>
-                <xsl:if test="//mei:workList/mei:work/mei:lyricist//text() != ''">
+                <xsl:if test="//mei:workList/mei:work/mei:lyricist[not(@type='stoff')]//text() != ''">
                 <tr>
                     <td valign="top">Textdichter(in):</td>
                     <td>
@@ -151,6 +151,28 @@
                         </xsl:for-each>
                     </td>
                 </tr>
+                </xsl:if>
+                <xsl:if test="//mei:workList/mei:work/mei:lyricist[@type='stoff']">
+                    <tr>
+                        <td valign="top">Lieferant(in) des Stoffes:</td>
+                        <td>
+                            <xsl:for-each select="//mei:workList/mei:work/mei:lyricist">
+                                <xsl:choose>
+                                    <xsl:when test="mei:persName/text()">
+                                        <xsl:value-of select="mei:persName"/>
+                                        <xsl:if test="mei:persName/@auth">
+                                            (<a href="{concat($viewPerson, mei:persName/@auth)}">
+                                                <xsl:value-of select="mei:persName/@auth"/>
+                                            </a>)
+                                        </xsl:if>
+                                    </xsl:when>
+                                    <xsl:when test="text() !=''"><xsl:value-of select="text()"/></xsl:when>
+                                    <xsl:otherwise>[unbekannt]</xsl:otherwise>
+                                </xsl:choose>
+                                <br/>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
                 </xsl:if>
                 <xsl:if test="//mei:workList/mei:work/mei:componentList/mei:work != ''">
                     <tr>
