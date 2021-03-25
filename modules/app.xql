@@ -3480,13 +3480,13 @@ declare function app:portalNews($node as node(), $model as map(*)){
 let $newsBlocks := doc('/db/apps/jraTexts/data/portal/news.xml')//tei:TEI//tei:text
 let $news := for $newsBlock in $newsBlocks
                 let $docDate := $newsBlock//tei:docDate/@when
-                let $heading := $newsBlock//tei:head/text()
-                let $subheading := $newsBlock//tei:head/text()
+                let $heading := $newsBlock//tei:head[not(@type='sub')]/text()
+                let $subheading := $newsBlock//tei:head[@type='sub']/text()
                 let $paragraphs := for $paragraph in $newsBlock//tei:p
                                     return
                                         <p>{$paragraph/text()}</p>
                 
-                where $docDate < current-date()
+                where $docDate <= current-date()
                 return
                     (if($heading)
                      then(<p class="title-b">{$heading}</p>)
@@ -3494,7 +3494,7 @@ let $news := for $newsBlock in $newsBlocks
                      if($subheading)
                      then(<p class="subtitle-b">{$subheading}</p>)
                      else(),
-                    <div>{$paragraphs}</div>)
+                    <div>{current-date()} | {$paragraphs}</div>)
     return
         $news
 };
