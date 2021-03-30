@@ -580,10 +580,12 @@ if(starts-with($lifedata,'-')) then(concat(substring(string(number($lifedata)),2
 declare function raffShared:getLifedata($person){
 let $birth := if(raffShared:getBirth($person)='noBirth')then()else(raffShared:getBirth($person))
 let $birthFormatted := raffShared:formatLifedata($birth)
-let $death := if(raffShared:getDeath($person)='noDeath')then()else(string(number(raffShared:getDeath($person))))
+
+let $death := if(raffShared:getDeath($person)='noDeath')then()else(raffShared:getDeath($person))
 let $deathFormatted := if (contains($birthFormatted, ' v. Chr.') and not(contains(raffShared:formatLifedata($death), 'v. Chr.')))
-                       then(concat(raffShared:formatLifedata($death), ' n. Chr.'))
+                       then(concat(number(raffShared:formatLifedata($death)), ' n. Chr.'))
                        else (raffShared:formatLifedata($death))
+
 let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
                 then
                     (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
