@@ -2778,7 +2778,7 @@ declare function app:work($node as node(), $model as map(*)) {
     let $naming := $collection//tei:title[@key=$id]/ancestor::tei:TEI
     let $opus := $work//mei:workList//mei:title[@type = 'desc']/normalize-space(text())
     let $name := $work//mei:fileDesc/mei:titleStmt/mei:title[@type = 'uniform' and @xml:lang = 'de']/normalize-space(text())
-    let $creation := $work//mei:history//mei:event[@type="entstehung"]/mei:desc[./mei:p/text() != '']
+    let $portrait := $work//mei:history//mei:div[@type="portrait"][./mei:p != '']
     let $facsWvSchaefer := $work//mei:facsimile[@type='wvSchaefer']
     let $facsWvMuellerReuter := $work//mei:facsimile[@type='wvMuellerReuter']
     let $xsltFormattingText := doc('/db/apps/raffArchive/resources/xslt/formattingText.xsl')
@@ -2798,10 +2798,10 @@ declare function app:work($node as node(), $model as map(*)) {
                              class="nav-link-jra active"
                              data-toggle="tab"
                              href="#metadata">Allgemein</a></li>
-                    {if($creation)
+                    {if($portrait)
                     then(<li class="nav-item">
                          <a class="nav-link-jra" data-toggle="tab"
-                             href="#creation">Werkporträt</a></li>
+                             href="#portrait">Werkporträt</a></li>
                              )
                     else()}
                      {if (raffShared:getReferences($id)) then(
@@ -2850,12 +2850,12 @@ declare function app:work($node as node(), $model as map(*)) {
          {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
                      </div>
                      {
-                         if ($creation)
+                         if ($portrait)
                          then (<div
                                  class="tab-pane fade"
-                                 id="creation">
+                                 id="portrait">
                                  <br/>
-                                 <div >{transform:transform($creation, $xsltFormattingText, ())
+                                 <div >{transform:transform($portrait, $xsltFormattingText, ())
                                  }</div>
                                </div>
                          )
