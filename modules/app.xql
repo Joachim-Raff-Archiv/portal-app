@@ -898,7 +898,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                              let $occupation := $person//tei:occupation[1]/text()[1]
                              
                              let $birth := raffShared:getBirth($person)
-                             let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth)
+(:                             let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth):)
                              let $birthFormatted := raffShared:formatLifedata($birth)
                              let $lifeData := raffShared:getLifedata($person)
                              
@@ -927,7 +927,7 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                          href="person/{$persID}">{$persID}</a></div>
                              </div>
                                  group by $birth
-                                 order by distinct-values($birthToSort)
+(:                                 order by distinct-values($birthToSort):)
                              return
                                  (<div
                                      name="{
@@ -945,10 +945,16 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                  </div>)
     
     let $personsGroupedByBirth := for $groups in $personsBirth
-                                     let $birthToSort := $groups/@birth/number()
+                                     let $birthToSort := if(contains($groups/@birth, '/'))
+                                                         then(number(substring($groups/@birth,1,4)))
+                                                         else if(matches($groups/@birth, '^noBirth'))
+                                                         then (number(9999))
+                                                         else ($groups/@birth/number())
                                      let $groupParam := $groups/@name/normalize-space(string())
                                      let $birth := if(functx:contains-any-of($groupParam, ('Chr.', 'nach', 'vor', '/')))
                                                     then($groupParam)
+                                                    else if (matches($groups/@name, '^noBirth'))
+                                                    then($groups/@name/string())
                                                     else(string(number($groupParam)))
                                      let $count := $groups/@count/string()
                                      group by $birth
