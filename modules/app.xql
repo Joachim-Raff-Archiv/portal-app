@@ -1122,10 +1122,16 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                                 </div>)
     
     let $personsGroupedByDeath := for $groups in $personsDeath
-                                    let $deathToSort := $groups/@death/number()
+                                    let $deathToSort := if(contains($groups/@death, '/'))
+                                                         then(number(substring($groups/@death,1,4)))
+                                                         else if(matches($groups/@death, '^noDeath'))
+                                                         then (number(9999))
+                                                         else ($groups/@death/number())
                                     let $groupParam := $groups/@name/normalize-space(string())
                                     let $death := if(functx:contains-any-of($groupParam, ('Chr.', 'nach', 'vor', '/')))
                                                     then($groupParam)
+                                                    else if (matches($groups/@name, '^noDeath'))
+                                                    then($groups/@name/string())
                                                     else(string(number($groupParam)))
                                     let $count := $groups/@count/string()
                                     group by $death
