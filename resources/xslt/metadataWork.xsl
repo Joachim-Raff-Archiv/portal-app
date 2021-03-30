@@ -329,7 +329,6 @@
                         <xsl:variable name="UAdate" select="local:formatDate(//mei:eventList/mei:event[@type = 'UA']/mei:date/text())"/>
                         <xsl:variable name="UAort" select="normalize-space(string-join(//mei:eventList/mei:event[@type = 'UA']/mei:geogName//text(), ' '))"/>
                         <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor']/text()"/>
-                        <xsl:variable name="UAinterpret" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]/text()"/>
                         <xsl:choose>
                             <xsl:when test="not(empty($UAdate)) and not(empty($UAort))">
                                 <xsl:value-of select="concat('Am ', $UAdate, ' in ', $UAort)"/>
@@ -345,10 +344,10 @@
                             <br/>
                             <xsl:value-of select="concat('Dirigent: ', $UAconductor)"/>
                         </xsl:if>
-                        <xsl:if test="$UAinterpret/normalize-space() !=''">
-                            <xsl:for-each select="$UAinterpret">
+                        <xsl:if test="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]/text()/normalize-space() !=''">
+                            <xsl:for-each select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]">
                                 <br/>
-                                <xsl:value-of select="concat('Interpret(en): ', ./text()[1])"/>
+                                <xsl:value-of select="concat('Interpret(in): ', ./text()[1])"/>
                                 <xsl:if test="contains(./@role,' ')">
                                     <xsl:value-of select="concat(' (',string-join(subsequence(tokenize(./@role,' '),2),'|'),')')"/>
                                 </xsl:if>
