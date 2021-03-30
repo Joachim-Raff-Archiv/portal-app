@@ -686,19 +686,15 @@ declare function raffShared:get-digitalization-work-as-html($facsimile as node()
                     return
                         <div class="test tab-pane fade {if($n=1)then(' show active')else()}" id="facsimile-{$facsType}-{$n}">
                             <hr/>
-                            <span class="sublevel">{$bibl}</span>
-                            <hr/>
                             <div class="container">
                                 {$img}
                             </div>
                             <hr/>
                             <div>
-                            <table>
-                                <tr>
-                                    <td>Bereitgestellt durch:</td>
-                                    <td>{$publisher}</td>
-                                </tr>
-                            </table>
+                            <div>
+                            <span class="sublevel">Abbildung aus: {$bibl}</span>
+                            <br/>
+                            <span class="sublevel">Bereitgestellt durch: {$publisher}</span>
                             </div>
                             <hr/>
                         </div>
