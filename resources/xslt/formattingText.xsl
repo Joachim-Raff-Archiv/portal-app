@@ -169,7 +169,7 @@
         </xsl:for-each>
     </xsl:template>
     
-    <xsl:template match="note">
+    <xsl:template match="note[not(@type='regeste')]">
         <xsl:variable name="noteContent" select="./text()"/>
         <xsl:variable name="noteCounter">
             <xsl:if test="@n = '1'">*)</xsl:if>
@@ -180,4 +180,9 @@
         </span>
     </xsl:template>
     
+    <xsl:template match="note[@type='regeste']">
+        <p>
+            <xsl:apply-templates/>
+        </p>
+    </xsl:template>
 </xsl:stylesheet>
