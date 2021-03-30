@@ -192,7 +192,7 @@
                                             <ul>
                                                 <xsl:for-each select="./mei:componentList/mei:work">
                                                 Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
-                                                <xsl:if test="mei:lyricist">
+                                                    <xsl:if test="mei:lyricist and starts-with(ancestor::mei:meiHead//mei:classification//mei:term/text(),'cat-01')">
                                                     <xsl:choose>
                                                         <xsl:when test="mei:lyricist/mei:persName/@auth">
                                                             &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
@@ -213,7 +213,7 @@
                                     </xsl:when>
                                     <xsl:otherwise>
                                         Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
-                                        <xsl:if test="mei:lyricist">
+                                        <xsl:if test="mei:lyricist and starts-with(ancestor::mei:meiHead//mei:classification//mei:term/text(),'cat-01')">
                                         <xsl:choose>
                                             <xsl:when test="mei:lyricist/mei:persName/@auth">
                                                 &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
