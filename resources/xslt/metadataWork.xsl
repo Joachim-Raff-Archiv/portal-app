@@ -322,16 +322,6 @@
                 </xsl:choose>
                         <!--</xsl:if>-->
             
-                <xsl:if test="//mei:history/mei:eventList/mei:event[@type='entstehung']">
-                <tr>
-                    <td>Entstehungsgeschichte:</td>
-                    <td>
-<!--                        <xsl:value-of select="//mei:history/mei:eventList/mei:event[@type='entstehung']/mei:desc"/>-->
-                        <xsl:apply-templates select="//mei:event[@type='entstehung']/mei:desc"/>
-<!--                        <xsl:value-of select="//mei:creation/string-join(text(),' ')"/>-->
-                    </td>
-                </tr>
-                </xsl:if>
             <xsl:if test="//mei:eventList/mei:event[@type='UA']/normalize-space() !=''">
                 <tr>
                     <td valign="top">Uraufführung:</td>
