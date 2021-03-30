@@ -96,11 +96,6 @@ declare function search:content()
                     <div>
                        <div class="row mb-2">
                             {count($hits)}&#160;{raffShared:translate('jra.search.result.result')}&#160;<i>{request:get-parameter("term",())}</i><br/>
-                            <!--{
-                             if (request:get-parameter("type",()) = "exactmatch")
-                                then ()
-                             else " using wildcard (*) search"
-                            }-->
                        </div>
                           { 
                             for $hit in $hits
@@ -127,7 +122,7 @@ declare function search:content()
                             order by $docid
                             return
                                 <div class="row">
-                                     <div class="col-10">{kwic:summarize($hit, <config width="50"/>)}</div>
+                                     <div class="col-10">{kwic:summarize($hit, <config width="70"/>)}</div>
                                      <div class="col-2"><a href="{$docurl}" target="_blank">{$docid}</a></div>
                                  </div>
                           }
