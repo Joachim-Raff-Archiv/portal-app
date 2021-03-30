@@ -2791,9 +2791,7 @@ declare function app:work($node as node(), $model as map(*)) {
          <h2>{$name}</h2>
          <h5>{$opus}</h5>
          <hr/>
-         <ul
-                     class="nav nav-pills"
-                     role="tablist">
+         <ul class="nav nav-pills" role="tablist">
                      <li
                          class="nav-item">
                          <a
@@ -2803,7 +2801,7 @@ declare function app:work($node as node(), $model as map(*)) {
                     {if($creation)
                     then(<li class="nav-item">
                          <a class="nav-link-jra" data-toggle="tab"
-                             href="#creation">Entstehung</a></li>
+                             href="#creation">Werkporträt</a></li>
                              )
                     else()}
                      {if (raffShared:getReferences($id)) then(
