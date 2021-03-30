@@ -898,7 +898,6 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                              let $occupation := $person//tei:occupation[1]/text()[1]
                              
                              let $birth := raffShared:getBirth($person)
-(:                             let $birthToSort := if (contains($birth,'/')) then(substring-before($birth,'/')) else($birth):)
                              let $birthFormatted := raffShared:formatLifedata($birth)
                              let $lifeData := raffShared:getLifedata($person)
                              
@@ -927,7 +926,6 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
                                          href="person/{$persID}">{$persID}</a></div>
                              </div>
                                  group by $birth
-(:                                 order by distinct-values($birthToSort):)
                              return
                                  (<div
                                      name="{
@@ -1077,7 +1075,6 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                             let $occupation := $person//tei:occupation[1]/text()[1]
                             
                             let $death := raffShared:getDeath($person)
-                            let $deathToSort := if (contains($death,'/')) then(substring-before($death,'/')) else($death)
                             let $deathFormatted := raffShared:formatLifedata($death)
                             let $lifeData := raffShared:getLifedata($person)
                             let $nameJoined := raffPostals:getName($persID, 'reversed')
@@ -1106,7 +1103,6 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
                                         href="person/{$persID}">{$persID}</a></div>
                             </div>
                                 group by $death
-                                order by distinct-values($deathToSort)
                             return
                                 (<div
                                     name="{
