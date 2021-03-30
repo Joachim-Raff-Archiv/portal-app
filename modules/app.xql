@@ -945,6 +945,10 @@ declare function app:registryPersonsBirth($node as node(), $model as map(*)) {
     let $personsGroupedByBirth := for $groups in $personsBirth
                                      let $birthToSort := if(contains($groups/@birth, '/'))
                                                          then(number(substring($groups/@birth,1,4)))
+                                                         else if(contains($groups/@birth, 'vor '))
+                                                         then(number(substring-after($groups/@birth, 'vor ')))
+                                                         else if(contains($groups/@birth, 'nach '))
+                                                         then(number(substring-after($groups/@birth, 'nach ')))
                                                          else if(matches($groups/@birth, '^noBirth'))
                                                          then (number(9999))
                                                          else ($groups/@birth/number())
@@ -1124,6 +1128,10 @@ declare function app:registryPersonsDeath($node as node(), $model as map(*)) {
     let $personsGroupedByDeath := for $groups in $personsDeath
                                     let $deathToSort := if(contains($groups/@death, '/'))
                                                          then(number(substring($groups/@death,1,4)))
+                                                         else if(contains($groups/@death, 'vor '))
+                                                         then(number(substring-after($groups/@death, 'vor ')))
+                                                         else if(contains($groups/@death, 'nach '))
+                                                         then(number(substring-after($groups/@death, 'nach ')))
                                                          else if(matches($groups/@death, '^noDeath'))
                                                          then (number(9999))
                                                          else ($groups/@death/number())
