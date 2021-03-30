@@ -691,10 +691,9 @@ declare function raffShared:get-digitalization-work-as-html($facsimile as node()
                             </div>
                             <hr/>
                             <div>
-                            <div>
-                            <span class="sublevel">Abbildung aus: {$bibl}</span>
-                            <br/>
-                            <span class="sublevel">Bereitgestellt durch: {$publisher}</span>
+                                <span class="sublevel">Abbildung aus {$bibl}</span>
+                                <br/>
+                                <span class="sublevel">Bereitgestellt durch {$publisher}</span>
                             </div>
                             <hr/>
                         </div>
