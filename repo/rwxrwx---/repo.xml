@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta xmlns="http://exist-db.org/xquery/repo">
+    <description>Joachim-Raff-Archiv Portal Application</description>
+    <author/>
+    <website/>
+    <status>released</status>
+    <license>GNU-LGPL</license>
+    <copyright>true</copyright>
+    <type>application</type>
+    <target>raffArchive</target>
+    <prepare>pre-install.xql</prepare>
+    <finish/>
+    <permissions user="raff" password="dummy" group="raffArchive" mode="rwxrwx---"/>
+<deployed>2020-04-017T16:44:08.153+02:00</deployed>
+</meta>
