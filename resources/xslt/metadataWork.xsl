@@ -328,7 +328,7 @@
                     <td>
                         <xsl:variable name="UAdate" select="local:formatDate(//mei:eventList/mei:event[@type = 'UA']/mei:date/text())"/>
                         <xsl:variable name="UAort" select="normalize-space(string-join(//mei:eventList/mei:event[@type = 'UA']/mei:geogName//text(), ' '))"/>
-                        <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor']/text()"/>
+                        <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor']"/>
                         <xsl:choose>
                             <xsl:when test="not(empty($UAdate)) and not(empty($UAort))">
                                 <xsl:value-of select="concat('Am ', $UAdate, ' in ', $UAort)"/>
@@ -340,14 +340,14 @@
                                 <xsl:value-of select="concat('In ', $UAort)"/>
                             </xsl:when>
                         </xsl:choose>
-                        <xsl:if test="not(empty($UAconductor))">
+                        <xsl:if test="not(empty($UAconductor/text()))">
                             <br/>
-                            <xsl:value-of select="concat('Dirigent: ', $UAconductor)"/>
+                            Dirigent: <xsl:apply-templates select="$UAconductor"/>
                         </xsl:if>
                         <xsl:if test="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]/text()/normalize-space() !=''">
                             <xsl:for-each select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]">
                                 <br/>
-                                <xsl:value-of select="concat('Interpret(in): ', ./text()[1])"/>
+                                Interpret(in): <xsl:apply-templates select="."/>
                                 <xsl:if test="contains(./@role,' ')">
                                     <xsl:value-of select="concat(' (',string-join(subsequence(tokenize(./@role,' '),2),'|'),')')"/>
                                 </xsl:if>
@@ -449,15 +449,18 @@
                     <tr>
                         <td>Erfasste Ausgaben:</td>
                         <td>
+                            <xsl:variable name="biblList" select="//mei:componentList/mei:manifestation/mei:biblList"/>
                             <xsl:choose>
-                                <xsl:when test="//mei:componentList/mei:manifestation/mei:biblList/count(mei:bibl) = 1">
-                                    <xsl:value-of select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl/concat(./mei:publisher, ' (', ./mei:date, ')')"/>
+                                <xsl:when test="$biblList/count(mei:bibl) = 1">
+                                    <xsl:apply-templates select="$biblList/mei:bibl/mei:publisher"/>
+                                    <xsl:value-of select="concat('(', $biblList/mei:bibl//mei:date, ')')"/>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <ul>
-                                        <xsl:for-each select="//mei:componentList/mei:manifestation/mei:biblList/mei:bibl">
+                                        <xsl:for-each select="$biblList/mei:bibl">
                                             <li>
-                                                <xsl:value-of select="concat(./mei:publisher, ' (', ./mei:date, ')')"/>
+                                                <xsl:apply-templates select="$biblList/mei:bibl/mei:publisher"/>
+                                                <xsl:value-of select="concat('(', $biblList/mei:bibl//mei:date, ')')"/>
                                             </li>
                                         </xsl:for-each>
                                     </ul>
