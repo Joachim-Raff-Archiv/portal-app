@@ -6,8 +6,13 @@
 xquery version "3.0";
 
 import module namespace templates="http://exist-db.org/xquery/templates" ;
-import module namespace i18n="http://exist-db.org/xquery/i18n-templates" at "i18n-templates.xql";
-
+import module namespace i18n="http://exist-db.org/xquery/i18n-templates" at "/db/apps/raffArchive/modules/i18n-templates.xql";
+import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
+import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "/db/apps/raffArchive/modules/raffShared.xqm";
+import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "/db/apps/raffArchive/modules/raffWritings.xqm";
+import module namespace search="https://portal.raff-archiv.ch/ns/search" at "/db/apps/raffArchive/modules/search.xqm";
+(:import module namespace raffSources="https://portal.raff-archiv.ch/ns/baudiSources" at "raffSources.xqm";:)
 (: 
  : The following modules provide functions which will be called by the 
  : templating.

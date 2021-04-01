@@ -530,3 +530,8 @@ a.disabled{
     pointer-events: none;
     cursor: default;
 }
+
+span.hi {
+    background-color:yellow;
+    font-weight:bold;
+}

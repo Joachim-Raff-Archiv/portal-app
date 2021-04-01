@@ -112,7 +112,10 @@
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@from">
                                 <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@from)"/> bis <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@to)"/> (ermittelt)<br/></xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'postal']/@when">
-                                <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'postal']/@when)"/> (Poststempel)<br/></xsl:if>
+                                <xsl:for-each select="$correspAction[@type = 'sent']/date[@type = 'postal']">
+                                    <xsl:value-of select="local:formatDate(./@when)"/> (Poststempel)<br/>
+                                </xsl:for-each>
+                            </xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore"> Frühestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notBefore)"/> (ermittelt)<br/>
                             </xsl:if>
                             <xsl:if test="$correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter"> Spätestens <xsl:value-of select="local:formatDate($correspAction[@type = 'sent']/date[@type = 'editor']/@notAfter)"/> (ermittelt)<br/>
@@ -232,14 +235,6 @@
                     </td>
                 </tr>
             </xsl:if>-->
-            <xsl:if test="$sourceDesc/bibl != ''">
-                <tr>
-                    <td valign="top">Veröffentlichung:</td>
-                    <td>
-                        <xsl:value-of select="$sourceDesc/bibl"/>
-                    </td>
-                </tr>
-            </xsl:if>
         </table>
         <table class="letterView">
             <tr>
@@ -258,6 +253,16 @@
                 </td>
             </tr>
         </table>
+        </xsl:if>
+        <xsl:if test="$sourceDesc/bibl != ''">
+            <table class="letterView">
+             <tr>
+                 <td valign="top">Veröffentlichung:</td>
+                 <td>
+                     <xsl:value-of select="$sourceDesc/bibl"/>
+                 </td>
+             </tr>
+            </table>
         </xsl:if>
         <xsl:if test="//@cert"><br/>
             <hr/>

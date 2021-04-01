@@ -2,6 +2,7 @@ xquery version "3.0";
 
 import module namespace login="http://exist-db.org/xquery/login" at "resource:org/exist/xquery/modules/persistentlogin/login.xql";
 import module namespace console="http://exist-db.org/xquery/console";
+import module namespace app = "https://portal.raff-archiv.ch/templates" at "/db/apps/raffArchive/modules/app.xql";
 
 declare variable $exist:path external;
 declare variable $exist:resource external;
@@ -81,9 +82,9 @@ else if (ends-with($exist:path, "restricted.html")) then (
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <forward url="login.html"/>
                 </dispatch>
-)else
+)
 
-if ($exist:path eq '') then
+else if ($exist:path eq '') then
 	<dispatch
 		xmlns="http://exist.sourceforge.net/NS/exist">
 		<redirect
@@ -97,16 +98,10 @@ else
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			<forward
 				url="{$exist:controller}/html/search.html">
-				<add-parameter
-					name="letter-id"
-					value="{$exist:resource}"/>
 			</forward>
 			<view>
 				<forward
 					url="{$exist:controller}/modules/view.xql">
-					<add-parameter
-						name="letter-id"
-						value="{$exist:resource}"/>
 				</forward>
 			</view>
 			<error-handler>
@@ -124,12 +119,14 @@ else
 	if (matches($exist:path, "/letter/")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
-			<forward
+			{if($app:collFullPostals/id($exist:resource))
+			 then(<forward
 				url="{$exist:controller}/html/viewLetter.html">
 				<add-parameter
 					name="letter-id"
 					value="{$exist:resource}"/>
-			</forward>
+			</forward>)
+			else(<forward url="{$exist:controller}/html/registryLettersDate.html"/>)}
 			<view>
 				<forward
 					url="{$exist:controller}/modules/view.xql">
@@ -147,8 +144,8 @@ else
 			</error-handler>
 		</dispatch>
 		
-		(: if its a document :)
-else
+(: if its a document :)
+(:else
 	if (matches($exist:path, "/document/")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
@@ -173,19 +170,21 @@ else
 				<forward
 					url="{$exist:controller}/modules/view.xql"/>
 			</error-handler>
-		</dispatch>
+		</dispatch>:)
 		
 		(: if its a person :)
 	else
 		if (matches($exist:path, "/person/")) then
 			<dispatch
 				xmlns="http://exist.sourceforge.net/NS/exist">
-				<forward
+				{if($app:collectionPersons/id($exist:resource))
+				 then(<forward
 					url="{$exist:controller}/html/viewPerson.html">
 					<add-parameter
 						name="person-id"
 						value="{$exist:resource}"/>
-				</forward>
+				</forward>)
+				else(<forward url="{$exist:controller}/html/registryPersonsInitial.html"/>)}
 				<view>
 					<forward
 						url="{$exist:controller}/modules/view.xql">
@@ -204,7 +203,7 @@ else
 			</dispatch>
 			
 			(: if its an place :)
-		else
+		(:else
 			if (matches($exist:path, "/place/")) then
 				<dispatch
 					xmlns="http://exist.sourceforge.net/NS/exist">
@@ -229,19 +228,21 @@ else
 						<forward
 							url="{$exist:controller}/modules/view.xql"/>
 					</error-handler>
-				</dispatch>
+				</dispatch>:)
 				
 				(: if its an institution :)
 			else
 				if (matches($exist:path, "/institution/")) then
 					<dispatch
 						xmlns="http://exist.sourceforge.net/NS/exist">
-						<forward
+						{if($app:collectionInstitutions/id($exist:resource))
+						then(<forward
 							url="{$exist:controller}/html/viewInstitution.html">
 							<add-parameter
 								name="institution-id"
 								value="{$exist:resource}"/>
-						</forward>
+						</forward>)
+						else(<forward url="{$exist:controller}/html/registryInstitutions.html"/>)}
 						<view>
 							<forward
 								url="{$exist:controller}/modules/view.xql">
@@ -264,19 +265,20 @@ else
 				if (matches($exist:path, "/work/")) then
 					<dispatch
 						xmlns="http://exist.sourceforge.net/NS/exist">
-						<forward
-							url="{$exist:controller}/html/viewWork.html">
-							<add-parameter
-								name="work-id"
-								value="{$exist:resource}"/>
-						</forward>
+						{if($app:collectionWorks/id($exist:resource))
+						then(<forward url="{$exist:controller}/html/viewWork.html">
+    							<add-parameter
+    								name="work-id"
+    								value="{$exist:resource}"/>
+    						</forward>)
+						else(<forward url="{$exist:controller}/html/registryWorks.html"/>)}
 						<view>
 							<forward
 								url="{$exist:controller}/modules/view.xql">
-								<add-parameter
-									name="work-id"
-									value="{$exist:resource}"/>
-							</forward>
+						      <add-parameter
+    								name="work-id"
+    								value="{$exist:resource}"/>
+						  </forward>
 						</view>
 						<error-handler>
 							<forward
@@ -287,111 +289,91 @@ else
 						</error-handler>
 					</dispatch>
 					
-						
-						(: if its an manuskript :)
+			(: if it's a writing :)
+			else
+				if (matches($exist:path, "/writing/")) then
+					<dispatch
+						xmlns="http://exist.sourceforge.net/NS/exist">
+						{if($app:collectionWritings/id($exist:resource))
+						then(
+      						<forward url="{$exist:controller}/html/viewWriting.html">
+      							<add-parameter
+      								name="writing-id"
+      								value="{$exist:resource}"/>
+      						</forward>)
+						else(<forward url="{$exist:controller}/html/registryWritings.html"/>)
+						}
+						<view>
+							<forward url="{$exist:controller}/modules/view.xql">
+							 <add-parameter
+      								name="writing-id"
+      								value="{$exist:resource}"/>
+      						</forward>
+						</view>
+						<error-handler>
+							<forward
+								url="{$exist:controller}/templates/error-page.html"
+								method="get"/>
+							<forward
+								url="{$exist:controller}/modules/view.xql"/>
+						</error-handler>
+					</dispatch>
+							
+			else if (starts-with($exist:path, "/search"))
+             then
+                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                    <forward url="{$exist:controller}/html/search.html"/>
+                    <view>
+                        <forward url="{$exist:controller}/modules/view.xql"/>
+                    </view>
+                 </dispatch>
+							
+			else
+				if ($exist:path eq "/") then
+					(: forward root path to index.xql :)
+					<dispatch
+						xmlns="http://exist.sourceforge.net/NS/exist">
+						<redirect
+							url="index.html"/>
+					</dispatch>
+				
+				else
+					if (ends-with($exist:resource, ".html")) then
+						(: the html page is run through view.xql to expand templates :)
+						<dispatch
+							xmlns="http://exist.sourceforge.net/NS/exist">
+							<view>
+								<forward
+									url="{$exist:controller}/modules/view.xql"/>
+							</view>
+							<error-handler>
+								<forward
+									url="{$exist:controller}/templates/error-page.html"
+									method="get"/>
+								<forward
+									url="{$exist:controller}/modules/view.xql"/>
+							</error-handler>
+						</dispatch>
+						(: Resource paths starting with $shared are loaded from the shared-resources app :)
 					else
-						if (matches($exist:path, "/sources/manuscript/")) then
+						if (contains($exist:path, "/$shared/")) then
 							<dispatch
 								xmlns="http://exist.sourceforge.net/NS/exist">
 								<forward
-									url="{$exist:controller}/html/sources/viewManuscript.html">
-									<add-parameter
-										name="source-id"
-										value="{$exist:resource}"/>
+									url="/shared-resources/{substring-after($exist:path, '/$shared/')}">
+									<set-header
+										name="Cache-Control"
+										value="max-age=3600, must-revalidate"/>
 								</forward>
-								<view>
-									<forward
-										url="{$exist:controller}/modules/view.xql">
-										<add-parameter
-											name="source-id"
-											value="{$exist:resource}"/>
-									</forward>
-								</view>
-								<error-handler>
-									<forward
-										url="{$exist:controller}/templates/error-page.html"
-										method="get"/>
-									<forward
-										url="{$exist:controller}/modules/view.xql"/>
-								</error-handler>
 							</dispatch>
-							
-							
-							(: if its an druck :)
+						
+						
 						else
-							if (matches($exist:path, "/sources/print/")) then
-								<dispatch
-									xmlns="http://exist.sourceforge.net/NS/exist">
-									<forward
-										url="{$exist:controller}/html/sources/viewPrint.html">
-										<add-parameter
-											name="source-id"
-											value="{$exist:resource}"/>
-									</forward>
-									<view>
-										<forward
-											url="{$exist:controller}/modules/view.xql">
-											<add-parameter
-												name="source-id"
-												value="{$exist:resource}"/>
-										</forward>
-									</view>
-									<error-handler>
-										<forward
-											url="{$exist:controller}/templates/error-page.html"
-											method="get"/>
-										<forward
-											url="{$exist:controller}/modules/view.xql"/>
-									</error-handler>
-								</dispatch>
-							
-							
-							else
-								if ($exist:path eq "/") then
-									(: forward root path to index.xql :)
-									<dispatch
-										xmlns="http://exist.sourceforge.net/NS/exist">
-										<redirect
-											url="index.html"/>
-									</dispatch>
-								
-								else
-									if (ends-with($exist:resource, ".html")) then
-										(: the html page is run through view.xql to expand templates :)
-										<dispatch
-											xmlns="http://exist.sourceforge.net/NS/exist">
-											<view>
-												<forward
-													url="{$exist:controller}/modules/view.xql"/>
-											</view>
-											<error-handler>
-												<forward
-													url="{$exist:controller}/templates/error-page.html"
-													method="get"/>
-												<forward
-													url="{$exist:controller}/modules/view.xql"/>
-											</error-handler>
-										</dispatch>
-										(: Resource paths starting with $shared are loaded from the shared-resources app :)
-									else
-										if (contains($exist:path, "/$shared/")) then
-											<dispatch
-												xmlns="http://exist.sourceforge.net/NS/exist">
-												<forward
-													url="/shared-resources/{substring-after($exist:path, '/$shared/')}">
-													<set-header
-														name="Cache-Control"
-														value="max-age=3600, must-revalidate"/>
-												</forward>
-											</dispatch>
-										
-										
-										else
-											(: everything else is passed through :)
-											<dispatch
-												xmlns="http://exist.sourceforge.net/NS/exist">
-												<cache-control
-													cache="yes"/>
-											</dispatch>
+							(: everything else is passed through :)
+							<dispatch
+								xmlns="http://exist.sourceforge.net/NS/exist">
+								<cache-control
+									cache="yes"/>
+							</dispatch>
 
 
