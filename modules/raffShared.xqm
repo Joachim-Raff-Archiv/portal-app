@@ -713,10 +713,10 @@ declare function raffShared:getReferences($id) {
                           let $docRoot := $doc/root()/node()
                           let $docID := $docRoot/@xml:id
                           let $docIDInitial := substring($docID,1,1)
-                          let $docType := if(starts-with($docRoot/@xml:id,'A'))
+                          let $docInfo := if(starts-with($docRoot/@xml:id,'A'))
                                           then('Brief')
                                           else if (starts-with($docRoot/@xml:id,'B'))
-                                          then ($doc//mei:title[@type="desc"]/text())
+                                          then (raffShared:formatWorkDesc($doc//mei:title[@type="desc"]))
                                           else if(starts-with($docRoot/@xml:id,'C'))
                                           then('Person')
                                           else if(starts-with($docRoot/@xml:id,'D'))
@@ -746,6 +746,7 @@ declare function raffShared:getReferences($id) {
                           let $docDate := if(starts-with($docRoot/@xml:id,'A'))
                                           then(raffShared:getDate($docRoot//tei:correspAction[@type='sent']))
                                           else(<br/>)
+                          let $workSortValue := $docRoot//mei:workList/mei:work[1]/string(@auth)
                           let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
                                            then($correspSentTurned,<br/>,'an ',$correspReceivedTurned)
                                            else if(starts-with($docRoot/@xml:id,'B')) 
@@ -767,11 +768,11 @@ declare function raffShared:getReferences($id) {
                                           then('../writing/')
                                           else()
                           let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
-                                          <div class="col-3" dateToSort="{$docDate}">
+                                          <div class="col-3" dateToSort="{$docDate}" workSort="{$workSortValue}">
                                             {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
                                               then('Regeste',<br/>)
                                               else()}
-                                              {$docType}
+                                              {$docInfo}
                                               {if($docDate and starts-with($docRoot/@xml:id,'A'))
                                               then(' vom ',raffShared:formatDate($docDate))
                                               else()}
@@ -784,6 +785,8 @@ declare function raffShared:getReferences($id) {
                               (<div xmlns="http://www.w3.org/1999/xhtml" groupInitial="{$docIDInitial}" order="{$entryOrder}">{for $each in $entry
                                     order by if($each/div/@dateToSort !='')
                                              then($each/div/@dateToSort)
+                                             else if($each/div/@workSort)
+                                             then($each/div/@workSort)
                                              else ($each/div/@docTitle)
                                     return
                                         $each}</div>)
@@ -923,4 +926,12 @@ declare function raffShared:replaceCutArticlesForSort($input) {
       normalize-space(functx:replace-multi(lower-case($input),$fr,$to))
 };
 
-
+declare function raffShared:formatWorkDesc($titleWorkDesc as node()) as xs:string {
+   let $tokens := tokenize($titleWorkDesc/text(), ' ')
+   let $token1 := $tokens[1]
+   let $token2Part1 := number(functx:get-matches($tokens[2],'\d{3}'))
+   let $token2Part2 := substring($tokens[2],4)
+   
+   return
+    concat($token1, ' ', $token2Part1, $token2Part2)
+};
