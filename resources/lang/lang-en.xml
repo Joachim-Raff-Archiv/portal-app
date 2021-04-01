@@ -11,6 +11,7 @@
     <msg key="jra.mainNav.documents">Documents</msg>
     <msg key="jra.mainNav.places">Places</msg>
     <msg key="jra.mainNav.institutions">Institutions</msg>
+    <msg key="jra.mainNav.search">Search</msg>
     <msg key="jra.mainNav.project.about">About the project</msg>
     <msg key="jra.mainNav.documentation">Documentation</msg>
     <msg key="jra.mainNav.resourcesUsed">Used resources</msg>
@@ -318,6 +319,11 @@
     <msg key="jra.catalog.mei.annot.place.rightmar">right</msg>
     
     <msg key="jra.search">Search</msg>
+    <msg key="jra.search.term">Search term</msg>
+    <msg key="jra.search.match">Exact match</msg>
+    <msg key="jra.search.submit">submit</msg>
+    <msg key="jra.search.result.notice">Search results will display below</msg>
+    <msg key="jra.search.result.result">result(s) for</msg>
     <msg key="jra.privacyPolicy">Privacy policy</msg>
     <msg key="jra.index">Landing page</msg>
     <msg key="jra.impressum">Impressum</msg>

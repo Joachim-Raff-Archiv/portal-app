@@ -4,3 +4,4 @@ build/*
 *.xar
 resources/img
 .existdb.json
+repo.xml

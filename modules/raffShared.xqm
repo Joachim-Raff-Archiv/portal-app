@@ -8,20 +8,21 @@ declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace hc = "http://expath.org/ns/http-client";
 declare namespace response = "http://exist-db.org/xquery/response";
 
-import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
+import module namespace app="https://portal.raff-archiv.ch/templates" at "/db/apps/raffArchive/modules/app.xql";
+import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
+import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "/db/apps/raffArchive/modules/raffWritings.xqm";
+import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
+import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 import module namespace templates = "http://exist-db.org/xquery/templates";
-import module namespace config="https://portal.raff-archiv.ch/config" at "config.xqm";
+(:import module namespace config="https://portal.raff-archiv.ch/config" at "/db/apps/raffArchive/modules/config.xqm";:)
 import module namespace request="http://exist-db.org/xquery/request";
 import module namespace transform="http://exist-db.org/xquery/transform";
 
-import module namespace functx="http://www.functx.com" at "functx.xqm";
+import module namespace functx="http://www.functx.com" at "/db/apps/raffArchive/modules/functx.xqm";
 import module namespace json="http://www.json.org";
 import module namespace jsonp="http://www.jsonp.org";
 
-import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "raffPostals.xqm";
-import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "raffWritings.xqm";
-import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 (:  Schön formatiertes Datum: format-date($date, "[D]. [MNn,*-4] [Y]", $lang, (), ()) :)
 
@@ -123,24 +124,6 @@ declare function raffShared:translate($content) {
 :
 :)
 
-declare %templates:wrap function raffShared:listMultiSelectOptions($node as node(), $model as map(*), $listName as xs:string) {
-    let $list := if ($listName = 'personRefs2RegerTypes')
-                    then ($app:personRefs2RegerTypes)
-                    else if ($listName = 'mriPersonaliaOrgaClassificationTypes')
-                    then ($app:mriPersonaliaOrgaClassificationTypes)
-                    else if ($listName = 'mriPostalObjektTypes')
-                    then ($app:mriPostalObjektTypes)
-                    else if ($listName = 'mriEventTypes')
-                    then ($app:mriEventTypes)
-                    else ()
-
-    for $type in $list
-        let $typeLabel := raffShared:translate($type)
-        order by $typeLabel
-        return
-            <option value="{$type}">{$typeLabel}</option>
-};
-
 
 
 (: DATES:)
@@ -179,102 +162,7 @@ declare function raffShared:monthName($monthNo as xs:integer) as xs:string {
 :
 :)
 
-declare function raffShared:customDate($dateVal as xs:string) as xs:string {
-    let $dateValT := tokenize($dateVal, '-')
-    let $hasDay := if (number($dateValT[3]) > 0)
-                    then (number($dateValT[3]))
-                    else ()
-    let $hasMonth := if (number($dateValT[2]) > 0)
-                        then (number($dateValT[2]))
-                        else ()
-    let $hasYear := if (number($dateValT[1]) > 0)
-                    then (number($dateValT[1]))
-                    else ()
-    return
-        if ($hasDay and $hasMonth and $hasYear)
-        then (xs:date($dateVal))
-        else if ($hasMonth and $hasYear)
-        then (
-            concat(
-                raffShared:monthName($dateValT[2]),
-                ' ',
-                $dateValT[1],
-                ' [',
-                raffShared:translate('raffArchive.entry.postalObject.date.day'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasDay and $hasMonth)
-        then (
-            concat(
-                format-number($dateValT[3], '0'),
-                '.&#160;',
-                raffShared:monthName($dateValT[2]),
-                ', [',
-                raffShared:translate('raffArchive.entry.postalObject.date.year'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasMonth)
-        then (
-            concat(
-                raffShared:monthName($dateValT[2]),
-                ', [',
-                raffShared:translate('raffArchive.entry.postalObject.date.day'),
-                '/',
-                raffShared:translate('raffArchive.entry.postalObject.date.year'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasDay)
-        then (
-            concat(
-                format-number($dateValT[3], '0'),
-                '., [',
-                raffShared:translate('raffArchive.entry.postalObject.date.month'),
-                '/',
-                raffShared:translate('raffArchive.entry.postalObject.date.year'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else if ($hasYear)
-        then (
-            concat(
-                $dateValT[1],
-                ', [',
-                raffShared:translate('raffArchive.entry.postalObject.date.day'),
-                '/',
-                raffShared:translate('raffArchive.entry.postalObject.date.month'),
-                ' ',
-                raffShared:translate('unknown'),
-                ']'
-            )
-        )
-        else (raffShared:translate('raffArchive.entry.postalObject.date.type.undated'))
 
-};
-
-
-(:~
-: Format xs:date with respect to language and desired form
-:
-: @param $date the date
-: @param $form the form (e.g. full, short, …)
-: @param $lang the requested language
-:
-: @return a i18n date string.
-:
-: ToDo: find the right type of $date for raffShared:getBirthDeathDates
-:
-:)
 
 declare function raffShared:formatDate($date, $form as xs:string, $lang as xs:string) as xs:string {
     let $date := if (functx:atomic-type($date) = 'xs:date')
@@ -336,10 +224,6 @@ declare function raffShared:shortenAndFormatDates($dateFrom, $dateTo, $form as x
 };
 
 
-
-
-
-
 declare function raffShared:getBirthDeathDates($dates, $lang) {
     let $date := if ($dates/tei:date)
                         then (raffShared:formatDate($dates/tei:date, 'full', $lang))
@@ -372,10 +256,6 @@ declare function raffShared:queryKey() {
 };
 
 
-declare %templates:wrap function raffShared:readCache($node as node(), $model as map(*), $cacheName as xs:string) {
-    doc(concat('xmldb:exist:///db/apps/raffArchive/caches/', $cacheName, '.xml'))/*
-};
-
 
 (: Patrick integrates https://jaketrent.com/post/xquery-browser-language-detection/ :)
 
@@ -386,19 +266,6 @@ declare function raffShared:get-browser-lang() as xs:string? {
   else
     ()
 };
-
-(:declare function raffShared:get-lang() as xs:string? {
-  let $lang := if(string-length(request:get-parameter("lang", "")) gt 0) then
-      (\: use http parameter lang as selected language :\)
-      request:get-parameter("lang", "")
-  else
-     if(string-length(request:get-cookie-value("forceLang")) gt 0) then
-       request:get-cookie-value("forceLang")
-     else
-       raffShared:get-browser-lang()
-  (\: limit to de and en; en default :\)
-  return if($lang != "en" and $lang != "de") then "en" else $lang
-};:)
 
 declare function raffShared:get-top-supported-lang($ordered-langs as xs:string*, $translations as xs:string*) as xs:string? {
   if (fn:empty($ordered-langs)) then
@@ -537,7 +404,7 @@ declare function raffShared:formatDate($dateRaw){
                   then(concat(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[D]. ','de',(),()),upper-case(substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3]. ','de',(),()),1,1)),substring(format-date(xs:date(replace($dateRaw,'0000-','9999-')),'[Mn,*-3].','de',(),()),2)))
                   else($dateRaw)
     
-    let $replaceMay := replace($date,'Mai.','Mai')
+    let $replaceMay := $date => replace('Mai.','Mai') => replace('May.','May')
     return
         $replaceMay
 };
@@ -646,7 +513,6 @@ declare function raffShared:getDateRegistryLetters($correspAction as node()*) as
         [$get, $type]
 };
 
-
 declare function raffShared:formatDateRegistryLetters($dateArray){
     let $dateRaw := $dateArray(1)
     let $type := $dateArray(2)
@@ -668,6 +534,74 @@ declare function raffShared:formatDateRegistryLetters($dateArray){
         $bracketify
 };
 
+declare function raffShared:getBirth($person){
+if ($person//tei:birth[1][@when-iso])
+    then
+        ($person//tei:birth[1]/@when-iso)
+    else
+        if ($person//tei:birth[1][@notBefore] and $person//tei:birth[1][@notAfter])
+        then
+            (concat($person//tei:birth[1]/@notBefore, '/', $person//tei:birth[1]/@notAfter))
+        else
+            if ($person//tei:birth[1][@notBefore])
+            then
+                ($person//tei:birth[1]/@notBefore)
+            else
+                if ($person//tei:birth[1][@notAfter])
+                then
+                    ($person//tei:birth[1]/@notAfter)
+                else
+                    ('noBirth')
+};
+declare function raffShared:getDeath($person){
+if ($person//tei:death[1][@when-iso])
+    then
+        ($person//tei:death[1]/@when-iso)
+    else
+        if ($person//tei:death[1][@notBefore] and $person//tei:death[1][@notAfter])
+        then
+            (concat($person//tei:death[1]/@notBefore, '/', $person//tei:death[1]/@notAfter))
+        else
+            if ($person//tei:death[1][@notBefore])
+            then
+                ($person//tei:death[1]/@notBefore)
+            else
+                if ($person//tei:death[1][@notAfter])
+                then
+                    ($person//tei:death[1]/@notAfter)
+                else
+                    ('noDeath')
+                    };
+
+declare function raffShared:formatLifedata($lifedata){
+if(starts-with($lifedata,'-')) then(concat(substring(string(number($lifedata)),2),' v. Chr.')) else($lifedata)
+};
+
+declare function raffShared:getLifedata($person){
+let $birth := if(raffShared:getBirth($person)='noBirth')then()else(raffShared:getBirth($person))
+let $birthFormatted := raffShared:formatLifedata($birth)
+
+let $death := if(raffShared:getDeath($person)='noDeath')then()else(raffShared:getDeath($person))
+let $deathFormatted := if (contains($birthFormatted, ' v. Chr.') and not(contains(raffShared:formatLifedata($death), 'v. Chr.')))
+                       then(concat(number(raffShared:formatLifedata($death)), ' n. Chr.'))
+                       else (raffShared:formatLifedata($death))
+
+let $lifedata:= if ($birthFormatted[. != ''] and $deathFormatted[. != ''])
+                then
+                    (concat(' (', $birthFormatted, '–', $deathFormatted, ')'))
+                else
+                    if ($birthFormatted and not($deathFormatted))
+                    then
+                        (concat(' (*', $birthFormatted, ')'))
+                    else
+                        if ($deathFormatted and not($birthFormatted))
+                        then
+                            (concat(' (†', $deathFormatted, ')'))
+                        else
+                            ()
+    return
+        $lifedata
+                };
 
 declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*){
     
@@ -739,6 +673,145 @@ declare function raffShared:get-digitalization-tei-as-html($facsimile as node()*
         $images
     
 };
+
+declare function raffShared:get-digitalization-work-as-html($facsimile as node()*, $facsType as xs:string){
+    
+    let $bibl := $facsimile/ancestor::mei:mei//mei:source[@xml:id=$facsType]//text() => string-join(' ') => normalize-space()
+    let $surfaces := $facsimile[@type=$facsType]/mei:surface
+    let $images := for $surface at $n in $surfaces
+                    let $url := $surface/mei:graphic/@target
+                    let $publisher := 'Joachim-Raff-Archiv' (:$surface/ancestor::mei:mei//mei:sourceDesc/mei:source/tei:bibl[1]/text():)
+                    
+                    let $img := <img src="{concat('https://digilib.baumann-digital.de/JRA/',$url,'?dh=1000&amp;dw=1000')}" class="img-fluid mx-auto d-block img-thumbnail" width="75%"/>
+                    return
+                        <div class="test tab-pane fade {if($n=1)then(' show active')else()}" id="facsimile-{$facsType}-{$n}">
+                            <hr/>
+                            <div class="container">
+                                {$img}
+                            </div>
+                            <hr/>
+                            <div>
+                                <span class="sublevel">Abbildung aus {$bibl}</span>
+                                <br/>
+                                <span class="sublevel">Bereitgestellt durch {$publisher}</span>
+                            </div>
+                            <hr/>
+                        </div>
+    return
+        $images
+};
+
+declare function raffShared:getReferences($id) {
+    let $collectionReference := ($app:collectionPersons[matches(.//@key,$id)],
+                                 $app:collectionInstitutions[matches(.//@key,$id)],
+                                 $app:collectionTexts[matches(.//@key,$id)],
+                                 $app:collectionSources//tei:note[@type='regeste'][matches(.//@key,$id)],
+                                 $app:collectionWorks[matches(.//@auth,$id)],
+                                 $app:collectionWritings[matches(.//@key,$id)])
+    
+    let $entryGroups := for $doc in $collectionReference
+                          let $docRoot := $doc/root()/node()
+                          let $docID := $docRoot/@xml:id
+                          let $docIDInitial := substring($docID,1,1)
+                          let $docInfo := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('Brief')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then (raffShared:formatWorkDesc($doc//mei:title[@type="desc"]))
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('Person')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('Institution')
+                                          else if(starts-with($docRoot/@xml:id,'E'))
+                                          then(
+                                                if($doc//tei:analytic)
+                                                then('Artikel')
+                                                else ('Monographie')
+                                              )
+                                          else('Sonstige')
+                          let $entryOrder := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('002')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then ('001')
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('003')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('004')
+                                          else if(starts-with($docRoot/@xml:id,'E'))
+                                          then('005')
+                                          else('006')
+                          let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
+                          let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
+                          let $correspSentTurned := raffPostals:getSenderTurned($correspActionSent)
+                          let $correspReceivedTurned := raffPostals:getReceiverTurned($correspActionReceived)
+                          let $docDate := if(starts-with($docRoot/@xml:id,'A'))
+                                          then(raffShared:getDate($docRoot//tei:correspAction[@type='sent']))
+                                          else(<br/>)
+                          let $workSortValue := $docRoot//mei:workList/mei:work[1]/string(@auth)
+                          let $docTitle := if(starts-with($docRoot/@xml:id,'A'))
+                                           then($correspSentTurned,<br/>,'an ',$correspReceivedTurned)
+                                           else if(starts-with($docRoot/@xml:id,'B')) 
+                                           then($docRoot//mei:workList/mei:work[1]/mei:title[1]/string())
+                                           else if(starts-with($docRoot/@xml:id,'E'))
+                                           then($docRoot//tei:biblStruct//tei:title[1]/text())
+                                           else if($docRoot/name()='TEI')
+                                           then($docRoot//tei:titleStmt/tei:title/string())
+                                           else('noTitle')
+                          let $href := if(starts-with($docRoot/@xml:id,'A'))
+                                          then('../letter/')
+                                          else if (starts-with($docRoot/@xml:id,'B'))
+                                          then ('../work/')
+                                          else if(starts-with($docRoot/@xml:id,'C'))
+                                          then('../person/')
+                                          else if(starts-with($docRoot/@xml:id,'D'))
+                                          then('../institution/')
+                                          else if(starts-with($docRoot/@xml:id,'E'))
+                                          then('../writing/')
+                                          else()
+                          let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
+                                          <div class="col-3" dateToSort="{$docDate}" workSort="{$workSortValue}">
+                                            {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
+                                              then('Regeste',<br/>)
+                                              else()}
+                                              {$docInfo}
+                                              {if($docDate and starts-with($docRoot/@xml:id,'A'))
+                                              then(' vom ',raffShared:formatDate($docDate))
+                                              else()}
+                                         </div>
+                                         <div class="col" docTitle="{normalize-space($docTitle[1])}">{$docTitle}</div>
+                                         <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
+                                       </div>
+                          group by $docIDInitial
+                          return
+                              (<div xmlns="http://www.w3.org/1999/xhtml" groupInitial="{$docIDInitial}" order="{$entryOrder}">{for $each in $entry
+                                    order by if($each/div/@dateToSort !='')
+                                             then($each/div/@dateToSort)
+                                             else if($each/div/@workSort)
+                                             then($each/div/@workSort)
+                                             else ($each/div/@docTitle)
+                                    return
+                                        $each}</div>)
+   let $entryGroupsShow := for $groups in $entryGroups
+                              let $groupInitial := $groups/@groupInitial
+                              let $order := $groups/@order
+                              let $registerSortEntryLabel := switch ($groupInitial/string())
+                                                                 case 'A' return 'Briefe und Regesten'
+                                                                 case 'B' return 'Werke'
+                                                                 case 'C' return 'Personen'
+                                                                 case 'D' return 'Institutionen'
+                                                                 case 'E' return 'Schriften'
+                                                                 default return 'Weitere'
+                                order by $order
+                                return
+                                 <div class="RegisterSortBox" xmlns="http://www.w3.org/1999/xhtml">
+                                          <div class="RegisterSortEntry">{$registerSortEntryLabel}</div>
+                                          {for $group in $groups
+                                              return
+                                                  $group}
+                                 </div>
+   return
+    $entryGroupsShow
+};
+
 
 declare function raffShared:suggestedCitation($id as xs:string) {
     
@@ -830,4 +903,35 @@ declare function raffShared:forwardEntries($idParam as xs:string) {
        if($entryDeleted)
        then(response:redirect-to($entryLink))
        else()
+};
+
+
+declare function raffShared:replaceToSortDist($input) {
+
+let $fr := 	('ö','ä','ü','É','é','è','ê','á','à')
+let $to := 	('oe','ae','ue','E','e','e','e','a','a')
+   
+   return
+      functx:replace-multi(lower-case($input),$fr,$to)
+        => distinct-values()
+
+};
+
+declare function raffShared:replaceCutArticlesForSort($input) {
+
+   let $fr := 	('der', 'die', 'das', 'ein', 'eine', '[N.N.]','den','la','le','l’')
+   let $to := 	('', '', '', '', '', '', '', '', '', '')
+   
+   return
+      normalize-space(functx:replace-multi(lower-case($input),$fr,$to))
+};
+
+declare function raffShared:formatWorkDesc($titleWorkDesc as node()) as xs:string {
+   let $tokens := tokenize($titleWorkDesc/text(), ' ')
+   let $token1 := $tokens[1]
+   let $token2Part1 := number(functx:get-matches($tokens[2],'\d{3}'))
+   let $token2Part2 := substring($tokens[2],4)
+   
+   return
+    concat($token1, ' ', $token2Part1, $token2Part2)
 };
