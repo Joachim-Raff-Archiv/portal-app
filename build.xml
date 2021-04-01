@@ -59,7 +59,6 @@
         <echo message="postDeploy.xql executed"/>-->
     </target>
     
-    
     <target name="xarLocal">
         <mkdir dir="${build.dir}"/>
         <delete file="./repo.xml"/>
@@ -78,9 +77,7 @@
         </exec>
     </target>
     
-    <target name="deployDev" depends="xarDev">
-        
-    </target>
+    <target name="deployDev" depends="xarDev"/>
     
     <target name="xarDev">
         <mkdir dir="${build.dir}"/>
