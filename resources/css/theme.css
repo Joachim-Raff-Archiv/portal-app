@@ -1,5 +1,9 @@
 /* Custom CSS for JRA-Portal, Dennis Ried 2019 */
 
+.page-header {
+    padding-top: 2em;
+}
+
 a{
     color: #641a85; 
 	text-decoration: none;
