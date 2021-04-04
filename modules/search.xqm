@@ -30,7 +30,7 @@ declare function search:search($node as node(), $model as map(*))
 declare function search:form-w-check()
 {
       	<div class="col-8 rounded-lg border">
-            <form method="GET" action="http://localhost:8080/exist/apps/raffArchive/search">
+            <form method="GET" action="https://portal.raff-archiv.ch/search">
               <div class="form-group row mt-3">
                 <label for="search-term" class="col-2 col-form-label">{raffShared:translate('jra.search.term')}</label>
                 <div class="col-sm-10">
