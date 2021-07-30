@@ -30,8 +30,8 @@ declare variable $app:dbRootPortal as xs:string := 'http://localhost:8082/exist/
 declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
 
-declare variable $app:collectionDocuments := '/db/apps/jraSources/data/documents';
-declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI[.//tei:correspAction];
+declare variable $app:collectionDocuments := '/db/apps/jraSources/data';
+declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/postals')//tei:TEI;
 declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
 declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI[.//tei:org];
 declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI;
@@ -40,7 +40,7 @@ declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//m
 declare variable $app:collectionWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
-declare variable $app:collFullPostals := collection('/db/apps/jraSources/data/documents')//tei:TEI;
+declare variable $app:collFullPostals := collection('/db/apps/jraSources/data/postals')//tei:TEI;
 declare variable $app:collFullPersons := collection('/db/apps/jraPersons/data')//tei:TEI;
 declare variable $app:collFullInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI;
 declare variable $app:collFullSources := collection('/db/apps/jraSources/data')//tei:TEI;
