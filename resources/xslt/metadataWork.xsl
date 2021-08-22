@@ -1,7 +1,19 @@
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="https://portal.raff-archive.ch/ns/local" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="https://portal.raff-archive.ch/ns/local" xmlns:functx = "http://www.functx.com" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes"/>
     <xsl:include href="formattingText.xsl"/>
     <xsl:include href="formattingDate.xsl"/>
+    
+    <xsl:function name="functx:contains-any-of" as="xs:boolean"
+        xmlns:functx="http://www.functx.com">
+        <xsl:param name="arg" as="xs:string?"/>
+        <xsl:param name="searchStrings" as="xs:string*"/>
+        
+        <xsl:sequence select="
+            some $searchString in $searchStrings
+            satisfies contains($arg,$searchString)
+            "/>
+        
+    </xsl:function>
     
     <xsl:function name="local:switch2Roman">
         <xsl:param name="n"/>
@@ -38,6 +50,35 @@
             <xsl:when test="$n = '30'">XXX</xsl:when>
             <xsl:otherwise><xsl:value-of select="$n"/></xsl:otherwise>
         </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="local:matches-cat">
+        <xsl:param name="seq"/>
+        <xsl:param name="string"/>
+        <xsl:variable name="seq-analyzed">
+        <xsl:for-each select="$seq">
+            <xsl:choose>
+                <xsl:when test="matches(., $string) = true()">
+                    <xsl:value-of select="'true'"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="'false'"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+        </xsl:variable>
+        <xsl:if test="functx:contains-any-of('true',($seq-analyzed))
+            ">
+            <xsl:value-of select="true()"/>
+        </xsl:if>
+    </xsl:function>
+    
+    <xsl:function name="local:any-matches-string-loop">
+        <xsl:param name="arg1"/>
+        <xsl:param name="arg2"/>
+        <xsl:for-each select="$arg1">
+            <xsl:value-of select="matches(., $arg2)"/>
+        </xsl:for-each>
     </xsl:function>
     
     <xsl:template match="/">
@@ -213,7 +254,7 @@
                                     </xsl:when>
                                     <xsl:otherwise>
                                         Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
-                                        <xsl:if test="mei:lyricist and starts-with(ancestor::mei:meiHead//mei:classification//mei:term/text(),'cat-01')">
+                                        <xsl:if test="mei:lyricist and local:matches-cat(ancestor::mei:meiHead//mei:classification//mei:term/text(), 'cat-01')">
                                         <xsl:choose>
                                             <xsl:when test="mei:lyricist/mei:persName/@auth">
                                                 &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
