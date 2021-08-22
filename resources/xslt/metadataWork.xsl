@@ -67,18 +67,9 @@
             </xsl:choose>
         </xsl:for-each>
         </xsl:variable>
-        <xsl:if test="functx:contains-any-of('true',($seq-analyzed))
-            ">
+        <xsl:if test="functx:contains-any-of('true',($seq-analyzed))">
             <xsl:value-of select="true()"/>
         </xsl:if>
-    </xsl:function>
-    
-    <xsl:function name="local:any-matches-string-loop">
-        <xsl:param name="arg1"/>
-        <xsl:param name="arg2"/>
-        <xsl:for-each select="$arg1">
-            <xsl:value-of select="matches(., $arg2)"/>
-        </xsl:for-each>
     </xsl:function>
     
     <xsl:template match="/">
@@ -233,7 +224,7 @@
                                             <ul>
                                                 <xsl:for-each select="./mei:componentList/mei:work">
                                                 Nr.&#160;<xsl:value-of select="@n"/>&#160;<em><xsl:value-of select="mei:title"/></em>
-                                                    <xsl:if test="mei:lyricist and starts-with(ancestor::mei:meiHead//mei:classification//mei:term/text(),'cat-01')">
+                                                    <xsl:if test="mei:lyricist and local:matches-cat(ancestor::mei:meiHead//mei:classification//mei:term/text(),'cat-01')">
                                                     <xsl:choose>
                                                         <xsl:when test="mei:lyricist/mei:persName/@auth">
                                                             &#160;(<a href="{concat($viewPerson, mei:lyricist/mei:persName/@auth)}"><xsl:value-of select="mei:lyricist/mei:persName/text()"/></a>)
