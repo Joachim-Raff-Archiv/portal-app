@@ -26,7 +26,11 @@ declare namespace pkg = "http://expath.org/ns/pkg";
 declare variable $app:dbRootUrl as xs:string := request:get-url();
 declare variable $app:dbRootLocalhost as xs:string := 'http://localhost:8080/exist/apps/raffArchive';
 declare variable $app:dbRootDev as xs:string := 'http://localhost:8088/exist/apps/raffArchive';
-declare variable $app:dbRootPortal as xs:string := 'http://localhost:8082/exist/apps/raffArchive';
+declare variable $app:dbRootPortal as xs:string := if(contains($app:dbRootUrl, 'http://localhost:8082/exist/'))
+                                                   then('http://localhost:8082/exist/apps/raffArchive')
+                                                   else if(contains($app:dbRootUrl, 'http://localhost:8084/exist/'))
+                                                   then('http://localhost:8084/exist/apps/raffArchive')
+                                                   else('unknownDomain');
 declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
 
