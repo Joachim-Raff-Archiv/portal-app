@@ -1,158 +1,145 @@
-<project default="deployLocal" name="${package(abbrev)}">
-    <xmlproperty file="./expath-pkg.xml"/>
-    <tstamp>
-        <format property="DATETIME" pattern="yyyyMMdd-HHmm"  locale="en,UK" />
-    </tstamp>
-    <property name="env.EXIST_PATH" value="/opt/exist/exist-distribution-5.2.0"/>
-    <property name="project.version" value="${package(version)}"/>
-    <property name="project.app" value="${package(abbrev)}"/>
-    <property name="build.dir" value="./build"/>
-    <property name="p.target.user" value="deploy"/>
-    <property name="p.target.pass" value=""/>
-    <property name="p.target1.exist.url" value="xmldb:exist://localhost:8080/exist/xmlrpc/db/"/>
-    <property name="p.target.exist.tmp" value="installer"/>
-    <property name="xar.name" value="${project.app}-${project.version}-${DATETIME}.xar"/>
-    <property name="xar.destination" value=""/>
-    <property environment="env" />
-    <property name="pathResolverLocalhost"
-        location="scripts/pathResolverLocalhost.py"/>
+<project default="deployLocal" name="${package(abbrev)}" basedir=".">
     
-    <property name="pathResolverDev"
-        location="scripts/pathResolverDev.py"/>
+    <!-- import default properties from file -->
+    <property file="local.build.properties"/>
+    <property file="build.properties"/>
     
-    <!-- export EXIST_PATH=/opt/exist/exist-distribution-5.2.0 -->
-    <typedef resource="org/exist/ant/antlib.xml" uri="http://exist-db.org/ant">
-        <classpath>
-            <fileset dir="${env.EXIST_PATH}/lib">
-                <include name="*.jar"/>
-            </fileset>
-        </classpath>
-    </typedef>
+    <property name="pathResolverLocalhost" location="scripts/pathResolverLocalhost.py"/>
+    <property name="pathResolverDev" location="scripts/pathResolverDev.py"/>
     
-    <!-- upload to localhost -->
-    <target name="uploadLocal" depends="xarLocal">
-        <echo message="Uploading packages to localhost ..."/>
-        <xdb:store xmlns:xdb="http://exist-db.org/ant" uri="${p.target1.exist.url}${p.target.exist.tmp}" user="${p.target.user}" password="${p.target.pass}" createcollection="true">
-            <fileset dir="${build.dir}">
-                <include name="${xar.name}"/>
-            </fileset>
-        </xdb:store>
-    </target>
-    <target name="deployLocal" depends="uploadLocal">
-        <echo message="Deploying xar ${xar.name}"/>
-        <xdb:xquery xmlns:xdb="http://exist-db.org/ant" uri="${p.target1.exist.url}${p.target.exist.tmp}" user="${p.target.user}" password="${p.target.pass}"
-            queryFile="scripts/deploy.xql" outputproperty="deploy.output">
-            <variable name="temp" value="${p.target.exist.tmp}"/>
-            <variable name="xar" value="${xar.name}"/>
-        </xdb:xquery>
-        <echo message="${deploy.output}"/>
-        <xdb:remove xmlns:xdb="http://exist-db.org/ant" uri="${p.target1.exist.url}${p.target.exist.tmp}" resource="${xar.name}" user="${p.target.user}" password="${p.target.pass}"/>
-        
-        <!-- postDeploy-Actions -->
-        <!--<echo message="Prepairing postDeploy.xql"/>
-        <loadfile property="postDeployXQuery" srcFile="scripts/postDeployLocalhost.xql"/>
-        
-        <echo message="Executing postDeploy.xql"/>
-        <xdb:xquery  xmlns:xdb="http://exist-db.org/ant"
-            uri="${p.target1.exist.url}" query="${postDeployXQuery}"
-            user="${p.target.user}" password="${p.target.pass}"/>
-        <echo message="postDeploy.xql executed"/>-->
+    <target name="gitStash">
+        <description>Stash uncommitted changes</description>
+        <exec executable="${bash.command}" outputproperty="git.stash">
+            <arg value="-c"/>
+            <arg value="${git.command} stash save tempBuild"/>
+            <arg value="${git.command} stash apply"/>
+            <env key="LANG" value="C"/>
+        </exec>
+        <echo>Uncomittet changes stashed to tempBuild</echo>
     </target>
     
-    <target name="xarLocal">
-        <mkdir dir="${build.dir}"/>
+    <target name="cleanAll" depends="gitStash">
+        <delete dir="build/"></delete>
         <delete file="./repo.xml"/>
+    </target>
+    
+    <target name="clean" depends="gitStash">
+        <delete file="./repo.xml"/>
+    </target>
+    
+    <target name="init" depends="clean">
+        <mkdir dir="${build.dir}"/>
+    </target>
+    
+    <target name="gitReset">
+        <description>Stash uncommitted changes</description>
+        <exec executable="${bash.command}" outputproperty="git.reset">
+            <arg value="-c"/>
+            <arg value="${git.command} reset --hard"/>
+            <arg value="${git.command} stash pop"/>
+            <env key="LANG" value="C"/>
+        </exec>
+        <echo>Stash applied after resetting git repo</echo>
+    </target>
+
+    <target name="get-current-hash-of-HEAD">
+        <description>Get the hash of the current git HEAD</description>
+        <exec executable="${bash.command}" outputproperty="local.revision">
+            <arg value="-c"/>
+            <arg value="${git.command} rev-parse --short HEAD"/>
+            <env key="LANG" value="C"/>
+        </exec>
+        <echo>Current HEAD: ${local.revision}</echo>
+    </target>
+    
+    <target name="xarLocal" depends="init, get-current-hash-of-HEAD">
         <copy todir=".">
             <file file="repo/rwxrwxr-x/repo.xml"/>
         </copy>
-        <exec executable="/bin/bash">
-            <arg value="scripts/stashTemp.sh"/>
-        </exec>
         <exec executable="python">
             <arg value="${pathResolverLocalhost}"/>
         </exec>
-        <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
-        <exec executable="/bin/bash">
-            <arg value="scripts/resetAndClear.sh"/>
-        </exec>
+        <property name="package-name-local" value="${project.app}-local-${local.revision}.xar"/>
+        <zip basedir="." destfile="${build.dir.local}/${package-name-local}" excludes="build/ .existdb.json build.sh"/>
+        <antcall target="gitReset"/>
     </target>
     
-    <target name="deployDev" depends="xarDev"/>
-    
-    <target name="deployPortal" depends="xarPortal"/>
-    
-    <target name="xarDev">
-        <mkdir dir="${build.dir}"/>
-        <delete file="./repo.xml"/>
+    <target name="xarDev" depends="init, get-current-hash-of-HEAD">
         <copy todir=".">
             <file file="repo/rwxrwx---/repo.xml"/>
         </copy>
-        <git command="stash">
-            <args>
-                <arg value="save"/>
-                <arg value="temp"/>
-            </args>
-        </git>
-        <git command="stash">
-            <args>
-                <arg value="apply"/>
-            </args>
-        </git>
         <exec executable="python">
             <arg value="${pathResolverDev}"/>
         </exec>
-        <zip basedir="." destfile="${build.dir}/${project.app}-dev-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
-        <git command="reset">
-            <args>
-                <arg value="--hard" />
-            </args>
-        </git>
-        <git command="stash">
-            <args>
-                <arg value="apply"/>
-            </args>
-        </git>
-        <git command="stash">
-            <args>
-                <arg value="clear"/>
-            </args>
-        </git>
+        <property name="package-name-dev" value="${project.app}-dev-${local.revision}.xar"/>
+        <zip basedir="." destfile="${build.dir.dev}/${package-name-dev}" excludes="build/ .existdb.json build.sh"/>
+        <antcall target="gitReset"/>
     </target>
     
-    <target name="xarPortal">
-        <mkdir dir="${build.dir}"/>
-        <delete file="./repo.xml"/>
+    <target name="xarPortal" depends="init, get-current-hash-of-HEAD">
         <copy todir=".">
             <file file="repo/rwxrwxr-x/repo.xml"/>
         </copy>
-        <zip basedir="." destfile="../all_xars_server_portal/${project.app}-portal-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
+        <zip basedir="." destfile="${build.dir.portal}/${project.app}-portal-${local.revision}.xar" excludes="build/ .existdb.json build.sh"/>
+        <antcall target="gitReset"/>
     </target>
     
-    <target name="xar" >
-        <delete file="./repo.xml"/>
+    <target name="xar" depends="init">
         <input message="set user permissions (default: user=yes,group=yes;other=no)" defaultvalue="rwxrwx---" addproperty="userPermissions"/>
         <copyfile src="repo/${userPermissions}/repo.xml" dest="./repo.xml" forceoverwrite="yes"/>
         <mkdir dir="${build.dir}"/>
-        <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}-${DSTAMP}-${TSTAMP}.xar" excludes="build/ .existdb.json build.sh"/>
+        <zip basedir="." destfile="${build.dir}/${project.app}-${local.revision}.xar" excludes="build/ .existdb.json build.sh"/>
         <echo message=""/>
         <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
         <echo message="!!!!!!! user permissions set to !!!!!!!"/>
         <echo message="!!!!!!!!!!!    ${userPermissions}    !!!!!!!!!!!"/>
         <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+        <antcall target="gitReset"/>
     </target>
-
-    <!--  git makro  -->
-    <macrodef name="git">
-        <attribute name="command" />
-        <attribute name="dir" default="" />
-        <element name="args" optional="true" />
-        <sequential>
-            <echo message="git @{command}" />
-            <exec executable="git" dir="@{dir}">
-                <arg value="@{command}" />
-                <args/>
-            </exec>
-        </sequential>
-    </macrodef>
-
+    
+    <target name="deployLocal" depends="xarLocal">
+        <!--<path id="classpath.core">
+            <fileset dir="${exist.home}/lib/core" erroronmissingdir="no">
+                <include name="*.jar"/>
+            </fileset>
+            <pathelement path="${exist.home}/exist.jar"/>
+            <pathelement path="${exist.home}/exist-optional.jar"/>
+        </path>-->
+        <path id="classpath.eXist5">
+            <fileset dir="${exist5.libs}" erroronmissingdir="no">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+        <typedef resource="org/exist/ant/antlib.xml" uri="http://exist-db.org/ant">
+            <classpath refid="classpath.core"/>
+            <classpath refid="classpath.eXist5"/>
+        </typedef>
+        
+        <!-- store xar-file in eXist-db -->
+        <xdb:store xmlns:xdb="http://exist-db.org/ant"
+            uri="${exist.db}/tmp"
+            createcollection="true"
+            createsubcollections="true"
+            user="${exist.user}"
+            password="${exist.pass}"
+            failonerror="true">
+            <fileset file="${build.dir.local}/${package-name-local}"/>
+        </xdb:store>
+        
+        <!-- Deploy the xar -->
+        <xdb:xquery  xmlns:xdb="http://exist-db.org/ant"
+            uri="${exist.db}"
+            user="${exist.user}"
+            password="${exist.pass}">
+            (
+            if("${project.name}" = repo:list()) then (
+            repo:undeploy("${project.name}"),
+            repo:remove("${project.name}")
+            )
+            else (),
+            repo:install-and-deploy-from-db("/db/tmp/${package-name-local}")
+            )
+        </xdb:xquery>
+    </target>
+    
 </project>
