@@ -57,14 +57,22 @@
         <echo>Current HEAD: ${local.revision}</echo>
     </target>
     
-    <target name="xarLocal" depends="init, get-current-hash-of-HEAD">
+    <target name="get-current-git-tag">
+        <exec executable="${bash.command}" outputproperty="git.tag">
+            <arg value="-c"/>
+            <arg value="${git.command} describe --abbrev=0"/>
+            <env key="LANG" value="C"/>
+        </exec>
+    </target>
+    
+    <target name="xarLocal" depends="init, get-current-hash-of-HEAD, get-current-git-tag">
         <copy todir=".">
             <file file="repo/rwxrwxr-x/repo.xml"/>
         </copy>
         <exec executable="python">
             <arg value="${pathResolverLocalhost}"/>
         </exec>
-        <property name="package.name.local" value="${project.app}-local-${local.revision}.xar"/>
+        <property name="package.name.local" value="${project.app}_local_${git.tag}_${local.revision}.xar"/>
         <zip basedir="." destfile="${build.dir.local}/${package.name.local}" excludes="build/ .existdb.json build.sh"/>
         <antcall target="gitApply"/>
     </target>
