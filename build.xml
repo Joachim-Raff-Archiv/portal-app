@@ -64,8 +64,8 @@
         <exec executable="python">
             <arg value="${pathResolverLocalhost}"/>
         </exec>
-        <property name="package-name-local" value="${project.app}-local-${local.revision}.xar"/>
-        <zip basedir="." destfile="${build.dir.local}/${package-name-local}" excludes="build/ .existdb.json build.sh"/>
+        <property name="package.name.local" value="${project.app}-local-${local.revision}.xar"/>
+        <zip basedir="." destfile="${build.dir.local}/${package.name.local}" excludes="build/ .existdb.json build.sh"/>
         <antcall target="gitApply"/>
     </target>
     
@@ -103,20 +103,12 @@
     </target>
     
     <target name="deployLocal" depends="xarLocal">
-        <!--<path id="classpath.core">
-            <fileset dir="${exist.home}/lib/core" erroronmissingdir="no">
-                <include name="*.jar"/>
-            </fileset>
-            <pathelement path="${exist.home}/exist.jar"/>
-            <pathelement path="${exist.home}/exist-optional.jar"/>
-        </path>-->
         <path id="classpath.eXist5">
             <fileset dir="${exist5.libs}" erroronmissingdir="no">
                 <include name="*.jar"/>
             </fileset>
         </path>
         <typedef resource="org/exist/ant/antlib.xml" uri="http://exist-db.org/ant">
-            <classpath refid="classpath.core"/>
             <classpath refid="classpath.eXist5"/>
         </typedef>
         
@@ -128,7 +120,7 @@
             user="${exist.user}"
             password="${exist.pass}"
             failonerror="true">
-            <fileset file="${build.dir.local}/${package-name-local}"/>
+            <fileset file="${build.dir.local}/${package.name.local}"/>
         </xdb:store>
         
         <!-- Deploy the xar -->
@@ -142,7 +134,7 @@
             repo:remove("${project.name}")
             )
             else (),
-            repo:install-and-deploy-from-db("/db/tmp/${package-name-local}")
+            repo:install-and-deploy-from-db("/db/tmp/${package.name.local}")
             )
         </xdb:xquery>
     </target>
