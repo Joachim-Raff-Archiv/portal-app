@@ -32,10 +32,15 @@
     </target>
     
     <target name="gitReset">
-        <description>Stash uncommitted changes</description>
         <exec executable="${bash.command}" outputproperty="git.reset">
             <arg value="-c"/>
             <arg value="${git.command} reset --hard"/>
+            <env key="LANG" value="C"/>
+        </exec>
+    </target>
+    <target name="gitApply" depends="gitReset">
+        <exec executable="${bash.command}" outputproperty="git.reset">
+            <arg value="-c"/>
             <arg value="${git.command} stash pop"/>
             <env key="LANG" value="C"/>
         </exec>
@@ -61,7 +66,7 @@
         </exec>
         <property name="package-name-local" value="${project.app}-local-${local.revision}.xar"/>
         <zip basedir="." destfile="${build.dir.local}/${package-name-local}" excludes="build/ .existdb.json build.sh"/>
-        <antcall target="gitReset"/>
+        <antcall target="gitApply"/>
     </target>
     
     <target name="xarDev" depends="init, get-current-hash-of-HEAD">
@@ -73,7 +78,7 @@
         </exec>
         <property name="package-name-dev" value="${project.app}-dev-${local.revision}.xar"/>
         <zip basedir="." destfile="${build.dir.dev}/${package-name-dev}" excludes="build/ .existdb.json build.sh"/>
-        <antcall target="gitReset"/>
+        <antcall target="gitApply"/>
     </target>
     
     <target name="xarPortal" depends="init, get-current-hash-of-HEAD">
@@ -81,7 +86,7 @@
             <file file="repo/rwxrwxr-x/repo.xml"/>
         </copy>
         <zip basedir="." destfile="${build.dir.portal}/${project.app}-portal-${local.revision}.xar" excludes="build/ .existdb.json build.sh"/>
-        <antcall target="gitReset"/>
+        <antcall target="gitApply"/>
     </target>
     
     <target name="xar" depends="init">
