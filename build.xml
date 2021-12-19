@@ -19,7 +19,7 @@
     </target>
     
     <target name="cleanAll" depends="gitStash">
-        <delete dir="build/"></delete>
+        <delete dir="build/"/>
         <delete file="./repo.xml"/>
     </target>
     
@@ -37,8 +37,6 @@
             <arg value="${git.command} reset --hard"/>
             <env key="LANG" value="C"/>
         </exec>
-    </target>
-    <target name="gitApply" depends="gitReset">
         <exec executable="${bash.command}" outputproperty="git.reset">
             <arg value="-c"/>
             <arg value="${git.command} stash pop"/>
@@ -74,7 +72,7 @@
         </exec>
         <property name="package.name.local" value="${project.app}_local_${git.tag}_${local.revision}.xar"/>
         <zip basedir="." destfile="${build.dir.local}/${package.name.local}" excludes="build/ .existdb.json build.sh"/>
-        <antcall target="gitApply"/>
+        <antcall target="gitReset"/>
     </target>
     
     <target name="xarDev" depends="init, get-current-hash-of-HEAD">
