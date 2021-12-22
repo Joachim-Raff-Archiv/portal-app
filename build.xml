@@ -143,6 +143,7 @@
             repo:install-and-deploy-from-db("/db/tmp/${package.name.local}")
             )
         </xdb:xquery>
+<!--    <xdb:remove xmlns:xdb="http://exist-db.org/ant" uri="${exist.db}/tmp/" resource="${package.name.local}"/>-->
     </target>
     
 </project>
