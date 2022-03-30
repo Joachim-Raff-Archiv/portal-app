@@ -34,23 +34,23 @@ declare variable $app:dbRootPortal as xs:string := if(contains($app:dbRootUrl, '
 declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
 
-declare variable $app:collectionDocuments := '/db/apps/jraSources/data';
-declare variable $app:collectionPostals := collection('/db/apps/jraSources/data/postals')//tei:TEI;
-declare variable $app:collectionPersons := collection('/db/apps/jraPersons/data')//tei:TEI[.//tei:person];
-declare variable $app:collectionInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI[.//tei:org];
-declare variable $app:collectionSources := collection('/db/apps/jraSources/data')//tei:TEI;
-declare variable $app:collectionTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
-declare variable $app:collectionWorks := collection('/db/apps/jraWorks/data')//mei:mei;
-declare variable $app:collectionWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
+declare variable $app:collectionDocuments := '/db/apps/jra-data/sources';
+declare variable $app:collectionPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
+declare variable $app:collectionPersons := collection('/db/apps/jra-data/persons')//tei:TEI[.//tei:person];
+declare variable $app:collectionInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI[.//tei:org];
+declare variable $app:collectionSources := collection('/db/apps/jra-data/sources')//tei:TEI;
+declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//tei:TEI;
+declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei;
+declare variable $app:collectionWritings := collection('/db/apps/jra-data/writings')//tei:TEI;
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
-declare variable $app:collFullPostals := collection('/db/apps/jraSources/data/postals')//tei:TEI;
-declare variable $app:collFullPersons := collection('/db/apps/jraPersons/data')//tei:TEI;
-declare variable $app:collFullInstitutions := collection('/db/apps/jraInstitutions/data')//tei:TEI;
-declare variable $app:collFullSources := collection('/db/apps/jraSources/data')//tei:TEI;
-declare variable $app:collFullTexts := collection('/db/apps/jraTexts/data')//tei:TEI;
-declare variable $app:collFullWorks := collection('/db/apps/jraWorks/data')//mei:mei;
-declare variable $app:collFullWritings := collection('/db/apps/jraWritings/data')//tei:TEI;
+declare variable $app:collFullPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
+declare variable $app:collFullPersons := collection('/db/apps/jra-data/persons')//tei:TEI;
+declare variable $app:collFullInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI;
+declare variable $app:collFullSources := collection('/db/apps/jra-data/sources')//tei:TEI;
+declare variable $app:collFullTexts := collection('/db/apps/jra-data/texts')//tei:TEI;
+declare variable $app:collFullWorks := collection('/db/apps/jra-data/works')//mei:mei;
+declare variable $app:collFullWritings := collection('/db/apps/jra-data/writings')//tei:TEI;
 declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks, $app:collFullWritings);
 
 declare function app:langSwitch($node as node(), $model as map(*)) {
@@ -3270,7 +3270,7 @@ declare function app:writing($node as node(), $model as map(*)) {
 
 declare function app:aboutProject($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/aboutProject.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/aboutProject.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3300,7 +3300,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
 
 declare function app:aboutRaff($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/aboutRaff.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/aboutRaff.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3316,7 +3316,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
 
 declare function app:aboutArchive($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/aboutArchive.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/aboutArchive.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/text()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]/text()
     
@@ -3332,7 +3332,7 @@ declare function app:aboutArchive($node as node(), $model as map(*)) {
 
 declare function app:aboutDocumentation($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/aboutDocumentation.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/aboutDocumentation.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3362,7 +3362,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
 
 declare function app:aboutResources($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/aboutResources.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/aboutResources.xml")/tei:TEI
     let $title := $text//tei:titleStmt/tei:title/string()
     let $subtitle := $text//tei:sourceDesc/tei:p[1]
     
@@ -3392,7 +3392,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
 
 declare function app:indexPage($node as node(), $model as map(*)) {
     
-    let $text := doc('/db/apps/jraTexts/data/portal/index.xml')
+    let $text := doc('/db/apps/jra-data/texts/portal/index.xml')
     
     return
         (
@@ -3405,7 +3405,7 @@ declare function app:indexPage($node as node(), $model as map(*)) {
 
 declare function app:impressum($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/impressum.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/impressum.xml")/tei:TEI
     
     return
         (
@@ -3418,7 +3418,7 @@ declare function app:impressum($node as node(), $model as map(*)) {
 
 declare function app:privacyPolicy($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/privacyPolicy.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/privacyPolicy.xml")/tei:TEI
     
     return
         (
@@ -3431,7 +3431,7 @@ declare function app:privacyPolicy($node as node(), $model as map(*)) {
 
 declare function app:disclaimer($node as node(), $model as map(*)) {
     
-    let $text := doc("/db/apps/jraTexts/data/portal/disclaimer.xml")/tei:TEI
+    let $text := doc("/db/apps/jra-data/texts/portal/disclaimer.xml")/tei:TEI
     
     return
         (
@@ -3517,7 +3517,7 @@ return
 
 declare function app:portalNews($node as node(), $model as map(*)){
 
-let $newsBlocks := doc('/db/apps/jraTexts/data/portal/news.xml')//tei:TEI//tei:text
+let $newsBlocks := doc('/db/apps/jra-data/texts/portal/news.xml')//tei:TEI//tei:text
 let $news := for $newsBlock in $newsBlocks
                 let $docDate := $newsBlock//tei:docDate/@when
                 let $heading := $newsBlock//tei:head[not(@type='sub')]/text()
