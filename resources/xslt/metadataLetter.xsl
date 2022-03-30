@@ -25,7 +25,7 @@
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/persName/@cert">*</xsl:if>
-                        <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('person/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if><br/>
                         </xsl:for-each>
                     </xsl:if>
@@ -38,7 +38,7 @@
                                 <xsl:value-of select="text()[1]"/>
                             </xsl:otherwise>
                         </xsl:choose><xsl:if test="$correspAction[@type = 'sent']/orgName/@cert">*</xsl:if>
-                        <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                        <xsl:if test="@key"> (<a href="{concat('institution/',@key)}"><xsl:value-of select="@key"/></a>)
                         </xsl:if>
                         </xsl:for-each>
                     </xsl:if>
@@ -66,7 +66,7 @@
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
                             </xsl:choose><xsl:if test="$correspAction[@type = 'received']/persName/@cert">*</xsl:if>
-                            <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/person/',@key)}"><xsl:value-of select="@key"/></a>)
+                            <xsl:if test="@key"> (<a href="{concat('person/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if><br/>
                         </xsl:for-each>
                     </xsl:if>
@@ -79,7 +79,7 @@
                                     <xsl:value-of select="text()[1]"/>
                                 </xsl:otherwise>
                             </xsl:choose><xsl:if test="$correspAction[@type = 'received']/orgName/@cert">*</xsl:if>
-                            <xsl:if test="@key"> (<a href="{concat('https://portal.raff-archiv.ch/html/institution/',@key)}"><xsl:value-of select="@key"/></a>)
+                            <xsl:if test="@key"> (<a href="{concat('institution/',@key)}"><xsl:value-of select="@key"/></a>)
                             </xsl:if>
                         </xsl:for-each>
                     </xsl:if>
