@@ -5,3 +5,4 @@ build/*
 resources/img
 .existdb.json
 repo.xml
+dist
