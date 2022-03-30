@@ -9,7 +9,7 @@ import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" a
 import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
 
 
-import module namespace templates = "http://exist-db.org/xquery/templates";
+import module namespace templates = "http://exist-db.org/xquery/html-templating";
 (:import module namespace config="https://portal.raff-archiv.ch/config" at "/db/apps/raffArchive/modules/config.xqm";:)
 import module namespace request="http://exist-db.org/xquery/request";
 import module namespace transform="http://exist-db.org/xquery/transform";

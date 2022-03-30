@@ -10,7 +10,7 @@ declare namespace response = "http://exist-db.org/xquery/response";
 
 import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
 
-import module namespace templates = "http://exist-db.org/xquery/templates";
+import module namespace templates = "http://exist-db.org/xquery/html-templating";
 import module namespace config="https://portal.raff-archiv.ch/config" at "config.xqm";
 import module namespace request="http://exist-db.org/xquery/request";
 import module namespace transform="http://exist-db.org/xquery/transform";
