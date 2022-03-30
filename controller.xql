@@ -23,6 +23,11 @@ else
         <redirect url="{substring-before(request:get-uri(),'/html/')}{concat('/', substring-after($exist:path, '/html/'))}"/>
     </dispatch>
 
+else
+    if(contains($exist:path, '/$index')) then
+        <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+            <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/index.html')}"/>
+        </dispatch>
 	(: if it's a search :)
 else
 	if (matches($exist:path, "/search/")) then
