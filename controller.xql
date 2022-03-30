@@ -355,7 +355,7 @@ else
 							</error-handler>
 						</dispatch>
 						(: Resource paths starting with $shared are loaded from the shared-resources app :)
-					else
+					(:else
 						if (contains($exist:path, "/$shared/")) then
 							<dispatch
 								xmlns="http://exist.sourceforge.net/NS/exist">
@@ -365,7 +365,7 @@ else
 										name="Cache-Control"
 										value="max-age=3600, must-revalidate"/>
 								</forward>
-							</dispatch>
+							</dispatch>:)
 						
 						
 						else
