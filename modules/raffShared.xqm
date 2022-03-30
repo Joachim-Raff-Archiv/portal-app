@@ -874,7 +874,7 @@ declare function raffShared:suggestedCitation($id as xs:string) {
 
 declare function raffShared:forwardEntries($idParam as xs:string) {
     let $currentUri := request:get-url()
-    let $basicPath := if(starts-with($currentUri, 'http://localhost:8088/exist/apps/raffArchive'))
+    (:let $basicPath := if(starts-with($currentUri, 'http://localhost:8088/exist/apps/raffArchive'))
                           then('https://dev.raff-archiv.ch/html')
                           else if(starts-with($currentUri, 'http://localhost:8084/exist/apps/raffArchive'))
                           then('https://portal.raff-archiv.ch/html')
@@ -882,7 +882,7 @@ declare function raffShared:forwardEntries($idParam as xs:string) {
                           then('https://portal.raff-archiv.ch/html')
                           else if(starts-with($currentUri, 'http://localhost:8080/exist/apps/raffArchive'))
                           then('http://localhost:8080/exist/apps/raffArchive/html')
-                          else('/html/')
+                          else('/html/'):)
     let $entryDeleted := $app:collFullAll/id($idParam)//tei:relation[@type='deleted']/@active/string()
     let $entryIdToForward := substring-after($entryDeleted,'#')
     let $entryType := if(starts-with($entryIdToForward, 'A'))
@@ -897,7 +897,8 @@ declare function raffShared:forwardEntries($idParam as xs:string) {
                      then('writing')
                      else()
     let $itemRootPath := functx:substring-before-last(functx:substring-before-last(request:get-url(), '/'), '/')
-    let $entryLink := concat($basicPath, '/', $entryType, '/', $entryIdToForward)
+    let $entryLink := concat($entryType, '/', $entryIdToForward)
+    (:let $entryLink := concat($basicPath, '/', $entryType, '/', $entryIdToForward):)
     
     return
        if($entryDeleted)
