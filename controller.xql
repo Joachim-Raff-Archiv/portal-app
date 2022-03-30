@@ -17,6 +17,11 @@ declare variable $exist:root external;
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="index.html"/>
     </dispatch>
+else
+    if(contains($exist:path, '/html/')) then
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <redirect url="{substring-before(request:get-uri(),'/html/')}{concat('/', substring-after($exist:path, '/html/'))}"/>
+    </dispatch>
 
 	(: if it's a search :)
 else
