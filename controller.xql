@@ -36,6 +36,27 @@ else
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
             <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/index.html')}"/>
         </dispatch>
+        
+    (: if it's a registry :)
+else
+    if (matches($exist:path, "registry") or matches($exist:path, "about") or matches($exist:path, "view") or matches($exist:path, "impressum") or matches($exist:path, "privacy") or matches($exist:path, "search") or matches($exist:path, "disclaimer")) then
+        <dispatch
+            xmlns="http://exist.sourceforge.net/NS/exist">
+            <forward
+                url="{$exist:controller}/templates/{$exist:resource}"/>
+            <view>
+                <forward
+                    url="{$exist:controller}/modules/view.xql"/>
+            </view>
+            <error-handler>
+                <forward
+                    url="{$exist:controller}/templates/error-page.html"
+                    method="get"/>
+                <forward
+                    url="{$exist:controller}/modules/view.xql"/>
+            </error-handler>
+        </dispatch>
+        
 	(: if it's a search :)
 else
 	if (matches($exist:path, "/search/")) then
