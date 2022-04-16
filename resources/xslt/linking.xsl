@@ -8,8 +8,9 @@
     
     <!-- Linking persons -->
     <xsl:template match="tei:persName">
+        <xsl:variable name="dirPersons" select="concat('C', substring(@key, 2, 3), '00')"/>
         <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/persons/', ./@key, '.xml'))">
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/persons/', $dirPersons, '/',  ./@key, '.xml'))">
                 <a href="{concat($viewPerson, ./@key)}">
                     <xsl:apply-templates/>
                 </a>
@@ -20,8 +21,9 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="mei:persName">
+        <xsl:variable name="dirPersons" select="concat('C', substring(@key, 2, 3), '00')"/>
         <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/persons/', ./@auth, '.xml'))">
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/persons/', $dirPersons, '/',  ./@key, '.xml'))">
                 <a href="{concat($viewPerson, ./@auth)}">
                     <xsl:apply-templates/>
                 </a>
@@ -33,8 +35,9 @@
     </xsl:template>
     <!-- Linking institutions -->
     <xsl:template match="tei:orgName">
+        <xsl:variable name="dirInstitutions" select="concat('D', substring(@key, 2, 3), '00')"/>
         <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/institutions/', ./@key, '.xml'))">
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/institutions/', $dirInstitutions, '/',  ./@key, '.xml'))">
                 <a href="{concat($viewInstitution, ./@key)}">
                     <xsl:apply-templates/>
                 </a>
@@ -45,8 +48,9 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="mei:corpName">
+        <xsl:variable name="dirInstitutions" select="concat('D', substring(@key, 2, 3), '00')"/>
         <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/institutions/', ./@auth, '.xml'))">
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/institutions/', $dirInstitutions, '/',  ./@key, '.xml'))">
                 <a href="{concat($viewInstitution, ./@auth)}">
                     <xsl:apply-templates/>
                 </a>
@@ -59,8 +63,9 @@
     
     <!-- Linking works -->
     <xsl:template match="tei:title">
+        <xsl:variable name="dirWorks" select="concat('B', substring(@key, 2,2), '00')"/>
         <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/works/', ./@key, '.xml'))">
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/works/', $dirWorks, '/',  ./@key, '.xml'))">
                 <a href="{concat($viewWork, ./@key)}">
                     <xsl:apply-templates/>
                 </a>
@@ -71,8 +76,9 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="mei:title">
+        <xsl:variable name="dirWorks" select="concat('B', substring(@key, 2,2), '00')"/>
         <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/works/', ./@auth, '.xml'))">
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/works/', $dirWorks, '/',  ./@key, '.xml'))">
                 <a href="{concat($viewWork, ./@auth)}">
                     <xsl:apply-templates/>
                 </a>
