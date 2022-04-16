@@ -507,7 +507,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                   <div
                                       class="row">
                                       <div class="letterContentFullView">
-                                          {transform:transform($letter//tei:body/tei:div[@type = "volltext"], doc("/db/apps/raffArchive/resources/xslt/contentLetterFull.xsl"), ())}
+                                          {transform:transform($fulltext, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}
                                       </div>
                                   </div>
                           </div>)else()}
