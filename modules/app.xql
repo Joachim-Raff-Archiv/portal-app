@@ -3515,6 +3515,26 @@ return
     $errorReport
 };
 
+declare function app:hasPortalNews() as xs:boolean{
+let $newsBlocks := doc('/db/apps/jra-data/texts/portal/news.xml')//tei:TEI//tei:text
+let $news := for $newsBlock in $newsBlocks
+                let $docDate := $newsBlock//tei:docDate/@when
+                where $docDate <= current-date()
+                where $docDate >= current-date() - xs:dayTimeDuration('P70D')
+                return
+                    $newsBlock
+return
+    count($news) > 1
+};
+
+declare function app:navbarNews($node as node(), $model as map(*)){
+    let $hasNews := app:hasPortalNews()
+    where $hasNews = true()
+    return
+        <li class="nav-item">
+            <a class="nav-link js-scroll" href="#news">News</a>
+        </li>
+};
 declare function app:portalNews($node as node(), $model as map(*)){
 
 let $newsBlocks := doc('/db/apps/jra-data/texts/portal/news.xml')//tei:TEI//tei:text
@@ -3523,10 +3543,13 @@ let $news := for $newsBlock in $newsBlocks
                 let $heading := $newsBlock//tei:head[not(@type='sub')]/text()
                 let $subheading := $newsBlock//tei:head[@type='sub']/text()
                 let $paragraphs := for $paragraph in $newsBlock//tei:p
+                                    let $paraText := $paragraph/text()
                                     return
-                                        <p>{$paragraph/text()}</p>
+                                        <p>{transform:transform($paraText, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</p>
+                let $author := $newsBlock//tei:byline/text()
                 
                 where $docDate <= current-date()
+                where $docDate >= current-date() - xs:dayTimeDuration('P70D')
                 order by $docDate descending
                 return
                     <div>
@@ -3536,12 +3559,28 @@ let $news := for $newsBlock in $newsBlocks
                          if($subheading)
                          then(<p class="subtitle-b">{$subheading}</p>)
                          else(),
-                        <div>{$paragraphs}</div>}
+                        <div>
+                            {$paragraphs}
+                            <p class="subtitle-b">{string-join(($docDate, $author), ' | ')}</p>
+                        </div>}
                     </div>
     return
-        for $message at $n in $news
-        return
-            if($n > 1)
-            then(<hr/>,$message)
-            else($message)
+        if(app:hasPortalNews() = true())
+        then(<section id="news" class="about-mf sect-pt4 route">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="box-shadow-full">
+                {for $message at $n in $news
+                 return
+                    if($n > 1)
+                    then(<hr/>,$message)
+                    else($message)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+            )
+        else()
 };
