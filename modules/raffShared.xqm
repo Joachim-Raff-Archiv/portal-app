@@ -805,14 +805,16 @@ declare function raffShared:getReferences($id) {
 declare function raffShared:suggestedCitation($id as xs:string) {
     
     let $itemLink := request:get-url()
-    let $itemTypePath := functx:substring-before-last($itemLink, '/')
     let $doc := $app:collectionsAll/root()/node()/id($id)
-    let $itemType := switch (substring(functx:substring-after-last-match($itemTypePath, '/'),1,1))
+    let $itemType := switch (substring(functx:substring-after-last-match($itemLink, '/'),1,1))
                         case 'A' return 'letter'
                         case 'B' return 'work'
                         case 'C' return 'person'
                         case 'D' return 'institution'
                         case 'E' return 'writing'
+                        case 'F' return 'event'
+                        case 'G' return 'bibl'
+                        case 'H' return 'news'
                         default return 'unknown'
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
