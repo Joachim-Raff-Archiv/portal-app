@@ -818,7 +818,13 @@ declare function raffShared:suggestedCitation($id as xs:string) {
     let $itemLink := request:get-url()
     let $itemTypePath := functx:substring-before-last($itemLink, '/')
     let $doc := $app:collectionsAll/root()/node()/id($id)
-    let $itemType := functx:substring-after-last-match($itemTypePath, '/')
+    let $itemType := switch (substring(functx:substring-after-last-match($itemTypePath, '/'),1,1))
+                        case 'A' return 'letter'
+                        case 'B' return 'work'
+                        case 'C' return 'person'
+                        case 'D' return 'institution'
+                        case 'E' return 'writing'
+                        default return 'unknown'
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
                  else if($itemType = 'person')
@@ -849,24 +855,17 @@ declare function raffShared:suggestedCitation($id as xs:string) {
                   then(concat($name, '; '))
                   else if($itemType = 'writing')
                   then(concat($name, '; '))
-                  else('LABEL')
+                  else('')
     
-    
-    let $itemLinkLabel := if(starts-with($itemLink, 'http://localhost:8088/exist/apps/raffArchive'))
-                          then(replace($itemLink, 'http://localhost:8088/exist/apps/raffArchive', 'https://dev.raff-archiv.ch'))
-                          else if(starts-with($itemLink, 'http://localhost:8084/exist/apps/raffArchive'))
-                          then(replace($itemLink, 'http://localhost:8084/exist/apps/raffArchive', 'https://portal.raff-archiv.ch'))
-                          else if(starts-with($itemLink, 'http://localhost:8086/exist/apps/raffArchive'))
-                          then(replace($itemLink, 'http://localhost:8086/exist/apps/raffArchive', 'https://portal.raff-archiv.ch'))
-                          else($itemLink)
+    let $itemLinkLabel := concat('https://portal.raff-archiv.ch', substring-after($itemLink, 'raffArchive'))
     
     return
         (<hr/>,
         <div class="container">
             <div class="suggestedCitation">
                 <span class="heading" style="font-size: medium;">Zitiervorschlag: </span>
-                {$label} <a href="{$itemLinkLabel}">{$itemLinkLabel}</a>,
-                abgerufen am {format-date(current-date(), '[D]. [M,*-3]. [Y]', 'de', (), ())}.
+                {$label} {$itemLinkLabel},
+                abgerufen am {format-date(current-date(), '[D]. [M] [Y]', 'de', (), ())}.
             </div>
         </div>,
         <hr/>)
