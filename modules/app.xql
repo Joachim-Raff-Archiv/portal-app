@@ -6,14 +6,14 @@ import module namespace templates = "http://exist-db.org/xquery/html-templating"
 import module namespace config = "https://portal.raff-archiv.ch/config" at "/db/apps/raffArchive/modules/config.xqm";
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
 
-import module namespace i18n="http://exist-db.org/xquery/i18n" at "i18n.xql";
+import module namespace i18n="http://exist-db.org/xquery/i18n" at "/db/apps/raffArchive/modules/i18n.xql";
 import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "/db/apps/raffArchive/modules/raffShared.xqm";
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
 import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "/db/apps/raffArchive/modules/raffWritings.xqm";
 import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
 (:import module namespace raffSources="https://portal.raff-archiv.ch/ns/baudiSources" at "raffSources.xqm";:)
 
-import module namespace functx = "http://www.functx.com" at "functx.xqm";
+import module namespace functx = "http://www.functx.com";
 
 declare namespace tei = "http://www.tei-c.org/ns/1.0";
 declare namespace mei = "http://www.music-encoding.org/ns/mei";
