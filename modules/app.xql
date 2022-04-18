@@ -493,11 +493,12 @@ declare function app:letter($node as node(), $model as map(*)) {
                               class="tab-pane fade"
                               id="contentLetterRegeste">
                               <br/>
-                                  <div
-                                      class="row">
+                                  <div class="container">
+                                    <div class="row">
                                       <div class="col">
                                           {transform:transform($regeste, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}
                                       </div>
+                                    </div>
                                   </div>
                           </div>)else()}
                           {if ($fulltext/tei:p != '')
