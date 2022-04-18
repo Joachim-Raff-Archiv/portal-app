@@ -54,7 +54,16 @@
     </target>
     
     <target name="dist" depends="init">
-        <property name="project.app.pkg.name" value="${project.app}-${project.version}-${local.revision}.xar"/>
+        <property name="project.version.package" value="${project.version}"/>
+        <loadresource property="project.version.package.name">
+            <propertyresource name="project.version.package" />
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\." replace="_" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </loadresource>
+        <property name="project.app.pkg.name" value="${project.app}-${project.version.package.name}-${local.revision}.xar"/>
         <copy todir="${dist.dir}/">
             <fileset dir=".">
                 <include name="**/*.*"/>
