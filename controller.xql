@@ -41,6 +41,11 @@ else
             <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/index.html')}"/>
         </dispatch>
         
+else
+    if(contains($exist:path, '/$baseUrl/')) then
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, substring-after($exist:path, '/$baseUrl'))}"/>
+    </dispatch>
     (: if it's a registry :)
 else
     if (matches($exist:path, "registry") or matches($exist:path, "about") or matches($exist:path, "view") or matches($exist:path, "impressum") or matches($exist:path, "privacy") or matches($exist:path, "search") or matches($exist:path, "disclaimer")) then
