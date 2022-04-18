@@ -64,14 +64,14 @@ declare function app:langSwitch($node as node(), $model as map(*)) {
 
 declare function app:filterInput(){
     <div>
-        <h5>Filter​n <img src="{concat($app:dbRoot,'/resources/fonts/feather/info.svg')}" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
+        <h5>Filter​n <img src="$resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
         <input type="text" id="myResearchInput" onkeyup="myFilter()" placeholder="Name, ID, …" title="Type in a string"/>
    </div>
 };
 
 declare function app:filterInputWorks(){
     <div>
-        <h5>Filter​n <img src="{concat($app:dbRoot,'/resources/fonts/feather/info.svg')}" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
+        <h5>Filter​n <img src="$resources/fonts/feather/info.svg" width="23px" data-toggle="popover" title="Ansicht reduzieren." data-content="Geben Sie bspw. einen Namen, eine ID oder ein Datum ein. Der Filter reduziert die Ansicht auf die Einträge, die Ihren Suchbegriff enthalten."/></h5>
         <input type="text" id="myResearchInput" onkeyup="myFilterWorks()" placeholder="Name, ID, …" title="Type in a string"/>
    </div>
 };
