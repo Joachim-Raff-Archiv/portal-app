@@ -47,6 +47,12 @@ else
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/', $exist:resource)}"/>
     </dispatch>
+else
+    if(matches($exist:path, '/person/') or matches($exist:path, '/institution/') or matches($exist:path, '/sources/') or matches($exist:path, '/work/') or matches($exist:path, '/letter/')) then
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/', $exist:resource)}"/>
+    </dispatch>
+    
     (: if it's a registry :)
 else
     if (matches($exist:path, "registry") or matches($exist:path, "about") or matches($exist:path, "view") or matches($exist:path, "impressum") or matches($exist:path, "privacy") or matches($exist:path, "search") or matches($exist:path, "disclaimer")) then
@@ -92,7 +98,7 @@ else
 	
 	(: if its a letter :)
 else
-	if (matches($exist:path, "/letter/")) then
+	if (matches($exist:path, "A\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			{if($app:collFullPostals/id($exist:resource))
@@ -150,7 +156,7 @@ else
 		
 		(: if its a person :)
 else
-	if (matches($exist:path, "/person/")) then
+	if (matches($exist:path, "C\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			{if($app:collectionPersons/id($exist:resource))
@@ -208,7 +214,7 @@ else
 		
 		(: if its an institution :)
 else
-	if (matches($exist:path, "/institution/")) then
+	if (matches($exist:path, "D\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			{if($app:collectionInstitutions/id($exist:resource))
@@ -238,7 +244,7 @@ else
 		
 			(: if its a work :)
 else
-	if (matches($exist:path, "/work/")) then
+	if (matches($exist:path, "B\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			{if($app:collectionWorks/id($exist:resource))
@@ -267,7 +273,7 @@ else
 		
 (: if it's a writing :)
 else
-	if (matches($exist:path, "/writing/")) then
+	if (matches($exist:path, "E\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			{if($app:collectionWritings/id($exist:resource))
