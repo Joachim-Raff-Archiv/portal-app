@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="deploy" name="raffArchive" basedir="." xmlns:unless="ant:unless">
+<project default="dist" name="raffArchive" basedir="." xmlns:unless="ant:unless">
     <dirname property="raffArchive.basedir" file="${ant.file.raffArchive}"/>
     
     <!-- import default properties from file -->
