@@ -3499,6 +3499,13 @@ declare function app:portalVersion($node as node(), $model as map(*)){
         <p class="subtitle-b">{concat('(Version ',$version,')')}</p>
 };
 
+declare function app:portalVersionPlaintext($node as node(), $model as map(*)){
+ let $package := doc('/db/apps/raffArchive/expath-pkg.xml')
+ let $version := $package//pkg:package/@version/string()
+    return
+        $version
+};
+
 declare function app:errorReport($node as node(), $model as map(*)){
 
 let $errorMsg := templates:error-description($node, $model)
