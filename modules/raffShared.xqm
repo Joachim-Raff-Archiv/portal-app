@@ -756,17 +756,6 @@ declare function raffShared:getReferences($id) {
                                            else if($docRoot/name()='TEI')
                                            then($docRoot//tei:titleStmt/tei:title/string())
                                            else('noTitle')
-                          let $href := if(starts-with($docRoot/@xml:id,'A'))
-                                          then('../letter/')
-                                          else if (starts-with($docRoot/@xml:id,'B'))
-                                          then ('../work/')
-                                          else if(starts-with($docRoot/@xml:id,'C'))
-                                          then('../person/')
-                                          else if(starts-with($docRoot/@xml:id,'D'))
-                                          then('../institution/')
-                                          else if(starts-with($docRoot/@xml:id,'E'))
-                                          then('../writing/')
-                                          else()
                           let $entry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                           <div class="col-3" dateToSort="{$docDate}" workSort="{$workSortValue}">
                                             {if(starts-with($docRoot/@xml:id,'A') and $doc[./ancestor::tei:note])
@@ -778,7 +767,7 @@ declare function raffShared:getReferences($id) {
                                               else()}
                                          </div>
                                          <div class="col" docTitle="{normalize-space($docTitle[1])}">{$docTitle}</div>
-                                         <div class="col-2"><a href="{concat($href,$docID)}">{$docID/string()}</a></div>
+                                         <div class="col-2"><a href="{$docID}">{string($docID)}</a></div>
                                        </div>
                           group by $docIDInitial
                           return
