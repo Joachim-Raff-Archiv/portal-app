@@ -254,6 +254,8 @@
                                                 &#160;(<xsl:value-of select="mei:lyricist/mei:persName/text()"/>)
                                             </xsl:when>
                                             <xsl:when test="mei:lyricist/normalize-space(text()) != ''">&#160;(<xsl:value-of select="mei:lyricist/text()"/>)</xsl:when>
+                                            <xsl:when test="ancestor::mei:workList/mei:work[1]/mei:lyricist != ''">
+                                            </xsl:when>
                                             <xsl:otherwise>
                                                 &#160;(unbekannt)
                                             </xsl:otherwise>
