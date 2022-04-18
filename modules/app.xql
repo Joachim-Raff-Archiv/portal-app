@@ -3516,7 +3516,7 @@ return
 };
 
 declare function app:hasPortalNews() as xs:boolean{
-let $newsBlocks := doc('/db/apps/jra-data/texts/portal/news.xml')//tei:TEI//tei:text
+let $newsBlocks := collection('/db/apps/jra-data/texts/news')//tei:TEI//tei:text
 let $news := for $newsBlock in $newsBlocks
                 let $docDate := $newsBlock//tei:docDate/@when
                 where $docDate <= current-date()
@@ -3524,7 +3524,7 @@ let $news := for $newsBlock in $newsBlocks
                 return
                     $newsBlock
 return
-    count($news) > 1
+    count($news) > 0
 };
 
 declare function app:navbarNews($node as node(), $model as map(*)){
@@ -3537,15 +3537,14 @@ declare function app:navbarNews($node as node(), $model as map(*)){
 };
 declare function app:portalNews($node as node(), $model as map(*)){
 
-let $newsBlocks := doc('/db/apps/jra-data/texts/portal/news.xml')//tei:TEI//tei:text
+let $newsBlocks := collection('/db/apps/jra-data/texts/news')//tei:TEI//tei:text
 let $news := for $newsBlock in $newsBlocks
                 let $docDate := $newsBlock//tei:docDate/@when
                 let $heading := $newsBlock//tei:head[not(@type='sub')]/text()
                 let $subheading := $newsBlock//tei:head[@type='sub']/text()
                 let $paragraphs := for $paragraph in $newsBlock//tei:p
-                                    let $paraText := $paragraph/text()
                                     return
-                                        <p>{transform:transform($paraText, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</p>
+                                        <p>{transform:transform($paragraph, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</p>
                 let $author := $newsBlock//tei:byline/text()
                 
                 where $docDate <= current-date()
