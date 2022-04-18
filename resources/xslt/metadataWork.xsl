@@ -360,26 +360,26 @@
                     <td>
                         <xsl:variable name="UAdate" select="local:formatDate(//mei:eventList/mei:event[@type = 'UA']/mei:date/text())"/>
                         <xsl:variable name="UAort" select="normalize-space(string-join(//mei:eventList/mei:event[@type = 'UA']/mei:geogName//text(), ' '))"/>
-                        <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor']"/>
+                        <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor'][./text() != '']"/>
                         <xsl:choose>
                             <xsl:when test="not(empty($UAdate)) and not(empty($UAort))">
-                                <xsl:value-of select="concat('Am ', $UAdate, ' in ', $UAort)"/>
+                                <xsl:value-of select="concat($UAdate, ' in ', $UAort)"/>
                             </xsl:when>
                             <xsl:when test="not(empty($UAdate)) and empty($UAort)">
-                                <xsl:value-of select="concat('Am ', $UAdate)"/>
+                                <xsl:value-of select="$UAdate"/>
                             </xsl:when>
                             <xsl:when test="empty($UAdate) and not(empty($UAort))">
-                                <xsl:value-of select="concat('In ', $UAort)"/>
+                                <xsl:value-of select="$UAort"/>
                             </xsl:when>
                         </xsl:choose>
                         <xsl:if test="not(empty($UAconductor/text()))">
                             <br/>
-                            Dirigent: <xsl:apply-templates select="$UAconductor"/>
+                            Dirigent*in: <xsl:apply-templates select="$UAconductor"/>
                         </xsl:if>
                         <xsl:if test="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]/text()/normalize-space() !=''">
                             <xsl:for-each select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[contains(@role,'interpret')]">
                                 <br/>
-                                Interpret(in): <xsl:apply-templates select="."/>
+                                Interpret*in: <xsl:apply-templates select="."/>
                                 <xsl:if test="contains(./@role,' ')">
                                     <xsl:value-of select="concat(' (',string-join(subsequence(tokenize(./@role,' '),2),'|'),')')"/>
                                 </xsl:if>
