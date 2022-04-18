@@ -56,18 +56,18 @@
         <xsl:param name="seq"/>
         <xsl:param name="string"/>
         <xsl:variable name="seq-analyzed">
-        <xsl:for-each select="$seq">
-            <xsl:choose>
-                <xsl:when test="matches(., $string) = true()">
-                    <xsl:value-of select="'true'"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="'false'"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:for-each>
+            <xsl:for-each select="$seq">
+                <xsl:choose>
+                    <xsl:when test="matches(., $string)">
+                        <xsl:value-of select="'true'"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="'false'"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
         </xsl:variable>
-        <xsl:if test="functx:contains-any-of('true',($seq-analyzed))">
+        <xsl:if test="functx:contains-any-of(($seq-analyzed),'true')">
             <xsl:value-of select="true()"/>
         </xsl:if>
     </xsl:function>
