@@ -283,7 +283,7 @@ declare function raffPostals:getCorrespondance($id as xs:string){
         let $letterEntry := <div class="row RegisterEntry" xmlns="http://www.w3.org/1999/xhtml">
                                 <div class="col-3">{$dateFormatted}</div>
                                 <div class="col">{$correspSentTurned}<br/>an {$correspReceivedTurned}</div>
-                                <div class="col-2"><a href="letter/{$letterID}">{$letterID}</a></div>
+                                <div class="col-2"><a href="{$letterID}">{$letterID}</a></div>
                             </div>
         
             order by $date(1)
