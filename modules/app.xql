@@ -3506,8 +3506,8 @@ let $errorReportDir := '/db/apps/raffArchive/errors/'
 let $url := request:get-url()
 let $dateTime := replace(substring-before(string(current-dateTime()), '+'),':','-')
 let $error := <file url="{$url}" timeStamp="{$dateTime}">{templates:error-description($node, $model)}</file>
-let $logIn := xmldb:login($errorReportDir,'errors', 'errorReport12345')
-let $store := xmldb:store($errorReportDir, concat('error_', replace($dateTime,':','-'), '.xml'), $error)
+(:let $logIn := xmldb:login($errorReportDir,'errors', 'errorReport12345'):)
+(:let $store := xmldb:store($errorReportDir, concat('error_', replace($dateTime,':','-'), '.xml'), $error):)
 let $errorReport := if(contains($app:dbRootUrl,$app:dbRootLocalhost))
                     then(<pre class="error">{$errorMsg}</pre>)
                     else()
