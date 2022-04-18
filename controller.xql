@@ -21,18 +21,13 @@ else
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="index.html"/>
     </dispatch>
+
 else
     if(contains($exist:path, '/$resources/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <forward url="{concat($exist:controller, '/resources/', substring-after($exist:path, '/$resources/'))}">
             <set-header name="Cache-Control" value="max-age=3600,public"/>
         </forward>
-    </dispatch>
-
-else
-    if(contains($exist:path, '/html/')) then
-    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <redirect url="{substring-before(request:get-uri(),'/html/')}{concat('/', substring-after($exist:path, '/html/'))}"/>
     </dispatch>
 
 else
@@ -45,6 +40,12 @@ else
     if(contains($exist:path, '/$baseUrl/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, substring-after($exist:path, '/$baseUrl'))}"/>
+    </dispatch>
+
+else
+    if(matches($exist:path, '/html/')) then
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/', $exist:resource)}"/>
     </dispatch>
     (: if it's a registry :)
 else
