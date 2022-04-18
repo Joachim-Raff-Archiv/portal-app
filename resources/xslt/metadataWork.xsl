@@ -164,7 +164,7 @@
                 </xsl:if>
                 <xsl:if test="//mei:workList/mei:work/mei:lyricist[not(@type='stoff')]//text() != ''">
                 <tr>
-                    <td valign="top">Textdichter(in):</td>
+                    <td valign="top">Textdichter*in:</td>
                     <td>
                         <xsl:for-each select="//mei:workList/mei:work/mei:lyricist">
                             <xsl:choose>
