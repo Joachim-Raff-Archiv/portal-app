@@ -419,7 +419,7 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $correspReceived := $letter//tei:correspAction[@type = "received"]
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
-    let $regeste := $letter//tei:note[@type='regeste' and ./text() != '']
+    let $regeste := $letter//tei:note[@type='regeste'][./text()/normalize-space() != '']
     let $fulltext := $letter//tei:div[@type='volltext']
     let $facsimile := $letter//tei:facsimile[.//tei:graphic]
     return
