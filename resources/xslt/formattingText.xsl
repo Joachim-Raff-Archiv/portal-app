@@ -185,4 +185,8 @@
             <xsl:apply-templates/>
         </p>
     </xsl:template>
+    
+    <xsl:template match="q">
+        «<xsl:apply-templates/>»
+    </xsl:template>
 </xsl:stylesheet>
