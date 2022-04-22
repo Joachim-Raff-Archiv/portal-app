@@ -398,7 +398,7 @@ declare function raffPostals:getDateRegistryLetters($correspAction as node()*) a
 declare function raffPostals:formatDateRegistryLetters($dateArray){
     let $dateRaw := $dateArray(1)
     let $type := $dateArray(2)
-    let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'00')))
+    let $date :=  if(string-length($dateRaw)=10 and not(contains($dateRaw,'-00')) and not(contains($dateRaw,'0000-')))
                   then(format-date(xs:date($dateRaw),'[D]. [M,*-3]. [Y]','de',(),()))
                   else if($dateRaw =('0000','0000-00','0000-00-00'))
                   then('[undatiert]')
