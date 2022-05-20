@@ -2867,7 +2867,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                           <div class="container-fluid">
                                            <div class="row">
                                                <div class="col-5">
-                                               <img src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target}" class="rounded img-thumbnail" alt="Cover"/>
+                                               <img src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target}" class="rounded img-thumbnail" alt="Cover" height="200" width="200"/>
                                                <audio class="player_audio" controls="true" controlsList="nodownload" src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target/string()}" id="{concat('audio-file-',format-number($work/@n, '0000'))}"/>
                                                  <!--
                                                  <div class="music-player">
