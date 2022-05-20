@@ -162,6 +162,50 @@
                         </td>
                     </tr>
                 </xsl:if>
+                <xsl:if test="//mei:workList/mei:work/mei:composer != ''">
+                    <tr>
+                        <td valign="top">Musik:</td>
+                        <td>
+                            <xsl:for-each select="//mei:workList/mei:work/mei:composer">
+                                <xsl:choose>
+                                    <xsl:when test="mei:persName">
+                                        <xsl:value-of select="mei:persName"/>
+                                        <xsl:if test="mei:persName/@auth">
+                                            (<a href="{concat($viewPerson, mei:persName/@auth)}">
+                                                <xsl:value-of select="mei:persName/@auth"/>
+                                            </a>)
+                                        </xsl:if>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="normalize-space(string-join(.//text(),' '))"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
+                </xsl:if>
+                <xsl:if test="//mei:workList/mei:work/mei:composer != ''">
+                    <tr>
+                        <td valign="top">Bearbeiter*in:</td>
+                        <td>
+                            <xsl:for-each select="//mei:workList/mei:work/mei:arranger">
+                                <xsl:choose>
+                                    <xsl:when test="mei:persName">
+                                        <xsl:value-of select="mei:persName"/>
+                                        <xsl:if test="mei:persName/@auth">
+                                            (<a href="{concat($viewPerson, mei:persName/@auth)}">
+                                                <xsl:value-of select="mei:persName/@auth"/>
+                                            </a>)
+                                        </xsl:if>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="normalize-space(string-join(.//text(),' '))"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
+                </xsl:if>
                 <xsl:if test="//mei:workList/mei:work/mei:lyricist[not(@type='stoff')]//text() != ''">
                 <tr>
                     <td valign="top">Textdichter*in:</td>
