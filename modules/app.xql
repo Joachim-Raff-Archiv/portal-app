@@ -2905,8 +2905,8 @@ declare function app:work($node as node(), $model as map(*)) {
                                            </div>
                                            </div>
                                            <hr/>
-                                           <div><a data-toggle="collapse" href="#learnMote" aria-expanded="false" aria-controls="learnMote">Mehr erfahren</a></div>
-                                           <div class="collapse" id="learnMote">
+                                           <div><a data-toggle="collapse" href="{concat('#learnMore-',format-number($work/@n, '0000'))}" aria-expanded="false" aria-controls="learnMote">Mehr erfahren</a></div>
+                                           <div class="collapse" id="{concat('learnMore-',format-number($work/@n, '0000'))}">
                                                <div class="card card-body">
                                                  Ein befreundeter Dirigent riet Galina Vracheva einst, sich in erster Linie mit Mozart und – Joachim Raff zu befassen. Mit den Schweizerweisen spielt die in Zürich beheimatete Professorin, die am Mozarteum Salzburg und am Conservatorio della Svizzera Italiana in Lugano unterrichtet und auf ihrem Album Die Kunst der Paraphrase (Deutsche Grammophon) bereits selbst über schweizerische Volkslieder improvisiert hat, für das Schwyzer Heft «Unterwegs mit Joachim Raff im Alpenraum» (Nr. 113) erstmals Werke des Lachner Komponisten ein.
                                                </div>
