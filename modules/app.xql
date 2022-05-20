@@ -2848,11 +2848,146 @@ declare function app:work($node as node(), $model as map(*)) {
                  class="col">
                  <div
                      class="tab-content">
-                     <div
-                         class="tab-pane fade show active"
-                         id="metadata">
+                     <div class="tab-pane fade show active" id="metadata">
                          <br/>
-         {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
+                         {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
+                         {if($work//mei:expression[@type='audio'])
+                          then(for $work in $work//mei:componentList/mei:work[.//mei:expression[@type='audio']]
+                               return
+                               (<div class="modal fade" id="{concat('audio-modal-',format-number($work/@n, '0000'))}" tabindex="-1" aria-labelledby="{concat('audio-modal-label-',format-number($work/@n, '0000'))}" aria-hidden="true">
+                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                       <div class="modal-content">
+                                           <div class="modal-header">
+                                           <h5 class="modal-title">{concat('Nr. ', $work/@n, ' ', ($work//mei:title)[1])}</h5>
+                                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                             <span aria-hidden="true"><img src="$resources/fonts/feather/x.svg"/></span>
+                                           </button>
+                                         </div>
+                                          <div class="modal-body">
+                                          <div class="container-fluid">
+                                           <div class="row">
+                                               <div class="col-5">
+                                               <img src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target}" class="rounded img-thumbnail" alt="Cover"/>
+                                               <audio controls="true" controlsList="nodownload" src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target/string()}" width="200"/>
+                                                 <!--
+                                                 <div class="music-player">
+                                                     <div class="info">
+                                                       <div class="center">
+                                                         <div class="jp-playlist">
+                                                           <ul>
+                                                             <li></li>
+                                                           </ul>
+                                                         </div>
+                                                       </div>
+                                                       <div class="progress"></div>
+                                                     </div>
+                                                     <div class="controls">
+                                                       <div class="current jp-current-time">00:00</div>
+                                                       <div class="play-controls">
+                                                         <a href="javascript:;" class="icon-play jp-play" title="play"></a>
+                                                         <a href="javascript:;" class="icon-pause jp-pause" title="pause"></a>
+                                                       </div>
+                                                       <div class="volume-level">
+                                                         <a href="javascript:;" class="icon-volume-up" title="max volume"></a>
+                                                         <a href="javascript:;" class="icon-volume-down" title="mute"></a>
+                                                       </div>
+                                                     </div>
+                                                     <div id="jquery_jplayer" class="jp-jplayer">
+                                                     </div>
+                                                   </div>
+                                                   -->
+                                               </div>
+                                               <div class="col-7">
+                                                   <p><span style="font-style: italic!important;">Mitwirkende</span></p>
+                                                   <p>Galina Vracheva (Klavier)</p>
+                                                   <p>Mag. Sascha Tekale (Tonmeister, VDT)</p>
+                                               </div>
+                                           </div>
+                                           </div>
+                                           <hr/>
+                                           <div><a data-toggle="collapse" href="#learnMote" aria-expanded="false" aria-controls="learnMote">Mehr erfahren</a></div>
+                                           <div class="collapse" id="learnMote">
+                                               <div class="card card-body">
+                                                 Ein befreundeter Dirigent riet Galina Vracheva einst, sich in erster Linie mit Mozart und – Joachim Raff zu befassen. Mit den Schweizerweisen spielt die in Zürich beheimatete Professorin, die am Mozarteum Salzburg und am Conservatorio della Svizzera Italiana in Lugano unterrichtet und auf ihrem Album Die Kunst der Paraphrase (Deutsche Grammophon) bereits selbst über schweizerische Volkslieder improvisiert hat, für das Schwyzer Heft «Unterwegs mit Joachim Raff im Alpenraum» (Nr. 113) erstmals Werke des Lachner Komponisten ein.
+                                               </div>
+                                           </div>
+                                          </div>
+                                           <div class="modal-footer">
+                                               {$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:title[@type='desc']/text()}
+                                           </div>
+                                       </div>
+                                   </div>
+                                 </div>,
+                                 <!--
+                                 <script>
+                                   $(document).ready(function(){{
+
+                                     var playlist = [{{
+                                          title:"{concat('Nr. ', $work/@n, ' ', ($work//mei:title)[1])}",
+                                          artist:"{$work/ancestor::mei:workList/mei:work[1]/mei:composer//text() => string-join(' ') => normalize-space() || 'Bearbeitet von ', $work//mei:arranger//mei:persName/text()}",
+                                          mp3:"{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$node//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target}",
+                                          poster: "{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target}"
+                                        }}];
+
+                                     var cssSelector = {{
+                                       jPlayer: "#jquery_jplayer",
+                                       cssSelectorAncestor: ".music-player"
+                                     }};
+
+                                     var options = {{
+                                       swfPath: "https://cdnjs.cloudflare.com/ajax/libs/jplayer/2.6.4/jquery.jplayer/Jplayer.swf",
+                                       supplied: "ogv, m4v, oga, mp3",
+                                       volumechange: function(event) {{
+                                         $( ".volume-level" ).slider("value", event.jPlayer.options.volume);
+                                       }},
+                                       timeupdate: function(event) {{
+                                         $( ".progress" ).slider("value", event.jPlayer.status.currentPercentAbsolute);
+                                       }}
+                                     }};
+
+                                     var myPlaylist = new jPlayerPlaylist(cssSelector, playlist, options);
+                                     var PlayerData = $(cssSelector.jPlayer).data("jPlayer");
+
+
+                                     // Create the volume slider control
+                                     $( ".volume-level" ).slider({{
+                                        animate: "fast",
+                                       	max: 1,
+                                       	range: "min",
+                                       	step: 0.01,
+                                       	value : $.jPlayer.prototype.options.volume,
+                                       	slide: function(event, ui) {{
+                                       		$(cssSelector.jPlayer).jPlayer("option", "muted", false);
+                                       		$(cssSelector.jPlayer).jPlayer("option", "volume", ui.value);
+                                       	}}
+                                     }});
+
+                                     // Create the progress slider control
+                                     $( ".progress" ).slider({{
+                                       	animate: "fast",
+                                       	max: 100,
+                                       	range: "min",
+                                       	step: 0.1,
+                                       	value : 0,
+                                       	slide: function(event, ui) {{
+                                       		var sp = PlayerData.status.seekPercent;
+                                       		if(sp > 0) {{
+                                       			// Move the play-head to the value and factor in the seek percent.
+                                       			$(cssSelector.jPlayer).jPlayer("playHead", ui.value * (100 / sp));
+                                       		}} else {{
+                                       			// Create a timeout to reset this slider to zero.
+                                       			setTimeout(function() {{
+                                       				 $( ".progress" ).slider("value", 0);
+                                       			}}, 0);
+                                       		}}
+                                       	}}
+                                       }});
+
+                                   }});
+                                 </script>-->
+                                 )
+                        )
+                        else()}
                      </div>
                      {
                          if ($portrait)

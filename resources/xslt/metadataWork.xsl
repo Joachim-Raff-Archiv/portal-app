@@ -261,9 +261,14 @@
                                             </xsl:otherwise>
                                         </xsl:choose>
                                         </xsl:if>
-                                        <br/>
                                     </xsl:otherwise>
                                 </xsl:choose>
+                                <xsl:if test=".//mei:expression[@type='audio']">
+                                    &#160;<a href="#" data-toggle="modal" data-target="{concat('#audio-modal-',format-number(./@n, '0000'))}">
+                                            <img src="$resources/fonts/feather/speaker.svg"/>
+                                          </a>
+                                          <br/>
+                                </xsl:if>
                             </xsl:for-each>
                         </td>
                     </tr>

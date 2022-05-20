@@ -35,7 +35,13 @@ else
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
             <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/index.html')}"/>
         </dispatch>
-        
+
+else
+    if(contains($exist:path, '/$audio/')) then
+        <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+            <redirect url="{substring-before(request:get-uri(),$exist:controller) || '/jra-audio/' || substring-after($exist:path, '/$audio/')}"/>
+        </dispatch>
+
 else
     if(contains($exist:path, '/$baseUrl/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">

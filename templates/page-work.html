@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title data-template="config:app-title">Joachim-Raff-Archive</title>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="app-meta" data-template="config:app-meta" content="JRA"/>
+        
+        <!-- tab icon -->
+        <link rel="icon" href="icon.png"/>
+        
+        <!-- audio player -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"/>
+        <link rel='stylesheet' href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css'/>
+<!--        <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700'/>-->
+        <link rel="stylesheet" href="$resources/css/audio-player.css"/>
+        
+        <!-- fonts -->
+        <link href="//fonts.googleapis.com/css?family=Merriweather:hin,extra-light,light,100,200,300,400,500,600,700,800" rel="stylesheet" type="text/css"/>
+        <link href="//fonts.googleapis.com/css?family=Montserrat:hin,extra-light,light,100,200,300,400,500,600,700,800" rel="stylesheet" type="text/css"/>
+        
+        <!-- Bootstrap CSS File -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+        
+        <!-- Libraries CSS Files -->
+        <link href="$resources/lib/animate/animate.min.css" rel="stylesheet"/>
+        <link href="$resources/lib/ionicons/css/ionicons.min.css" rel="stylesheet"/>
+        <link href="$resources/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+        <link href="$resources/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
+        
+        <!-- Main Stylesheet File -->
+        <link href="$resources/css/theme.css" rel="stylesheet"/>
+<!--        <link href="$resources/css/style.css" rel="stylesheet"/>-->
+        
+        <!-- sticky-footer -->
+        <link href="$resources/css/sticky-footer-navbar.css" rel="stylesheet"/>
+        
+        
+    </head>
+    <body> <!--  id="body" data-spy="scroll" data-target="myScrollspy" -->
+        <nav data-template="templates:include" data-template-path="templates/jraPortalNav.html"/>
+<!--        <div data-template="app:alert"/>-->
+        <main role="main" class="container mt-1" id="content"/>
+        
+        <footer data-template="templates:include" data-template-path="templates/jraPortalFooter.html"/>
+        
+        <a href="#" class="back-to-top">
+            <i class="fa fa-chevron-up"/>
+        </a>
+        
+        <!-- Bootstrap core JavaScript
+				 ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        
+
+        <!-- JavaScript Libraries -->
+        <script src="$resources/lib/jquery/jquery.min.js"/>
+<!--         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"/>-->
+        <script src="$resources/lib/jquery/jquery-migrate.min.js"/>
+        <script src="$resources/js/jquery.pleaseWait.js"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"/>
+<!--        <script src="$resources/lib/popper/popper.min.js"/>-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"/>
+<!--        <script src="$resources/lib/bootstrap/js/bootstrap.min.js"/>-->
+        <script src="$resources/lib/easing/easing.min.js"/>
+        <script src="$resources/lib/counterup/jquery.waypoints.min.js"/>
+        <script src="$resources/lib/counterup/jquery.counterup.js"/>
+        <script src="$resources/lib/owlcarousel/owl.carousel.min.js"/>
+<!--        <script src="$resources/lib/lightbox/js/lightbox.min.js"/>-->
+        <script src="$resources/lib/typed/typed.min.js"/>
+        <script src="$resources/js/filter.js"/>
+<!--        <script src="$resources/js/animateScrollspy.js"/>-->
+        
+        <!-- Contact Form JavaScript File -->
+<!--        <script src="$resources/contactform/contactform.js"/>-->
+        
+        <!-- Template Main Javascript File -->
+        <script src="$resources/js/main.js"/>
+        
+        <script type="text/javascript" src="$resources/js/pagination.js"/>
+        <script>
+            $(function () {
+              $('[data-toggle="popover"]').popover()
+            })
+        </script>
+        <script>
+            function pleaseWait() { 
+                $('#content').pleaseWait();
+            }
+        </script>
+    </body>
+</html>
