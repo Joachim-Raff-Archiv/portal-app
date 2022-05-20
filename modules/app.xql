@@ -2853,6 +2853,8 @@ declare function app:work($node as node(), $model as map(*)) {
                          {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
                          {if($work//mei:expression[@type='audio'])
                           then(for $work in $work//mei:componentList/mei:work[.//mei:expression[@type='audio']]
+                                let $coverUri := '$resources/cover/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target
+                                let $audioUri := '$resources/mp3/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target
                                return
                                (<div class="modal fade" id="{concat('audio-modal-',format-number($work/@n, '0000'))}" tabindex="-1" aria-labelledby="{concat('audio-modal-label-',format-number($work/@n, '0000'))}" aria-hidden="true">
                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -2867,8 +2869,12 @@ declare function app:work($node as node(), $model as map(*)) {
                                           <div class="container-fluid">
                                            <div class="row">
                                                <div class="col-5">
+                                               <!--
                                                <img src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target}" class="rounded img-thumbnail" alt="Cover" height="200" width="200"/>
                                                <audio class="player_audio" controls="true" controlsList="nodownload" src="{$work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target/string()}" id="{concat('audio-file-',format-number($work/@n, '0000'))}"/>
+                                               -->
+                                               <img src="{$coverUri}" class="rounded img-thumbnail" alt="Cover" height="200" width="200"/>
+                                               <audio class="player_audio" controls="true" controlsList="nodownload" src="{$audioUri}" id="{concat('audio-file-',format-number($work/@n, '0000'))}"/>
                                                  <!--
                                                  <div class="music-player">
                                                      <div class="info">
