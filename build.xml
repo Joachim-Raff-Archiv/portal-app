@@ -59,7 +59,7 @@
             <propertyresource name="project.version.package" />
             <filterchain>
                 <tokenfilter>
-                    <replaceregex pattern="\." replace="_" flags="g"/>
+                    <replaceregex pattern="\." replace="" flags="g"/>
                 </tokenfilter>
             </filterchain>
         </loadresource>
