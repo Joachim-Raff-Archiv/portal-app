@@ -335,4 +335,6 @@
     <msg key="jra.privacyPolicy">Datenschutzerklärung</msg>
     <msg key="jra.index">Startseite</msg>
     <msg key="jra.impressum">Impressum</msg>
+    
+    <msg key="jra.from">aus</msg>
 </catalogue>

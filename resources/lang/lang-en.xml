@@ -332,4 +332,6 @@
     <msg key="jra.privacyPolicy">Privacy policy</msg>
     <msg key="jra.index">Landing page</msg>
     <msg key="jra.impressum">Impressum</msg>
+    
+    <msg key="jra.from">from</msg>
 </catalogue>
