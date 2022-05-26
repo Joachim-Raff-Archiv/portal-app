@@ -113,7 +113,7 @@ else
 
 	(: if it's a search :)
 else
-	if (matches($exist:path, "/search/")) then
+	if (matches($exist:path, "/search.html")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			<forward
