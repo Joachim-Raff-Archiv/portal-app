@@ -44,7 +44,7 @@ declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//
 declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei;
 declare variable $app:collectionWritings := collection('/db/apps/jra-data/writings')//tei:TEI;
 
-declare variable $app:collectionPodcasts := collection('/db/apps/jra-data/podcasts')//raffPod:podcasts;
+declare variable $app:collectionPodcasts := collection('/db/apps/jra-data/podcasts')//raffPod:podcast;
 
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
@@ -3614,7 +3614,7 @@ declare function app:podcast($node as node(), $model as map(*)) {
     
     let $id := request:get-parameter("podcast-id", "Fehler")
     let $forwarding := raffShared:forwardEntries($id)
-    let $podcast := $app:collectionPodcast/id($id)
+    let $podcast := $app:collectionPodcasts/id($id)
     let $persons := $app:collectionPersons
     let $institution := $app:collectionInstitutions
     let $work := $app:collectionWorks
