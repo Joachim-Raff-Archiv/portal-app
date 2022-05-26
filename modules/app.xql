@@ -22,6 +22,7 @@ declare namespace http = "http://expath.org/ns/http-client";
 (:declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";:)
 declare namespace range = "http://exist-db.org/xquery/range";
 declare namespace pkg = "http://expath.org/ns/pkg";
+declare namespace raffPod="https://portal.raff-archiv.ch/ns/raffPodcasts";
 
 declare variable $app:dbRootUrl as xs:string := request:get-url();
 declare variable $app:dbRootLocalhost as xs:string := 'http://localhost:8080/exist/apps/raffArchive';
@@ -42,6 +43,9 @@ declare variable $app:collectionSources := collection('/db/apps/jra-data/sources
 declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//tei:TEI;
 declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei;
 declare variable $app:collectionWritings := collection('/db/apps/jra-data/writings')//tei:TEI;
+
+declare variable $app:collectionPodcasts := collection('/db/apps/jra-data/podcasts')//raffPod:podcasts;
+
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
 declare variable $app:collFullPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
@@ -3590,4 +3594,47 @@ let $news := for $newsBlock in $newsBlocks
     </section>
             )
         else()
+};
+
+declare function app:registryPodcasts($node as node(), $model as map(*)) {
+    let $podcasts := $app:collectionPodcasts
+    return
+    <div>
+    {
+        for $podcast in $podcasts
+        let $id := $podcast/string(@xml:id)
+        return
+            <div style="border: solid 2px black;">
+            PODCAST-REGISTER-ENTRY: {$id}
+            <!-- in Spalten: Bild, Teaser-Text, works? --></div>
+    }</div>
+};
+
+declare function app:podcast($node as node(), $model as map(*)) {
+    
+    let $id := request:get-parameter("podcast-id", "Fehler")
+    let $forwarding := raffShared:forwardEntries($id)
+    let $podcast := $app:collectionPodcast/id($id)
+    let $persons := $app:collectionPersons
+    let $institution := $app:collectionInstitutions
+    let $work := $app:collectionWorks
+    let $title := $podcast/raffPod:title//text() => normalize-space()
+    let $imgTarget := $podcast/raffPod:img/string(@target)
+    let $desc := $podcast/raffPod:desc
+    let $samples := $podcast/raffPod:audioSamples
+    return
+        <div>
+            {if($title != '') then(<h1>{$title}</h1>) else(<h1>«Raff-Casts»POD</h1>)}
+            <img class="thumbnail" src="{$imgTarget}"/>
+            <!-- player -->
+            <div>{transform:transform($desc, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</div>
+            <div>
+                <h5>{raffShared:translate('jra.catalog.podcasts.audio.samples')}</h5>
+                {for $sample at $i in $samples/raffPod:audioSample
+                    return
+                        <div>Beispiel {$i}</div>
+                }
+            </div>
+        </div>
+        
 };

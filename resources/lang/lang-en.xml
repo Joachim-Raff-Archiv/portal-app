@@ -150,6 +150,10 @@
     <!-- Catalog of Writings -->
     <msg key="jra.catalog.writings">Catalog of writings</msg>
     
+    <!-- Catalog of Podcasts -->
+    <msg key="jra.catalog.podcasts">«Raff-Casts»</msg>
+    <msg key="jra.catalog.podcasts.audio.samples">Audio samples</msg>
+    
     <!-- Catalog of Sources -->
     <msg key="jra.catalog.sources">Catalog of sources</msg>
     <msg key="jra.catalog.sources.title">Title</msg>
@@ -274,6 +278,7 @@
     <msg key="breadCrumb.catalogue">Catalog</msg>
     <msg key="breadCrumb.persons">Persons</msg>
     <msg key="breadCrumb.events">Events</msg>
+    <msg key="breadCrumb.podcasts">Podcasts</msg>
     
     <!-- Months -->
     <msg key="january">January</msg>
