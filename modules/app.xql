@@ -3800,7 +3800,7 @@ declare function app:listPodcasts() {
                     <li class="list-group-item">
                        <div class="row">
                            <div class="col-4">
-                               <img class="img-thumbnail rounded pull-left" src="{$imgTarget}"/>
+                               <a href="{$app:dbRoot}/{$podcastID}"><img class="img-thumbnail rounded pull-left" src="{$imgTarget}"/></a>
                            </div>
                            <div class="col">
                                <h3>{if($title != '') then($title) else()}</h3>
