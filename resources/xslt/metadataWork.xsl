@@ -184,7 +184,7 @@
                         </td>
                     </tr>
                 </xsl:if>
-                <xsl:if test="//mei:workList/mei:work/mei:composer != ''">
+                <xsl:if test="//mei:workList/mei:work/mei:arranger != ''">
                     <tr>
                         <td valign="top">Bearbeiter*in:</td>
                         <td>
@@ -311,8 +311,8 @@
                                     &#160;<a href="#" data-toggle="modal" data-target="{concat('#audio-modal-',format-number(./@n, '0000'))}">
                                             <img src="$resources/fonts/feather/speaker.svg"/>
                                           </a>
-                                          <br/>
                                 </xsl:if>
+                                <br/>
                             </xsl:for-each>
                         </td>
                     </tr>
