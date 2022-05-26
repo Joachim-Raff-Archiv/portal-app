@@ -3787,12 +3787,13 @@ declare function app:listPodcasts() {
 <div class="container" style="padding: 1%;">
     <ul class="list-group" style="margin-top: 1%;">{
         for $podcast in $app:collectionPodcasts
-            let $work := $app:collectionWorks/id($raffWorkID)
+            let $podcastID := $podcast/string(@xml:id)
             let $title := $podcast/raffPod:title//text() => normalize-space()
             let $imgTarget := $podcast/raffPod:img/string(@target)
             let $desc := $podcast/raffPod:desc
             let $workList := for $sample in $podcast//raffPod:audioSample
                                let $raffWorkID := $sample/string(@raffWork)
+                               let $work := $app:collectionWorks/id($raffWorkID)
                                return
                                   $work//mei:workList//mei:title[matches(@type,'uniform')]/text() => normalize-space()
             return
