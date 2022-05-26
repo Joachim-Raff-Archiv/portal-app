@@ -3761,15 +3761,9 @@ declare function app:podcast($node as node(), $model as map(*)) {
     let $samples := $podcast/raffPod:audioSamples
     return
         <div class="container" style="padding: 3%;">
-            <h1 style="margin-top: 3%; margin-bottom: 2%;">{if($title != '') then($title) else('«Raff-Casts»')}</h1>
-            <div class="row">
-                <div class="col-4">
-                    <img class="img-thumbnail rounded pull-left" src="{$imgTarget}" style="max-width: 300px;"/>
-                </div>
-                <div class="col">
-                    <div>HERE COMES THE PLAYER {'URL: ' || $audioTarget}</div>
-                </div>
-            </div>
+            <!--<h1 style="margin-top: 3%; margin-bottom: 2%;">{if($title != '') then($title) else('«Raff-Casts»')}</h1>-->
+            <h1 style="margin-top: 3%; margin-bottom: 2%;">«Raff-Casts»</h1>
+            <script class="podigee-podcast-player" src="https://player.podigee-cdn.net/podcast-player/javascripts/podigee-podcast-player.js" data-configuration="https://joachim-raff.podigee.io/embed?context=external"></script>
             <div style="margin-top: 3%;">{transform:transform($desc, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</div>
             <div>
                 <h5 style="padding-top: 3%; padding-bottom: 2%;">{raffShared:translate('jra.catalog.podcasts.audio.samples')}</h5>
