@@ -716,7 +716,7 @@ declare function raffShared:getReferences($id) {
                           let $docInfo := if(starts-with($docRoot/@xml:id,'A'))
                                           then('Brief')
                                           else if (starts-with($docRoot/@xml:id,'B'))
-                                          then (raffShared:formatWorkDesc($doc//mei:title[@type="desc"]))
+                                          then (raffShared:formatWorkDesc($doc//mei:work//mei:title[@type="desc"]))
                                           else if(starts-with($docRoot/@xml:id,'C'))
                                           then('Person')
                                           else if(starts-with($docRoot/@xml:id,'D'))
