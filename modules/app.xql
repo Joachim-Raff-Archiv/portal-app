@@ -3114,15 +3114,15 @@ declare function app:work($node as node(), $model as map(*)) {
 };
 
 declare function app:registryWritings($node as node(), $model as map(*)) {
-    (:<div class="container">
+    <div class="container">
         <ul>{
         for $entry in $app:collFullWritings
             let $entryID := $entry/@xml:id/string()
             return
                 <li>{raffWritings:getTitle($entryID)}&#160;<a onclick="pleaseWait()" href="writing/{$entryID}">{$entryID}</a></li>
         }</ul>
-    </div>:)
-
+    </div>
+    
     let $writings := $app:collFullWritings
 
     let $writingsAlpha := for $writing in $writings
