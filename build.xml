@@ -92,6 +92,7 @@
             <filterset>
                 <filter token="data.target" value="${project.app}"/>
                 <filter token="project.name" value="${project.name}"/>
+                <filter token="user.permissions" value="${user.permissions}"/>
             </filterset>
         </copy>
         <zip destfile="${build.dir}/${project.app.pkg.name}">
