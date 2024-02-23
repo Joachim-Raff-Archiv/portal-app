@@ -7,40 +7,25 @@
     <property file="${raffArchive.basedir}/build.properties"/>
     
     <target name="clean-all">
-        <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
-        <delete file="expath-pkg.xml"/>
-        <delete file="repo.xml"/>
+        <delete dir="${build.dir}"/>
     </target>
     
     <target name="clean">
-        <antcall target="clean-build"/>
-        <antcall target="clean-dist"/>
+        <delete dir="${build.dir}"/>
     </target>
     
-    <target name="clean-build" if="${build.dir}">
+    <target name="clean-dist" if="${build.dir}">
         <delete includeemptydirs="true">
             <fileset dir="${build.dir}" defaultexcludes="false">
-                <!--<include name="*.xml"/>
-                <include name="*.txt"/>-->
-                <include name="**/*"/>
-                <exclude name="*.xar"/>
-                <exclude name="*.tar.gz"/>
-            </fileset>
-        </delete>
-    </target>
-    
-    <target name="clean-dist" if="${dist.dir}">
-        <delete includeemptydirs="true">
-            <fileset dir="${dist.dir}" defaultexcludes="false">
                 <include name="**/*"/>
             </fileset>
         </delete>
     </target>
     
     <target name="init" depends="get-current-hash-of-HEAD">
-        <mkdir dir="${build.dir}"/>
         <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${build.dir}"/>
     </target>
     
     <target name="get-current-hash-of-HEAD">
@@ -64,7 +49,7 @@
             </filterchain>
         </loadresource>
         <property name="project.app.pkg.name" value="${project.app}-${project.version.package.name}-${local.revision}.xar"/>
-        <copy todir="${dist.dir}/">
+        <copy todir="${build.dir}/">
             <fileset dir=".">
                 <include name="**/*.*"/>
                 <exclude name="build.xml"/>
@@ -79,7 +64,7 @@
             </fileset>
         </copy>
         
-        <copy file="expath-pkg.xml.tmpl" tofile="dist/expath-pkg.xml" filtering="true" overwrite="true">
+        <copy file="expath-pkg.xml.tmpl" tofile="${build.dir}/expath-pkg.xml" filtering="true" overwrite="true">
             <filterset>
                 <filter token="project.app" value="${project.app}"/>
                 <filter token="project.name" value="${project.name}"/>
@@ -88,59 +73,18 @@
                 <filter token="project.url" value="${project.url}"/>
             </filterset>
         </copy>
-        <copy file="repo.xml.tmpl" tofile="dist/repo.xml" filtering="true" overwrite="true">
+        <copy file="repo.xml.tmpl" tofile="${build.dir}/repo.xml" filtering="true" overwrite="true">
             <filterset>
                 <filter token="data.target" value="${project.app}"/>
                 <filter token="project.name" value="${project.name}"/>
                 <filter token="user.permissions" value="${user.permissions}"/>
             </filterset>
         </copy>
-        <zip destfile="${build.dir}/${project.app.pkg.name}">
-            <fileset dir="${dist.dir}/">
+        <zip destfile="${dist.dir}/${project.app.pkg.name}">
+            <fileset dir="${build.dir}/">
                 <include name="**/*.*"/>
             </fileset>
         </zip>
-        <delete file="expath-pkg.xml"/>
-        <delete file="repo.xml"/>
+        <antcall target="clean"/>
     </target>
-    
-    <!-- Deploy directly to localhost -->
-    <target name="deploy" depends="clean, dist">
-        <path id="classpath.eXist">
-            <fileset dir="${exist.libs}" erroronmissingdir="no">
-                <include name="*.jar"/>
-            </fileset>
-        </path>
-        <typedef resource="org/exist/ant/antlib.xml" uri="http://exist-db.org/ant">
-            <classpath refid="classpath.eXist"/>
-        </typedef>
-        
-        <!-- store xar-file in eXist-db -->
-        <xdb:store xmlns:xdb="http://exist-db.org/ant"
-            uri="${exist.db}/tmp"
-            createcollection="true"
-            createsubcollections="true"
-            user="${exist.user}"
-            password="${exist.pass}"
-            failonerror="true">
-            <fileset file="${build.dir}/${project.app.pkg.name}"/>
-        </xdb:store>
-        
-        <!-- Deploy the xar -->
-        <xdb:xquery  xmlns:xdb="http://exist-db.org/ant"
-            uri="${exist.db}"
-            user="${exist.user}"
-            password="${exist.pass}"
-            failonerror="true">
-            (
-            if("${project.url}" = repo:list()) then (
-            repo:undeploy("${project.url}"),
-            repo:remove("${project.url}")
-            )
-            else (),
-            repo:install-and-deploy-from-db("/db/tmp/${project.app.pkg.name}")
-            )
-        </xdb:xquery>
-    </target>
-    
 </project>
