@@ -3745,6 +3745,8 @@ declare function app:registryPodcasts($node as node(), $model as map(*)) {
             let $title := $podcast/raffPod:title//text() => normalize-space()
             let $imgTarget := $podcast/raffPod:img/string(@target)
             let $desc := $podcast/raffPod:desc
+
+            order by $podcastID descending
             return
                     <li class="list-group-item">
                        <div class="row">
@@ -3754,7 +3756,7 @@ declare function app:registryPodcasts($node as node(), $model as map(*)) {
                            <div class="col">
                                <h3>{if($title != '') then($title) else()}</h3>
                                <p style="margin-top: 3%;">{substring(normalize-space(string-join($desc//text(),' ')),1,300) || '…'}</p>
-                               <p><a href="{$app:dbRoot}/{$podcastID}">{$podcastID}</a></p>
+                               <p><a href="{$app:dbRoot}/{$podcastID}">Podcast #{format-number(number(substring-after($podcastID,'-')),'#')}</a></p>
                            </div>
                        </div>
                     </li>}
