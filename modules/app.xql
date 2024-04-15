@@ -3780,7 +3780,7 @@ declare function app:podcast($node as node(), $model as map(*)) {
                         for $sample at $i in $samples/raffPod:audioSample
                         let $raffWorkID := $sample/string(@raffWork)
                         return
-                            <li class="list-group-item">{$sample}<br/><span style="margin-top: 0.5em;"><a href="{$app:dbRoot}/{$raffWorkID}">mehr zum Werk</a></span></li>
+                            <li class="list-group-item">{$sample}<br/><span style="line-height: 2.5em;"><a href="{$app:dbRoot}/{$raffWorkID}">mehr zum Werk</a></span></li>
                     }</ul>
                 </div>)
             else()}
