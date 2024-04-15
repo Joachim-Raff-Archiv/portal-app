@@ -83,31 +83,23 @@ else
 
 (: if it's a podcast :)
 else
-	if (matches($exist:path, "podcast")) then
+	if (matches($exist:path, "podcast-\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
-		    <!--
-		    {if($app:collectionPodcasts/id($exist:resource))
-			    then(<forward
-				    url="{$exist:controller}/templates/viewPodcast.html">
-    				<add-parameter
-    					name="podcast-id"
-    					value="{$exist:resource}"/>
-    			</forward>)
-    			else(<forward url="{$exist:controller}/templates/registryPodcasts.html"/>)}
-    	    -->
-    	    <forward
-				    url="{$exist:controller}/templates/viewPodcast.html">
-    				<add-parameter
-    					name="podcast-id"
-    					value="podcast-00001"/>
-    			</forward>
+			{if($app:collectionPodcasts/id($exist:resource))
+			 then(<forward
+				url="{$exist:controller}/templates/viewPodcast.html">
+				<add-parameter
+					name="podcast-id"
+					value="{$exist:resource}"/>
+			</forward>)
+			else(<forward url="{$exist:controller}/templates/registryPodcasts.html"/>)}
 			<view>
 				<forward
 					url="{$exist:controller}/modules/view.xql">
 					<add-parameter
 						name="podcast-id"
-						value="podcast-00001"/>
+						value="{$exist:resource}"/>
 				</forward>
 			</view>
 			<error-handler>

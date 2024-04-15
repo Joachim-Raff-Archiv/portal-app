@@ -3728,12 +3728,30 @@ let $news := for $newsBlock in $newsBlocks
 };
 
 declare function app:registryPodcasts($node as node(), $model as map(*)) {
-    let $podcasts := $app:collectionPodcasts
-    return
-        for $podcast in $podcasts
-        let $id := $podcast/string(@xml:id)
-        return
-            app:listPodcasts()
+<div class="container" style="padding: 1%;">
+    <ul class="list-group" style="margin-top: 1%;">{
+        for $podcast in $app:collectionPodcasts
+            let $podcastID := $podcast/string(@xml:id)
+            let $title := $podcast/raffPod:title//text() => normalize-space()
+            let $imgTarget := $podcast/raffPod:img/string(@target)
+            let $desc := $podcast/raffPod:desc
+
+            order by $podcastID descending
+            return
+                    <li class="list-group-item">
+                       <div class="row">
+                           <div class="col-4">
+                               <a href="{$app:dbRoot}/{$podcastID}"><img class="img-thumbnail rounded pull-left" src="$resources/img/{$imgTarget}" style="max-width: 50%;"/></a>
+                           </div>
+                           <div class="col">
+                               <h3>{if($title != '') then($title) else()}</h3>
+                               <p style="margin-top: 3%;">{substring(normalize-space(string-join($desc//text(),' ')),1,300) || '…'}</p>
+                               <p><a href="{$app:dbRoot}/{$podcastID}">Podcast #{format-number(number(substring-after($podcastID,'-')),'#')}</a></p>
+                           </div>
+                       </div>
+                    </li>}
+    </ul>
+</div>
 };
 
 declare function app:podcast($node as node(), $model as map(*)) {
@@ -3753,46 +3771,18 @@ declare function app:podcast($node as node(), $model as map(*)) {
         <div class="container" style="padding: 3%;">
             <!--<h1 style="margin-top: 3%; margin-bottom: 2%;">{if($title != '') then($title) else('«Raff-Casts»')}</h1>-->
             <h1 style="margin-top: 3%; margin-bottom: 2%;">«Raff-Casts»</h1>
-            <script class="podigee-podcast-player" src="https://player.podigee-cdn.net/podcast-player/javascripts/podigee-podcast-player.js" data-configuration="https://joachim-raff.podigee.io/embed?context=external"></script>
+            <script class="podigee-podcast-player" src="https://player.podigee-cdn.net/podcast-player/javascripts/podigee-podcast-player.js" data-configuration="{$audioTarget}"></script>
             <div style="margin-top: 3%;">{transform:transform($desc, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</div>
-            <div>
-                <h5 style="padding-top: 3%; padding-bottom: 2%;">{raffShared:translate('jra.catalog.podcasts.audio.samples')}</h5>
-                <ul class="list-group" style="margin-top: 1%;">{
-                    for $sample at $i in $samples/raffPod:audioSample
-                    let $raffWorkID := $sample/string(@raffWork)
-                    return
-                        <li class="list-group-item">{$sample}<br/><span style="margin-top: 0.5em;"><a href="{$app:dbRoot}/{$raffWorkID}">mehr zum Werk</a></span></li>
-                }</ul>
-            </div>
+            {if($samples) then(
+                <div>
+                    <h5 style="padding-top: 3%; padding-bottom: 2%;">{raffShared:translate('jra.catalog.podcasts.audio.samples')}</h5>
+                    <ul class="list-group" style="margin-top: 1%;">{
+                        for $sample at $i in $samples/raffPod:audioSample
+                        let $raffWorkID := $sample/string(@raffWork)
+                        return
+                            <li class="list-group-item">{$sample}<br/><span style="margin-top: 0.5em;"><a href="{$app:dbRoot}/{$raffWorkID}">mehr zum Werk</a></span></li>
+                    }</ul>
+                </div>)
+            else()}
         </div>
-};
-
-declare function app:listPodcasts() {
-<div class="container" style="padding: 1%;">
-    <ul class="list-group" style="margin-top: 1%;">{
-        for $podcast in $app:collectionPodcasts
-            let $podcastID := $podcast/string(@xml:id)
-            let $title := $podcast/raffPod:title//text() => normalize-space()
-            let $imgTarget := $podcast/raffPod:img/string(@target)
-            let $desc := $podcast/raffPod:desc
-            let $workList := for $sample in $podcast//raffPod:audioSample
-                               let $raffWorkID := $sample/string(@raffWork)
-                               let $work := $app:collectionWorks/id($raffWorkID)
-                               return
-                                  $work//mei:workList//mei:title[matches(@type,'uniform')]/text() => normalize-space()
-            return
-                    <li class="list-group-item">
-                       <div class="row">
-                           <div class="col-4">
-                               <a href="{$app:dbRoot}/{$podcastID}"><img class="img-thumbnail rounded pull-left" src="{$imgTarget}"/></a>
-                           </div>
-                           <div class="col">
-                               <h3>{if($title != '') then($title) else()}</h3>
-                               <p style="margin-top: 3%;">{substring(normalize-space(string-join($desc//text(),' ')),1,300) || '…'}</p>
-                               <p>{raffShared:translate('jra.catalog.podcasts.audio.samples') || ' ' || raffShared:translate('jra.from') || ' '} {string-join($workList, ' | ')}</p>
-                           </div>
-                       </div>
-                    </li>}
-    </ul>
-</div>
 };
