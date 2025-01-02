@@ -36,25 +36,25 @@ declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbR
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
 
 declare variable $app:collectionDocuments := '/db/apps/jra-data/sources';
-declare variable $app:collectionPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
-declare variable $app:collectionPersons := collection('/db/apps/jra-data/persons')//tei:TEI[.//tei:person];
-declare variable $app:collectionInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI[.//tei:org];
-declare variable $app:collectionSources := collection('/db/apps/jra-data/sources')//tei:TEI;
-declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//tei:TEI;
-declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei;
-declare variable $app:collectionWritings := collection('/db/apps/jra-data/writings')//tei:TEI;
+declare variable $app:collectionPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI[not(tei:ref)];
+declare variable $app:collectionPersons := collection('/db/apps/jra-data/persons')//tei:TEI[.//tei:person][not(tei:ref)];
+declare variable $app:collectionInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI[.//tei:org][not(tei:ref)];
+declare variable $app:collectionSources := collection('/db/apps/jra-data/sources')//tei:TEI[not(tei:ref)];
+declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//tei:TEI[not(tei:ref)];
+declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei[not(mei:ref)];
+declare variable $app:collectionWritings := collection('/db/apps/jra-data/writings')//tei:TEI[not(tei:ref)];
 
 declare variable $app:collectionPodcasts := collection('/db/apps/jra-data/podcasts')//raffPod:podcast;
 
 declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
-declare variable $app:collFullPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
-declare variable $app:collFullPersons := collection('/db/apps/jra-data/persons')//tei:TEI;
-declare variable $app:collFullInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI;
-declare variable $app:collFullSources := collection('/db/apps/jra-data/sources')//tei:TEI;
-declare variable $app:collFullTexts := collection('/db/apps/jra-data/texts')//tei:TEI;
-declare variable $app:collFullWorks := collection('/db/apps/jra-data/works')//mei:mei;
-declare variable $app:collFullWritings := collection('/db/apps/jra-data/writings')//tei:TEI;
+declare variable $app:collFullPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI[not(tei:ref)];
+declare variable $app:collFullPersons := collection('/db/apps/jra-data/persons')//tei:TEI[not(tei:ref)];
+declare variable $app:collFullInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI[not(tei:ref)];
+declare variable $app:collFullSources := collection('/db/apps/jra-data/sources')//tei:TEI[not(tei:ref)];
+declare variable $app:collFullTexts := collection('/db/apps/jra-data/texts')//tei:TEI[not(tei:ref)];
+declare variable $app:collFullWorks := collection('/db/apps/jra-data/works')//mei:mei[not(mei:ref)];
+declare variable $app:collFullWritings := collection('/db/apps/jra-data/writings')//tei:TEI[not(tei:ref)];
 declare variable $app:collFullAll := ($app:collFullPostals, $app:collFullPersons, $app:collFullInstitutions, $app:collFullSources, $app:collFullTexts, $app:collFullWorks, $app:collFullWritings);
 
 declare function app:langSwitch($node as node(), $model as map(*)) {
