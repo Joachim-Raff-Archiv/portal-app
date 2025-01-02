@@ -862,38 +862,11 @@ declare function raffShared:suggestedCitation($id as xs:string) {
         <hr/>)
 };
 
-declare function raffShared:forwardEntries($idParam as xs:string) {
-    let $currentUri := request:get-url()
-    (:let $basicPath := if(starts-with($currentUri, 'http://localhost:8088/exist/apps/raffArchive'))
-                          then('https://dev.raff-archiv.ch/html')
-                          else if(starts-with($currentUri, 'http://localhost:8084/exist/apps/raffArchive'))
-                          then('https://portal.raff-archiv.ch/html')
-                          else if(starts-with($currentUri, 'http://localhost:8086/exist/apps/raffArchive'))
-                          then('https://portal.raff-archiv.ch/html')
-                          else if(starts-with($currentUri, 'http://localhost:8080/exist/apps/raffArchive'))
-                          then('http://localhost:8080/exist/apps/raffArchive/html')
-                          else('/html/'):)
-    let $entryDeleted := $app:collFullAll/id($idParam)//tei:relation[@type='deleted']/@active/string()
-    let $entryIdToForward := substring-after($entryDeleted,'#')
-    let $entryType := if(starts-with($entryIdToForward, 'A'))
-                     then('letter')
-                     else if(starts-with($entryIdToForward, 'B'))
-                     then('work')
-                     else if(starts-with($entryIdToForward, 'C'))
-                     then('person')
-                     else if(starts-with($entryIdToForward, 'D'))
-                     then('institution')
-                     else if(starts-with($entryIdToForward, 'E'))
-                     then('writing')
-                     else()
-    let $itemRootPath := functx:substring-before-last(functx:substring-before-last(request:get-url(), '/'), '/')
-    let $entryLink := concat($entryType, '/', $entryIdToForward)
-    (:let $entryLink := concat($basicPath, '/', $entryType, '/', $entryIdToForward):)
-    
+declare function raffShared:forwardEntries($id as xs:string) {
+    let $target := $app:collFullAll/id($id)/tei:ref/@target
+    where $target
     return
-       if($entryDeleted)
-       then(response:redirect-to($entryLink))
-       else()
+        response:redirect-to($target)
 };
 
 
