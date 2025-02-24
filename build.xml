@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="update-jra-docker" name="raffArchive" basedir="." xmlns:unless="ant:unless">
+<project default="update-jraDocker" name="raffArchive" basedir="." xmlns:unless="ant:unless">
     <dirname property="raffArchive.basedir" file="${ant.file.raffArchive}"/>
     
     <!-- import default properties from file -->
@@ -88,15 +88,15 @@
         <antcall target="clean"/>
     </target>
 
-    <target name="update-jra-docker" depends="dist">
-        <description>Copy xar package to jra-docker repo (autodeploy)</description>
+    <target name="update-jraDocker" depends="dist">
+        <description>Copy xar package to jraDocker repo (autodeploy)</description>
         <echo>Delete old packages</echo>
         <delete>
-            <fileset dir="${raffArchive.basedir}/../jra-docker/autodeploy">
+            <fileset dir="${raffArchive.basedir}/../jraDocker/autodeploy">
                 <include name="${project.app}-*.xar"/>
             </fileset>
         </delete>
         <echo>Add new package</echo>
-        <copy file="${dist.dir}/${project.app.pkg.name}" todir="${raffArchive.basedir}/../jra-docker/autodeploy" overwrite="yes"/>
+        <copy file="${dist.dir}/${project.app.pkg.name}" todir="${raffArchive.basedir}/../jraDocker/autodeploy" overwrite="yes"/>
     </target>
 </project>
