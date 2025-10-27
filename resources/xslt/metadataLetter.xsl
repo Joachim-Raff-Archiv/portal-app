@@ -171,7 +171,7 @@
                         <xsl:choose>
                             <xsl:when test="contains(.,'Privatbesitz')">Privatbesitz</xsl:when>
                             <xsl:otherwise>
-                                <xsl:value-of select="."/>
+                                <xsl:value-of select="$sourceDesc//msIdentifier/repository"/>
                                 <xsl:if test="$sourceDesc//msIdentifier/settlement != ''">
                                     <xsl:text> (</xsl:text>
                                     <xsl:value-of select="$sourceDesc//msIdentifier/settlement"/>
