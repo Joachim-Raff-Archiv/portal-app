@@ -50,3 +50,4 @@ jobs:
             gh release create latest "$ARTIFACT" --repo "$TARGET_REPO" --title "raffArchive Portal-App latest" --notes "Automated publish from CI"
           else
             gh release upload latest "$ARTIFACT" --repo "$TARGET_REPO" --clobber
+          fi
