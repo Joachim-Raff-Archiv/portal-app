@@ -1,0 +1,52 @@
+name: Build software
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Install Ant and gh CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ant gh curl
+
+      - name: Build data package (public)
+        run: |
+          ant -verbose -lib scripts/libs dist
+          echo "Build finished, listing dist:"
+          ls -la dist || true
+
+      - name: Find artifact
+        id: find
+        run: |
+          ART=$(ls dist/raffArchive-*.xar 2>/dev/null | head -n1 || true)
+          if [ -z "$ART" ]; then echo "No artifact found in dist" && exit 1; fi
+          echo "artifact=$ART" >> $GITHUB_OUTPUT
+
+      - name: Publish to this repo as Release asset
+        env:
+          TARGET_REPO: ${{ github.repository }}        # current repo (will be private)
+          TARGET_PAT: ${{ secrets.GITHUB_TOKEN }}      # use GITHUB_TOKEN for same-repo writes
+          ARTIFACT: ${{ steps.find.outputs.artifact }}
+        run: |
+          echo "$TARGET_PAT" | gh auth login --with-token
+          if ! gh release view latest --repo "$TARGET_REPO" >/dev/null 2>&1; then
+            gh release create latest "$ARTIFACT" --repo "$TARGET_REPO" --title "raffArchive Portal-App latest" --notes "Automated publish from CI"
+          else
+            gh release upload latest "$ARTIFACT" --repo "$TARGET_REPO" --clobber
