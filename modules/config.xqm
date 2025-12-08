@@ -13,13 +13,15 @@ declare namespace expath="http://expath.org/ns/pkg";
 (: 
     Determine the application root collection from the current module load path.
 :)
-declare variable $config:app-root := 
-    let $rawPath := system:get-module-load-path()
+declare variable $config:app-root as xs:string := 
+    let $rawPath := replace(system:get-module-load-path(), '/null/', '//')
     let $modulePath :=
         (: strip the xmldb: part :)
         if (starts-with($rawPath, "xmldb:exist://")) then
             if (starts-with($rawPath, "xmldb:exist://embedded-eXist-server")) then
                 substring($rawPath, 36)
+            else if (contains($rawPath, "/xmlrpc/")) then
+                substring-after($rawPath, "/xmlrpc")
             else
                 substring($rawPath, 15)
         else

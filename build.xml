@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="update-jraDocker" name="raffArchive" basedir="." xmlns:unless="ant:unless">
+<project default="update-jraDocker" name="raffArchive" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
     <dirname property="raffArchive.basedir" file="${ant.file.raffArchive}"/>
     
     <!-- import default properties from file -->
     <property file="${raffArchive.basedir}/local.build.properties"/>
     <property file="${raffArchive.basedir}/build.properties"/>
+    
+    <condition property="wega-webapp-lib-available">
+        <or>
+            <available file="${raffArchive.basedir}/resources/wega-webapp-lib/xquery/app-shared.xqm"/>
+        </or>
+    </condition>
+    <echo if:set="wega-webapp-lib-available" message="WeGA-WebApp-lib available: ${wega-webapp-lib-available}"/>
+    <echo unless:set="wega-webapp-lib-available" message="wega-webapp-lib available: false"/>
     
     <target name="clean-all">
         <delete dir="${dist.dir}"/>
@@ -26,6 +34,28 @@
     <target name="init" depends="get-current-hash-of-HEAD">
         <mkdir dir="${dist.dir}"/>
         <mkdir dir="${build.dir}"/>
+        <antcall target="wega-webapp-lib-prepare" unless:true="${wega-webapp-lib-available}"/>
+    </target>
+    
+    <target name="wega-webapp-lib-download" unless="${wega-webapp-lib-available}">
+        <echo>Download the WeGA-WebApp-lib</echo>
+        <mkdir dir="${raffArchive.basedir}/temp/"/>
+        <get src="https://github.com/Edirom/WeGA-WebApp-lib/archive/refs/tags/v${wega-webapp-lib-version}.zip" dest="${raffArchive.basedir}/temp/download"/>
+    </target>
+    
+    <target name="wega-webapp-lib-unzip" depends="wega-webapp-lib-download" unless="${wega-webapp-lib-available}">
+        <echo>Download the WeGA-WebApp-lib</echo>
+        <mkdir dir="${raffArchive.basedir}/resources/wega-webapp-lib/"/>
+        <unzip src="${raffArchive.basedir}/temp/download" overwrite="true" dest="${raffArchive.basedir}/temp/unzipped"/>
+    </target>
+    
+    <target name="wega-webapp-lib-prepare" depends="wega-webapp-lib-unzip" unless="${wega-webapp-lib-available}">
+        <copy todir="resources/lib/wega-webapp-lib">
+            <fileset dir="${raffArchive.basedir}/temp/unzipped/WeGA-WebApp-lib-${wega-webapp-lib-version}/">
+                <include name="**"/>
+            </fileset>
+        </copy>
+        <delete dir="${raffArchive.basedir}/temp/"/>
     </target>
     
     <target name="get-current-hash-of-HEAD">
@@ -50,7 +80,7 @@
         </loadresource>
         <property name="project.app.pkg.name" value="${project.app}-${project.version.package.name}-${local.revision}.xar"/>
         <copy todir="${build.dir}/">
-            <fileset dir=".">
+            <fileset dir="${raffArchive.basedir}">
                 <include name="**/*.*"/>
                 <exclude name="build.xml"/>
                 <exclude name=".existdb.json"/>

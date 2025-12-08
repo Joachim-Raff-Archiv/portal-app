@@ -6,3 +6,4 @@ resources/img
 .existdb.json
 repo.xml
 dist
+resources/lib/wega-webapp-lib

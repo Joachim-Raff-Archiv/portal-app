@@ -7,6 +7,8 @@ xquery version "3.0";
 
 import module namespace templates="http://exist-db.org/xquery/html-templating" ;
 import module namespace i18n="http://exist-db.org/xquery/i18n-templates" at "/db/apps/raffArchive/modules/i18n-templates.xql";
+import module namespace app-shared="http://xquery.weber-gesamtausgabe.de/modules/app-shared" at "/db/apps/raffArchive/resources/lib/wega-webapp-lib/xquery/app-shared.xqm";
+
 import module namespace raffWorks="https://portal.raff-archiv.ch/ns/raffWorks" at "/db/apps/raffArchive/modules/raffWorks.xqm";
 import module namespace raffShared="https://portal.raff-archiv.ch/ns/raffShared" at "/db/apps/raffArchive/modules/raffShared.xqm";
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
@@ -30,6 +32,22 @@ let $config := map {
     $templates:CONFIG_APP_ROOT : $config:app-root,
     $templates:CONFIG_STOP_ON_ERROR : true()
 }
+
+(:~
+ : Initialise the model map for the templating 
+ : with the attributes that are passed by the controller,
+ : and with user preferences
+~:)
+let $model := 
+	map:merge((
+		(
+		for $var in request:attribute-names()
+		return
+			map:entry($var, request:get-attribute($var))
+		),
+		map:entry('environment', config:app-status())
+	))
+
 (:
  : We have to provide a lookup function to templates:apply to help it
  : find functions in the imported application modules. The templates
