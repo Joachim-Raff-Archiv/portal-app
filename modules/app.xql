@@ -473,12 +473,12 @@ declare function app:letter($node as node(), $model as map(*)) {
                               {if(config:status-is-development())
                               then(<div class="alert alert-info" role="alert">{
                                         if($letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text() != '')
-                                        then('Signatur (JRA): ', $letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text(), ' (Kopie)')
+                                        then('Signatur (JRA): ' || $letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text() || ' (Kopie)')
                                         else()}
                                    </div>)
                               else()}
                               <br/>
-                              {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/metadataLetter.xsl"), ())}
+                              {raffShared:transform($letter, "metadataLetter.xsl")}
                           </div>
                           {if ($regeste)
                            then (<div
@@ -488,7 +488,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                   <div class="container">
                                     <div class="row">
                                       <div class="col">
-                                          {transform:transform($regeste, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}
+                                          {raffShared:transform($regeste, "formattingText.xsl")}
                                       </div>
                                     </div>
                                   </div>
@@ -500,7 +500,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                   <div
                                       class="row">
                                       <div class="letterContentFullView">
-                                          {transform:transform($fulltext, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}
+                                          {raffShared:transform($fulltext, "formattingText.xsl")}
                                       </div>
                                   </div>
                           </div>)else()}
@@ -542,7 +542,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                               id="viewXML">
                               <pre>
                                               <xmp>
-                              {transform:transform($letter, doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                              {raffShared:transform($letter, "viewXML.xsl")}
                               </xmp>
                               </pre>
                           </div>)
@@ -1313,7 +1313,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                 class="tab-pane fade show active"
                                 id="metadata">
                                 <br/>
-                                {transform:transform($person, doc("/db/apps/raffArchive/resources/xslt/metadataPerson.xsl"), ())}
+                                {raffShared:transform($person, "metadataPerson.xsl")}
                             </div>
                             {
                                 if (raffPostals:getCorrespondance($id)) then
@@ -1362,7 +1362,7 @@ declare function app:person($node as node(), $model as map(*)) {
                     id="viewXML">
                     <pre>
                                     <xmp>
-                    {transform:transform($person/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                    {raffShared:transform($person/root(), "viewXML.xsl")}
                     </xmp>
                     </pre>
                 </div>)
@@ -1701,7 +1701,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 class="tab-pane fade show active"
                                 id="metadata">
                                 <br/>
-                                {transform:transform($institution, doc("/db/apps/raffArchive/resources/xslt/metadataInstitution.xsl"), ())}
+                                {raffShared:transform($institution, "metadataInstitution.xsl")}
 
 
                         <!--
@@ -1764,7 +1764,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                     id="viewXML">
                         <pre>
                             <xmp>
-                                {transform:transform($institution/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                                {raffShared:transform($institution/root(), "viewXML.xsl")}
                             </xmp>
                         </pre>
                     </div>)
@@ -2778,7 +2778,6 @@ declare function app:work($node as node(), $model as map(*)) {
     let $portrait := $work//mei:history//mei:div[@type="portrait"][./mei:p != '']
     let $facsWvSchaefer := $work//mei:facsimile[@type='wvSchaefer']
     let $facsWvMuellerReuter := $work//mei:facsimile[@type='wvMuellerReuter']
-    let $xsltFormattingText := doc('/db/apps/raffArchive/resources/xslt/formattingText.xsl')
     return
         (
   <div
@@ -2842,7 +2841,7 @@ declare function app:work($node as node(), $model as map(*)) {
                      class="tab-content">
                      <div class="tab-pane fade show active" id="metadata">
                          <br/>
-                         {transform:transform($work, doc("/db/apps/raffArchive/resources/xslt/metadataWork.xsl"), ())}
+                         {raffShared:transform($work,"metadataWork.xsl")}
                          {if($work//mei:expression[@type='audio'])
                           then(for $work in $work//mei:componentList/mei:work[.//mei:expression[@type='audio']]
                                 let $coverUri := '$resources/cover/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target
@@ -2993,7 +2992,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                  class="tab-pane fade"
                                  id="portrait">
                                  <br/>
-                                 <div >{transform:transform($portrait, $xsltFormattingText, ())
+                                 <div >{raffShared:transform($portrait, "formattingText.xsl")
                                  }</div>
                                </div>
                          )
@@ -3086,7 +3085,7 @@ declare function app:work($node as node(), $model as map(*)) {
                          id="viewXML">
                              <pre>
                                  <xmp>
-                                     {transform:transform($work/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                                    {raffShared:transform($work/root(),"viewXML.xsl")}
                                  </xmp>
                              </pre>
                          </div>)
@@ -3324,7 +3323,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                          class="tab-pane fade show active"
                          id="metadata">
                          <br/>
-         {transform:transform($writing//tei:teiHeader, doc("/db/apps/raffArchive/resources/xslt/metadataWriting.xsl"), ())}
+         {raffShared:transform($writing//tei:teiHeader,"metadataWriting.xsl")}
                      </div>
                      <div
                          class="tab-pane fade"
@@ -3332,7 +3331,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                          <br/>
          <div class="row">
             <div class="col">
-            {transform:transform($writing//tei:text, doc("/db/apps/raffArchive/resources/xslt/contentWriting.xsl"), ())}
+            {raffShared:transform($writing//tei:text,"contentWriting.xsl")}
             </div>
             <div class="col-2">
                <h5>Navigation</h5>
@@ -3386,7 +3385,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                          id="viewXML">
                              <pre>
                                  <xmp>
-                                     {transform:transform($writing/root(), doc("/db/apps/raffArchive/resources/xslt/viewXML.xsl"), ())}
+                                    {raffShared:transform($writing/root(),"viewXML.xsl")}
                                  </xmp>
                              </pre>
                          </div>)
@@ -3422,7 +3421,7 @@ declare function app:aboutProject($node as node(), $model as map(*)) {
                     class="row">
                     <div
                         class="col">
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         </div>
         </div>
@@ -3441,7 +3440,7 @@ declare function app:aboutRaff($node as node(), $model as map(*)) {
         <p class="title-b">{$title}</p>,
         <p class="subtitle-b">{$subtitle}</p>,
         <div>
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         )
 };
@@ -3457,7 +3456,7 @@ declare function app:aboutArchive($node as node(), $model as map(*)) {
         <p class="title-b">{$title}</p>,
         <p class="subtitle-b">{$subtitle}</p>,
         <div>
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         )
 };
@@ -3484,7 +3483,7 @@ declare function app:aboutDocumentation($node as node(), $model as map(*)) {
                     class="row">
                     <div
                         class="col">
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         </div>
         </div>
@@ -3514,7 +3513,7 @@ declare function app:aboutResources($node as node(), $model as map(*)) {
                     class="row">
                     <div
                         class="col">
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         </div>
         </div>
@@ -3530,7 +3529,7 @@ declare function app:indexPage($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         )
 };
@@ -3543,7 +3542,7 @@ declare function app:impressum($node as node(), $model as map(*)) {
         (
         <div class="title-b">Kontakt</div>,
         <div>
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         )
 };
@@ -3556,7 +3555,7 @@ declare function app:privacyPolicy($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         )
 };
@@ -3569,7 +3568,7 @@ declare function app:disclaimer($node as node(), $model as map(*)) {
         (
         <div
             class="container">
-            {transform:transform($text, doc("/db/apps/raffArchive/resources/xslt/portal.xsl"), ())}
+            {raffShared:transform($text, "portal.xsl")}
         </div>
         )
 };
@@ -3665,7 +3664,7 @@ let $news := for $newsBlock in $newsBlocks
                 let $subheading := $newsBlock//tei:head[@type='sub']/text()
                 let $paragraphs := for $paragraph in $newsBlock//tei:p
                                     return
-                                        <p>{transform:transform($paragraph, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</p>
+                                        <p>{raffShared:transform($paragraph, "formattingText.xsl")}</p>
                 let $author := $newsBlock//tei:byline/text()
 
                 where $docDate <= current-date()
@@ -3750,7 +3749,7 @@ declare function app:podcast($node as node(), $model as map(*)) {
             <!--<h1 style="margin-top: 3%; margin-bottom: 2%;">{if($title != '') then($title) else('«Raff-Casts»')}</h1>-->
             <h1 style="margin-top: 3%; margin-bottom: 2%;">«Raff-Casts»</h1>
             <script class="podigee-podcast-player" src="https://player.podigee-cdn.net/podcast-player/javascripts/podigee-podcast-player.js" data-configuration="{$audioTarget}"></script>
-            <div style="margin-top: 3%;">{transform:transform($desc, doc("/db/apps/raffArchive/resources/xslt/formattingText.xsl"), ())}</div>
+            <div style="margin-top: 3%;">{raffShared:transform($desc, "formattingText.xsl")}</div>
             {if($samples) then(
                 <div>
                     <h5 style="padding-top: 3%; padding-bottom: 2%;">{raffShared:translate('jra.catalog.podcasts.audio.samples')}</h5>

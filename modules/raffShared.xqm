@@ -8,6 +8,7 @@ declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace hc = "http://expath.org/ns/http-client";
 declare namespace response = "http://exist-db.org/xquery/response";
 
+import module namespace config = "https://portal.raff-archiv.ch/config" at "/db/apps/raffArchive/modules/config.xqm";
 import module namespace app="https://portal.raff-archiv.ch/templates" at "/db/apps/raffArchive/modules/app.xql";
 import module namespace raffPostals="https://portal.raff-archiv.ch/ns/raffPostals" at "/db/apps/raffArchive/modules/raffPostals.xqm";
 import module namespace raffWritings="https://portal.raff-archiv.ch/ns/raffWritings" at "/db/apps/raffArchive/modules/raffWritings.xqm";
@@ -898,4 +899,8 @@ declare function raffShared:formatWorkDesc($titleWorkDesc as node()) as xs:strin
    
    return
     concat($token1, ' ', $token2Part1, $token2Part2)
+};
+
+declare function raffShared:transform($element as node(), $script as xs:string) as node()* {
+   transform:transform($element, doc($config:app-root || "/resources/xslt/" || $script), ())
 };
