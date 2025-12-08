@@ -53,6 +53,21 @@ declare function config:repo-descriptor() as element(repo:meta) {
 };
 
 (:~
+ : Returns the repo.xml descriptor for the current application status.
+ :)
+declare function config:app-status() as xs:string {
+    $config:repo-descriptor/repo:status
+};
+
+(:~
+ : Returns a boolean if the application status is development or not.
+ :)
+declare function config:status-is-development() as xs:boolean {
+    config:app-status() = ('dev', 'development')
+};
+
+
+(:~
  : Returns the expath-pkg.xml descriptor for the current application.
  :)
 declare function config:expath-descriptor() as element(expath:package) {

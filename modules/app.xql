@@ -19,20 +19,9 @@ declare namespace tei = "http://www.tei-c.org/ns/1.0";
 declare namespace mei = "http://www.music-encoding.org/ns/mei";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace http = "http://expath.org/ns/http-client";
-(:declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";:)
 declare namespace range = "http://exist-db.org/xquery/range";
-declare namespace pkg = "http://expath.org/ns/pkg";
 declare namespace raffPod="https://portal.raff-archiv.ch/ns/raffPodcasts";
 
-declare variable $app:dbRootUrl as xs:string := request:get-url();
-declare variable $app:dbRootLocalhost as xs:string := 'http://localhost:8080/exist/apps/raffArchive';
-declare variable $app:dbRootDev as xs:string := 'http://localhost:8088/exist/apps/raffArchive';
-declare variable $app:dbRootPortal as xs:string := if(contains($app:dbRootUrl, 'http://localhost:8082/exist/'))
-                                                   then('http://localhost:8082/exist/apps/raffArchive')
-                                                   else if(contains($app:dbRootUrl, 'http://localhost:8084/exist/'))
-                                                   then('http://localhost:8084/exist/apps/raffArchive')
-                                                   else('unknownDomain');
-declare variable $app:dbRoot as xs:string := if(contains($app:dbRootUrl,$app:dbRootLocalhost))then('/exist/apps/raffArchive')else('');
 declare variable $app:digilibPath as xs:string := 'https://digilib.baumann-digital.de';
 
 declare variable $app:collectionDocuments := '/db/apps/jra-data/sources';
@@ -459,7 +448,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                         class="nav-link-jra"
                         data-toggle="tab"
                         href="#contentLetterFacsimile">Faksimile</a></li>)else()}
-                {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                {if(config:status-is-development())
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -481,8 +470,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                           <div
                               class="tab-pane fade show active"
                               id="letterMetadata">
-                              {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
-                              contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                              {if(config:status-is-development())
                               then(<div class="alert alert-info" role="alert">{
                                         if($letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text() != '')
                                         then('Signatur (JRA): ', $letter//tei:msIdentifier/tei:altIdentifier/tei:idno[@resp = 'JRA-copy']/text(), ' (Kopie)')
@@ -548,7 +536,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                 </div>
                                 </div>)
                            else()}
-                          {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                          {if(config:status-is-development())
                           then(<div
                               class="tab-pane fade"
                               id="viewXML">
@@ -1302,7 +1290,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                            {if(config:status-is-development())
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -1368,7 +1356,7 @@ declare function app:person($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                            {if(config:status-is-development())
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
@@ -1691,7 +1679,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                     class="nav-link-jra"
                                     data-toggle="tab"
                                     href="#literature">Literatur</a></li>)else()}
-                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                            {if(config:status-is-development())
                 then(<li
                     class="nav-item"><a
                         class="nav-link-jra"
@@ -1770,7 +1758,7 @@ declare function app:institution($node as node(), $model as map(*)) {
                                 else
                                     ()
                             }
-                            {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                            {if(config:status-is-development())
                 then(<div
                     class="tab-pane fade"
                     id="viewXML">
@@ -2833,7 +2821,7 @@ declare function app:work($node as node(), $model as map(*)) {
                              href="#wvMuellerReuter">Müller-Reuter (1909)</a></li>
                              )
                     else()}
-                    {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                    {if(config:status-is-development())
          then(<li
              class="nav-item"><a
                  class="nav-link-jra"
@@ -3092,8 +3080,7 @@ declare function app:work($node as node(), $model as map(*)) {
                                 </div>
                                 </div>)
                            else()}
-                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
-                         contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                     {if(config:status-is-development())
                      then(<div
                          class="tab-pane fade"
                          id="viewXML">
@@ -3314,7 +3301,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                              data-toggle="tab"
                              href="#references">Referenzen</a></li>
                              )else()}
-                    {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                    {if(config:status-is-development())
          then(<li
              class="nav-item"><a
                  class="nav-link-jra"
@@ -3393,8 +3380,7 @@ declare function app:writing($node as node(), $model as map(*)) {
                          else
                              ()
                      }
-                     {if(contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive') or
-                         contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
+                     {if(config:status-is-development())
                      then(<div
                          class="tab-pane fade"
                          id="viewXML">
@@ -3621,47 +3607,29 @@ return
 };
 
 declare function app:alert($node as node(), $model as map(*)){
-    if (contains(request:get-url(),'http://localhost:8080/exist/apps/raffArchive'))
+    if (config:status-is-development())
     then (
             <div class="alert alert-info" role="alert" style="padding-top: 67px;">
-               Raff-Portal Entwicklung –  Sie befinden sich auf http://localhost:8080
+               Raff-Portal – Sie befinden sich in der Entwicklungsumgebung
             </div>
          )
-
-    else if (contains(request:get-url(),'http://localhost:8088/exist/apps/raffArchive'))
-    then (
-            <div class="alert alert-warning" role="alert" style="padding-top: 67px;">
-               Raff-Portal intern: Diese Umgebung kann sich in Inhalt und Erscheinung vom offiziellen Raff-Portal unterscheiden! Sie befinden sich auf https://dev.raff-archiv.ch
-            </div>
-         )
-
     else ()
 };
 
 declare function app:portalVersion($node as node(), $model as map(*)){
- let $package := doc('/db/apps/raffArchive/expath-pkg.xml')
- let $version := $package//pkg:package/@version/string()
+ let $version := $config:expath-descriptor/@version/string()
     return
         <p class="subtitle-b">{concat('(Version ',$version,')')}</p>
 };
 
 declare function app:portalVersionPlaintext($node as node(), $model as map(*)){
- let $package := doc('/db/apps/raffArchive/expath-pkg.xml')
- let $version := $package//pkg:package/@version/string()
-    return
-        $version
+    $config:expath-descriptor/@version/string()
 };
 
 declare function app:errorReport($node as node(), $model as map(*)){
 
 let $errorMsg := templates:error-description($node, $model)
-let $errorReportDir := '/db/apps/raffArchive/errors/'
-let $url := request:get-url()
-let $dateTime := replace(substring-before(string(current-dateTime()), '+'),':','-')
-let $error := <file url="{$url}" timeStamp="{$dateTime}">{templates:error-description($node, $model)}</file>
-(:let $logIn := xmldb:login($errorReportDir,'errors', 'errorReport12345'):)
-(:let $store := xmldb:store($errorReportDir, concat('error_', replace($dateTime,':','-'), '.xml'), $error):)
-let $errorReport := if(contains($app:dbRootUrl,$app:dbRootLocalhost))
+let $errorReport := if(config:status-is-development())
                     then(<pre class="error">{$errorMsg}</pre>)
                     else()
 return
@@ -3751,12 +3719,12 @@ declare function app:registryPodcasts($node as node(), $model as map(*)) {
                     <li class="list-group-item">
                        <div class="row">
                            <div class="col-4">
-                               <a href="{$app:dbRoot}/{$podcastID}"><img class="img-thumbnail rounded pull-left" src="$resources/img/{$imgTarget}" style="max-width: 50%;"/></a>
+                               <a href="{$config:app-root}/{$podcastID}"><img class="img-thumbnail rounded pull-left" src="$resources/img/{$imgTarget}" style="max-width: 50%;"/></a>
                            </div>
                            <div class="col">
                                <h3>{if($title != '') then($title) else()}</h3>
                                <p style="margin-top: 3%;">{substring(normalize-space(string-join($desc//text(),' ')),1,300) || '…'}</p>
-                               <p><a href="{$app:dbRoot}/{$podcastID}">Podcast #{format-number(number(substring-after($podcastID,'-')),'#')}</a></p>
+                               <p><a href="{$config:app-root}/{$podcastID}">Podcast #{format-number(number(substring-after($podcastID,'-')),'#')}</a></p>
                            </div>
                        </div>
                     </li>}
@@ -3790,7 +3758,7 @@ declare function app:podcast($node as node(), $model as map(*)) {
                         for $sample at $i in $samples/raffPod:audioSample
                         let $raffWorkID := $sample/string(@raffWork)
                         return
-                            <li class="list-group-item">{$sample}<br/><span style="line-height: 2.5em;"><a href="{$app:dbRoot}/{$raffWorkID}">mehr zum Werk</a></span></li>
+                            <li class="list-group-item">{$sample}<br/><span style="line-height: 2.5em;"><a href="{$config:app-root}/{$raffWorkID}">mehr zum Werk</a></span></li>
                     }</ul>
                 </div>)
             else()}
