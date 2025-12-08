@@ -2,7 +2,6 @@ build/*
 *.bak
 *.DS_Store
 *.xar
-resources/img
 .existdb.json
 repo.xml
 dist
