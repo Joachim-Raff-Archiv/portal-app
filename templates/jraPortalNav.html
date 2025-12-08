@@ -22,14 +22,14 @@
                                     </li>-->
                     <li>
                         <a class="nav-link-jra-top" onclick="pleaseWait()" href="$baseUrl/registryLettersDate.html">
-                            <i18n:text key="jra.mainNav.letters"/>
+                            <i18n:text key="jra.mainNav.letters"/> <span data-template="app-shared:print" data-template-key="environment"></span>
                         </a>
                     </li>
-                    <!--<li>
+                    <li data-template="app-shared:if-matches" data-template-key="environment" data-template-value="development">
                         <a class="nav-link-jra-top" onclick="pleaseWait()" href="$baseUrl/registryWritings.html">
                             <i18n:text key="jra.mainNav.writings"/>
                         </a>
-                    </li>-->
+                    </li>
                     <li>
                         <a class="nav-link-jra-top" onclick="pleaseWait()" href="$baseUrl/registryPersonsInitial.html">
                             <i18n:text key="jra.mainNav.persons"/>
