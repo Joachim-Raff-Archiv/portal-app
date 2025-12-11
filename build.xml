@@ -114,6 +114,15 @@
                 <filter token="project.status" value="${project.status}"/>
             </filterset>
         </copy>
+        <echo>Creating CITATION.cff</echo>
+        <copy file="${raffArchive.basedir}/CITATION.cff.tmpl" tofile="${build.dir}/CITATION.cff" filtering="true" overwrite="true">
+            <filterset>
+                <filter token="project.app" value="${project.app}"/>
+                <filter token="project.version" value="${project.version}"/>
+                <filter token="release.date" value="${release.date}"/>
+                <filter token="release.year" value="${release.year}"/>
+            </filterset>
+        </copy>
         <zip destfile="${dist.dir}/${project.app.pkg.name}">
             <fileset dir="${build.dir}/">
                 <include name="**/*.*"/>
