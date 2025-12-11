@@ -40,13 +40,13 @@
     <target name="wega-webapp-lib-download" unless="${wega-webapp-lib-available}">
         <echo>Download the WeGA-WebApp-lib</echo>
         <mkdir dir="${raffArchive.basedir}/temp/download"/>
-        <get src="https://github.com/Edirom/WeGA-WebApp-lib/archive/refs/tags/v${wega-webapp-lib-version}.zip" dest="${raffArchive.basedir}/temp/download"/>
+        <get src="https://codeload.github.com/Edirom/WeGA-WebApp-lib/zip/refs/tags/v${wega-webapp-lib-version}" dest="${raffArchive.basedir}/temp/download"/>
     </target>
     
     <target name="wega-webapp-lib-unzip" depends="wega-webapp-lib-download" unless="${wega-webapp-lib-available}">
         <echo>Download the WeGA-WebApp-lib</echo>
         <mkdir dir="${raffArchive.basedir}/resources/lib/wega-webapp-lib/"/>
-        <unzip src="${raffArchive.basedir}/temp/download/WeGA-WebApp-lib-${wega-webapp-lib-version}.zip" overwrite="true" dest="${raffArchive.basedir}/temp/unzipped"/>
+        <unzip src="${raffArchive.basedir}/temp/download/v${wega-webapp-lib-version}" overwrite="true" dest="${raffArchive.basedir}/temp/unzipped"/>
     </target>
     
     <target name="wega-webapp-lib-prepare" depends="wega-webapp-lib-unzip" unless="${wega-webapp-lib-available}">
