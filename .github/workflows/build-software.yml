@@ -41,8 +41,8 @@ jobs:
 
       - name: Publish to this repo as Release asset
         env:
-          TARGET_REPO: ${{ github.repository }}        # current repo (will be private)
-          TARGET_PAT: ${{ secrets.GITHUB_TOKEN }}      # use GITHUB_TOKEN for same-repo writes
+          TARGET_REPO: ${{ github.repository }}
+          TARGET_PAT: ${{ secrets.GITHUB_TOKEN }}
           ARTIFACT: ${{ steps.find.outputs.artifact }}
         run: |
           echo "$TARGET_PAT" | gh auth login --with-token
