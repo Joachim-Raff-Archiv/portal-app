@@ -1,4 +1,4 @@
-xquery version "3.0";
+xquery version "3.1";
 
 (:~
  : A set of helper functions to access the application context from
@@ -57,7 +57,7 @@ declare function config:repo-descriptor() as element(repo:meta) {
 (:~
  : Returns the repo.xml descriptor for the current application status.
  :)
-declare function config:app-status() as xs:string {
+declare function config:repo-status() as xs:string {
     $config:repo-descriptor/repo:status
 };
 
@@ -65,7 +65,7 @@ declare function config:app-status() as xs:string {
  : Returns a boolean if the application status is development or not.
  :)
 declare function config:status-is-development() as xs:boolean {
-    config:app-status() = ('dev', 'development')
+    config:repo-status() = ('dev', 'development')
 };
 
 

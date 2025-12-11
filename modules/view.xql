@@ -3,9 +3,10 @@
  : to process any URI ending with ".html". It receives the HTML from
  : the controller and passes it to the templating system.
  :)
-xquery version "3.0";
+xquery version "3.1";
 
-import module namespace templates="http://exist-db.org/xquery/html-templating" ;
+import module namespace templates="http://exist-db.org/xquery/html-templating";
+
 import module namespace i18n="http://exist-db.org/xquery/i18n-templates" at "/db/apps/raffArchive/modules/i18n-templates.xql";
 import module namespace app-shared="http://xquery.weber-gesamtausgabe.de/modules/app-shared" at "/db/apps/raffArchive/resources/lib/wega-webapp-lib/xquery/app-shared.xqm";
 
@@ -19,14 +20,15 @@ import module namespace search="https://portal.raff-archiv.ch/ns/search" at "/db
  : The following modules provide functions which will be called by the 
  : templating.
  :)
+declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
+
 import module namespace config="https://portal.raff-archiv.ch/config" at "config.xqm";
 import module namespace app="https://portal.raff-archiv.ch/templates" at "app.xql";
 import module namespace xmldb="http://exist-db.org/xquery/xmldb";
 
-declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
-
-declare option output:method "html5";
+declare option output:method "xhtml";
 declare option output:media-type "text/html";
+declare option output:html-version "5";
 
 let $config := map {
     $templates:CONFIG_APP_ROOT : $config:app-root,
@@ -45,7 +47,7 @@ let $model :=
 		return
 			map:entry($var, request:get-attribute($var))
 		),
-		map:entry('environment', config:app-status())
+		map:entry('environment', config:repo-status())
 	))
 
 (:
@@ -61,10 +63,11 @@ let $lookup := function($functionName as xs:string, $arity as xs:int) {
         ()
     }
 }
-(:
+
+ (:~
  : The HTML is passed in the request from the controller.
  : Run it through the templating system and return the result.
- :)
+~:)
 let $content := request:get-data()
-return
-    templates:apply($content, $lookup, (), $config)
+return 
+    templates:apply($content, $lookup, $model, $config)
