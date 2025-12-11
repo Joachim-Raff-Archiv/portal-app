@@ -6,3 +6,5 @@ build/*
 repo.xml
 dist
 resources/lib/wega-webapp-lib
+temp
+*.code-workspace

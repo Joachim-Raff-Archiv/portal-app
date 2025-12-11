@@ -82,15 +82,19 @@
         <copy todir="${build.dir}/">
             <fileset dir="${raffArchive.basedir}">
                 <include name="**/*.*"/>
-                <exclude name="build.xml"/>
                 <exclude name=".existdb.json"/>
-                <exclude name=".git*"/>
+                <exclude name="build.xml"/>
                 <exclude name="*.tmpl"/>
                 <exclude name="*.xpr"/>
                 <exclude name="*.properties"/>
+                <exclude name="*.code-workspace"/>
+                <exclude name=".git"/>
+                <exclude name=".github/"/>
                 <exclude name="build/"/>
                 <exclude name="dist/"/>
                 <exclude name="scripts/"/>
+                <exclude name="submodules/"/>
+                <exclude name="temp/"/>
             </fileset>
         </copy>
         
