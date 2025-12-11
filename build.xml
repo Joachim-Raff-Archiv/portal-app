@@ -8,7 +8,7 @@
     
     <condition property="wega-webapp-lib-available">
         <or>
-            <available file="${raffArchive.basedir}/resources/wega-webapp-lib/xquery/app-shared.xqm"/>
+            <available file="${raffArchive.basedir}/resources/lib/wega-webapp-lib/xquery/app-shared.xqm"/>
         </or>
     </condition>
     <echo if:set="wega-webapp-lib-available" message="WeGA-WebApp-lib available: ${wega-webapp-lib-available}"/>
@@ -39,14 +39,14 @@
     
     <target name="wega-webapp-lib-download" unless="${wega-webapp-lib-available}">
         <echo>Download the WeGA-WebApp-lib</echo>
-        <mkdir dir="${raffArchive.basedir}/temp/"/>
+        <mkdir dir="${raffArchive.basedir}/temp/download"/>
         <get src="https://github.com/Edirom/WeGA-WebApp-lib/archive/refs/tags/v${wega-webapp-lib-version}.zip" dest="${raffArchive.basedir}/temp/download"/>
     </target>
     
     <target name="wega-webapp-lib-unzip" depends="wega-webapp-lib-download" unless="${wega-webapp-lib-available}">
         <echo>Download the WeGA-WebApp-lib</echo>
-        <mkdir dir="${raffArchive.basedir}/resources/wega-webapp-lib/"/>
-        <unzip src="${raffArchive.basedir}/temp/download" overwrite="true" dest="${raffArchive.basedir}/temp/unzipped"/>
+        <mkdir dir="${raffArchive.basedir}/resources/lib/wega-webapp-lib/"/>
+        <unzip src="${raffArchive.basedir}/temp/download/WeGA-WebApp-lib-${wega-webapp-lib-version}.zip" overwrite="true" dest="${raffArchive.basedir}/temp/unzipped"/>
     </target>
     
     <target name="wega-webapp-lib-prepare" depends="wega-webapp-lib-unzip" unless="${wega-webapp-lib-available}">
