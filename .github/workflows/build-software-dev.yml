@@ -66,6 +66,10 @@ jobs:
             --target develop \
             ${{ steps.find.outputs.artifact }}
 
+  dispatch:
+    runs-on: ubuntu-latest
+    needs: build-and-publish
+    steps:
       - name: Trigger Docker build
         run: |
           curl -X POST \
