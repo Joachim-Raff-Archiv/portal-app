@@ -83,7 +83,7 @@ else
 
 (: if it's a podcast :)
 else
-	if (matches($exist:path, "podcast-\d*")) then
+	if (matches($exist:path, "podcast*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			{if($app:collectionPodcasts/id($exist:resource))
