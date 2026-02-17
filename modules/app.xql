@@ -2844,8 +2844,8 @@ declare function app:work($node as node(), $model as map(*)) {
                          {raffShared:transform($work,"metadataWork.xsl")}
                          {if($work//mei:expression[@type='audio'])
                           then(for $work in $work//mei:componentList/mei:work[.//mei:expression[@type='audio']]
-                                let $coverUri := '$resources/cover/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target
-                                let $audioUri := '$resources/mp3/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target
+                                let $coverUri := '$audio/cover/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:bibl[@type='cover']/@target
+                                let $audioUri := '$audio/mp3/' || $work/ancestor::mei:meiHead//mei:manifestation[@xml:id=$work//mei:expression[@type='audio']//mei:relation[@rel='hasEmbodiment']/substring-after(@target,'#')]//mei:item[@n=$work/@n]/@target
                                return
                                (<div class="modal fade" id="{concat('audio-modal-',format-number($work/@n, '0000'))}" tabindex="-1" aria-labelledby="{concat('audio-modal-label-',format-number($work/@n, '0000'))}" aria-hidden="true">
                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
