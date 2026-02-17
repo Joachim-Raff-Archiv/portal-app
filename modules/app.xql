@@ -28,6 +28,7 @@ declare variable $app:collectionDocuments := '/db/apps/jra-data/sources';
 declare variable $app:collectionPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI[not(tei:ref)];
 declare variable $app:collectionPersons := collection('/db/apps/jra-data/persons')//tei:TEI[.//tei:person][not(tei:ref)];
 declare variable $app:collectionInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI[.//tei:org][not(tei:ref)];
+declare variable $app:collectionPlaces := collection('/db/apps/jra-data/places')//tei:TEI[.//tei:place][not(tei:ref)];
 declare variable $app:collectionSources := collection('/db/apps/jra-data/sources')//tei:TEI[not(tei:ref)];
 declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//tei:TEI[not(tei:ref)];
 declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei[not(mei:ref)];
@@ -35,7 +36,7 @@ declare variable $app:collectionWritings := collection('/db/apps/jra-data/writin
 
 declare variable $app:collectionPodcasts := collection('/db/apps/jra-data/podcasts')//raffPod:podcast;
 
-declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
+declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionPlaces, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
 declare variable $app:collFullPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
 declare variable $app:collFullPersons := collection('/db/apps/jra-data/persons')//tei:TEI;
@@ -3596,6 +3597,13 @@ let $count := count($app:collectionInstitutions)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Institutionen</span>)
+};
+
+declare function app:countPlaces($node as node(), $model as map(*)){
+let $count := count($app:collectionPlaces)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Orte</span>)
 };
 
 declare function app:countWritings($node as node(), $model as map(*)){
