@@ -38,7 +38,9 @@ else
 else
     if(contains($exist:path, '/$audio/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat('/jra-audio/', substring-after($exist:path, '/$audio'))}"/>
+        <forward url="{concat(substring-before($exist:controller,'/raffArchive/'), '/jra-audio/', substring-after($exist:path, '/$audio/'))}">
+            <set-header name="Cache-Control" value="max-age=3600,public"/>
+        </forward>
     </dispatch>
 
 else
