@@ -1779,6 +1779,246 @@ declare function app:institution($node as node(), $model as map(*)) {
         )
 };
 
+declare function app:registryPlaces($node as node(), $model as map(*)) {
+
+    let $places := $app:collectionPlaces
+
+    let $placesAlpha := for $place in $places
+                                let $placeID := $place/@xml:id/string()
+                                let $initial := upper-case(substring($place//tei:place/tei:placeName[1], 1, 1))
+                                let $namePlace := $place//tei:place/tei:placeName[1]
+                                let $desc := $place//tei:place/tei:desc[1]
+                                let $country := string-join($place//tei:place/tei:country, '/')
+
+                                let $href := if(contains(request:get-url(),'place/')) then('') else('place/')
+                                let $name := <div
+                                    class="row RegisterEntry">
+                                    <div
+                                        class="col-sm-5 col-md-6 col-lg-6">
+                                        {$namePlace}<br/><span class="sublevel">{$desc}</span>
+                                    </div>
+                                    <div
+                                        class="col-sm-4 col-md-4 col-lg-4">{$country}</div>
+                                    <div
+                                        class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
+                                            href="{concat($href, $placeID)}">{$placeID}</a></div>
+                                </div>
+                                    group by $initial
+                                    order by $initial
+                                return
+                                    (<div
+                                        name="{$initial}"
+                                        count="{count($name)}">
+                                        {
+                                            for $each in $name
+                                                let $order := raffShared:replaceToSortDist($each)
+                                                order by $order
+                                            return
+                                                $each
+                                        }
+                                    </div>)
+
+    let $placesGroupedByInitials := for $groups in $placesAlpha
+                                            group by $initial := $groups/@name/string()
+                                            return
+                                                (<div
+                                                    class="RegisterSortBox"
+                                                    initial="{$initial}"
+                                                    count="{$placesAlpha[@name = $initial]/@count}"
+                                                    xmlns="http://www.w3.org/1999/xhtml">
+                                                    <div
+                                                        class="RegisterSortEntry"
+                                                        id="{
+                                                                concat('list-item-', if ($initial = '') then
+                                                                    ('unknown')
+                                                                else
+                                                                    ($initial))
+                                                            }">
+                                                        {
+                                                            if ($initial = '') then
+                                                                ('[N.N.]')
+                                                            else
+                                                                ($initial)
+                                                        }
+                                                    </div>
+                                                    {
+                                                        for $group in $groups
+                                                        return
+                                                            $group
+                                                    }
+                                                </div>)
+    return
+        <div
+            class="container"
+            xmlns="http://www.w3.org/1999/xhtml">
+           <div class="row  justify-content-between">
+               <div class="col-sm-9 	col-md-7 	col-lg-7">
+                   <p>Der Katalog verzeichnet derzeit {count($places)} Orte.</p>
+               </div>
+               <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                   {app:filterInput()}
+               </div>
+            </div>
+                    <ul
+                        class="nav nav-tabs"
+                        id="myTab"
+                        role="tablist">
+                        <li
+                            class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra active"
+                                data-toggle="tab"
+                                href="#alpha">Alphabetisch</a></li>
+                    </ul>
+                    <div
+                        class="tab-content" id="divResults" >
+                        <div
+                            class="tab-pane fade show active"
+                            id="alpha">
+                            <br/>
+                            <div
+                                class="container row">
+                                <div id="navigator" class="list-group col-sm-4 col-md-3 col-lg-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm">
+                                    {
+                                        for $each in $placesGroupedByInitials
+                                        let $initial := if ($each/@initial/string() = '') then
+                                            ('unknown')
+                                        else
+                                            ($each/@initial/string())
+                                        let $count := $each/@count/string()
+                                            order by $initial
+                                        return
+                                            <a
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', $initial)}"><span>{
+                                                        if ($initial = 'unknown') then
+                                                            ('[N.N.]')
+                                                        else
+                                                            ($initial)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$count}</span>
+                                            </a>
+                                    }
+                                    </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                    {$placesGroupedByInitials}
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+};
+
+declare function app:place($node as node(), $model as map(*)) {
+
+    let $id := request:get-parameter("place-id", "Fehler")
+    let $forwarding := raffShared:forwardEntries($id)
+    let $place := $app:collectionPlaces/id($id)
+    let $name := $place//tei:listPlace/tei:place/tei:placeName/normalize-space(data(.))
+    let $literature := $place//tei:bibl[@type='links']
+    return
+        (
+        <div
+            class="container">
+
+            <div
+                class="page-header">
+                <h2>{$name}</h2>
+                <h6>ID: {$id}</h6>
+                <hr/>
+                <ul
+                            class="nav nav-pills"
+                            role="tablist">
+                            <li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra active"
+                                    data-toggle="tab"
+                                    href="#metadata">Allgemein</a></li>
+                            {if (raffShared:getReferences($id)) then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#references">Referenzen</a></li>)else()}
+                            {if ($literature/text()/normalize-space()!='') then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#literature">Literatur</a></li>)else()}
+                            {if(config:status-is-development())
+                then(<li
+                    class="nav-item"><a
+                        class="nav-link-jra"
+                        data-toggle="tab"
+                        href="#viewXML">XML-Ansicht</a></li>)
+                        else()}
+                        </ul>
+                <hr/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+                        <div
+                            class="tab-content">
+                            <div
+                                class="tab-pane fade show active"
+                                id="metadata">
+                                <br/>
+                                {raffShared:transform($place, "metadataPlace.xsl")}
+                            </div>
+                            {
+                                if (raffShared:getReferences($id)) then
+                                    (<div
+                                        class="tab-pane fade"
+                                        id="references">
+                                        <br/>
+                                        <div >{
+                                            let $entrys := raffShared:getReferences($id)
+                                            return
+                                                $entrys
+                                        }</div>
+                                    </div>)
+                                else
+                                    ()
+                            }
+                            {
+                                if ($literature/text()/normalize-space()!='') then
+                                    (<div
+                                        class="tab-pane fade"
+                                        id="literature">
+                                        {$literature}
+                                    </div>)
+                                else
+                                    ()
+                            }
+                            {if(config:status-is-development())
+                then(<div
+                    class="tab-pane fade"
+                    id="viewXML">
+                        <pre>
+                            <xmp>
+                                {raffShared:transform($place/root(), "viewXML.xsl")}
+                            </xmp>
+                        </pre>
+                    </div>)
+                else()}
+                    </div>
+                    {raffShared:suggestedCitation($id)}
+                  </div>
+              </div>
+          </div>
+        </div>
+        )
+};
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
 
