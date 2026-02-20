@@ -40,9 +40,11 @@
                             <i18n:text key="jra.mainNav.institutions"/>
                         </a>
                     </li>
-                    <!--<li>
-                    <a class="nav-link-jra-top" href="$baseUrl/registryPlaces.html"><i18n:text key="jra.mainNav.places"/></a>
-                </li>-->
+                    <li data-template="app-shared:if-matches" data-template-key="environment" data-template-value="development">
+                        <a class="nav-link-jra-top" onclick="pleaseWait()" href="$baseUrl/registryPlaces.html">
+                            <i18n:text key="jra.mainNav.places"/>
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li>
