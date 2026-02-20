@@ -204,6 +204,14 @@ fieldset[disabled] .btn-jra.active {
     box-shadow: 0 0 0 .2rem rgba(127, 185, 29, 0.5)
 }
 
+.btn-jra-annot {
+    padding-left: 0.4em;
+  padding-right: 0.4em;
+  padding-top: 0em;
+  padding-bottom: 0em;
+  margin-left: 0.15em;
+}
+
 navbar-jra .navbar-brand{
     color: #641a85
 }
