@@ -71,7 +71,6 @@
                 </a>
             </xsl:when>
             <xsl:otherwise>
-            <xsl:value-of select="$dirPlaces"/>
                 <xsl:apply-templates/>
             </xsl:otherwise>
         </xsl:choose>

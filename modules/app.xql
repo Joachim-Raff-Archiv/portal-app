@@ -414,7 +414,7 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
     let $regeste := $letter//tei:note[@type='regeste'][./text()/normalize-space() != '']
-    let $fulltext := $letter//tei:div[@type='volltext']
+    let $fulltext := $letter//tei:text/tei:body/tei:div
     let $facsimile := $letter//tei:facsimile[.//tei:graphic]
     return
         (
@@ -501,7 +501,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                   <div
                                       class="row">
                                       <div class="letterContentFullView">
-                                          {raffShared:transform($fulltext, "formattingText.xsl")}
+                                          {for $text in $fulltext return raffShared:transform($text, "formattingText.xsl")}
                                       </div>
                                   </div>
                           </div>)else()}
