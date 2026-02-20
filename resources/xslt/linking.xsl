@@ -2,7 +2,7 @@
     <xsl:variable name="viewPerson" select="'person/'"/>
     <xsl:variable name="viewInstitution" select="'institution/'"/>
     <xsl:variable name="viewWork" select="'work/'"/>
-    <xsl:variable name="viewLocus" select="'locus/'"/>
+    <xsl:variable name="viewPlace" select="'places/'"/>
     <xsl:variable name="viewManuscript" select="'sources/manuscript/'"/>
     <xsl:variable name="viewPrint" select="'sources/print/'"/>
     
@@ -61,6 +61,22 @@
         </xsl:choose>
     </xsl:template>
     
+    <!-- Linking places -->
+    <xsl:template match="tei:placeName|tei:settlement">
+        <xsl:variable name="dirPlaces" select="concat('K', substring(@key, 2, 4), '00')"/>
+        <xsl:choose>
+            <xsl:when test="doc-available(concat('/db/apps/jra-data/places/', $dirPlaces, '/',  ./@key, '.xml'))">
+                <a href="{concat($viewPlace, ./@key)}">
+                    <xsl:apply-templates/>
+                </a>
+            </xsl:when>
+            <xsl:otherwise>
+            <xsl:value-of select="$dirPlaces"/>
+                <xsl:apply-templates/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     <!-- Linking works -->
     <xsl:template match="tei:title">
         <xsl:variable name="dirWorks" select="concat('B', substring(@key, 2,2), '00')"/>
@@ -88,20 +104,5 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    
-    <!-- Linking settlements -->
-    <!--<xsl:template match="settlement">
-        <xsl:choose>
-            <xsl:when test="doc-available(concat('/db/apps/jra-data/loci/', ./@key, '.xml'))">
-                <a href="{concat($viewLocus, ./@key)}">
-                    <xsl:apply-templates/>
-                </a>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>-->
-    
     
 </xsl:stylesheet>
