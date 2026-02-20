@@ -169,7 +169,7 @@
         </xsl:for-each>
     </xsl:template>
     
-    <xsl:template match="note[not(@type='regeste')]">
+    <xsl:template match="note[not(@type='regeste') and not(@type='commentary')]">
         <xsl:variable name="noteContent" select="./text()"/>
         <xsl:variable name="noteCounter">
             <xsl:if test="@n = '1'">*)</xsl:if>
@@ -184,6 +184,12 @@
         <p>
             <xsl:apply-templates/>
         </p>
+    </xsl:template>
+
+    <xsl:template match="note[@type='commentary']">
+        <xsl:variable name="commentaryContent" select=".//text()/normalize-space()"/>
+        <xsl:variable name="commentaryResp" select="./@resp"/>
+        <button type="button" class="btn btn-sm btn-jra" data-toggle="popover" title="Kritischer Kommentar" data-content="{$commentaryContent} ({$commentaryResp})">i</button>
     </xsl:template>
     
     <xsl:template match="q">
