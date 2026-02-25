@@ -31,6 +31,9 @@ jobs:
           ant -verbose -lib scripts/libs dist
           echo "Build finished, listing dist:"
           ls -la dist || true
+          VERSION=$(grep '^project.version=' build.properties | cut -d'=' -f2)
+          git tag -a v$VERSION -m "v$VERSION"
+          git push origin --tags
 
       - name: Find artifact
         id: find
@@ -39,15 +42,24 @@ jobs:
           if [ -z "$ART" ]; then echo "No artifact found in dist" && exit 1; fi
           echo "artifact=$ART" >> $GITHUB_OUTPUT
 
+      - name: Delete existing prod-latest tag and set new
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push --delete origin prod-latest || echo "Tag prod-latest does not exist yet"
+          git tag -a prod-latest -m "Latest release for production" || echo "Tag prod-latest can't be created"
+      
+      
       - name: Create versioned release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(grep '^project.version=' build.properties | cut -d'=' -f2)
-          gh release create prod-latest \
+          gh release create v$VERSION \
             --title "v$VERSION" \
-            --notes "Automatic build and release from main branch." \
             --target main \
+            --generate-notes \
             ${{ steps.find.outputs.artifact }}
 
   dispatch:

@@ -61,7 +61,7 @@ jobs:
         run: |
           gh release create dev-latest \
             --title "raffArchive Portal-App (dev)" \
-            --notes "Automatischer Build vom develop Branch. Dies ist ein Pre-Release für Entwicklungszwecke." \
+            --notes "Automatic build from develop branch for development purpose." \
             --prerelease \
             --target develop \
             ${{ steps.find.outputs.artifact }}
