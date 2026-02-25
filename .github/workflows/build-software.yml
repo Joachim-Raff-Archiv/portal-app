@@ -31,9 +31,6 @@ jobs:
           ant -verbose -lib scripts/libs dist
           echo "Build finished, listing dist:"
           ls -la dist || true
-          VERSION=$(grep '^project.version=' build.properties | cut -d'=' -f2)
-          git tag -a v$VERSION -m "v$VERSION"
-          git push origin --tags
 
       - name: Find artifact
         id: find
