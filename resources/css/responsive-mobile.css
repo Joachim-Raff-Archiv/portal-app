@@ -1,0 +1,174 @@
+/* ===============================================
+   Responsive Design für Mobile Geräte
+   Optimierungen für iPhone und andere mobile Geräte
+   =============================================== */
+
+/* Tablet und größer - Logo ausblenden */
+@media (min-width: 768px) {
+    .navbar-brand {
+        display: none !important;
+    }
+}
+
+/* Mobile Geräte (iPhone und kleinere Tablets) */
+@media (max-width: 767px) {
+    /* Navigation Anpassungen */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar-collapse {
+        background-color: #641a85;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .nav-link-jra-top {
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+    }
+    
+    .dropdown-menu {
+        border: none !important;
+        margin-left: 1rem;
+    }
+    
+    /* Schriftgrößen für mobile Geräte */
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    h3 {
+        font-size: 1.25rem !important;
+    }
+    
+    h4 {
+        font-size: 1.1rem !important;
+    }
+    
+    h5, h6 {
+        font-size: 1rem !important;
+    }
+    
+    /* Container Anpassungen */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    /* Register und Listen */
+    .RegisterSortBox {
+        width: 100%;
+        margin-top: 1em;
+        padding: 0 10px;
+    }
+    
+    .RegisterSortEntry {
+        font-size: 0.95em;
+        padding: 0.5em;
+    }
+    
+    .RegisterSortEntry2 {
+        font-size: 0.95em;
+        padding: 0.5em;
+    }
+    
+    /* Tabellen responsive */
+    table {
+        font-size: 0.85rem;
+    }
+    
+    /* Buttons und Formulare */
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Hero-Section auf der Startseite */
+    .display-6 {
+        font-size: 1.5rem !important;
+    }
+    
+    .intro-content {
+        padding: 1rem;
+    }
+    
+    /* Zeilenumbrüche für lange Wörter */
+    p, div, span {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Back-to-top Button */
+    .back-to-top {
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+    }
+}
+
+/* Sehr kleine Geräte (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    body {
+        font-size: 13px;
+    }
+    
+    h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    h2 {
+        font-size: 1.3rem !important;
+    }
+    
+    h3 {
+        font-size: 1.15rem !important;
+    }
+    
+    .display-6 {
+        font-size: 1.2rem !important;
+    }
+    
+    .nav-link-jra-top {
+        font-size: 0.9rem !important;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* Landscape-Modus für Smartphones */
+@media (max-width: 767px) and (orientation: landscape) {
+    .intro {
+        min-height: 300px;
+    }
+    
+    .intro-content {
+        padding: 0.5rem;
+    }
+}
+
+/* Optimierungen für bessere Touch-Bedienung */
+@media (max-width: 767px) {
+    /* Größere Touch-Targets */
+    a, button, .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Input-Felder */
+    input, select, textarea {
+        font-size: 16px; /* Verhindert Zoom auf iOS */
+    }
+}
