@@ -466,7 +466,8 @@ svg {
 
 /* Tablet und Desktop - Landing Page bleibt wie bisher */
 @media (min-width: 768px) {
-    .navbar-b .navbar-toggler {
+    .navbar-b .navbar-toggler,
+    .navbar-b .navbar-toggler-jra {
         display: none !important;
     }
     
