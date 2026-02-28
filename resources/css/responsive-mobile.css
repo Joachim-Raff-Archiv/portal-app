@@ -346,8 +346,14 @@ svg {
 
 /* Optimierungen für bessere Touch-Bedienung */
 @media (max-width: 767px) {
-    /* Größere Touch-Targets */
-    a, button, .btn {
+    /* Größere Touch-Targets nur für interaktive Bedienelemente, nicht für alle Links */
+    button,
+    .btn,
+    .navbar-nav a,
+    .nav-link,
+    .navbar-toggler,
+    .navbar-toggler-jra,
+    .nav-link-jra-top {
         min-height: 44px;
         min-width: 44px;
     }
