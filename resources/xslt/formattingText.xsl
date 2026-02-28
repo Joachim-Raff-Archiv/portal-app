@@ -170,14 +170,29 @@
     </xsl:template>
     
     <xsl:template match="note[not(@type='regeste') and not(@type='commentary')]">
-        <xsl:variable name="noteContent" select="./text()"/>
         <xsl:variable name="noteCounter">
             <xsl:if test="@n = '1'">*)</xsl:if>
             <xsl:if test="@n = '2'">**)</xsl:if>
         </xsl:variable>
-        <span data-container="body" data-toggle="popover" title="Fußnote {$noteCounter}" data-placement="top" data-content="{$noteContent}" style="color: #641a85;">
+        <xsl:variable name="noteID" select="concat('note-', $docID, '-', generate-id())"/>
+        <span data-toggle="modal" data-target="#{$noteID}" style="color: #641a85; cursor: pointer;">
             <xsl:value-of select="$noteCounter"/>
         </span>
+        <div class="modal fade" id="{$noteID}" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Fußnote <xsl:value-of select="$noteCounter"/></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <xsl:apply-templates/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </xsl:template>
     
     <xsl:template match="note[@type='regeste']">
@@ -187,12 +202,90 @@
     </xsl:template>
 
     <xsl:template match="note[@type='commentary']">
-        <xsl:variable name="commentaryContent" select=".//text()/normalize-space()"/>
         <xsl:variable name="commentaryResp" select="./@resp"/>
-        <button type="button" class="btn btn-jra btn-jra-annot" data-toggle="popover" title="Kritischer Kommentar" data-content="{$commentaryContent} ({$commentaryResp})">i</button>
+        <xsl:variable name="commentaryID" select="concat('commentary-', $docID, '-', generate-id())"/>
+        <button type="button" class="btn btn-jra btn-jra-annot" data-toggle="modal" data-target="#{$commentaryID}">i</button>
+        <div class="modal fade" id="{$commentaryID}" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Kritischer Kommentar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <xsl:apply-templates/>
+                        <xsl:if test="$commentaryResp">
+                            <p class="text-muted" style="margin-top: 1em;">(<xsl:value-of select="$commentaryResp"/>)</p>
+                        </xsl:if>
+                    </div>
+                </div>
+            </div>
+        </div>
     </xsl:template>
     
     <xsl:template match="q">
         «<xsl:apply-templates/>»
     </xsl:template>
+    
+    <!-- Additional templates for elements within notes -->
+    <xsl:template match="quote">
+        <span style="font-style: italic;">"<xsl:apply-templates/>"</span>
+    </xsl:template>
+    
+    <xsl:template match="foreign">
+        <i><xsl:apply-templates/></i>
+    </xsl:template>
+    
+    <xsl:template match="title[not(@key)]">
+        <i><xsl:apply-templates/></i>
+    </xsl:template>
+    
+    <xsl:template match="date">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+    <xsl:template match="rs[@type='postal']">
+        <xsl:choose>
+            <xsl:when test="@key">
+                <a href="/html/letter/{@key}"><xsl:apply-templates/></a>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="rs[@type='person']">
+        <xsl:choose>
+            <xsl:when test="@key">
+                <a href="/html/person/{@key}"><xsl:apply-templates/></a>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="rs[@type='work']">
+        <xsl:choose>
+            <xsl:when test="@key">
+                <a href="/html/work/{@key}"><xsl:apply-templates/></a>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="unclear">
+        <span style="color: #666; font-style: italic;" title="Unklare Lesart">[<xsl:apply-templates/>?]</span>
+    </xsl:template>
+    
+    <xsl:template match="gap">
+        <span style="color: #999;" title="Lücke im Text">[...]</span>
+    </xsl:template>
+
+    
 </xsl:stylesheet>
