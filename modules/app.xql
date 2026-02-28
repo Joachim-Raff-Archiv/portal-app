@@ -3663,29 +3663,7 @@ declare function app:writing($node as node(), $model as map(*)) {
          </div>
      </div>
      <!-- Scroll to Top Button -->
-     <button id="scrollToTopBtn" 
-             style="display: none; 
-                    position: fixed; 
-                    bottom: 30px; 
-                    right: 25%; 
-                    z-index: 9999; 
-                    border: none; 
-                    outline: none; 
-                    background-color: #641a85; 
-                    color: white; 
-                    cursor: pointer; 
-                    padding: 15px; 
-                    border-radius: 50%; 
-                    font-size: 18px;
-                    width: 50px;
-                    height: 50px;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                    transition: background-color 0.3s, transform 0.3s;"
-             onmouseover="this.style.backgroundColor='#4a1265'; this.style.transform='scale(1.1)';"
-             onmouseout="this.style.backgroundColor='#641a85'; this.style.transform='scale(1)';"
-             title="Zum Anfang springen">
-        ↑
-     </button>
+     <button id="scrollToTopBtn" title="Zum Anfang springen">↑</button>
      <script src="$resources/js/writing-navigation.js"></script>
   </div>
         )
