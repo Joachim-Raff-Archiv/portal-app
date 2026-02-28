@@ -3,6 +3,64 @@
    Optimierungen für iPhone und andere mobile Geräte
    =============================================== */
 
+/* ===============================================
+   Hamburger-Button Klasse (basiert auf .btn-jra)
+   =============================================== */
+.navbar-toggler-jra {
+    display: inline-block;
+    background-image: -webkit-linear-gradient(top, #641a85 0%, #641A85 100%);
+    background-image: -o-linear-gradient(top, #641a85 0%, #641A85 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#641a85), to(#641A85));
+    background-image: linear-gradient(to bottom, #641a85 0%, #641A85 100%);
+    background-repeat: repeat-x;
+    border: 2px solid #641A85;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.navbar-toggler-jra:hover,
+.navbar-toggler-jra:focus {
+    background-color: #f0f0f0;
+    background-image: none;
+    border-color: #777777;
+    color: #641a85;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.navbar-toggler-jra:active,
+.navbar-toggler-jra[aria-expanded="true"] {
+    background-color: #f0f0f0;
+    background-image: none;
+    border-color: #641A85;
+    color: #641a85;
+}
+
+/* Unterstrich-Balken für Hamburger-Icon deaktivieren */
+.navbar-toggler-jra:before,
+.navbar-toggler-jra:after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Hamburger Icon Rotation */
+.navbar-toggler-jra span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    transform: rotate(0deg) !important;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.navbar-toggler-jra[aria-expanded="true"] span {
+    transform: rotate(90deg) !important;
+}
+
 /* Globale Responsive SVG Styles */
 img[src$=".svg"] {
     max-width: 100%;
