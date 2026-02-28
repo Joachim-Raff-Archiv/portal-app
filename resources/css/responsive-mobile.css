@@ -3,10 +3,26 @@
    Optimierungen für iPhone und andere mobile Geräte
    =============================================== */
 
+/* Globale Responsive SVG Styles */
+img[src$=".svg"] {
+    max-width: 100%;
+    height: auto;
+}
+
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
 /* Tablet und größer - Logo ausblenden */
 @media (min-width: 768px) {
     .navbar-brand {
         display: none !important;
+    }
+    
+    /* Navigation ist auf Desktop immer sichtbar */
+    .navbar-collapse {
+        display: flex !important;
     }
 }
 
@@ -17,20 +33,41 @@
         padding: 0.5rem 1rem;
     }
     
-    .navbar-collapse {
+    /* Collapsed Navigation initial versteckt */
+    .navbar-collapse:not(.show) {
+        display: none !important;
+    }
+    
+    /* Wenn geöffnet, dann anzeigen */
+    .navbar-collapse.show {
+        display: block !important;
         background-color: #641a85;
         padding: 1rem;
         margin-top: 0.5rem;
     }
     
+    /* Collapsing Animation */
+    .navbar-collapse.collapsing {
+        display: block !important;
+        background-color: #641a85;
+    }
+    
     .nav-link-jra-top {
         padding: 0.75rem 1rem !important;
         font-size: 1rem !important;
+        display: block !important;
     }
     
     .dropdown-menu {
         border: none !important;
         margin-left: 1rem;
+        position: static !important;
+    }
+    
+    /* Toggler Button sichtbar machen */
+    .navbar-toggler {
+        display: block !important;
+        border: 1px solid white;
     }
     
     /* Schriftgrößen für mobile Geräte */
@@ -56,6 +93,38 @@
     
     h5, h6 {
         font-size: 1rem !important;
+    }
+    
+    /* title-b Klasse für große Überschriften */
+    .title-b {
+        font-size: 1.8rem !important;
+    }
+    
+    .subtitle-b {
+        font-size: 1rem !important;
+    }
+    
+    /* SVG Icons responsive */
+    .service-box img[src$=".svg"] {
+        max-width: 100px !important;
+        height: auto !important;
+    }
+    
+    /* Service Boxes auf mobile optimiert */
+    .service-box {
+        margin-bottom: 2rem;
+    }
+    
+    /* Grid-Spalten auf volle Breite bei mobilen Geräten */
+    .row .col-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .row .col-sm-2,
+    .row .col-lg-2 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
     }
     
     /* Container Anpassungen */
@@ -136,6 +205,16 @@
     
     .display-6 {
         font-size: 1.2rem !important;
+    }
+    
+    /* title-b für sehr kleine Geräte */
+    .title-b {
+        font-size: 1.5rem !important;
+    }
+    
+    /* SVG Icons noch kleiner */
+    .service-box img[src$=".svg"] {
+        max-width: 80px !important;
     }
     
     .nav-link-jra-top {
