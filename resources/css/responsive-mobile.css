@@ -68,6 +68,20 @@ svg {
     .navbar-toggler {
         display: block !important;
         border: 1px solid white;
+        padding: 0.5rem;
+    }
+    
+    /* Hamburger Icon - Standard */
+    .navbar-toggler span {
+        display: inline-block;
+        transition: transform 0.3s ease;
+        transform: rotate(0deg);
+    }
+    
+    /* Hamburger Icon - Aktiviert (90 Grad Drehung) */
+    .navbar-toggler:not(.collapsed) span,
+    .navbar-toggler[aria-expanded="true"] span {
+        transform: rotate(90deg);
     }
     
     /* Schriftgrößen für mobile Geräte */
@@ -284,6 +298,19 @@ svg {
         border: 1px solid white;
         background-color: #641a85;
         padding: 0.5rem;
+    }
+    
+    /* Hamburger Icon - Standard (Landing Page) */
+    .navbar-b .navbar-toggler span {
+        display: inline-block;
+        transition: transform 0.3s ease;
+        transform: rotate(0deg);
+    }
+    
+    /* Hamburger Icon - Aktiviert 90 Grad (Landing Page) */
+    .navbar-b .navbar-toggler:not(.collapsed) span,
+    .navbar-b .navbar-toggler[aria-expanded="true"] span {
+        transform: rotate(90deg);
     }
     
     /* Navigation Container */
