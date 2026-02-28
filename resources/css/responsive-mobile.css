@@ -1,0 +1,487 @@
+/* ===============================================
+   Responsive Design für Mobile Geräte
+   Optimierungen für iPhone und andere mobile Geräte
+   =============================================== */
+
+/* ===============================================
+   Hamburger-Button Klasse (basiert auf .btn-jra)
+   =============================================== */
+.navbar-toggler-jra {
+    display: inline-block;
+    background-image: -webkit-linear-gradient(top, #641a85 0%, #641A85 100%);
+    background-image: -o-linear-gradient(top, #641a85 0%, #641A85 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#641a85), to(#641A85));
+    background-image: linear-gradient(to bottom, #641a85 0%, #641A85 100%);
+    background-repeat: repeat-x;
+    border: 2px solid #641A85;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.navbar-toggler-jra:hover,
+.navbar-toggler-jra:focus {
+    background-color: #f0f0f0;
+    background-image: none;
+    border-color: #777777;
+    color: #641a85;
+    box-shadow: none;
+    outline: none;
+}
+
+.navbar-toggler-jra:focus-visible {
+    outline: 3px solid #641a85;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(100, 26, 133, 0.4);
+}
+
+.navbar-toggler-jra:active,
+.navbar-toggler-jra[aria-expanded="true"] {
+    background-color: #f0f0f0;
+    background-image: none;
+    border-color: #641A85;
+    color: #641a85;
+}
+
+/* Unterstrich-Balken für Hamburger-Icon deaktivieren */
+.navbar-toggler-jra:before,
+.navbar-toggler-jra:after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Hamburger Icon Rotation */
+.navbar-toggler-jra span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    transform: rotate(0deg) !important;
+    line-height: 1;
+}
+
+.navbar-toggler-jra[aria-expanded="true"] span {
+    transform: rotate(90deg) !important;
+}
+
+/* Globale Responsive SVG Styles */
+img[src$=".svg"] {
+    max-width: 100%;
+    height: auto;
+}
+
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Unterstrich-Balken für Hamburger-Icon global deaktivieren */
+.navbar-toggler:before,
+.navbar-toggler:after,
+.navbar-b .navbar-toggler:before,
+.navbar-b .navbar-toggler:after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Tablet und größer - Logo ausblenden */
+@media (min-width: 768px) {
+    /* Navigation ist auf Desktop immer sichtbar */
+    .navbar-collapse {
+        display: flex !important;
+    }
+}
+
+/* Mobile Geräte (iPhone und kleinere Tablets) */
+@media (max-width: 767px) {
+    /* Navigation Anpassungen */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Collapsed Navigation initial versteckt */
+    .navbar-collapse:not(.show) {
+        display: none !important;
+    }
+    
+    /* Wenn geöffnet, dann anzeigen */
+    .navbar-collapse.show {
+        display: block !important;
+        background-color: #641a85;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* Collapsing Animation */
+    .navbar-collapse.collapsing {
+        display: block !important;
+        background-color: #641a85;
+    }
+    
+    .nav-link-jra-top {
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+        display: block !important;
+    }
+    
+    .dropdown-menu {
+        border: none !important;
+        margin-left: 1rem;
+        position: static !important;
+    }
+    
+    /* Toggler Button sichtbar machen */
+    .navbar-toggler {
+        display: block !important;
+        border: none !important;
+        padding: 0.5rem 0.75rem;
+        background-color: transparent !important;
+        outline: none !important;
+        position: relative;
+    }
+    
+    /* Unterstrich für Toggler deaktivieren */
+    .navbar-toggler:before,
+    .navbar-toggler:after {
+        display: none !important;
+        content: none !important;
+    }
+    
+    .navbar-toggler:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    /* Hamburger Icon - Standard (horizontal) */
+    .navbar-toggler span {
+        display: inline-block;
+        transition: transform 0.3s ease;
+        transform: rotate(0deg) !important;
+        line-height: 1;
+        vertical-align: middle;
+    }
+    
+    /* Hamburger Icon - Nur wenn Menü geöffnet (vertikal) */
+    .navbar-toggler[aria-expanded="true"] span {
+        transform: rotate(90deg) !important;
+    }
+    
+    /* Schriftgrößen für mobile Geräte */
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    h3 {
+        font-size: 1.25rem !important;
+    }
+    
+    h4 {
+        font-size: 1.1rem !important;
+    }
+    
+    h5, h6 {
+        font-size: 1rem !important;
+    }
+    
+    /* title-b Klasse für große Überschriften */
+    .title-b {
+        font-size: 1.8rem !important;
+    }
+    
+    .subtitle-b {
+        font-size: 1rem !important;
+    }
+    
+    /* SVG Icons responsive */
+    .service-box img[src$=".svg"] {
+        max-width: 100px !important;
+        height: auto !important;
+    }
+    
+    /* Service Boxes auf mobile optimiert */
+    .service-box {
+        margin-bottom: 2rem;
+    }
+    
+    /* Grid-Spalten auf volle Breite bei mobilen Geräten */
+    .row .col-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .row .col-sm-2,
+    .row .col-lg-2 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+    
+    /* Container Anpassungen */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    /* Portal-Section: Breiter auf mobilen Geräten */
+    #portal .container {
+        width: 90% !important;
+        max-width: 90% !important;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    /* Allgemeine Section-Container breiter */
+    section .container {
+        width: 90% !important;
+        max-width: 90% !important;
+    }
+    
+    /* Register und Listen */
+    .RegisterSortBox {
+        width: 100%;
+        margin-top: 1em;
+        padding: 0 10px;
+    }
+    
+    .RegisterSortEntry {
+        font-size: 0.95em;
+        padding: 0.5em;
+    }
+    
+    .RegisterSortEntry2 {
+        font-size: 0.95em;
+        padding: 0.5em;
+    }
+    
+    /* Tabellen responsive */
+    table {
+        font-size: 0.85rem;
+    }
+    
+    /* Buttons und Formulare */
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Hero-Section auf der Startseite */
+    .display-6 {
+        font-size: 1.5rem !important;
+    }
+    
+    .intro-content {
+        padding: 1rem;
+    }
+    
+    /* Zeilenumbrüche für lange Wörter */
+    p, div, span {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Back-to-top Button */
+    .back-to-top {
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+    }
+}
+
+/* Sehr kleine Geräte (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    body {
+        font-size: 13px;
+    }
+    
+    h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    h2 {
+        font-size: 1.3rem !important;
+    }
+    
+    h3 {
+        font-size: 1.15rem !important;
+    }
+    
+    .display-6 {
+        font-size: 1.2rem !important;
+    }
+    
+    /* title-b für sehr kleine Geräte */
+    .title-b {
+        font-size: 1.5rem !important;
+    }
+    
+    /* SVG Icons noch kleiner */
+    .service-box img[src$=".svg"] {
+        max-width: 80px !important;
+    }
+    
+    .nav-link-jra-top {
+        font-size: 0.9rem !important;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* Landscape-Modus für Smartphones */
+@media (max-width: 767px) and (orientation: landscape) {
+    .intro {
+        min-height: 300px;
+    }
+    
+    .intro-content {
+        padding: 0.5rem;
+    }
+}
+
+/* Optimierungen für bessere Touch-Bedienung */
+@media (max-width: 767px) {
+    /* Größere Touch-Targets nur für interaktive Bedienelemente, nicht für alle Links */
+    button,
+    .btn,
+    .navbar-nav a,
+    .nav-link,
+    .navbar-toggler,
+    .navbar-toggler-jra,
+    .nav-link-jra-top {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Input-Felder */
+    input, select, textarea {
+        font-size: 16px; /* Verhindert Zoom auf iOS */
+    }
+}
+
+/* ===============================================
+   Landing-Page Navigation (navbar-b) Mobile
+   =============================================== */
+
+/* Mobile Geräte - Landing Page Navigation */
+@media (max-width: 767px) {
+    /* Logo immer sichtbar auf Landing Page */
+    .navbar-b.navbar-trans img#icon {
+        display: block !important;
+        height: 50px !important;
+    }
+    
+    /* Toggler Button für Landing Page */
+    .navbar-b .navbar-toggler {
+        display: block !important;
+        border: none !important;
+        background-color: #641a85;
+        padding: 0.5rem 0.75rem;
+        outline: none !important;
+        position: relative;
+    }
+    
+    /* Unterstrich für Landing-Toggler deaktivieren */
+    .navbar-b .navbar-toggler:before,
+    .navbar-b .navbar-toggler:after {
+        display: none !important;
+        content: none !important;
+    }
+    
+    .navbar-b .navbar-toggler:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    /* Hamburger Icon - Standard (Landing Page, horizontal) */
+    .navbar-b .navbar-toggler span {
+        display: inline-block;
+        transition: transform 0.3s ease;
+        transform: rotate(0deg) !important;
+        line-height: 1;
+        vertical-align: middle;
+    }
+    
+    /* Hamburger Icon - Nur wenn Menü geöffnet (Landing Page, vertikal) */
+    .navbar-b .navbar-toggler[aria-expanded="true"] span {
+        transform: rotate(90deg) !important;
+    }
+    
+    /* Navigation Container */
+    .navbar-b {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    
+    /* Collapsed Navigation initial versteckt */
+    .navbar-b .navbar-collapse:not(.show) {
+        display: none !important;
+    }
+    
+    /* Wenn geöffnet, dann anzeigen */
+    .navbar-b .navbar-collapse.show {
+        display: block !important;
+        background-color: rgba(100, 26, 133, 0.95);
+        padding: 1rem;
+        margin-top: 0.5rem;
+        border-radius: 5px;
+    }
+    
+    /* Collapsing Animation */
+    .navbar-b .navbar-collapse.collapsing {
+        display: block !important;
+        background-color: rgba(100, 26, 133, 0.95);
+    }
+    
+    /* Nav Items auf volle Breite */
+    .navbar-b .nav-item {
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    /* Nav Links anklickbar und sichtbar */
+    .navbar-b .nav-link {
+        display: block !important;
+        padding: 0.75rem 1rem !important;
+        color: white !important;
+        font-size: 1rem !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .navbar-b .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white !important;
+    }
+    
+    /* Unterline-Animation deaktivieren auf Mobile */
+    .navbar-b.navbar-trans .nav-link:before,
+    .navbar-b.navbar-reduce .nav-link:before {
+        display: none !important;
+    }
+    
+    /* Container für Landing-Nav */
+    .navbar-b .container {
+        padding: 0;
+    }
+}
+
+/* Tablet und Desktop - Landing Page bleibt wie bisher */
+@media (min-width: 768px) {
+    .navbar-b .navbar-toggler,
+    .navbar-b .navbar-toggler-jra {
+        display: none !important;
+    }
+    
+    .navbar-b .navbar-collapse {
+        display: flex !important;
+    }
+}
