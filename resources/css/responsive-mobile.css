@@ -19,8 +19,6 @@
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
-    outline: none !important;
-    box-shadow: none !important;
 }
 
 .navbar-toggler-jra:hover,
@@ -29,8 +27,14 @@
     background-image: none;
     border-color: #777777;
     color: #641a85;
-    box-shadow: none !important;
-    outline: none !important;
+    box-shadow: none;
+    outline: none;
+}
+
+.navbar-toggler-jra:focus-visible {
+    outline: 3px solid #641a85;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(100, 26, 133, 0.4);
 }
 
 .navbar-toggler-jra:active,
