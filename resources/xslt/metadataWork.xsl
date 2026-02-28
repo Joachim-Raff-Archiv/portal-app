@@ -410,7 +410,7 @@
                     <td valign="top">Uraufführung:</td>
                     <td>
                         <xsl:variable name="UAdate" select="local:formatDate(//mei:eventList/mei:event[@type = 'UA']/mei:date/text())"/>
-                        <xsl:variable name="UAort" select="normalize-space(string-join(//mei:eventList/mei:event[@type = 'UA']/mei:geogName//text(), ' '))"/>
+                        <xsl:variable name="UAort" select="normalize-space(string-join(//mei:eventList/mei:event[@type = 'UA']/mei:geogName//text(), ''))"/>
                         <xsl:variable name="UAconductor" select="//mei:eventList/mei:event[@type = 'UA']/mei:persName[@role = 'conductor'][./text() != '']"/>
                         <xsl:choose>
                             <xsl:when test="not(empty($UAdate)) and not(empty($UAort))">
