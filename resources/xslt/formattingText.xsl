@@ -3,6 +3,11 @@
     <xsl:include href="linking.xsl"/>
     <xsl:variable name="docID" select="//TEI/@xml:id/data(.)"/>
     
+    <!-- Root template -->
+    <xsl:template match="/">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
     <!--front
     pb n="6" rend="roman"
     pb n="1" rend="none"-->
@@ -44,8 +49,13 @@
     </xsl:template>
     <xsl:template match="pb">
         <xsl:variable name="pageID" select="string-join(('page', @n, @rend), '-')"/>
-        <div style="border-style: solid none solid none; border-width: 1px;
-                    margin-top: 1em; margin-bottom: 1em; text-align: center;"
+        <!-- Seitenumbruch-Trennlinie mit Seitennummer -->
+        <div class="page-break" style="border-top: 1px solid #ddd;
+                    margin: 3em 0 2em 0; 
+                    padding-top: 1em;
+                    text-align: center; 
+                    color: #666; 
+                    font-size: 0.9em;"
              id="{$pageID}">
         <xsl:choose>
                 <xsl:when test="@n and @rend = 'roman'">
@@ -60,6 +70,9 @@
                         <xsl:when test="@n = '8'">VIII</xsl:when>
                         <xsl:when test="@n = '9'">IX</xsl:when>
                         <xsl:when test="@n = '10'">X</xsl:when>
+                        <xsl:when test="@n = '11'">XI</xsl:when>
+                        <xsl:when test="@n = '12'">XII</xsl:when>
+                        <xsl:otherwise><xsl:value-of select="@n"/></xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
             <xsl:when test="@n and not(@rend = 'roman') and not(@rend = 'none')">
@@ -76,9 +89,9 @@
         <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="div/head">
-        <b class="heading" style="padding-top: 1.5em;">
+        <h3 class="heading" style="padding-top: 1em; margin-bottom: 1em; color: #641a85;">
             <xsl:apply-templates/>
-        </b>
+        </h3>
     </xsl:template>
     <xsl:template match="hi[@rend = 'bold']">
         <b>
@@ -160,13 +173,18 @@
         </p>
     </xsl:template>
     
-    <xsl:template match="//choice">
-        <xsl:for-each select=".">
-            <xsl:variable name="expan" select="expan"/>
-            <span class="abk" data-toggle="tooltip" data-placement="top" title="{$expan}">
-                <xsl:value-of select="abbr"/>
-            </span>
-        </xsl:for-each>
+    <xsl:template match="choice[abbr]">
+        <xsl:variable name="expan" select="expan"/>
+        <span class="abk" data-toggle="tooltip" data-placement="top" title="{$expan}">
+            <xsl:value-of select="abbr"/>
+        </span>
+    </xsl:template>
+    
+    <xsl:template match="choice[sic and corr]">
+        <xsl:variable name="original" select="sic"/>
+        <span class="corr" data-toggle="tooltip" data-placement="top" title="Original: {$original}" style="border-bottom: 1px dotted #999;">
+            <xsl:value-of select="corr"/>
+        </span>
     </xsl:template>
     
     <xsl:template match="note[not(@type='regeste') and not(@type='commentary')]">
@@ -285,6 +303,67 @@
     
     <xsl:template match="gap">
         <span style="color: #999;" title="Lücke im Text">[...]</span>
+    </xsl:template>
+    
+    <!-- Templates for div elements -->
+    <xsl:template match="div[@type='Kapitel']">
+        <div class="chapter" id="{@xml:id}" style="border-left: 4px solid #641a85; 
+                                                       padding-left: 1.5em; 
+                                                       margin: 2em 0 3em 0;">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="div[not(@type)]">
+        <div>
+            <xsl:if test="@xml:id">
+                <xsl:attribute name="id"><xsl:value-of select="@xml:id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="body">
+        <div class="writing-body" style="background: white; 
+                                         padding: 2em 3em; 
+                                         box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+    
+    <!-- Templates for lists -->
+    <xsl:template match="list[@type='toc']">
+        <ul class="toc-list" style="list-style: none; padding-left: 0;">
+            <xsl:apply-templates/>
+        </ul>
+    </xsl:template>
+    
+    <xsl:template match="list[not(@type) or @type!='toc']">
+        <ul style="margin: 1em 0; padding-left: 2em;">
+            <xsl:apply-templates/>
+        </ul>
+    </xsl:template>
+    
+    <xsl:template match="list[@type='toc']/item">
+        <li style="margin: 0.5em 0;">
+            <xsl:apply-templates/>
+        </li>
+    </xsl:template>
+    
+    <xsl:template match="item">
+        <li style="margin: 0.3em 0;">
+            <xsl:apply-templates/>
+        </li>
+    </xsl:template>
+    
+    <!-- Template for abstract -->
+    <xsl:template match="abstract">
+        <div class="abstract" style="background: #f9f9f9; 
+                                     padding: 1.5em; 
+                                     margin: 2em 0;
+                                     border-left: 3px solid #641a85;">
+            <xsl:apply-templates/>
+        </div>
     </xsl:template>
 
     

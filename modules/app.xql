@@ -3571,14 +3571,34 @@ declare function app:writing($node as node(), $model as map(*)) {
                          id="fulltext">
                          <br/>
          <div class="row">
+            <div class="col-2">
+               <h5>Kapitel</h5>
+               <div style="height:600px; overflow-y: auto; position: sticky; top: 20px;">
+               <ul class="nav flex-column">
+               {
+               for $div in $writing//tei:text//tei:div[@xml:id]
+                   let $divId := $div/@xml:id/string()
+                   let $divHead := $div/tei:head/string()
+                   return
+                   if($divHead) then
+                   <li class="nav-item">
+                      <a class="nav-link" href="#{$divId}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
+                         {$divHead}
+                      </a>
+                   </li>
+                   else()
+               }
+               </ul>
+               </div>
+            </div>
             <div class="col">
-            {raffShared:transform($writing//tei:text,"contentWriting.xsl")}
+            {raffShared:transform($writing//tei:text,"formattingText.xsl")}
             </div>
             <div class="col-2">
-               <h5>Navigation</h5>
-               <div style="height:400px; overflow-y: scroll;">
+               <h5>Seiten</h5>
+               <div style="height:600px; overflow-y: auto; position: sticky; top: 20px;">
                <ul class="nav flex-column">
-               <a class="nav-link" href="#fulltextTitel">Titelseite</a>
+               <a class="nav-link" href="#fulltextTitel" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">Titelseite</a>
                {
                for $pb in $writing//tei:text//tei:pb[@n]
                    let $pageNo := $pb/@n/string()
@@ -3594,11 +3614,17 @@ declare function app:writing($node as node(), $model as map(*)) {
                                             case '8' return 'VIII'
                                             case '9' return 'IX'
                                             case '10' return 'X'
+                                            case '11' return 'XI'
+                                            case '12' return 'XII'
                                             default return $pageNo)
                                        else()
                    let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
                    return
-                   <li class="nav-item"><a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}">Seite {$pageNoLabel}</a></li>
+                   <li class="nav-item">
+                      <a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
+                         Seite {$pageNoLabel}
+                      </a>
+                   </li>
                }</ul>
                </div>
             </div>
