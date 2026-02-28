@@ -13,12 +13,23 @@
     pb n="1" rend="none"-->
     
     <xsl:template match="front">
-        <div style="padding: 25px; border: 1px solid gray; text-align: center; min-height: 450px" id="fulltextTitel">
+        <div style="background: white; 
+                    padding: 3em 2em; 
+                    text-align: center; 
+                    min-height: 450px;
+                    margin-bottom: 2em;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);" 
+             id="fulltextTitel">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
+    
     <xsl:template match="back">
-        <div style="padding: 50px; border: 1px solid gray; text-align: center;">
+        <div style="background: white; 
+                    padding: 3em 2em; 
+                    text-align: center;
+                    margin-top: 2em;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
