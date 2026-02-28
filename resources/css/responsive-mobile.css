@@ -82,10 +82,6 @@ svg {
 
 /* Tablet und größer - Logo ausblenden */
 @media (min-width: 768px) {
-    .navbar-brand {
-        display: none !important;
-    }
-    
     /* Navigation ist auf Desktop immer sichtbar */
     .navbar-collapse {
         display: flex !important;
