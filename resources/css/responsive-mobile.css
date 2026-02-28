@@ -133,6 +133,20 @@ svg {
         padding-right: 15px;
     }
     
+    /* Portal-Section: Breiter auf mobilen Geräten */
+    #portal .container {
+        width: 90% !important;
+        max-width: 90% !important;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    /* Allgemeine Section-Container breiter */
+    section .container {
+        width: 90% !important;
+        max-width: 90% !important;
+    }
+    
     /* Register und Listen */
     .RegisterSortBox {
         width: 100%;
