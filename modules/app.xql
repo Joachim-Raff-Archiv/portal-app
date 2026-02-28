@@ -3629,94 +3629,6 @@ declare function app:writing($node as node(), $model as map(*)) {
                </div>
             </div>
             </div>
-            <!-- Scroll to Top Button -->
-            <button id="scrollToTopBtn" 
-                    style="display: none; 
-                           position: fixed; 
-                           bottom: 30px; 
-                           right: 30px; 
-                           z-index: 99; 
-                           border: none; 
-                           outline: none; 
-                           background-color: #641a85; 
-                           color: white; 
-                           cursor: pointer; 
-                           padding: 15px; 
-                           border-radius: 50%; 
-                           font-size: 18px;
-                           width: 50px;
-                           height: 50px;
-                           box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                           transition: background-color 0.3s, transform 0.3s;"
-                    onmouseover="this.style.backgroundColor='#4a1265'; this.style.transform='scale(1.1)';"
-                    onmouseout="this.style.backgroundColor='#641a85'; this.style.transform='scale(1)';"
-                    title="Zum Anfang springen">
-               ↑
-            </button>
-            <script>
-            <![CDATA[
-            // Calculate navbar height and adjust sticky navigation
-            document.addEventListener('DOMContentLoaded', function() {
-                // Get the main navbar height
-                var mainNavbar = document.querySelector('.navbar.fixed-top');
-                var navbarHeight = mainNavbar ? mainNavbar.offsetHeight : 60;
-                
-                // Adjust sticky headers and content positions
-                var chapterHeader = document.getElementById('chapterNavHeader');
-                var chapterContent = document.getElementById('chapterNavContent');
-                var pageHeader = document.getElementById('pageNavHeader');
-                var pageContent = document.getElementById('pageNavContent');
-                
-                if (chapterHeader && chapterContent && pageHeader && pageContent) {
-                    var headerOffset = navbarHeight + 10; // navbar height + 10px margin
-                    var contentOffset = headerOffset + 50; // header offset + header height
-                    
-                    chapterHeader.style.top = headerOffset + 'px';
-                    chapterContent.style.top = contentOffset + 'px';
-                    pageHeader.style.top = headerOffset + 'px';
-                    pageContent.style.top = contentOffset + 'px';
-                }
-                
-                // Use dynamic offset for smooth scrolling
-                var offset = navbarHeight + 20;
-                
-                document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-                    anchor.addEventListener('click', function (e) {
-                        var href = this.getAttribute('href');
-                        if (href !== '#' && href.length > 1) {
-                            e.preventDefault();
-                            var target = document.querySelector(href);
-                            if (target) {
-                                var targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
-                                window.scrollTo({
-                                    top: targetPosition,
-                                    behavior: 'smooth'
-                                });
-                            }
-                        }
-                    });
-                });
-            });
-            
-            // Scroll to Top Button functionality
-            var scrollToTopBtn = document.getElementById("scrollToTopBtn");
-            
-            window.onscroll = function() {
-                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                    scrollToTopBtn.style.display = "block";
-                } else {
-                    scrollToTopBtn.style.display = "none";
-                }
-            };
-            
-            scrollToTopBtn.onclick = function() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            };
-            ]]>
-            </script>
                      </div>
                      {
                          if (raffShared:getReferences($id))
@@ -3750,6 +3662,31 @@ declare function app:writing($node as node(), $model as map(*)) {
              </div>
          </div>
      </div>
+     <!-- Scroll to Top Button -->
+     <button id="scrollToTopBtn" 
+             style="display: none; 
+                    position: fixed; 
+                    bottom: 30px; 
+                    right: 25%; 
+                    z-index: 9999; 
+                    border: none; 
+                    outline: none; 
+                    background-color: #641a85; 
+                    color: white; 
+                    cursor: pointer; 
+                    padding: 15px; 
+                    border-radius: 50%; 
+                    font-size: 18px;
+                    width: 50px;
+                    height: 50px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    transition: background-color 0.3s, transform 0.3s;"
+             onmouseover="this.style.backgroundColor='#4a1265'; this.style.transform='scale(1.1)';"
+             onmouseout="this.style.backgroundColor='#641a85'; this.style.transform='scale(1)';"
+             title="Zum Anfang springen">
+        ↑
+     </button>
+     <script src="$resources/js/writing-navigation.js"></script>
   </div>
         )
 };
