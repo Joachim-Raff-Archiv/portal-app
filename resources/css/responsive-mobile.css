@@ -54,7 +54,6 @@
     transition: transform 0.3s ease;
     transform: rotate(0deg) !important;
     line-height: 1;
-    vertical-align: middle;
 }
 
 .navbar-toggler-jra[aria-expanded="true"] span {
