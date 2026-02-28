@@ -14,6 +14,15 @@ svg {
     height: auto;
 }
 
+/* Unterstrich-Balken für Hamburger-Icon global deaktivieren */
+.navbar-toggler:before,
+.navbar-toggler:after,
+.navbar-b .navbar-toggler:before,
+.navbar-b .navbar-toggler:after {
+    display: none !important;
+    content: none !important;
+}
+
 /* Tablet und größer - Logo ausblenden */
 @media (min-width: 768px) {
     .navbar-brand {
@@ -67,21 +76,37 @@ svg {
     /* Toggler Button sichtbar machen */
     .navbar-toggler {
         display: block !important;
-        border: 1px solid white;
-        padding: 0.5rem;
+        border: none !important;
+        padding: 0.5rem 0.75rem;
+        background-color: transparent !important;
+        outline: none !important;
+        position: relative;
     }
     
-    /* Hamburger Icon - Standard */
+    /* Unterstrich für Toggler deaktivieren */
+    .navbar-toggler:before,
+    .navbar-toggler:after {
+        display: none !important;
+        content: none !important;
+    }
+    
+    .navbar-toggler:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    /* Hamburger Icon - Standard (horizontal) */
     .navbar-toggler span {
         display: inline-block;
         transition: transform 0.3s ease;
-        transform: rotate(0deg);
+        transform: rotate(0deg) !important;
+        line-height: 1;
+        vertical-align: middle;
     }
     
-    /* Hamburger Icon - Aktiviert (90 Grad Drehung) */
-    .navbar-toggler:not(.collapsed) span,
+    /* Hamburger Icon - Nur wenn Menü geöffnet (vertikal) */
     .navbar-toggler[aria-expanded="true"] span {
-        transform: rotate(90deg);
+        transform: rotate(90deg) !important;
     }
     
     /* Schriftgrößen für mobile Geräte */
@@ -295,22 +320,37 @@ svg {
     /* Toggler Button für Landing Page */
     .navbar-b .navbar-toggler {
         display: block !important;
-        border: 1px solid white;
+        border: none !important;
         background-color: #641a85;
-        padding: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        outline: none !important;
+        position: relative;
     }
     
-    /* Hamburger Icon - Standard (Landing Page) */
+    /* Unterstrich für Landing-Toggler deaktivieren */
+    .navbar-b .navbar-toggler:before,
+    .navbar-b .navbar-toggler:after {
+        display: none !important;
+        content: none !important;
+    }
+    
+    .navbar-b .navbar-toggler:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    /* Hamburger Icon - Standard (Landing Page, horizontal) */
     .navbar-b .navbar-toggler span {
         display: inline-block;
         transition: transform 0.3s ease;
-        transform: rotate(0deg);
+        transform: rotate(0deg) !important;
+        line-height: 1;
+        vertical-align: middle;
     }
     
-    /* Hamburger Icon - Aktiviert 90 Grad (Landing Page) */
-    .navbar-b .navbar-toggler:not(.collapsed) span,
+    /* Hamburger Icon - Nur wenn Menü geöffnet (Landing Page, vertikal) */
     .navbar-b .navbar-toggler[aria-expanded="true"] span {
-        transform: rotate(90deg);
+        transform: rotate(90deg) !important;
     }
     
     /* Navigation Container */
