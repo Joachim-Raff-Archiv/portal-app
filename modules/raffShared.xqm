@@ -904,3 +904,21 @@ declare function raffShared:formatWorkDesc($titleWorkDesc as node()) as xs:strin
 declare function raffShared:transform($element as node(), $script as xs:string) as node()* {
    transform:transform($element, doc($config:app-root || "/resources/xslt/" || $script), ())
 };
+
+declare function raffShared:formatPageNos($element as element(tei:pb)) as xs:string? {
+    let $pbNumber := 
+        if ($element/@n and $element/@type = 'roman') then
+            format-integer(xs:integer($element/@n), 'I')
+        else if (matches($element/@n, '\d(r|v)')) then
+            replace(replace($element/@n, 'r', ' recto'), 'v', ' verso')
+        else if ($element/@n) then
+            string($element/@n)
+        else
+            'Seitenumbruch'
+    
+    return
+        if ($pbNumber and $element/@rend = 'none') then
+            concat('[', $pbNumber, ']')
+        else
+            $pbNumber
+};

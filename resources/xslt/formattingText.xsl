@@ -392,35 +392,29 @@
 
     <xsl:function name="jra:pbTitle" as="xs:string">
         <xsl:param name="pb" as="element()"/>
+        <xsl:variable name="pbNumber">
+            <xsl:choose>
+                <xsl:when test="$pb/@n and $pb/@type = 'roman'">
+                    <xsl:number value="$pb/@n" format="I"/>
+                </xsl:when>
+                <xsl:when test="matches($pb/@n, '\d(r|v)')">
+                    <xsl:value-of select="replace(replace($pb/@n,'r',' recto'),'v',' verso')"/>
+                </xsl:when>
+                <xsl:when test="$pb/@n">
+                    <xsl:value-of select="$pb/@n"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span style="color:gray;">Seitenumbruch</span>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
         <xsl:choose>
-            <xsl:when test="$pb/@n and $pb/@rend = 'roman'">
-                <xsl:choose>
-                    <xsl:when test="$pb/@n = '1'">I</xsl:when>
-                    <xsl:when test="$pb/@n = '2'">II</xsl:when>
-                    <xsl:when test="$pb/@n = '3'">III</xsl:when>
-                    <xsl:when test="$pb/@n = '4'">IV</xsl:when>
-                    <xsl:when test="$pb/@n = '5'">V</xsl:when>
-                    <xsl:when test="$pb/@n = '6'">VI</xsl:when>
-                    <xsl:when test="$pb/@n = '7'">VII</xsl:when>
-                    <xsl:when test="$pb/@n = '8'">VIII</xsl:when>
-                    <xsl:when test="$pb/@n = '9'">IX</xsl:when>
-                    <xsl:when test="$pb/@n = '10'">X</xsl:when>
-                    <xsl:when test="$pb/@n = '11'">XI</xsl:when>
-                    <xsl:when test="$pb/@n = '12'">XII</xsl:when>
-                    <xsl:otherwise><xsl:value-of select="$pb/@n"/></xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-            <xsl:when test="$pb/@n and not($pb/@rend = 'roman') and not($pb/@rend = 'none')">
-                <xsl:value-of select="$pb/@n"/>
-            </xsl:when>
-            <xsl:when test="$pb/@n and $pb/@rend = 'none'">
-                <xsl:value-of select="concat('[',$pb/@n,']')"/>
-            </xsl:when>
-            <xsl:when test="matches($pb/@n, '\d(r|v)')">
-                <xsl:value-of select="replace(replace($pb/@n,'r',' recto'),'v',' verso')"/>
+            <xsl:when test="$pbNumber and $pb/@rend = 'none'">
+                <xsl:value-of select="concat('[', $pbNumber, ']')"/>
             </xsl:when>
             <xsl:otherwise>
-                <span style="color:gray;">Seitenumbruch</span>
+                <xsl:value-of select="$pbNumber"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>

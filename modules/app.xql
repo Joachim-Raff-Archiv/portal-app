@@ -3601,29 +3601,11 @@ declare function app:writing($node as node(), $model as map(*)) {
                <a class="nav-link" href="#fulltextTitel" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">Titelseite</a>
                {
                for $pb in $writing//tei:text//tei:pb[@n]
-                   let $pageNo := $pb/@n/string()
-                   let $pageNoRoman := if($pb[@rend = 'roman'])
-                                       then(switch ($pageNo)
-                                            case '1' return 'I'
-                                            case '2' return 'II'
-                                            case '3' return 'III'
-                                            case '4' return 'IV'
-                                            case '5' return 'V'
-                                            case '6' return 'VI'
-                                            case '7' return 'VII'
-                                            case '8' return 'VIII'
-                                            case '9' return 'IX'
-                                            case '10' return 'X'
-                                            case '11' return 'XI'
-                                            case '12' return 'XII'
-                                            default return $pageNo)
-                                       else()
-                   let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
-                   let $pageNoLabelKrit := if($pb[@rend = 'none']) then('[' || $pageNoLabel || ']') else($pageNoLabel)
+                   let $pageNo := raffShared:formatPageNos($pb)
                    return
                    <li class="nav-item">
                       <a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
-                         Seite {$pageNoLabelKrit}
+                         Seite {$pageNo}
                       </a>
                    </li>
                }</ul>
