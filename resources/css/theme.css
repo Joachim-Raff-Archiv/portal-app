@@ -581,3 +581,30 @@ span.hi {
     height: 1em;
     padding-bottom: 0.1em;
 }
+
+hr.jra_pb-text {
+  position: relative;
+    border: none;
+    height: 6px;
+    background: #ddd;
+    border-radius: 12px;
+    margin-top: 1.75em;
+    margin-bottom: 2.2em;
+    color: #666; 
+    font-size: 0.7em;
+}
+
+hr.jra_pb-text:before {
+    content: attr(data-content);
+    display: inline-block;
+    background: #fff;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: #999;
+    border-radius: 30rem;
+    padding: 0.2rem 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

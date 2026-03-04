@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:pod="https://portal.raff-archiv.ch/ns/raffPodcasts" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:pod="https://portal.raff-archiv.ch/ns/raffPodcasts" xmlns:jra="https://github.com/Joachim-Raff-Archiv/jraData" exclude-result-prefixes="xs" xpath-default-namespace="http://www.tei-c.org/ns/1.0" version="2.0">
     <xsl:output method="xhtml" encoding="UTF-8"/>
     <xsl:include href="linking.xsl"/>
     <xsl:variable name="docID" select="//TEI/@xml:id/data(.)"/>
@@ -58,47 +58,41 @@
         <br/>
         <xsl:apply-templates/>
     </xsl:template>
+
     <xsl:template match="pb">
         <xsl:variable name="pageID" select="string-join(('page', @n, @rend), '-')"/>
-        <!-- Seitenumbruch-Trennlinie mit Seitennummer -->
-        <div class="page-break" style="border-top: 1px solid #ddd;
-                    margin: 3em 0 2em 0; 
-                    padding-top: 1em;
-                    text-align: center; 
-                    color: #666; 
-                    font-size: 0.9em;"
-             id="{$pageID}">
-        <xsl:choose>
-                <xsl:when test="@n and @rend = 'roman'">
-                    Seite <xsl:choose>
-                        <xsl:when test="@n = '1'">I</xsl:when>
-                        <xsl:when test="@n = '2'">II</xsl:when>
-                        <xsl:when test="@n = '3'">III</xsl:when>
-                        <xsl:when test="@n = '4'">IV</xsl:when>
-                        <xsl:when test="@n = '5'">V</xsl:when>
-                        <xsl:when test="@n = '6'">VI</xsl:when>
-                        <xsl:when test="@n = '7'">VII</xsl:when>
-                        <xsl:when test="@n = '8'">VIII</xsl:when>
-                        <xsl:when test="@n = '9'">IX</xsl:when>
-                        <xsl:when test="@n = '10'">X</xsl:when>
-                        <xsl:when test="@n = '11'">XI</xsl:when>
-                        <xsl:when test="@n = '12'">XII</xsl:when>
-                        <xsl:otherwise><xsl:value-of select="@n"/></xsl:otherwise>
-                    </xsl:choose>
+        <xsl:variable name="pbTitleText">
+            <xsl:value-of select="concat('Seite', ' ', jra:pbTitle(.), '')"/>
+        </xsl:variable>
+        <!-- breaks are not allowed within lists as they are in TEI. We need to workaround this … -->
+        <xsl:element name="span">
+            <xsl:attribute name="id"><xsl:value-of select="$pageID"/></xsl:attribute>
+            <xsl:attribute name="class">
+                <xsl:text>jra_</xsl:text>
+                <xsl:value-of select="local-name()"/>
+                <!-- breaks between block level elements -->
+                <xsl:if test="parent::div or parent::body">
+                    <xsl:text>_block</xsl:text>
+                </xsl:if>
+            </xsl:attribute>
+            <xsl:attribute name="title">
+                <xsl:value-of select="$pbTitleText"/>
+            </xsl:attribute>
+            <xsl:choose>
+                <xsl:when test="@break='no' and not(@rend='noHyphen')">
+                    <xsl:text>-</xsl:text>
                 </xsl:when>
-            <xsl:when test="@n and not(@rend = 'roman') and not(@rend = 'none')">
-                Seite <xsl:value-of select="@n"/>
-            </xsl:when>
-            <xsl:when test="@n and @rend = 'none'">
-                Seite [<xsl:value-of select="@n"/>]
-            </xsl:when>
-            <xsl:when test="not(@n)">
-                <span style="color:gray;">– Seitenumbruch – </span>
-            </xsl:when>
+                <xsl:when test="@break='no' and @rend='noHyphen'">
+                    <xsl:text>[-]</xsl:text>
+                </xsl:when>
+                <xsl:otherwise/>
             </xsl:choose>
-        </div>
-        <xsl:apply-templates/>
+        </xsl:element>
+        <xsl:if test="not(parent::list)">
+            <hr data-content="{$pbTitleText}" title="{$pbTitleText}" class="jra_pb-text"/>
+        </xsl:if>
     </xsl:template>
+
     <xsl:template match="div/head">
         <h3 class="heading" style="padding-top: 1em; margin-bottom: 1em; color: #641a85;">
             <xsl:apply-templates/>
@@ -383,6 +377,39 @@
         <img src="{$url}" alt="{$alt}" class="smufl-glyph"/>
     </xsl:template>
 
-
+    <xsl:function name="jra:pbTitle" as="xs:string">
+        <xsl:param name="pb" as="element()"/>
+        <xsl:choose>
+            <xsl:when test="$pb/@n and $pb/@rend = 'roman'">
+                <xsl:choose>
+                    <xsl:when test="$pb/@n = '1'">I</xsl:when>
+                    <xsl:when test="$pb/@n = '2'">II</xsl:when>
+                    <xsl:when test="$pb/@n = '3'">III</xsl:when>
+                    <xsl:when test="$pb/@n = '4'">IV</xsl:when>
+                    <xsl:when test="$pb/@n = '5'">V</xsl:when>
+                    <xsl:when test="$pb/@n = '6'">VI</xsl:when>
+                    <xsl:when test="$pb/@n = '7'">VII</xsl:when>
+                    <xsl:when test="$pb/@n = '8'">VIII</xsl:when>
+                    <xsl:when test="$pb/@n = '9'">IX</xsl:when>
+                    <xsl:when test="$pb/@n = '10'">X</xsl:when>
+                    <xsl:when test="$pb/@n = '11'">XI</xsl:when>
+                    <xsl:when test="$pb/@n = '12'">XII</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="$pb/@n"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:when test="$pb/@n and not($pb/@rend = 'roman') and not($pb/@rend = 'none')">
+                <xsl:value-of select="$pb/@n"/>
+            </xsl:when>
+            <xsl:when test="$pb/@n and $pb/@rend = 'none'">
+                <xsl:value-of select="concat('[',$pb/@n,']')"/>
+            </xsl:when>
+            <xsl:when test="matches($pb/@n, '\d(r|v)')">
+                <xsl:value-of select="replace(replace($pb/@n,'r',' recto'),'v',' verso')"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <span style="color:gray;">Seitenumbruch</span>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
     
 </xsl:stylesheet>
