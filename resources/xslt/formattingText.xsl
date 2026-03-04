@@ -6,6 +6,8 @@
     <!-- Root template -->
     <xsl:template match="/">
         <xsl:apply-templates/>
+        <!-- Modal-Dialoge am Ende sammeln -->
+        <xsl:apply-templates select="//note[@type='commentary']" mode="modals"/>
     </xsl:template>
     
     <!--front
@@ -225,9 +227,14 @@
     </xsl:template>
 
     <xsl:template match="note[@type='commentary']">
-        <xsl:variable name="commentaryResp" select="./@resp"/>
         <xsl:variable name="commentaryID" select="concat('commentary-', $docID, '-', generate-id())"/>
         <button type="button" class="btn btn-jra btn-jra-annot" data-toggle="modal" data-target="#{$commentaryID}">i</button>
+    </xsl:template>
+    
+    <!-- Template für Modal-Dialoge im separaten Mode -->
+    <xsl:template match="note[@type='commentary']" mode="modals">
+        <xsl:variable name="commentaryResp" select="./@resp"/>
+        <xsl:variable name="commentaryID" select="concat('commentary-', $docID, '-', generate-id())"/>
         <div class="modal fade" id="{$commentaryID}" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

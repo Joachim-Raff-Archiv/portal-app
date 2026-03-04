@@ -205,11 +205,14 @@ fieldset[disabled] .btn-jra.active {
 }
 
 .btn-jra-annot {
-    padding-left: 0.4em;
   padding-right: 0.4em;
+  padding-left: 0.45em;
   padding-top: 0em;
   padding-bottom: 0em;
   margin-left: 0.15em;
+  font-size: 0.7em;
+  vertical-align: super;
+  border-radius: 100%;
 }
 
 navbar-jra .navbar-brand{
