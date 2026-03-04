@@ -377,5 +377,12 @@
         </div>
     </xsl:template>
 
+    <xsl:template match="g">
+        <xsl:variable name="alt" select="concat('SMUFL ',doc(@ref)//desc/text())"/>
+        <xsl:variable name="url" select="doc(@ref)//graphic/@url/data()"/>
+        <img src="{$url}" alt="{$alt}" class="smufl-glyph"/>
+    </xsl:template>
+
+
     
 </xsl:stylesheet>

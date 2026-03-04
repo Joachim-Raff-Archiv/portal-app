@@ -576,3 +576,8 @@ span.hi {
 #scrollToTopBtn:focus {
     outline: none;
 }
+
+.smufl-glyph {
+    height: 1em;
+    padding-bottom: 0.1em;
+}
