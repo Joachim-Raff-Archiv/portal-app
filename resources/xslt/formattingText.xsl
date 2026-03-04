@@ -384,6 +384,12 @@
         <img src="{$url}" alt="{$alt}" class="smufl-glyph"/>
     </xsl:template>
 
+    <xsl:template match="ab[g]">
+        <span class="upright">
+            <xsl:apply-templates select="g"/>
+        </span>
+    </xsl:template>
+
     <xsl:function name="jra:pbTitle" as="xs:string">
         <xsl:param name="pb" as="element()"/>
         <xsl:choose>
