@@ -3619,10 +3619,11 @@ declare function app:writing($node as node(), $model as map(*)) {
                                             default return $pageNo)
                                        else()
                    let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
+                   let $pageNoLabelKrit := if($pb[@rend = 'none']) then('[' || $pageNoLabel || ']') else($pageNoLabel)
                    return
                    <li class="nav-item">
                       <a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
-                         Seite {$pageNoLabel}
+                         Seite {$pageNoLabelKrit}
                       </a>
                    </li>
                }</ul>
