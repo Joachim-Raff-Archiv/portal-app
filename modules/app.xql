@@ -3578,12 +3578,12 @@ declare function app:writing($node as node(), $model as map(*)) {
                {
                for $div in $writing//tei:text//tei:div[@xml:id]
                    let $divId := $div/@xml:id/string()
-                   let $divHead := $div/tei:head/string()
+                   let $divPageNo := format-number(number(substring-after($div/@xml:id,'cap_')), '0')
                    return
-                   if($divHead) then
+                   if($divPageNo) then
                    <li class="nav-item">
                       <a class="nav-link" href="#{$divId}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
-                         {$divHead}
+                         {$divPageNo}. Brief
                       </a>
                    </li>
                    else()
