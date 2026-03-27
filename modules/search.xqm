@@ -30,7 +30,7 @@ declare function search:search($node as node(), $model as map(*))
 declare function search:form-w-check()
 {
       	<div class="col-8 rounded-lg border">
-            <form method="GET" action="{$app:dbRoot}/search.html">
+            <form method="GET" action="/search.html">
               <div class="form-group row mt-3">
                 <label for="search-term" class="col-2 col-form-label">{raffShared:translate('jra.search.term')}</label>
                 <div class="col-sm-10">
@@ -117,7 +117,7 @@ declare function search:content()
                                           then('/writing/')
                                           else()
                             
-                            let $docurl := $app:dbRoot || $href || $docid
+                            let $docurl := $href || $docid
                             
                             order by $docid
                             return
