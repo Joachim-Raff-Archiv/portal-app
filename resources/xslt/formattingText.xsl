@@ -377,16 +377,6 @@
             <xsl:apply-templates/>
         </li>
     </xsl:template>
-    
-    <!-- Template for abstract -->
-    <xsl:template match="abstract">
-        <div class="abstract" style="background: #f9f9f9; 
-                                     padding: 1.5em; 
-                                     margin: 2em 0;
-                                     border-left: 3px solid #641a85;">
-            <xsl:apply-templates/>
-        </div>
-    </xsl:template>
 
     <xsl:template match="g">
         <xsl:variable name="alt" select="concat('SMUFL ',doc(@ref)//desc/text())"/>

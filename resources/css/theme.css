@@ -618,3 +618,51 @@ span.upright {
     flex-direction: row-reverse;
     display: inline-flex;
 }
+
+/* Writing TOC Styles */
+.writing-toc {
+    margin-top: 2em;
+    padding: 1.5em;
+    background: #f9f9f9;
+    border-left: 3px solid #641a85;
+}
+
+.writing-toc h4 {
+    margin-top: 0;
+    color: #641a85;
+}
+
+.writing-toc ul.toc-list {
+    list-style: none;
+    padding-left: 1em;
+}
+
+.writing-toc ul.toc-sublist {
+    list-style: none;
+    padding-left: 1.5em;
+    margin-top: 0.5em;
+}
+
+.writing-toc ul.toc-list > li {
+    margin: 0.3em 0;
+}
+
+.writing-toc ul.toc-sublist > li {
+    margin: 0.2em 0;
+    font-size: 0.95em;
+}
+
+.writing-toc ul.toc-sublist > li.toc-head {
+    margin: 0.5em 0;
+    font-weight: 600;
+    color: #641a85;
+}
+
+.writing-toc a {
+    color: #641a85;
+    text-decoration: none;
+}
+
+.writing-toc a:hover {
+    text-decoration: underline;
+}
