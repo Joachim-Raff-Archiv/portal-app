@@ -3978,12 +3978,12 @@ declare function app:registryPodcasts($node as node(), $model as map(*)) {
                     <li class="list-group-item">
                        <div class="row">
                            <div class="col-4">
-                               <a href="{$config:app-root}/{$podcastID}"><img class="img-thumbnail rounded pull-left" src="$resources/img/{$imgTarget}" style="max-width: 50%;"/></a>
+                               <a href="{$podcastID}"><img class="img-thumbnail rounded pull-left" src="$resources/img/{$imgTarget}" style="max-width: 50%;"/></a>
                            </div>
                            <div class="col">
                                <h3>{if($title != '') then($title) else()}</h3>
                                <p style="margin-top: 3%;">{substring(normalize-space(string-join($desc//text(),' ')),1,300) || '…'}</p>
-                               <p><a href="{$config:app-root}/{$podcastID}">Podcast #{format-number(number(substring-after($podcastID,'-')),'#')}</a></p>
+                               <p><a href="{$podcastID}">Podcast #{format-number(number(substring-after($podcastID,'-')),'#')}</a></p>
                            </div>
                        </div>
                     </li>}
@@ -4017,7 +4017,7 @@ declare function app:podcast($node as node(), $model as map(*)) {
                         for $sample at $i in $samples/raffPod:audioSample
                         let $raffWorkID := $sample/string(@raffWork)
                         return
-                            <li class="list-group-item">{$sample}<br/><span style="line-height: 2.5em;"><a href="{$config:app-root}/{$raffWorkID}">mehr zum Werk</a></span></li>
+                            <li class="list-group-item">{$sample}<br/><span style="line-height: 2.5em;"><a href="{$raffWorkID}">mehr zum Werk</a></span></li>
                     }</ul>
                 </div>)
             else()}
