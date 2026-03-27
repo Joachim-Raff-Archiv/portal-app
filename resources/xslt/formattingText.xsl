@@ -8,6 +8,7 @@
         <xsl:apply-templates/>
         <!-- Modal-Dialoge am Ende sammeln -->
         <xsl:apply-templates select="//note[@type='commentary']" mode="modals"/>
+        <xsl:apply-templates select="//note[not(@type='regeste') and not(@type='commentary')]" mode="modals"/>
     </xsl:template>
     
     <!--front
@@ -203,6 +204,15 @@
         <span data-toggle="modal" data-target="#{$noteID}" style="color: #641a85; cursor: pointer;">
             <xsl:value-of select="$noteCounter"/>
         </span>
+    </xsl:template>
+    
+    <!-- Template für Fußnoten-Modal-Dialoge im separaten Mode -->
+    <xsl:template match="note[not(@type='regeste') and not(@type='commentary')]" mode="modals">
+        <xsl:variable name="noteCounter">
+            <xsl:if test="@n = '1'">*)</xsl:if>
+            <xsl:if test="@n = '2'">**)</xsl:if>
+        </xsl:variable>
+        <xsl:variable name="noteID" select="concat('note-', $docID, '-', generate-id())"/>
         <div class="modal fade" id="{$noteID}" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -235,7 +245,7 @@
     <xsl:template match="note[@type='commentary']" mode="modals">
         <xsl:variable name="commentaryResp" select="./@resp"/>
         <xsl:variable name="commentaryID" select="concat('commentary-', $docID, '-', generate-id())"/>
-        <div class="modal fade" id="{$commentaryID}" tabindex="-1" role="dialog">
+        <div class="modal fade" id="{$commentaryID}" tabindex="-1" role="dialog" style="z-index: 1060;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
