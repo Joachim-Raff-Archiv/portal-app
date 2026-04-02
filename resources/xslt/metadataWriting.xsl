@@ -90,7 +90,7 @@
     </xsl:template>
     
     <xsl:template match="abstract//ref" mode="toc">
-        <a href="#{@target}">
+        <a href="{@target}">
             <xsl:apply-templates mode="toc"/>
         </a>
     </xsl:template>
