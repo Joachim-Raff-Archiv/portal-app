@@ -194,10 +194,89 @@
         });
     }
     
+    // Initialize cross-tab navigation (e.g., links in metadata tab pointing to fulltext tab)
+    function initCrossTabNavigation(offset) {
+        // Find all links in the metadata tab
+        var metadataTab = document.getElementById('metadata');
+        if (!metadataTab) return;
+        
+        var links = metadataTab.querySelectorAll('a[href^="#"]');
+        
+        links.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                var href = this.getAttribute('href');
+                if (href === '#' || href.length <= 1) return;
+                
+                e.preventDefault();
+                
+                // Check if target exists in fulltext tab
+                var fulltextTab = document.getElementById('fulltext');
+                if (!fulltextTab) return;
+                
+                var target = fulltextTab.querySelector(href);
+                
+                if (target) {
+                    // Target is in fulltext tab - switch to it first
+                    var fulltextTabLink = document.querySelector('a[href="#fulltext"][data-toggle="tab"]');
+                    
+                    if (fulltextTabLink) {
+                        // Activate fulltext tab
+                        $(fulltextTabLink).tab('show');
+                        
+                        // Wait for tab transition to complete, then scroll to target
+                        setTimeout(function() {
+                            // Try multiple selectors to find the scrollable content area
+                            var contentArea = fulltextTab.querySelector('.col:nth-of-type(2)') 
+                                || fulltextTab.querySelector('.writingText')
+                                || fulltextTab.querySelector('[style*="overflow"]')
+                                || fulltextTab;
+                            
+                            console.log('Scrolling to target:', href);
+                            console.log('Content area:', contentArea);
+                            console.log('Target element:', target);
+                            
+                            // Get the target's position relative to the content area
+                            var targetRect = target.getBoundingClientRect();
+                            var contentRect = contentArea.getBoundingClientRect();
+                            
+                            // Calculate scroll position
+                            var scrollPosition = targetRect.top - contentRect.top + contentArea.scrollTop - offset;
+                            
+                            console.log('Scroll position:', scrollPosition);
+                            
+                            // Scroll to the target
+                            contentArea.scrollTo({
+                                top: scrollPosition,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Also scroll the window if needed
+                            window.scrollTo({
+                                top: target.offsetTop - offset,
+                                behavior: 'smooth'
+                            });
+                        }, 350); // Wait for Bootstrap tab transition (default is 300ms)
+                    }
+                } else {
+                    // Target might be in current tab, use default behavior
+                    var localTarget = document.querySelector(href);
+                    if (localTarget) {
+                        var targetPosition = localTarget.getBoundingClientRect().top + window.pageYOffset - offset;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    }
+    
     // Initialize everything when DOM is ready
     function init() {
         var offset = initNavigation();
         initSmoothScrolling(offset);
+        initCrossTabNavigation(offset);
         initScrollToTopButton();
     }
     
