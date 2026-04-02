@@ -379,9 +379,16 @@
     </xsl:template>
 
     <xsl:template match="g">
-        <xsl:variable name="alt" select="concat('SMUFL ',doc(@ref)//desc/text())"/>
-        <xsl:variable name="url" select="doc(@ref)//graphic/@url/data()"/>
-        <img src="{$url}" alt="{$alt}" class="smufl-glyph"/>
+        <xsl:choose>
+            <xsl:when test="doc-available(@ref)">
+                <xsl:variable name="alt" select="concat('SMUFL ',doc(@ref)//desc/text())"/>
+                <xsl:variable name="url" select="doc(@ref)//graphic/@url/data()"/>
+                <img src="{$url}" alt="{$alt}" class="smufl-glyph"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <button type="button" class="btn btn-warning" title="Rendering derzeit nicht möglich">!</button>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="ab[g]">
