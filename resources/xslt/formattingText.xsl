@@ -272,7 +272,7 @@
     
     <!-- Additional templates for elements within notes -->
     <xsl:template match="quote">
-        <span style="font-style: italic;"><xsl:apply-templates/></span>
+        <xsl:apply-templates/>
     </xsl:template>
     
     <xsl:template match="foreign">
