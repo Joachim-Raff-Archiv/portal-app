@@ -3527,6 +3527,12 @@ declare function app:writing($node as node(), $model as map(*)) {
                              class="nav-link-jra active"
                              data-toggle="tab"
                              href="#metadata">Allgemein</a></li>
+                    <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#toc">Inhalt</a></li>
                      <li
                          class="nav-item">
                          <a
@@ -3565,6 +3571,12 @@ declare function app:writing($node as node(), $model as map(*)) {
                          id="metadata">
                          <br/>
          {raffShared:transform($writing//tei:teiHeader,"metadataWriting.xsl")}
+                     </div>
+                     <div
+                         class="tab-pane fade"
+                         id="toc">
+                         <br/>
+         {raffShared:transform($writing//tei:teiHeader,"metadataWriting-toc.xsl")}
                      </div>
                      <div
                          class="tab-pane fade"

@@ -104,4 +104,20 @@
         </xsl:choose>
     </xsl:template>
     
+    <xsl:template match="tei:ref">
+        <xsl:variable name="target" select="@target"/>
+        <xsl:choose>
+            <xsl:when test="starts-with($target, '#')">
+                <a href="{$target}">
+                    <xsl:apply-templates/>
+                </a>
+            </xsl:when>
+            <xsl:otherwise>
+                <a href="{$target}" target="_blank">
+                    <xsl:apply-templates/>
+                </a>
+            </xsl:otherwise>
+        </xsl:choose>
+        </xsl:template>
+
 </xsl:stylesheet>

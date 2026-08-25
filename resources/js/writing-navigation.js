@@ -194,13 +194,19 @@
         });
     }
     
-    // Initialize cross-tab navigation (e.g., links in metadata tab pointing to fulltext tab)
+    // Initialize cross-tab navigation (e.g., links in metadata/toc tab pointing to fulltext tab)
     function initCrossTabNavigation(offset) {
-        // Find all links in the metadata tab
-        var metadataTab = document.getElementById('metadata');
-        if (!metadataTab) return;
+        // Find all links in the tabs that may contain cross-tab links (metadata, toc)
+        var sourceTabs = ['metadata', 'toc'].map(function(id) {
+            return document.getElementById(id);
+        }).filter(function(tab) { return tab; });
         
-        var links = metadataTab.querySelectorAll('a[href^="#"]');
+        if (sourceTabs.length === 0) return;
+        
+        var links = [];
+        sourceTabs.forEach(function(tab) {
+            links = links.concat(Array.prototype.slice.call(tab.querySelectorAll('a[href^="#"]')));
+        });
         
         links.forEach(function(link) {
             link.addEventListener('click', function(e) {

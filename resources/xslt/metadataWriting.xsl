@@ -4,7 +4,9 @@
     <xsl:include href="formattingDate.xsl"/>
 
     <xsl:variable name="sourceDesc" select="//sourceDesc"/>
-<!--    <xsl:variable name="graphic" select="./ancestor::TEI/facsimile/graphic[1]"/>-->
+    <xsl:variable name="fileDesc" select="//teiHeader/fileDesc"/>
+    <xsl:variable name="profileDesc" select="//teiHeader/profileDesc"/>
+    <xsl:variable name="encodingDesc" select="//teiHeader/encodingDesc"/>
 
     <xsl:template match="/">
                 <xsl:call-template name="writingMetadataView"/>
@@ -13,94 +15,127 @@
     <xsl:template name="writingMetadataView">
         <table class="letterView">
             <tr>
-                <td valign="top">Titel:</td>
-                <td><xsl:value-of select="$sourceDesc//title[1]"/></td>
+                <td valign="top">Werktitel:</td>
+                <td><xsl:value-of select="$fileDesc/titleStmt/title[2]"/></td>
+            </tr>
+            <tr>
+                <td valign="top">Untertitel, Bandtitel:</td>
+                <td><xsl:value-of select="$fileDesc/titleStmt/title[3]"/></td>
+            </tr>
+            <tr>
+                <td valign="top">Kurztitel:</td>
+                <td><xsl:value-of select="$fileDesc/titleStmt/title[4]"/></td>
             </tr>
             <tr>
                 <td valign="top">Autor:</td>
-                <td><xsl:value-of select="$sourceDesc//author[1]"/></td>
+                <td><xsl:value-of select="$fileDesc/titleStmt/author"/></td>
             </tr>
-            <xsl:if test="$sourceDesc//biblStruct/@type">
+            <tr>
+                <td valign="top">Textkategorie:</td>
+                <td><xsl:value-of select="$profileDesc/textClass/keywords/term"/></td>
+            </tr>
+            <tr>
+                <td valign="top">Entstehungszeit:</td>
+                <td><xsl:value-of select="$profileDesc/creation/origDate"/></td>
+            </tr>
+            <tr>
+                <td valign="top">Entstehungsort:</td>
+                <td><xsl:value-of select="$profileDesc/creation/origPlace"/></td>
+            </tr>
+            <xsl:if test="$profileDesc/notesStmt/note[@type='history']">
                 <tr>
-                    <td valign="top">Ausgabe:</td>
-                    <td><xsl:value-of select="$sourceDesc//biblStruct/@type"/></td>
-                </tr>
+                <td valign="top">Entstehungsgeschichte:</td>
+                <td><xsl:value-of select="$profileDesc/notesStmt/note[@type='history']"/></td>
+            </tr>
             </xsl:if>
+            <table class="letterView">
+                <tr>
+                    <td valign="top"><h5 style="padding-top: 1rem;">Quellen</h5></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td valign="top">Typ:</td>
+                    <td><xsl:value-of select="$sourceDesc/biblStruct/@type"/></td>
+                </tr>
+                <tr>
+                    <td valign="top">Autor:</td>
+                    <td><xsl:value-of select="$sourceDesc/biblStruct/analytic/author"/></td>
+                </tr>
+                <tr>
+                    <td valign="top">Titel:</td>
+                    <td><xsl:value-of select="$sourceDesc/biblStruct/monogr/title"/></td>
+                </tr>
+                <tr>
+                    <td valign="top">Verlag:</td>
+                    <td><xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/publisher"/></td>
+                </tr>
+                <tr>
+                    <td valign="top">Erscheinungsort:</td>
+                    <td><xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/pubPlace"/></td>
+                </tr>
+                <tr>
+                    <td valign="top">Erscheinungsjahr:</td>
+                    <td><xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/date"/></td>
+                </tr>
+                <tr>
+                    <td valign="top">benutztes Exemplar:</td>
+                    <td><xsl:apply-templates select="$sourceDesc/biblStruct/monogr/imprint/biblScope[2]"/></td>
+                </tr>
+                <!--<tr>
+                    <td valign="top">Digitalisat:</td>
+                    <td><xsl:element name="a">
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/biblScope[2]/ref[1]/@target"/>
+                        </xsl:attribute>
+                        <xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/biblScope[2]/ref[1]/@target"/>
+                    </xsl:element></td>
+                </tr>-->
+                <!--<tr>
+                    <td valign="top">IIIF-Manifest:</td>
+                    <td><xsl:element name="a">
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/biblScope[2]/ref[2]/@target"/>
+                        </xsl:attribute>
+                        <xsl:value-of select="$sourceDesc/biblStruct/monogr/imprint/biblScope[2]/ref[2]/@target"/>
+                    </xsl:element></td>
+                </tr>-->
+                
+            </table>
+            <table class="letterView">
+                <tr>
+                    <td valign="top"><h5 style="padding-top: 1rem;">Edition</h5></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td valign="top">Herausgeber der Edition:</td>
+                    <td><xsl:value-of select="$fileDesc/titleStmt/editor"/></td>
+                </tr>
             <tr>
-                <td valign="top">Verlag:</td>
-                <td><xsl:value-of select="$sourceDesc//imprint/publisher[1]"/></td>
+                <td valign="top">Lizenz:</td>
+                <td><xsl:element name="a">
+                    <xsl:attribute name="href">
+                        <xsl:value-of select="$fileDesc/publicationStmt/availability/licence/@target"/>
+                    </xsl:attribute>
+                    <xsl:value-of select="$fileDesc/publicationStmt/availability/licence"/>
+                </xsl:element></td>
             </tr>
             <tr>
-                <td valign="top">Ort:</td>
-                <td><xsl:value-of select="$sourceDesc//imprint/pubPlace[1]"/></td>
+                <td valign="top">Projektzusammenhang:</td>
+                <td><xsl:value-of select="$encodingDesc/projectDesc/p"/></td>
             </tr>
             <tr>
-                <td valign="top">Jahr:</td>
-                <td><xsl:value-of select="$sourceDesc//imprint/date[1]"/></td>
+                <td valign="top">Editorische Grundsätze:</td>
+                <td><xsl:apply-templates select="$encodingDesc/editorialDecl/p"/></td>
             </tr>
         </table>
+        </table>
         
-        <!-- Inhaltsverzeichnis aus abstract anzeigen -->
-        <xsl:if test="//profileDesc/abstract">
-            <div class="writing-toc">
-                <h4>Inhalt</h4>
-                <xsl:apply-templates select="//profileDesc/abstract" mode="toc"/>
-            </div>
-        </xsl:if>
-        
-    </xsl:template>
-    
-    <!-- Template für abstract im TOC-Modus -->
-    <xsl:template match="abstract" mode="toc">
-        <xsl:apply-templates mode="toc"/>
-    </xsl:template>
-    
-    <xsl:template match="abstract/p" mode="toc">
-        <p><xsl:apply-templates mode="toc"/></p>
-    </xsl:template>
-    
-    <xsl:template match="abstract//list[@type='toc']" mode="toc">
-        <ul class="toc-list">
-            <xsl:apply-templates mode="toc"/>
-        </ul>
-    </xsl:template>
-    
-    <xsl:template match="abstract//list[not(@type='toc')]" mode="toc">
-        <ul class="toc-sublist">
-            <xsl:apply-templates mode="toc"/>
-        </ul>
-    </xsl:template>
-    
-    <xsl:template match="abstract//list/head" mode="toc">
-        <li class="toc-head">
-            <xsl:apply-templates mode="toc"/>
-        </li>
-    </xsl:template>
-    
-    <xsl:template match="abstract//list[@type='toc']/item" mode="toc">
-        <li>
-            <xsl:apply-templates mode="toc"/>
-        </li>
-    </xsl:template>
-    
-    <xsl:template match="abstract//list[not(@type='toc')]/item" mode="toc">
-        <li>
-            <xsl:apply-templates mode="toc"/>
-        </li>
-    </xsl:template>
-    
-    <xsl:template match="abstract//ref" mode="toc">
-        <a href="{@target}">
-            <xsl:apply-templates mode="toc"/>
-        </a>
-    </xsl:template>
-    
-    <xsl:template match="abstract//hi[@rend='italic']" mode="toc">
-        <i><xsl:apply-templates mode="toc"/></i>
-    </xsl:template>
-    
-    <xsl:template match="abstract//hi[@rend='bold']" mode="toc">
-        <b><xsl:apply-templates mode="toc"/></b>
     </xsl:template>
 
+    <xsl:template match="hi[@rend = 'italic']">
+        <i>
+            <xsl:apply-templates/>
+        </i>
+    </xsl:template>
+    
 </xsl:stylesheet>
