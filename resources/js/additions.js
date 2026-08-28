@@ -1,6 +1,10 @@
 window.addEventListener("hashchange", function () {
-    console.log("haschange");
-    scrollBy(0, -60)
+    console.log("hashchange");
+    // Calculate navbar height dynamically
+    var mainNavbar = document.querySelector('.navbar.fixed-top');
+    var navbarHeight = mainNavbar ? mainNavbar.offsetHeight : 60;
+    var offset = navbarHeight + 20;
+    scrollBy(0, -offset);
 });
 
 var msg = {

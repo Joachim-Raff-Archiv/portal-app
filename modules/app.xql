@@ -28,6 +28,7 @@ declare variable $app:collectionDocuments := '/db/apps/jra-data/sources';
 declare variable $app:collectionPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI[not(tei:ref)];
 declare variable $app:collectionPersons := collection('/db/apps/jra-data/persons')//tei:TEI[.//tei:person][not(tei:ref)];
 declare variable $app:collectionInstitutions := collection('/db/apps/jra-data/institutions')//tei:TEI[.//tei:org][not(tei:ref)];
+declare variable $app:collectionPlaces := collection('/db/apps/jra-data/places')//tei:TEI[.//tei:place][not(tei:ref)];
 declare variable $app:collectionSources := collection('/db/apps/jra-data/sources')//tei:TEI[not(tei:ref)];
 declare variable $app:collectionTexts := collection('/db/apps/jra-data/texts')//tei:TEI[not(tei:ref)];
 declare variable $app:collectionWorks := collection('/db/apps/jra-data/works')//mei:mei[not(mei:ref)];
@@ -35,7 +36,7 @@ declare variable $app:collectionWritings := collection('/db/apps/jra-data/writin
 
 declare variable $app:collectionPodcasts := collection('/db/apps/jra-data/podcasts')//raffPod:podcast;
 
-declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
+declare variable $app:collectionsAll := ($app:collectionPostals, $app:collectionPersons, $app:collectionInstitutions, $app:collectionPlaces, $app:collectionSources, $app:collectionTexts, $app:collectionWorks);
 
 declare variable $app:collFullPostals := collection('/db/apps/jra-data/sources/postals')//tei:TEI;
 declare variable $app:collFullPersons := collection('/db/apps/jra-data/persons')//tei:TEI;
@@ -413,7 +414,7 @@ declare function app:letter($node as node(), $model as map(*)) {
     let $adressat := if($letter//tei:correspAction[@type = "received"]/tei:persName) then ($letter//tei:correspAction[@type = "received"]/tei:persName[1]/text()[1]) else if($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) then($letter//tei:correspAction[@type = "received"]/tei:orgName[1]/text()[1]) else('')
     let $nameTurned := if(contains($adressat,', '))then(concat($adressat/substring-after(., ','),' ',$adressat/substring-before(., ',')))else($adressat)
     let $regeste := $letter//tei:note[@type='regeste'][./text()/normalize-space() != '']
-    let $fulltext := $letter//tei:div[@type='volltext']
+    let $fulltext := $letter//tei:text/tei:body/tei:div
     let $facsimile := $letter//tei:facsimile[.//tei:graphic]
     return
         (
@@ -500,7 +501,7 @@ declare function app:letter($node as node(), $model as map(*)) {
                                   <div
                                       class="row">
                                       <div class="letterContentFullView">
-                                          {raffShared:transform($fulltext, "formattingText.xsl")}
+                                          {for $text in $fulltext return raffShared:transform($text, "formattingText.xsl")}
                                       </div>
                                   </div>
                           </div>)else()}
@@ -1778,6 +1779,246 @@ declare function app:institution($node as node(), $model as map(*)) {
         )
 };
 
+declare function app:registryPlaces($node as node(), $model as map(*)) {
+
+    let $places := $app:collectionPlaces
+
+    let $placesAlpha := for $place in $places
+                                let $placeID := $place/@xml:id/string()
+                                let $initial := upper-case(substring($place//tei:place/tei:placeName[1], 1, 1))
+                                let $namePlace := $place//tei:place/tei:placeName[1]
+                                let $desc := $place//tei:place/tei:desc[1]
+                                let $country := string-join($place//tei:place/tei:country, '/')
+
+                                let $href := if(contains(request:get-url(),'place/')) then('') else('place/')
+                                let $name := <div
+                                    class="row RegisterEntry">
+                                    <div
+                                        class="col-sm-5 col-md-6 col-lg-6">
+                                        {$namePlace}<br/><span class="sublevel">{$desc}</span>
+                                    </div>
+                                    <div
+                                        class="col-sm-4 col-md-4 col-lg-4">{$country}</div>
+                                    <div
+                                        class="col-sm-3 col-md-2 col-lg-2"><a onclick="pleaseWait()"
+                                            href="{concat($href, $placeID)}">{$placeID}</a></div>
+                                </div>
+                                    group by $initial
+                                    order by $initial
+                                return
+                                    (<div
+                                        name="{$initial}"
+                                        count="{count($name)}">
+                                        {
+                                            for $each in $name
+                                                let $order := raffShared:replaceToSortDist($each)
+                                                order by $order
+                                            return
+                                                $each
+                                        }
+                                    </div>)
+
+    let $placesGroupedByInitials := for $groups in $placesAlpha
+                                            group by $initial := $groups/@name/string()
+                                            return
+                                                (<div
+                                                    class="RegisterSortBox"
+                                                    initial="{$initial}"
+                                                    count="{$placesAlpha[@name = $initial]/@count}"
+                                                    xmlns="http://www.w3.org/1999/xhtml">
+                                                    <div
+                                                        class="RegisterSortEntry"
+                                                        id="{
+                                                                concat('list-item-', if ($initial = '') then
+                                                                    ('unknown')
+                                                                else
+                                                                    ($initial))
+                                                            }">
+                                                        {
+                                                            if ($initial = '') then
+                                                                ('[N.N.]')
+                                                            else
+                                                                ($initial)
+                                                        }
+                                                    </div>
+                                                    {
+                                                        for $group in $groups
+                                                        return
+                                                            $group
+                                                    }
+                                                </div>)
+    return
+        <div
+            class="container"
+            xmlns="http://www.w3.org/1999/xhtml">
+           <div class="row  justify-content-between">
+               <div class="col-sm-9 	col-md-7 	col-lg-7">
+                   <p>Der Katalog verzeichnet derzeit {count($places)} Orte.</p>
+               </div>
+               <div class=".col-sm-3 	.col-md-3 	.col-lg-3">
+                   {app:filterInput()}
+               </div>
+            </div>
+                    <ul
+                        class="nav nav-tabs"
+                        id="myTab"
+                        role="tablist">
+                        <li
+                            class="nav-item nav-linkless-jra">Sortierungen:</li>
+                        <li
+                            class="nav-item"><a
+                                class="nav-link-jra active"
+                                data-toggle="tab"
+                                href="#alpha">Alphabetisch</a></li>
+                    </ul>
+                    <div
+                        class="tab-content" id="divResults" >
+                        <div
+                            class="tab-pane fade show active"
+                            id="alpha">
+                            <br/>
+                            <div
+                                class="container row">
+                                <div id="navigator" class="list-group col-sm-4 col-md-3 col-lg-3" style="height:500px; overflow-y: scroll;">
+            					   <ul id="nav" class="nav hidden-xs hidden-sm">
+                                    {
+                                        for $each in $placesGroupedByInitials
+                                        let $initial := if ($each/@initial/string() = '') then
+                                            ('unknown')
+                                        else
+                                            ($each/@initial/string())
+                                        let $count := $each/@count/string()
+                                            order by $initial
+                                        return
+                                            <a
+                                                class="nav-link list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                                href="{concat('#list-item-', $initial)}"><span>{
+                                                        if ($initial = 'unknown') then
+                                                            ('[N.N.]')
+                                                        else
+                                                            ($initial)
+                                                    }</span>
+                                                <span
+                                                    class="badge badge-jra badge-pill right">{$count}</span>
+                                            </a>
+                                    }
+                                    </ul>
+                                </div>
+                                <div data-spy="scroll" data-target="#navigator" data-offset="90" class="col-sm col-md col-lg" style="position: relative; height:500px; overflow-y: scroll;">
+                                    {$placesGroupedByInitials}
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+};
+
+declare function app:place($node as node(), $model as map(*)) {
+
+    let $id := request:get-parameter("place-id", "Fehler")
+    let $forwarding := raffShared:forwardEntries($id)
+    let $place := $app:collectionPlaces/id($id)
+    let $name := $place//tei:listPlace/tei:place/tei:placeName/normalize-space(data(.))
+    let $literature := $place//tei:bibl[@type='links']
+    return
+        (
+        <div
+            class="container">
+
+            <div
+                class="page-header">
+                <h2>{$name}</h2>
+                <h6>ID: {$id}</h6>
+                <hr/>
+                <ul
+                            class="nav nav-pills"
+                            role="tablist">
+                            <li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra active"
+                                    data-toggle="tab"
+                                    href="#metadata">Allgemein</a></li>
+                            {if (raffShared:getReferences($id)) then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#references">Referenzen</a></li>)else()}
+                            {if ($literature/text()/normalize-space()!='') then(<li
+                                class="nav-item">
+                                <a
+                                    class="nav-link-jra"
+                                    data-toggle="tab"
+                                    href="#literature">Literatur</a></li>)else()}
+                            {if(config:status-is-development())
+                then(<li
+                    class="nav-item"><a
+                        class="nav-link-jra"
+                        data-toggle="tab"
+                        href="#viewXML">XML-Ansicht</a></li>)
+                        else()}
+                        </ul>
+                <hr/>
+            </div>
+            <div
+                class="container">
+                <div
+                    class="row">
+                    <div
+                        class="col">
+                        <div
+                            class="tab-content">
+                            <div
+                                class="tab-pane fade show active"
+                                id="metadata">
+                                <br/>
+                                {raffShared:transform($place, "metadataPlace.xsl")}
+                            </div>
+                            {
+                                if (raffShared:getReferences($id)) then
+                                    (<div
+                                        class="tab-pane fade"
+                                        id="references">
+                                        <br/>
+                                        <div >{
+                                            let $entrys := raffShared:getReferences($id)
+                                            return
+                                                $entrys
+                                        }</div>
+                                    </div>)
+                                else
+                                    ()
+                            }
+                            {
+                                if ($literature/text()/normalize-space()!='') then
+                                    (<div
+                                        class="tab-pane fade"
+                                        id="literature">
+                                        {$literature}
+                                    </div>)
+                                else
+                                    ()
+                            }
+                            {if(config:status-is-development())
+                then(<div
+                    class="tab-pane fade"
+                    id="viewXML">
+                        <pre>
+                            <xmp>
+                                {raffShared:transform($place/root(), "viewXML.xsl")}
+                            </xmp>
+                        </pre>
+                    </div>)
+                else()}
+                    </div>
+                    {raffShared:suggestedCitation($id)}
+                  </div>
+              </div>
+          </div>
+        </div>
+        )
+};
 
 declare function app:registryWorks($node as node(), $model as map(*)) {
 
@@ -3276,6 +3517,11 @@ declare function app:writing($node as node(), $model as map(*)) {
     class="container">
      <div
          class="page-header">
+         <br/>
+         <div class="alert alert-warning" role="alert">
+            Die Publikation der Edition der «Wagnerfrage» hat sich leider etwas verzögert. Hier sehen Sie bereits die erste Hälfte der Edition. Wir planen Mitte September die Veröffentlichung des gesamten Dokuments. Wir bitten um Ihre Geduld und Ihr Verständnis. Vielen Dank.
+         </div>
+         <br/>
          <h2>{$name}</h2>
          <hr/>
          <ul class="nav nav-pills"
@@ -3286,6 +3532,12 @@ declare function app:writing($node as node(), $model as map(*)) {
                              class="nav-link-jra active"
                              data-toggle="tab"
                              href="#metadata">Allgemein</a></li>
+                    <li
+                         class="nav-item">
+                         <a
+                             class="nav-link-jra"
+                             data-toggle="tab"
+                             href="#toc">Inhalt</a></li>
                      <li
                          class="nav-item">
                          <a
@@ -3327,37 +3579,52 @@ declare function app:writing($node as node(), $model as map(*)) {
                      </div>
                      <div
                          class="tab-pane fade"
+                         id="toc">
+                         <br/>
+         {raffShared:transform($writing//tei:teiHeader,"metadataWriting-toc.xsl")}
+                     </div>
+                     <div
+                         class="tab-pane fade"
                          id="fulltext">
                          <br/>
          <div class="row">
+            <div class="col-2">
+               <h5 id="chapterNavHeader" style="position: sticky; top: 70px; background: white; z-index: 50; padding: 10px 0; margin: 0; border-bottom: 1px solid #eee;">Kapitel</h5>
+               <div id="chapterNavContent" style="height:600px; overflow-y: auto; position: sticky; top: 120px;">
+               <ul class="nav flex-column">
+               {
+               for $div in $writing//tei:text//tei:div[@xml:id]
+                   let $divId := $div/@xml:id/string()
+                   let $divPageNo := format-number(number(substring-after($div/@xml:id,'cap_')), '0')
+                   return
+                   if($divPageNo) then
+                   <li class="nav-item">
+                      <a class="nav-link" href="#{$divId}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
+                         {$divPageNo}. Brief
+                      </a>
+                   </li>
+                   else()
+               }
+               </ul>
+               </div>
+            </div>
             <div class="col">
-            {raffShared:transform($writing//tei:text,"contentWriting.xsl")}
+            {raffShared:transform($writing//tei:text,"formattingText.xsl")}
             </div>
             <div class="col-2">
-               <h5>Navigation</h5>
-               <div style="height:400px; overflow-y: scroll;">
+               <h5 id="pageNavHeader" style="position: sticky; top: 70px; background: white; z-index: 50; padding: 10px 0; margin: 0; border-bottom: 1px solid #eee;">Seiten</h5>
+               <div id="pageNavContent" style="height:600px; overflow-y: auto; position: sticky; top: 120px;">
                <ul class="nav flex-column">
-               <a class="nav-link" href="#fulltextTitel">Titelseite</a>
+               <a class="nav-link" href="#fulltextTitel" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">Titelseite</a>
                {
                for $pb in $writing//tei:text//tei:pb[@n]
-                   let $pageNo := $pb/@n/string()
-                   let $pageNoRoman := if($pb[@rend = 'roman'])
-                                       then(switch ($pageNo)
-                                            case '1' return 'I'
-                                            case '2' return 'II'
-                                            case '3' return 'III'
-                                            case '4' return 'IV'
-                                            case '5' return 'V'
-                                            case '6' return 'VI'
-                                            case '7' return 'VII'
-                                            case '8' return 'VIII'
-                                            case '9' return 'IX'
-                                            case '10' return 'X'
-                                            default return $pageNo)
-                                       else()
-                   let $pageNoLabel := if($pageNoRoman) then($pageNoRoman) else($pageNo)
+                   let $pageNo := raffShared:formatPageNos($pb)
                    return
-                   <li class="nav-item"><a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}">Seite {$pageNoLabel}</a></li>
+                   <li class="nav-item">
+                      <a class="nav-link" href="{string-join(('#page', $pageNo, $pb/@rend), '-')}" style="font-size: 0.9em; padding: 0.3rem 0.5rem;">
+                         Seite {$pageNo}
+                      </a>
+                   </li>
                }</ul>
                </div>
             </div>
@@ -3395,6 +3662,9 @@ declare function app:writing($node as node(), $model as map(*)) {
              </div>
          </div>
      </div>
+     <!-- Scroll to Top Button -->
+     <button id="scrollToTopBtn" title="Zum Anfang springen">↑</button>
+     <script src="$resources/js/writing-navigation.js"></script>
   </div>
         )
 };
@@ -3596,6 +3866,13 @@ let $count := count($app:collectionInstitutions)
 return
     (<p class="counter">{$count}</p>,
     <span class="counter-text">Institutionen</span>)
+};
+
+declare function app:countPlaces($node as node(), $model as map(*)){
+let $count := count($app:collectionPlaces)
+return
+    (<p class="counter">{$count}</p>,
+    <span class="counter-text">Orte</span>)
 };
 
 declare function app:countWritings($node as node(), $model as map(*)){

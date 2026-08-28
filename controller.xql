@@ -55,7 +55,7 @@ else
         <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/', $exist:resource)}"/>
     </dispatch>
 else
-    if(matches($exist:path, '/person/') or matches($exist:path, '/institution/') or matches($exist:path, '/sources/') or matches($exist:path, '/work/') or matches($exist:path, '/letter/')) then
+    if(matches($exist:path, '/person/') or matches($exist:path, '/institution/') or matches($exist:path, '/place/') or matches($exist:path, '/sources/') or matches($exist:path, '/work/') or matches($exist:path, '/letter/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{substring-before(request:get-uri(),$exist:controller)}{concat($exist:controller, '/', $exist:resource)}"/>
     </dispatch>
@@ -222,8 +222,8 @@ else
 		</dispatch>
 		
 	(: if its an place :)
-(:else
-	if (matches($exist:path, "/place/")) then
+else
+	if (matches($exist:path, "K\d*")) then
 		<dispatch
 			xmlns="http://exist.sourceforge.net/NS/exist">
 			<forward
@@ -247,7 +247,7 @@ else
 				<forward
 					url="{$exist:controller}/modules/view.xql"/>
 			</error-handler>
-		</dispatch>:)
+		</dispatch>
 		
 		(: if its an institution :)
 else

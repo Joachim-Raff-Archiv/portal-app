@@ -204,6 +204,19 @@ fieldset[disabled] .btn-jra.active {
     box-shadow: 0 0 0 .2rem rgba(127, 185, 29, 0.5)
 }
 
+.btn-jra-annot {
+  padding-right: 0.4em;
+  padding-left: 0.45em;
+  padding-top: 0em;
+  padding-bottom: 0em;
+  margin-left: 0.15em;
+  font-size: 0.7em;
+  vertical-align: super;
+  border-radius: 100%;
+}
+
+.note-in-note {font-size: 0.6em!important;};
+
 navbar-jra .navbar-brand{
     color: #641a85
 }
@@ -538,4 +551,129 @@ a.disabled{
 span.hi {
     background-color:yellow;
     font-weight:bold;
+}
+/* Scroll to Top Button */
+#scrollToTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 25%;
+    z-index: 9999;
+    border: none;
+    outline: none;
+    background-color: #641a85;
+    color: white;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#scrollToTopBtn:hover {
+    background-color: #4a1265;
+    transform: scale(1.1);
+}
+
+#scrollToTopBtn:focus {
+    outline: none;
+}
+
+.smufl-glyph {
+    height: 1em;
+    padding-bottom: 0.1em;
+}
+
+.smufl-like-letter {
+    height: 1em;
+    padding-bottom: 0.1em;
+    font-size: larger;
+    font-weight: 700;
+}
+
+hr.jra_pb-text {
+  position: relative;
+    border: none;
+    height: 6px;
+    background: #ddd;
+    border-radius: 12px;
+    margin-top: 1.75em;
+    margin-bottom: 2.2em;
+    color: #666; 
+    font-size: 0.7em;
+}
+
+hr.jra_pb-text:before {
+    content: attr(data-content);
+    display: inline-block;
+    background: #fff;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: #999;
+    border-radius: 30rem;
+    padding: 0.2rem 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+span.upright {
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    flex-direction: row-reverse;
+    display: inline-flex;
+    line-height: 1em;
+    width: 1em;
+}
+
+/* Writing TOC Styles */
+.writing-toc {
+    margin-top: 2em;
+    padding: 1.5em;
+    background: #f9f9f9;
+    border-left: 3px solid #641a85;
+}
+
+.writing-toc h4 {
+    margin-top: 0;
+    color: #641a85;
+}
+
+.writing-toc ul.toc-list {
+    list-style: none;
+    padding-left: 1em;
+}
+
+.writing-toc ul.toc-sublist {
+    list-style: none;
+    padding-left: 1.5em;
+    margin-top: 0.5em;
+}
+
+.writing-toc ul.toc-list > li {
+    margin: 0.3em 0;
+}
+
+.writing-toc ul.toc-sublist > li {
+    margin: 0.2em 0;
+    font-size: 0.95em;
+}
+
+.writing-toc ul.toc-sublist > li.toc-head {
+    margin: 0.5em 0;
+    font-weight: 600;
+    color: #641a85;
+}
+
+.writing-toc a {
+    color: #641a85;
+    text-decoration: none;
+}
+
+.writing-toc a:hover {
+    text-decoration: underline;
 }

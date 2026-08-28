@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -58,6 +61,13 @@ jobs:
             --target main \
             --generate-notes \
             ${{ steps.find.outputs.artifact }}
+
+      - name: Update prod-latest tag
+        continue-on-error: true
+        run: |
+          git push --delete origin prod-latest || echo "Tag prod-latest does not exist yet"
+          git tag -f prod-latest
+          git push origin prod-latest
 
   dispatch:
     runs-on: ubuntu-latest
