@@ -141,6 +141,16 @@
             <xsl:apply-templates/>
         </span>
     </xsl:template>
+    <xsl:template match="hi[@rend = 'superscript']">
+        <sup>
+            <xsl:apply-templates/>
+        </sup>
+    </xsl:template>
+    <xsl:template match="hi[@rend = 'subscript']">
+        <sub>
+            <xsl:apply-templates/>
+        </sub>
+    </xsl:template>
     
     <xsl:template match="hi[@rend = 'left']">
         <p class="text-left">
