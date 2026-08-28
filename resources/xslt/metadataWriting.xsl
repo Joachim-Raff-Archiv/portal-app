@@ -111,6 +111,14 @@
                     <td><xsl:value-of select="$fileDesc/titleStmt/editor"/></td>
                 </tr>
             <tr>
+                <td valign="top">Editorische Grundsätze:</td>
+                <td><xsl:apply-templates select="$encodingDesc/editorialDecl/p"/></td>
+            </tr>
+            <tr>
+                <td valign="top">Projektzusammenhang:</td>
+                <td><xsl:value-of select="$encodingDesc/projectDesc/p"/></td>
+            </tr>
+            <tr>
                 <td valign="top">Lizenz:</td>
                 <td><xsl:element name="a">
                     <xsl:attribute name="href">
@@ -119,14 +127,7 @@
                     <xsl:value-of select="$fileDesc/publicationStmt/availability/licence"/>
                 </xsl:element></td>
             </tr>
-            <tr>
-                <td valign="top">Projektzusammenhang:</td>
-                <td><xsl:value-of select="$encodingDesc/projectDesc/p"/></td>
-            </tr>
-            <tr>
-                <td valign="top">Editorische Grundsätze:</td>
-                <td><xsl:apply-templates select="$encodingDesc/editorialDecl/p"/></td>
-            </tr>
+            
         </table>
         </table>
         
