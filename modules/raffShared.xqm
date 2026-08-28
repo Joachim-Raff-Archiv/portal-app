@@ -724,10 +724,12 @@ declare function raffShared:getReferences($id) {
                                           then('Institution')
                                           else if(starts-with($docRoot/@xml:id,'E'))
                                           then(
-                                                if($doc//tei:analytic)
-                                                then('Artikel')
-                                                else ('Monographie')
+                                                if($doc//tei:textClass//tei:term)
+                                                then($doc//tei:textClass//tei:term[1]/text())
+                                                else ('Schrift')
                                               )
+                                          else if(starts-with($docRoot/@xml:id,'K'))
+                                          then('Ort')
                                           else('Sonstige')
                           let $entryOrder := if(starts-with($docRoot/@xml:id,'A'))
                                           then('002')
@@ -739,7 +741,10 @@ declare function raffShared:getReferences($id) {
                                           then('004')
                                           else if(starts-with($docRoot/@xml:id,'E'))
                                           then('005')
-                                          else('006')
+                                          else if(starts-with($docRoot/@xml:id,'K'))
+                                          then('006')
+                                          else('007')
+                                          
                           let $correspActionSent := $docRoot//tei:correspAction[@type="sent"]
                           let $correspActionReceived := $docRoot//tei:correspAction[@type="received"]
                           let $correspSentTurned := raffPostals:getSenderTurned($correspActionSent)
