@@ -3519,7 +3519,7 @@ declare function app:writing($node as node(), $model as map(*)) {
          class="page-header">
          <br/>
          <div class="alert alert-warning" role="alert">
-            Die Publikation der „Wagnerfrage“ hat sich leider etwas verzögert. Sie sehen hier die erste Hälfte der Edition. Wir planen Mitte September die Veröffentlichung des gesamten Werkes. Wir bitten um Ihre Geduld und Ihr Verständnis. Vielen Dank.
+            Die Publikation der Edition der «Wagnerfrage» hat sich leider etwas verzögert. Hier sehen Sie bereits die erste Hälfte der Edition. Wir planen Mitte September die Veröffentlichung des gesamten Dokuments. Wir bitten um Ihre Geduld und Ihr Verständnis. Vielen Dank.
          </div>
          <br/>
          <h2>{$name}</h2>
