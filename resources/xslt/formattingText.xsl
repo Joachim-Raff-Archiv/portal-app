@@ -188,7 +188,7 @@
     <xsl:template match="figure">
         <xsl:variable name="picture" select="@facs"/>
         <p class="text-center">
-            <img src="{$picture}" width="250"/>
+        <img src="{concat('https://digilib.baumann-digital.de/JRA/',$picture,'?dh=1000&amp;dw=1000')}" class="img-fluid mx-auto d-block img-thumbnail" width="75%"/>
         </p>
     </xsl:template>
     
@@ -398,7 +398,9 @@
 
     <xsl:template match="g">
         <xsl:choose>
-            <xsl:when test="doc-available(@ref)">
+        <xsl:when test="@ref">
+            <xsl:choose>
+                <xsl:when test="doc-available(@ref)">
                 <xsl:variable name="alt" select="concat('SMUFL ',doc(@ref)//desc/text())"/>
                 <xsl:variable name="url" select="doc(@ref)//graphic/@url/data()"/>
                 <img src="{$url}" alt="{$alt}" class="smufl-glyph"/>
@@ -406,6 +408,11 @@
             <xsl:otherwise>
                 <button type="button" class="btn btn-warning" title="Rendering derzeit nicht möglich">!</button>
             </xsl:otherwise>
+            </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+            <span class="smufl-like-letter"><xsl:value-of select="."/></span>
+        </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 

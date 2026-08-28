@@ -626,6 +626,8 @@ span.upright {
     text-orientation: upright;
     flex-direction: row-reverse;
     display: inline-flex;
+    line-height: 1em;
+    width: 1em;
 }
 
 /* Writing TOC Styles */
