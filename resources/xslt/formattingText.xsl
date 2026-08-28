@@ -249,7 +249,14 @@
 
     <xsl:template match="note[@type='commentary']">
         <xsl:variable name="commentaryID" select="concat('commentary-', $docID, '-', generate-id())"/>
-        <button type="button" class="btn btn-jra btn-jra-annot" data-toggle="modal" data-target="#{$commentaryID}">i</button>
+        <button type="button" data-toggle="modal" data-target="#{$commentaryID}">
+            <xsl:attribute
+        name="class">
+                <xsl:text>btn btn-jra btn-jra-annot</xsl:text>
+                <xsl:if test="parent::note"> note-in-note</xsl:if>
+            </xsl:attribute>
+            <xsl:attribute name="title">Kritischer Kommentar</xsl:attribute>
+        <xsl:text>i</xsl:text></button>
     </xsl:template>
     
     <!-- Template für Modal-Dialoge im separaten Mode -->

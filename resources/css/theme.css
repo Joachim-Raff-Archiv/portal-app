@@ -215,6 +215,8 @@ fieldset[disabled] .btn-jra.active {
   border-radius: 100%;
 }
 
+.note-in-note {font-size: 0.6em!important;};
+
 navbar-jra .navbar-brand{
     color: #641a85
 }
@@ -583,6 +585,13 @@ span.hi {
 .smufl-glyph {
     height: 1em;
     padding-bottom: 0.1em;
+}
+
+.smufl-like-letter {
+    height: 1em;
+    padding-bottom: 0.1em;
+    font-size: larger;
+    font-weight: 700;
 }
 
 hr.jra_pb-text {
