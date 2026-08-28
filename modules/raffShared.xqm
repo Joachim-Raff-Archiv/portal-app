@@ -816,6 +816,7 @@ declare function raffShared:suggestedCitation($id as xs:string) {
                         case 'F' return 'event'
                         case 'G' return 'bibl'
                         case 'H' return 'news'
+                        case 'K' return 'locus'
                         default return 'unknown'
     let $name := if($itemType = 'letter')
                  then(raffPostals:getName($doc//tei:correspAction[@type="sent"]//@key[1]/string(), 'reversed'))
@@ -831,23 +832,18 @@ declare function raffShared:suggestedCitation($id as xs:string) {
                  then(concat($doc//mei:work//mei:title[@type="uniform"]/text(), ' ', $doc//mei:work//mei:title[@type="desc"]/text()))
                  else if($itemType = 'writing')
                  then(raffWritings:getTitle($id))
+                 else if($itemType = 'locus')
+                 then($doc//tei:sourceDesc/tei:listPlace/tei:place[1]/tei:placeName[@type="reg"][1]/text())
                  else()
     let $nameLetterTo := if($doc//tei:correspAction[@type="received"]//@key[1]/string())
                          then(raffPostals:getName($doc//tei:correspAction[@type="received"]//@key[1]/string(), 'short'))
                          else('')
     let $letterDate := raffShared:formatDateRegistryLetters(raffShared:getDateRegistryLetters($doc//tei:correspAction[@type="sent"]))
     
-    let $label := if($itemType = 'letter')
-                  then(concat($name, ': Brief an ', $nameLetterTo, ' (', $letterDate, '); '))
-                  else if($itemType = 'person')
-                  then(concat($name, '; '))
-                  else if($itemType = 'institution')
-                  then(concat($name, '; '))
-                  else if($itemType = 'work')
-                  then(concat($name, '; '))
-                  else if($itemType = 'writing')
-                  then(concat($name, '; '))
-                  else('')
+    let $label := switch ($itemType)
+                        case 'letter' return concat($name, ': Brief an ', $nameLetterTo, ' (', $letterDate, '); ')
+                        case 'locus' case 'work' case 'person' case 'institution' case 'writing' case 'event' case 'bibl' case 'news' return concat($name, '; ')
+                        default return 'unknown'
     
     let $itemLinkLabel := concat('https://portal.raff-archiv.ch', substring-after($itemLink, 'raffArchive'))
     
@@ -857,7 +853,7 @@ declare function raffShared:suggestedCitation($id as xs:string) {
             <div class="suggestedCitation">
                 <span class="heading" style="font-size: medium;">Zitiervorschlag: </span>
                 {$label} {$itemLinkLabel},
-                abgerufen am {format-date(current-date(), '[D]. [M] [Y]', 'de', (), ())}.
+                abgerufen am {format-date(current-date(), '[D]. [M]. [Y]', 'de', (), ())}.
             </div>
         </div>,
         <hr/>)
