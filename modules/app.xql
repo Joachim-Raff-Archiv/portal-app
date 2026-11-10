@@ -3517,11 +3517,6 @@ declare function app:writing($node as node(), $model as map(*)) {
     class="container">
      <div
          class="page-header">
-         <br/>
-         <div class="alert alert-warning" role="alert">
-            Die Publikation der Edition der «Wagnerfrage» hat sich leider etwas verzögert. Hier sehen Sie bereits die erste Hälfte der Edition. Wir planen Mitte Oktober die Veröffentlichung des gesamten Dokuments. Wir bitten um Ihre Geduld und Ihr Verständnis. Vielen Dank.
-         </div>
-         <br/>
          <h2>{$name}</h2>
          <hr/>
          <ul class="nav nav-pills"
